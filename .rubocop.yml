@@ -1,0 +1,46 @@
+inherit_gem:
+    rubocop-shopify: rubocop.yml
+
+require:
+  - rubocop-performance
+  - rubocop-sorbet
+
+AllCops:
+  TargetRubyVersion: 2.7
+  UseCache: true
+  CacheRootDirectory: tmp
+  Exclude:
+    - 'test/fixtures/**/*'
+
+Lint/UnusedMethodArgument:
+  AllowUnusedKeywordArguments: true
+
+Style/MethodCallWithArgsParentheses:
+  Enabled: true
+  IgnoreMacros: true
+  IgnoredMethods:
+  - require
+  - require_relative
+  - require_dependency
+  - yield
+  - raise
+  Exclude:
+  - Gemfile
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Sorbet/ConstantsFromStrings:
+  Enabled: true
+
+Sorbet/ForbidIncludeConstLiteral:
+  Enabled: true
+
+Sorbet/ParametersOrderingInSignature:
+  Enabled: true
+
+Sorbet/KeywordArgumentOrdering:
+  Enabled: true
+
+Sorbet/ValidSigil:
+  Enabled: true

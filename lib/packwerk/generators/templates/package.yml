@@ -1,0 +1,17 @@
+# This file represents the root package of the application
+# Please validate the configuration using `bin/packwerk validate` (for Rails applications) or running the auto generated
+# test case (for non-Rails projects). You can then use `packwerk check` to check your code.
+
+# Turn on dependency checks for this package
+enforce_dependencies: true
+
+# Turn on privacy checks for this package
+# enforcing privacy is often not useful for the root package, because it would require defining a public interface
+# for something that should only be a thin wrapper in the first place.
+# We recommend enabling this for any new packages you create to aid with encapsulation.
+enforce_privacy: false
+
+# A list of this package's dependencies
+# Note that packages in this list require their own `package.yml` file
+# dependencies:
+# - "packages/billing"

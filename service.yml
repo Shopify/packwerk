@@ -1,0 +1,6 @@
+# https://services.shopify.io/services/packwerk/production
+org_line: Kernel
+owners: Shopify/kernel-architecture-patterns
+classification: library
+slack_channels:
+  - architecture-patterns

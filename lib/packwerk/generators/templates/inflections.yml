@@ -1,0 +1,6 @@
+# List your inflections in this file instead of `inflections.rb`
+# See steps to set up custom inflections:
+# https://github.com/Shopify/packwerk/blob/main/USAGE.md#Inflections
+
+# acronym:
+#   - "GraphQL"

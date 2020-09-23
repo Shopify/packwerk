@@ -1,0 +1,10 @@
+include:
+  - "**/*.rb"
+  - "**/*.{blop,rb}" # To test for duplicated files
+exclude:
+  - "**/temp.rb"
+load_paths:
+  - components/platform/app/models
+  - components/sales/app/models
+  - components/timeline/app/models
+  - components/timeline/app/models/concerns

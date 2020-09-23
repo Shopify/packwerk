@@ -1,0 +1,32 @@
+name: packwerk
+
+type: ruby
+
+up:
+  - ruby: 2.6.6
+  - bundler
+
+commands:
+  test:
+    run: |
+      if [[ "$*" =~ ":"[0-9]+ ]];
+      then
+        # run test by its line number
+        bundle exec m "$@"
+      elif [[ "$#" -eq 1 && -f "$1" ]];
+      then
+        # run all tests in given file(s)
+        bundle exec rake test TEST="$@"
+      else
+        # run all tests
+        bundle exec rake test
+      fi
+  style: "bundle exec rubocop -D --auto-correct"
+  typecheck:
+    desc: "run Sorbet typechecking"
+    run: "bundle exec srb tc"
+    aliases: ['tc']
+    subcommands:
+      update:
+        desc: "update RBIs for gems"
+        run: "bundle exec tapioca sync -c 'dev typecheck update'"

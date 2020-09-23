@@ -1,0 +1,12 @@
+/.bundle/
+/.yardoc
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+/spec/reports/
+/tmp/
+/.bundle/
+/tmp/
+.rubocop-*
+sorbet/rbi/hidden-definitions/errors.txt
