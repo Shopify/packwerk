@@ -16,9 +16,9 @@ Packwerk supports MRI versions 2.6 and above.
 
 ## Demo
 
-Watch a [1-minute video demo](https://drive.google.com/file/d/1D-t1nYduwgpHAP4DHY-EwVwVNFHlwRWj/view?usp=sharing) on how Packwerk works.
+Watch a [1-minute video demo](https://www.youtube.com/watch?v=NwqlyBAxVpQ&feature=youtu.be) on how Packwerk works.
 
-[![](./static/packwerk-check-demo.png)](https://drive.google.com/file/d/1D-t1nYduwgpHAP4DHY-EwVwVNFHlwRWj/view?usp=sharing)
+[![](./static/packwerk-check-demo.png)](https://www.youtube.com/watch?v=NwqlyBAxVpQ&feature=youtu.be)
 
 ## Installation
 
