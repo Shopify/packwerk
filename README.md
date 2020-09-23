@@ -52,8 +52,6 @@ Read [USAGE.md](USAGE.md) for usage once Packwerk is installed on your project.
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `bundle exec rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-To create a release, read [RELEASE.md](RELEASE.md).
-
 ## Limitations
 
 With Ruby being a very dynamic language, static analysis tools such as Packwerk are bound to have limitations.

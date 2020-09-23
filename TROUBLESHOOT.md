@@ -25,7 +25,7 @@ _Note: You cannot specify folders or packages for `packwerk validate` because th
 ### Package Privacy violation
 A constant that is private to its package has been referenced from outside of the package. Constants are declared private in their package’s `package.yml`.
 
-See: [USAGE.md - Enforcing privacy](USAGE.md#Enforcing-privacy)
+See: [USAGE.md - Enforcing privacy boundary](USAGE.md#Enforcing-privacy-boundary)
 
 #### Interpreting Privacy violation
 
@@ -45,7 +45,7 @@ The functionality you’re looking for may not be intended to be reused across p
 ### Package Dependency violation
 A constant defined in a package A is referenced from a package B that doesn’t define a dependency on A. Packages define their dependencies in their `package.yml`.
 
-See: [USAGE.md - Enforcing dependency](USAGE.md#Enforcing-dependency)
+See: [USAGE.md - Enforcing dependency boundary](USAGE.md#Enforcing-dependency-boundary)
 
 #### Interpreting Dependency violation
 
