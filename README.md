@@ -28,6 +28,8 @@ Watch a [1-minute video demo](https://www.youtube.com/watch?v=NwqlyBAxVpQ&featur
 gem 'packwerk'
 ```
 
+_Note: Packwerk has to be grouped in production environment as it contains logic to load custom inflectors._
+
 2. Install the gem
 
 Execute:
