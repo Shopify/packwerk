@@ -43,6 +43,8 @@ After including Packwerk in the Gemfile, you can generate the necessary files to
 
     bundle exec packwerk init
 
+_Note: Packwerk has to be grouped in production environment as it contains logic to load custom inflectors._
+
 Here is a list of files generated:
 
 | File                        | Location     | Description |
