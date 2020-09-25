@@ -58,10 +58,13 @@ module Packwerk
         (engine.config.autoload_paths + engine.config.eager_load_paths + engine.config.autoload_once_paths).uniq
       end
 
+      rails_root_match = Rails.root.join("**").to_s
+      bundle_path_match = Bundler.bundle_path.join("**").to_s
+
       all_paths = all_paths.map do |path_string|
-        # ignore paths outside of the Rails root
+        # ignore paths outside of the Rails root and gems
         path = Pathname.new(path_string)
-        if path.exist? && path.realpath.fnmatch(Rails.root.join("**").to_s)
+        if path.exist? && path.realpath.fnmatch(rails_root_match) && !path.realpath.fnmatch(bundle_path_match)
           path.relative_path_from(Rails.root).to_s
         end
       end
