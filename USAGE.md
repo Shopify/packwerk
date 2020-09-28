@@ -53,7 +53,7 @@ Here is a list of files generated:
 | Root package                | package.yml  | A package for the root folder |
 | Bin script                  | bin/packwerk | For Rails applications to run Packwerk validation on CI, see [Validating the package system](#Validating-the-package-system) |
 | Validation test             | test/packwerk_validator_test.rb | For Ruby projects to run Packwerk validation using tests, see [Validating the package system](#Validating-the-package-system) |
-| Custom inflections          | configs/inflections.yml | A custom inflections file is only required if you have custom inflections in `inflections.rb`, see [Inflections](#Inflections) |
+| Custom inflections          | config/inflections.yml | A custom inflections file is only required if you have custom inflections in `inflections.rb`, see [Inflections](#Inflections) |
 
 After that, you may begin creating packages for your application. See [Defining packages](#Defining-packages)
 
@@ -74,7 +74,7 @@ Packwerk reads from the `packwerk.yml` configuration file in the root directory.
 
 Packwerk requires custom inflections to be defined in `inflections.yml` instead of the traditional `inflections.rb`. This is because Packwerk accounts for custom inflections, such as acronyms, when resolving constants. Additionally, Packwerk interprets Active Record associations as references to constants. For example, `has_many :birds` is reference to the `Birds` constant.
 
-In order to make your custom inflections compatible with Active Support and Packwerk, you must create an `inflections.yml` file and point `ActiveSupport::Inflector` to that file.
+In order to make your custom inflections compatible with Active Support and Packwerk, you must create a `config/inflections.yml` file and point `ActiveSupport::Inflector` to that file.
 
 In `inflections.rb`, add:
 
@@ -82,12 +82,12 @@ In `inflections.rb`, add:
 ActiveSupport::Inflector.inflections do |inflect|
   # please add all custom inflections in the file below.
   Packwerk::Inflections::Custom.new(
-    Rails.root.join("inflections.yml")
+    Rails.root.join("config", "inflections.yml")
   ).apply_to(inflect)
 end
 ```
 
-Next, move your existing custom inflections into `inflections.yml`:
+Next, move your existing custom inflections into `config/inflections.yml`:
 
 ```yaml
 acronym:
@@ -101,7 +101,7 @@ uncountable:
   - 'payment_details'
 ```
 
-Any new inflectors should be added to `inflections.yml`.
+Any new inflectors should be added to `config/inflections.yml`.
 
 ## Validating the package system
 
