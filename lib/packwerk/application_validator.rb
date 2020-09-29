@@ -170,8 +170,8 @@ module Packwerk
       Packwerk::Inflections::Custom.new(inflections_file).apply_to(test_inflections)
 
       results = %i(plurals singulars uncountables humans acronyms).map do |type|
-        expected = ActiveSupport::Inflector.inflections.public_send(type).to_a
-        actual = test_inflections.public_send(type).to_a
+        expected = ActiveSupport::Inflector.inflections.public_send(type).to_set
+        actual = test_inflections.public_send(type).to_set
 
         if expected == actual
           Result.new(true)
