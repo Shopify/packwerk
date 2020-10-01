@@ -61,8 +61,9 @@ module Packwerk
       Bundler.expects(:bundle_path).returns(Rails.root.join("vendor/cache/gems"))
 
       configuration = Configuration.from_path
+      expected_autoloads = default_autoloads - ["vendor/cache/gems/example/models"]
 
-      assert_equal default_autoloads, configuration.load_paths.sort
+      assert_equal expected_autoloads, configuration.load_paths.sort
     end
 
     private
