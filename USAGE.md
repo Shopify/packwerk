@@ -61,13 +61,13 @@ After that, you may begin creating packages for your application. See [Defining 
 
 Packwerk reads from the `packwerk.yml` configuration file in the root directory. Packwerk will run with the default configuration if any of these settings are not specified.
 
-| Key                  | Default value                      | Description  |
-|----------------------|------------------------------------|--------------|
-| include              | **/*.{rb,rake,erb}                 | list of patterns for folder paths to include |
-| exclude              | {bin,node_modules,script,tmp}/**/* | list of patterns for folder paths to exclude |
-| package_paths        | **/                                | patterns to find package configuration files, see: Defining packages |
-| load_paths           | All application autoload paths     | list of load paths |
-| custom_associations  | N/A                                | list of custom associations, if any |
+| Key                  | Default value                             | Description  |
+|----------------------|-------------------------------------------|--------------|
+| include              | **/*.{rb,rake,erb}                        | list of patterns for folder paths to include |
+| exclude              | {bin,node_modules,script,tmp,vendor}/**/* | list of patterns for folder paths to exclude |
+| package_paths        | **/                                       | patterns to find package configuration files, see: Defining packages |
+| load_paths           | All application autoload paths            | list of load paths |
+| custom_associations  | N/A                                       | list of custom associations, if any |
 
 
 ### Inflections

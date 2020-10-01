@@ -47,7 +47,7 @@ module Packwerk
       configuration = Configuration.from_path
 
       assert_equal ["**/*.{rb,rake,erb}"], configuration.include
-      assert_equal ["{bin,node_modules,script,tmp}/**/*"], configuration.exclude
+      assert_equal ["{bin,node_modules,script,tmp,vendor}/**/*"], configuration.exclude
       assert_equal File.expand_path("."), configuration.root_path
       assert_equal default_autoloads, configuration.load_paths.sort
       assert_equal "**/", configuration.package_paths

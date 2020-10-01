@@ -28,7 +28,7 @@ module Packwerk
 
     DEFAULT_CONFIG_PATH = "packwerk.yml"
     DEFAULT_INCLUDE_GLOBS = ["**/*.{rb,rake,erb}"]
-    DEFAULT_EXCLUDE_GLOBS = ["{bin,node_modules,script,tmp}/**/*"]
+    DEFAULT_EXCLUDE_GLOBS = ["{bin,node_modules,script,tmp,vendor}/**/*"]
 
     attr_reader(
       :include, :exclude, :root_path, :package_paths, :custom_associations, :load_paths, :inflections_file,
