@@ -58,18 +58,19 @@ module Packwerk
         (engine.config.autoload_paths + engine.config.eager_load_paths + engine.config.autoload_once_paths).uniq
       end
 
-      rails_root_match = Rails.root.join("**").to_s
       bundle_path_match = Bundler.bundle_path.join("**").to_s
 
-      all_paths = all_paths.map do |path_string|
-        # ignore paths outside of the Rails root and vendored gems
+      all_paths = all_paths.each_with_object([]) do |path_string, paths|
+        # ignore paths inside gems
         path = Pathname.new(path_string)
-        if path.exist? && path.realpath.fnmatch(rails_root_match) && !path.realpath.fnmatch(bundle_path_match)
-          path.relative_path_from(Rails.root).to_s
-        end
+
+        next unless path.exist?
+        next if path.realpath.fnmatch(bundle_path_match)
+
+        paths << path.relative_path_from(Rails.root).to_s
       end
 
-      all_paths.compact.tap do |paths|
+      all_paths.tap do |paths|
         if paths.empty?
           raise <<~EOS
             No autoload paths have been set up in your Rails app. This is likely a bug, and
