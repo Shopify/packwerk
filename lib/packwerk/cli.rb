@@ -43,6 +43,8 @@ module Packwerk
         check(args)
       when "update"
         update(args)
+      when "update-deprecations"
+        update_deprecations(args)
       when "validate"
         validate(args)
       when nil, "help"
@@ -52,7 +54,8 @@ module Packwerk
           Subcommands:
             init - set up packwerk
             check - run all checks
-            update - update deprecated references
+            update - update deprecated references (deprecated, use update-deprecations instead)
+            update-deprecations - update deprecated references
             validate - verify integrity of packwerk and package configuration
             help  - display help information about packwerk
         USAGE
@@ -117,6 +120,11 @@ module Packwerk
     end
 
     def update(paths)
+      warn("`packwerk update` is deprecated in favor of `packwerk update-deprecations`.")
+      update_deprecations(paths)
+    end
+
+    def update_deprecations(paths)
       updating_deprecated_references = ::Packwerk::UpdatingDeprecatedReferences.new(@configuration.root_path)
       @run_context = Packwerk::RunContext.from_configuration(
         @configuration,

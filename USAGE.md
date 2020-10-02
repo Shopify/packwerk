@@ -214,17 +214,17 @@ For existing codebases, packages are likely to have existing boundary violations
 
 If so, you will want to stop the bleeding and prevent more violations from occuring. The existing violations in the codebase can be recorded in a [deprecated references list](#Understanding_the_list_of_deprecated_references) by executing:
 
-    bundle exec packwerk update
+    bundle exec packwerk update-deprecations
 
-Similar to `packwerk check`, you may also run `packwerk update` on folders or packages:
+Similar to `packwerk check`, you may also run `packwerk update-deprecations` on folders or packages:
 
-    bundle exec packwerk update components/your_package
+    bundle exec packwerk update-deprecations components/your_package
 
 ![](static/packwerk_update.gif)
 
 _Note: Changing dependencies or enabling dependencies will not require a full update of the codebase, only the package that changed. On the other hand, changing or enabling privacy will require a full update of the codebase._
 
-`packwerk update` should only be run to record existing violations and to remove deprecated references that have been worked off. Running `packwerk update` to resolve a violation should be the very last resort.
+`packwerk update-deprecations` should only be run to record existing violations and to remove deprecated references that have been worked off. Running `packwerk update-deprecations` to resolve a violation should be the very last resort.
 
 See: [TROUBLESHOOT.md - Troubleshooting violations](TROUBLESHOOT.md#Troubleshooting_violations)
 
