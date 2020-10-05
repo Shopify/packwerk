@@ -43,8 +43,6 @@ After including Packwerk in the Gemfile, you can generate the necessary files to
 
     bundle exec packwerk init
 
-_Note: Packwerk has to be grouped in production environment as it contains logic to load custom inflectors._
-
 Here is a list of files generated:
 
 | File                        | Location     | Description |
@@ -79,6 +77,8 @@ In order to make your custom inflections compatible with Active Support and Pack
 In `inflections.rb`, add:
 
 ```rb
+require "packwerk/inflections/custom"
+
 ActiveSupport::Inflector.inflections do |inflect|
   # please add all custom inflections in the file below.
   Packwerk::Inflections::Custom.new(
@@ -86,6 +86,8 @@ ActiveSupport::Inflector.inflections do |inflect|
   ).apply_to(inflect)
 end
 ```
+
+_Note: Packwerk has to be grouped in production environment within the Gemfile if you have custom inflections._
 
 Next, move your existing custom inflections into `config/inflections.yml`:
 
