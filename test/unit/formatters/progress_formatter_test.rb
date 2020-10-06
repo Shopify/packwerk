@@ -37,12 +37,12 @@ module Packwerk
       end
 
       test "#mark_as_inspected prints a dot" do
-        @progress_formatter.mark_as_inspected
+        @progress_formatter.mark_as_inspected("/foo/bar.rb")
         assert_equal ".", @string_io.string
       end
 
       test "#mark_as_failed prints an E" do
-        @progress_formatter.mark_as_failed
+        @progress_formatter.mark_as_failed("/foo/bar.rb")
         assert_equal "E", @string_io.string
       end
 

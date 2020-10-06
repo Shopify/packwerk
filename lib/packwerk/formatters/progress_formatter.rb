@@ -29,11 +29,11 @@ module Packwerk
         @out.puts("✅ Packages are valid. Use `packwerk check` to run static checks.")
       end
 
-      def mark_as_inspected
+      def mark_as_inspected(_path)
         @out.print(".")
       end
 
-      def mark_as_failed
+      def mark_as_failed(_path)
         @out.print("#{@style.error}E#{@style.reset}")
       end
 
