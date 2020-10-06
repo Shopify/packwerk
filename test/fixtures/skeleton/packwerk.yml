@@ -8,3 +8,4 @@ load_paths:
   - components/sales/app/models
   - components/timeline/app/models
   - components/timeline/app/models/concerns
+  - vendor/cache/gems/example/models

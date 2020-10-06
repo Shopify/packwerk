@@ -28,7 +28,7 @@ module Packwerk
 
     DEFAULT_CONFIG_PATH = "packwerk.yml"
     DEFAULT_INCLUDE_GLOBS = ["**/*.{rb,rake,erb}"]
-    DEFAULT_EXCLUDE_GLOBS = ["{bin,node_modules,script,tmp}/**/*"]
+    DEFAULT_EXCLUDE_GLOBS = ["{bin,node_modules,script,tmp,vendor}/**/*"]
 
     attr_reader(
       :include, :exclude, :root_path, :package_paths, :custom_associations, :load_paths, :inflections_file,
@@ -58,15 +58,19 @@ module Packwerk
         (engine.config.autoload_paths + engine.config.eager_load_paths + engine.config.autoload_once_paths).uniq
       end
 
-      all_paths = all_paths.map do |path_string|
-        # ignore paths outside of the Rails root
+      bundle_path_match = Bundler.bundle_path.join("**").to_s
+
+      all_paths = all_paths.each_with_object([]) do |path_string, paths|
+        # ignore paths inside gems
         path = Pathname.new(path_string)
-        if path.exist? && path.realpath.fnmatch(Rails.root.join("**").to_s)
-          path.relative_path_from(Rails.root).to_s
-        end
+
+        next unless path.exist?
+        next if path.realpath.fnmatch(bundle_path_match)
+
+        paths << path.relative_path_from(Rails.root).to_s
       end
 
-      all_paths.compact.tap do |paths|
+      all_paths.tap do |paths|
         if paths.empty?
           raise <<~EOS
             No autoload paths have been set up in your Rails app. This is likely a bug, and
