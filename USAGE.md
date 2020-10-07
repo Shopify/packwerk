@@ -47,7 +47,7 @@ Here is a list of files generated:
 
 | File                        | Location     | Description |
 |-----------------------------|--------------|------------|
-| Packwerk configuration      | packwerk.yml | See [Setting up configuration file](#Setting-up-configuration-file) |
+| Packwerk configuration      | packwerk.yml | See [Setting up the configuration file](#Setting-up-the-configuration-file) |
 | Root package                | package.yml  | A package for the root folder |
 | Bin script                  | bin/packwerk | For Rails applications to run Packwerk validation on CI, see [Validating the package system](#Validating-the-package-system) |
 | Validation test             | test/packwerk_validator_test.rb | For Ruby projects to run Packwerk validation using tests, see [Validating the package system](#Validating-the-package-system) |
