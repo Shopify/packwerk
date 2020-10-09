@@ -113,7 +113,7 @@ module Packwerk
 
     test "#execute_command with init subcommand runs application validation generator for non-Rails app" do
       string_io = StringIO.new
-      configuration = stub(root_path: @temp_dir, load_paths: ["path"], custom_associations: ["cached_belongs_to"])
+      configuration = stub(root_path: @temp_dir, load_paths: ["path"], package_paths: "**/", custom_associations: ["cached_belongs_to"])
       cli = ::Packwerk::Cli.new(configuration: configuration, out: string_io)
 
       Packwerk::Generators::ApplicationValidation.expects(:generate).returns(true)
@@ -125,7 +125,7 @@ module Packwerk
 
     test "#execute_command with init subcommand runs application validation generator, fails and prints error" do
       string_io = StringIO.new
-      configuration = stub(root_path: @temp_dir, load_paths: ["path"], custom_associations: ["cached_belongs_to"])
+      configuration = stub(root_path: @temp_dir, load_paths: ["path"], package_paths: "**/", custom_associations: ["cached_belongs_to"])
       cli = ::Packwerk::Cli.new(configuration: configuration, out: string_io)
 
       Packwerk::Generators::ApplicationValidation.expects(:generate).returns(false)
