@@ -16,7 +16,7 @@ You can specify folders or packages in Packwerk commands for a shorter run time:
 
      bundle exec packwerk check components/your_package
 
-     bundle exec packwerk update components/your_package
+     bundle exec packwerk update-deprecations components/your_package
 
 _Note: You cannot specify folders or packages for `packwerk validate` because the command runs for the entire application._
 

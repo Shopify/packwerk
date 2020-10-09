@@ -35,10 +35,10 @@ module Packwerk
         assert_match(/1 offense detected/, captured_output)
       end
 
-      test "'packwerk update' with no violations succeeds and updates no files" do
+      test "'packwerk update-deprecations' with no violations succeeds and updates no files" do
         deprecated_reference_content = read_deprecated_references
 
-        assert_successful_run("update")
+        assert_successful_run("update-deprecations")
 
         deprecated_reference_content_after_update = read_deprecated_references
 
@@ -47,7 +47,7 @@ module Packwerk
         assert_match(/`deprecated_references.yml` has been updated./, captured_output)
       end
 
-      test "'packwerk update' with violations succeeds and updates relevant deprecated_references" do
+      test "'packwerk update-deprecations' with violations succeeds and updates relevant deprecated_references" do
         deprecated_reference_content = read_deprecated_references
         timeline_deprecated_reference_path = timeline_path("deprecated_references.yml")
 
@@ -55,7 +55,7 @@ module Packwerk
           file.write("class TimelineComment; belongs_to :order; end")
           file.flush
 
-          assert_successful_run("update")
+          assert_successful_run("update-deprecations")
 
           assert(File.exist?(timeline_deprecated_reference_path),
             "expected new deprecated_reference for timeline package to be created")
@@ -76,6 +76,11 @@ module Packwerk
         ensure
           File.delete(timeline_deprecated_reference_path) if File.exist?(timeline_deprecated_reference_path)
         end
+      end
+
+      test "'update' gives deprecation warning" do
+        _out, err = capture_io { assert_successful_run("update") }
+        assert_match(/`packwerk update` is deprecated/, err)
       end
 
       private
