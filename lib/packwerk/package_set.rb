@@ -25,12 +25,14 @@ module Packwerk
         new(packages)
       end
 
-      private
-
       def package_paths(root_path, package_pathspec)
+        bundle_path_match = Bundler.bundle_path.join("**").to_s
+
         Dir.glob(File.join(root_path, package_pathspec, PACKAGE_CONFIG_FILENAME))
-          .map! { |path| Pathname.new(path) }
+          .map { |path| Pathname.new(path) }.reject { |path| path.realpath.fnmatch(bundle_path_match) }
       end
+
+      private
 
       def create_root_package_if_none_in(packages)
         return if packages.any?(&:root?)
