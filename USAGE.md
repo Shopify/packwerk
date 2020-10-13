@@ -172,7 +172,17 @@ enforce_privacy:
 It will be a privacy violation when a file outside of the `components/merchandising` package tries to reference `Merchandising::Product`.
 
 ##### Using public folders
-You may enforce privacy either way mentioned above and still expose a public API for your package by placing constants in the `app/public` folder. The constants in the public folder will be made available for use by the rest of the application.
+You may enforce privacy either way mentioned above and still expose a public API for your package by placing constants in the public folder, which by default is `app/public`. The constants in the public folder will be made available for use by the rest of the application.
+
+##### Defining your own public folder
+
+You may prefer to override the default public folder, you can do so on a per-package basis by defining a `public_path`.
+
+Example:
+
+```yaml
+public_path: my/custom/path
+```
 
 #### Enforcing dependency boundary
 A package's dependency boundary is violated whenever it references a constant in some package that has not been declared as a dependency.
