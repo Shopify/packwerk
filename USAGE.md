@@ -181,7 +181,7 @@ You may prefer to override the default public folder, you can do so on a per-pac
 Example:
 
 ```yaml
-public_path: my/custom/path
+public_path: my/custom/path/
 ```
 
 #### Enforcing dependency boundary
