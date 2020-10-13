@@ -35,7 +35,7 @@ module Packwerk
           return true
         end
 
-        source_file_path = File.expand_path("../templates/packwerk", __FILE__)
+        source_file_path = File.expand_path("templates/packwerk", __dir__)
         FileUtils.cp(source_file_path, destination_file_path)
 
         @out.puts("✅ Packwerk application validation bin script generated in #{destination_file_path}")
@@ -51,7 +51,7 @@ module Packwerk
           return true
         end
 
-        source_file_path = File.expand_path("../templates/packwerk_validator_test.rb", __FILE__)
+        source_file_path = File.expand_path("templates/packwerk_validator_test.rb", __dir__)
         FileUtils.cp(source_file_path, destination_file_path)
 
         @out.puts("✅ Packwerk application validation test generated in #{destination_file_path}")
