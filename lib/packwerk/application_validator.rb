@@ -113,7 +113,7 @@ module Packwerk
         hash = YAML.load_file(f)
         next unless hash
 
-        known_keys = %w(enforce_privacy enforce_dependencies dependencies metadata)
+        known_keys = %w(enforce_privacy enforce_dependencies public_path dependencies metadata)
         unknown_keys = hash.keys - known_keys
 
         unless unknown_keys.empty?
@@ -131,6 +131,16 @@ module Packwerk
         if hash.key?("enforce_dependencies")
           unless [TrueClass, FalseClass].include?(hash["enforce_dependencies"].class)
             errors << "Invalid 'enforce_dependencies' option in #{f.inspect}: #{hash['enforce_dependencies'].inspect}"
+          end
+        end
+
+        if hash.key?("public_path")
+          unless hash["public_path"].is_a?(String)
+            errors << "'public_path' option must be a string in #{f.inspect}: #{hash['public_path'].inspect}"
+          end
+
+          unless hash["public_path"].try(:last) == "/"
+            errors << "'public_path' option must end with a forward slash #{f.inspect}: #{hash['public_path'].inspect}"
           end
         end
 

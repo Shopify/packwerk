@@ -26,8 +26,14 @@ module Packwerk
       assert_equal(true, root_package.package_path?("components/unknown"))
     end
 
-    test "#public_path returns expected path" do
+    test "#public_path returns expected path when using the default public path" do
       assert_equal("components/timeline/app/public/", @package.public_path)
+    end
+
+    test "#public_path returns expected path when using a user defined public path" do
+      package = Package.new(name: "components/timeline", config: { "public_path" => "my/path/" })
+
+      assert_equal("components/timeline/my/path/", package.public_path)
     end
 
     test "#package_path? returns true for path under the package's public path" do
@@ -47,6 +53,16 @@ module Packwerk
     test "#<=> does not compare against different class" do
       assert_nil(@package <=> "boop")
       assert_nil(@package <=> Hash.new(name: "boop"))
+    end
+
+    test "#user_defined_public_path returns nil when not set in the configuration" do
+      assert_nil(@package.user_defined_public_path)
+    end
+
+    test "#user_defined_public_path returns the same value as in the config when set" do
+      package = Package.new(name: "components/timeline", config: { "public_path" => "my/path" })
+
+      assert_equal("my/path", package.user_defined_public_path)
     end
   end
 end
