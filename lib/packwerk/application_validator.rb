@@ -138,10 +138,6 @@ module Packwerk
           unless hash["public_path"].is_a?(String)
             errors << "'public_path' option must be a string in #{f.inspect}: #{hash['public_path'].inspect}"
           end
-
-          unless hash["public_path"].try(:last) == "/"
-            errors << "'public_path' option must end with a forward slash #{f.inspect}: #{hash['public_path'].inspect}"
-          end
         end
 
         next unless hash.key?("dependencies")
