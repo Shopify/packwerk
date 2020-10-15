@@ -41,7 +41,10 @@ module Packwerk
     end
 
     def user_defined_public_path
-      @config["public_path"]
+      return unless @config["public_path"]
+      return @config["public_path"] if @config["public_path"].end_with?("/")
+
+      @config["public_path"] + "/"
     end
 
     def <=>(other)

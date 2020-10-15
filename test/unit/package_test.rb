@@ -60,9 +60,15 @@ module Packwerk
     end
 
     test "#user_defined_public_path returns the same value as in the config when set" do
+      package = Package.new(name: "components/timeline", config: { "public_path" => "my/path/" })
+
+      assert_equal("my/path/", package.user_defined_public_path)
+    end
+
+    test "#user_defined_public_path adds a trailing forward slash to the path if it does not exist" do
       package = Package.new(name: "components/timeline", config: { "public_path" => "my/path" })
 
-      assert_equal("my/path", package.user_defined_public_path)
+      assert_equal("my/path/", package.user_defined_public_path)
     end
   end
 end
