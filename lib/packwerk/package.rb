@@ -33,11 +33,18 @@ module Packwerk
     end
 
     def public_path
-      @public_path ||= File.join(@name, "app/public/")
+      @public_path ||= File.join(@name, user_defined_public_path || "app/public/")
     end
 
     def public_path?(path)
       path.start_with?(public_path)
+    end
+
+    def user_defined_public_path
+      return unless @config["public_path"]
+      return @config["public_path"] if @config["public_path"].end_with?("/")
+
+      @config["public_path"] + "/"
     end
 
     def <=>(other)
