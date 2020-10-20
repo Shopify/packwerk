@@ -39,6 +39,7 @@ module Packwerk
         new(
           root_path: configuration.root_path,
           load_paths: configuration.load_paths,
+          package_paths: configuration.package_paths,
           inflector: ActiveSupport::Inflector,
           custom_associations: configuration.custom_associations,
           reference_lister: default_reference_lister,

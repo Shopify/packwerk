@@ -31,5 +31,16 @@ module Packwerk
     test "#fetch returns nil for unknown package name" do
       assert_nil(@package_set.fetch("components/unknown"))
     end
+
+    test ".package_paths excludes paths inside the gem directory" do
+      vendor_package_path = Pathname.new("test/fixtures/skeleton/vendor/cache/gems/example/package.yml")
+
+      package_paths = PackageSet.package_paths("test/fixtures/skeleton", "**")
+      assert_includes(package_paths, vendor_package_path)
+
+      Bundler.expects(:bundle_path).returns(Rails.root.join("vendor/cache/gems"))
+      package_paths = PackageSet.package_paths("test/fixtures/skeleton", "**")
+      refute_includes(package_paths, vendor_package_path)
+    end
   end
 end
