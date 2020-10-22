@@ -8,6 +8,7 @@ require "constant_resolver"
 require "packwerk"
 
 require "minitest/autorun"
+require "minitest/focus"
 require "support/test_macro"
 require "support/test_assertions"
 
