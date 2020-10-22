@@ -43,6 +43,7 @@ module Packwerk
         customs.inflections = {
           plural: [%w(analysis analyses)],
           acronym: ["PKG"],
+          singular: [[/status$/, "status"]],
         }
 
         customs.apply_to(inflections)
@@ -55,6 +56,11 @@ module Packwerk
         assert_equal(
           { "pkg" => "PKG" },
           inflections.acronyms
+        )
+
+        assert_equal(
+          [[/status$/, "status"]],
+          inflections.singulars
         )
       end
     end

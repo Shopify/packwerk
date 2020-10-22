@@ -7,3 +7,5 @@ irregular:
   - ['reserve', 'reserves']
 uncountable:
   - 'payment_details'
+singular:
+  - [!ruby/regexp /status$/, 'status']
