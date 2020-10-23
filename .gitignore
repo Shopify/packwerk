@@ -9,4 +9,5 @@
 /.bundle/
 /tmp/
 .rubocop-*
+.byebug_history
 sorbet/rbi/hidden-definitions/errors.txt
