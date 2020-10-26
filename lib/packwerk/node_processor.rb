@@ -3,6 +3,7 @@
 
 require "packwerk/node"
 require "packwerk/offense"
+require "packwerk/reference_lister"
 
 module Packwerk
   class NodeProcessor
