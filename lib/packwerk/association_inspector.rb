@@ -22,20 +22,20 @@ module Packwerk
     end
 
     def constant_name_from_node(node, ancestors:)
-      return unless Node.type(node) == Node::METHOD_CALL
+      return unless Node.method_call?(node)
 
       method_name = Node.method_name(node)
       return nil unless @associations.include?(method_name)
 
       arguments = Node.method_arguments(node)
-      association_name = Node.literal_value(arguments[0]) if Node.type(arguments[0]) == Node::SYMBOL
+      association_name = Node.literal_value(arguments[0]) if Node.symbol?(arguments[0])
       return nil unless association_name
 
-      association_options = arguments.detect { |n| Node.type(n) == Node::HASH }
+      association_options = arguments.detect { |n| Node.hash?(n) }
       class_name_node = Node.value_from_hash(association_options, :class_name) if association_options
 
       if class_name_node
-        Node.literal_value(class_name_node) if Node.type(class_name_node) == Node::STRING
+        Node.literal_value(class_name_node) if Node.string?(class_name_node)
       else
         @inflector.classify(association_name.to_s)
       end

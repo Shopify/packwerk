@@ -103,8 +103,24 @@ module Packwerk
         Location.new(location.line, location.column)
       end
 
+      def method_call?(node)
+        type(node) == METHOD_CALL
+      end
+
+      def hash?(node)
+        type(node) == HASH
+      end
+
+      def string?(node)
+        type(node) == STRING
+      end
+
+      def symbol?(node)
+        type(node) == SYMBOL
+      end
+
       def method_arguments(method_call_node)
-        raise TypeError unless type(method_call_node) == METHOD_CALL
+        raise TypeError unless method_call?(method_call_node)
 
         # (send (lvar :foo) :bar (int 1))
         #   "foo.bar(1)"
@@ -112,7 +128,7 @@ module Packwerk
       end
 
       def method_name(method_call_node)
-        raise TypeError unless type(method_call_node) == METHOD_CALL
+        raise TypeError unless method_call?(method_call_node)
 
         # (send (lvar :foo) :bar (int 1))
         #   "foo.bar(1)"
@@ -176,7 +192,7 @@ module Packwerk
       end
 
       def value_from_hash(hash_node, key)
-        raise TypeError unless type(hash_node) == HASH
+        raise TypeError unless hash?(hash_node)
         pair = hash_pairs(hash_node).detect { |pair_node| literal_value(hash_pair_key(pair_node)) == key }
         hash_pair_value(pair) if pair
       end
@@ -204,7 +220,7 @@ module Packwerk
       end
 
       def hash_pairs(hash_node)
-        raise TypeError unless type(hash_node) == HASH
+        raise TypeError unless hash?(hash_node)
 
         # (hash (pair (int 1) (int 2)) (pair (int 3) (int 4)))
         #   "{1 => 2, 3 => 4}"
@@ -222,7 +238,7 @@ module Packwerk
       def module_creation?(node)
         # "Class.new"
         # "Module.new"
-        type(node) == METHOD_CALL &&
+        method_call?(node) &&
           type(receiver(node)) == CONSTANT &&
           ["Class", "Module"].include?(constant_name(receiver(node))) &&
           method_name(node) == :new
