@@ -23,9 +23,7 @@ module Packwerk
 
     def constant_name_from_node(node, ancestors:)
       return unless Node.method_call?(node)
-
-      method_name = Node.method_name(node)
-      return nil unless @associations.include?(method_name)
+      return unless association?(node)
 
       arguments = Node.method_arguments(node)
       association_name = Node.literal_value(arguments[0]) if Node.symbol?(arguments[0])
@@ -39,6 +37,13 @@ module Packwerk
       else
         @inflector.classify(association_name.to_s)
       end
+    end
+
+    private
+
+    def association?(node)
+      method_name = Node.method_name(node)
+      @associations.include?(method_name)
     end
   end
 end
