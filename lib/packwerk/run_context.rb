@@ -34,15 +34,13 @@ module Packwerk
 
     class << self
       def from_configuration(configuration, reference_lister: nil)
-        default_reference_lister = reference_lister ||
-          ::Packwerk::CheckingDeprecatedReferences.new(configuration.root_path)
         new(
           root_path: configuration.root_path,
           load_paths: configuration.load_paths,
           package_paths: configuration.package_paths,
           inflector: ActiveSupport::Inflector,
           custom_associations: configuration.custom_associations,
-          reference_lister: default_reference_lister,
+          reference_lister: reference_lister,
         )
       end
     end
@@ -72,7 +70,7 @@ module Packwerk
         packages: package_set
       )
 
-      @reference_lister = reference_lister || ::Packwerk::CheckingDeprecatedReferences.new(@root_path)
+      @reference_lister = reference_lister
 
       @checkers = checker_classes.map(&:new)
 
