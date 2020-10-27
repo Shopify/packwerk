@@ -17,12 +17,7 @@ module Packwerk
       return nil if parent && Node.constant?(parent)
 
       if constant_in_module_or_class_definition?(node, parent: parent)
-        # We're defining a class with this name, in which case the constant is implicitly fully qualified by its
-        # enclosing namespace
-        name = Node.parent_module_name(ancestors: ancestors)
-        name ||= Node.enclosing_namespace_path(node, ancestors: ancestors).push(Node.constant_name(node)).join("::")
-
-        "::" + name
+        fully_qualify_constant(node, ancestors: ancestors)
       else
         begin
           Node.constant_name(node)
@@ -39,6 +34,20 @@ module Packwerk
         parent_name = Node.module_name_from_definition(parent)
         parent_name && parent_name == Node.constant_name(node)
       end
+    end
+
+    def fully_qualify_constant(node, ancestors:)
+      # We're defining a class with this name, in which case the constant is implicitly fully qualified by its
+      # enclosing namespace
+      name = Node.parent_module_name(ancestors: ancestors)
+      name ||= generate_qualified_constant(node, ancestors)
+      "::" + name
+    end
+
+    def generate_qualified_constant(node, ancestors:)
+      namespace_path = Node.enclosing_namespace_path(node, ancestors: ancestors)
+      constant_name = Node.constant_name(node)
+      namespace_path.push(constant_name).join("::")
     end
   end
 end
