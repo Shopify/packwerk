@@ -17,12 +17,14 @@ require "packwerk/reference_extractor"
 module Packwerk
   class RunContext
     attr_reader(
-      :checkers,
-      :constant_name_inspectors,
-      :context_provider,
       :root_path,
+      :load_paths,
+      :package_paths,
+      :inflector,
+      :custom_associations,
+      :checker_classes,
       :node_processor_class,
-      :reference_lister
+      :reference_lister,
     )
 
     DEFAULT_CHECKERS = [
@@ -54,46 +56,57 @@ module Packwerk
       reference_lister: nil
     )
       @root_path = File.expand_path(root_path)
-
-      resolver = ConstantResolver.new(
-        root_path: @root_path,
-        load_paths: load_paths,
-        inflector: inflector,
-      )
-
-      package_set = ::Packwerk::PackageSet.load_all_from(@root_path, package_pathspec: package_paths)
-
-      @context_provider = ::Packwerk::ConstantDiscovery.new(
-        constant_resolver: resolver,
-        packages: package_set
-      )
-
+      @load_paths = load_paths
+      @package_paths = package_paths
+      @inflector = inflector
+      @custom_associations = custom_associations
+      @checker_classes = checker_classes
       @reference_lister = reference_lister
-
-      @checkers = checker_classes.map(&:new)
-
-      @constant_name_inspectors = [
-        ::Packwerk::ConstNodeInspector.new,
-        ::Packwerk::AssociationInspector.new(inflector: inflector, custom_associations: custom_associations),
-      ]
-
       @node_processor_class = node_processor_class
     end
 
     def node_processor_for(filename:, ast_node:)
-      reference_extractor = ::Packwerk::ReferenceExtractor.new(
+      node_processor_class.new(
+        reference_extractor: reference_extractor_for_ast(ast_node),
+        reference_lister: reference_lister,
+        filename: filename,
+        checkers: checkers,
+      )
+    end
+
+    private
+
+    def reference_extractor_for_ast(ast_node)
+      ::Packwerk::ReferenceExtractor.new(
         context_provider: context_provider,
         constant_name_inspectors: constant_name_inspectors,
         root_node: ast_node,
         root_path: root_path,
       )
+    end
 
-      node_processor_class.new(
-        reference_extractor: reference_extractor,
-        reference_lister: @reference_lister,
-        filename: filename,
-        checkers: checkers,
-      )
+    def context_provider
+      @context_provider ||= create_context_provider
+    end
+
+    def create_context_provider
+      package_set = ::Packwerk::PackageSet.load_all_from(root_path, package_pathspec: package_paths)
+      ::Packwerk::ConstantDiscovery.new(constant_resolver: resolver, packages: package_set)
+    end
+
+    def constant_name_inspectors
+      @constant_name_inspectors ||= [
+        ::Packwerk::ConstNodeInspector.new,
+        ::Packwerk::AssociationInspector.new(inflector: inflector, custom_associations: custom_associations),
+      ]
+    end
+
+    def checkers
+      @checkers ||= checker_classes.map(&:new)
+    end
+
+    def resolver
+      @resolver ||= ConstantResolver.new(root_path: root_path, load_paths: load_paths, inflector: inflector)
     end
   end
 end
