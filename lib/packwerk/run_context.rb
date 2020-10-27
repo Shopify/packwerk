@@ -15,22 +15,20 @@ require "packwerk/privacy_checker"
 require "packwerk/reference_extractor"
 
 module Packwerk
-  class RunContext
-    attr_reader(
-      :root_path,
-      :load_paths,
-      :package_paths,
-      :inflector,
-      :custom_associations,
-      :checker_classes,
-      :node_processor_class,
-      :reference_lister,
-    )
-
+  class RunContext < T::Struct
     DEFAULT_CHECKERS = [
       ::Packwerk::DependencyChecker,
       ::Packwerk::PrivacyChecker,
     ]
+
+    const :root_path, String
+    const :reference_lister, T.nilable(ReferenceLister)
+    const :package_paths, T.nilable(String)
+    const :node_processor_class, T.untyped, default: ::Packwerk::NodeProcessor
+    const :load_paths, T.nilable(T::Array[String])
+    const :inflector, T.nilable(T.untyped)
+    const :custom_associations, T::Array[String], default: []
+    const :checker_classes, T.untyped, default: DEFAULT_CHECKERS
 
     class << self
       def from_configuration(configuration, reference_lister: nil)
@@ -43,26 +41,6 @@ module Packwerk
           reference_lister: reference_lister,
         )
       end
-    end
-
-    def initialize(
-      root_path:,
-      load_paths:,
-      package_paths: nil,
-      inflector: nil,
-      custom_associations: [],
-      checker_classes: DEFAULT_CHECKERS,
-      node_processor_class: NodeProcessor,
-      reference_lister: nil
-    )
-      @root_path = root_path
-      @load_paths = load_paths
-      @package_paths = package_paths
-      @inflector = inflector
-      @custom_associations = custom_associations
-      @checker_classes = checker_classes
-      @reference_lister = reference_lister
-      @node_processor_class = node_processor_class
     end
 
     def node_processor_for(filename:, ast_node:)
