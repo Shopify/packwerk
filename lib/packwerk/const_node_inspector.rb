@@ -10,13 +10,10 @@ module Packwerk
 
     def constant_name_from_node(node, ancestors:)
       return nil unless Node.constant?(node)
-
-      # Only process the root `const` node for namespaced constant references. For example, in the
-      # reference `Spam::Eggs::Thing`, we only process the const node associated with `Spam`.
       parent = ancestors.first
-      return nil if parent && Node.constant?(parent)
+      return nil unless root_constant?(parent)
 
-      if constant_in_module_or_class_definition?(node, parent: parent)
+      if parent && constant_in_module_or_class_definition?(node, parent: parent)
         fully_qualify_constant(node, ancestors: ancestors)
       else
         begin
@@ -29,11 +26,15 @@ module Packwerk
 
     private
 
+    # Only process the root `const` node for namespaced constant references. For example, in the
+    # reference `Spam::Eggs::Thing`, we only process the const node associated with `Spam`.
+    def root_constant?(parent)
+      !(parent && Node.constant?(parent))
+    end
+
     def constant_in_module_or_class_definition?(node, parent:)
-      if parent
-        parent_name = Node.module_name_from_definition(parent)
-        parent_name && parent_name == Node.constant_name(node)
-      end
+      parent_name = Node.module_name_from_definition(parent)
+      parent_name && parent_name == Node.constant_name(node)
     end
 
     def fully_qualify_constant(node, ancestors:)
