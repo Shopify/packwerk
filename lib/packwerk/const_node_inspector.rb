@@ -9,12 +9,12 @@ module Packwerk
     include ConstantNameInspector
 
     def constant_name_from_node(node, ancestors:)
-      return nil unless Node.type(node) == Node::CONSTANT
+      return nil unless Node.constant?(node)
 
       # Only process the root `const` node for namespaced constant references. For example, in the
       # reference `Spam::Eggs::Thing`, we only process the const node associated with `Spam`.
       parent = ancestors.first
-      return nil if parent && Node.type(parent) == Node::CONSTANT
+      return nil if parent && Node.constant?(parent)
 
       if constant_in_module_or_class_definition?(node, parent: parent)
         # We're defining a class with this name, in which case the constant is implicitly fully qualified by its
