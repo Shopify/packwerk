@@ -140,7 +140,7 @@ module Packwerk
       all_offenses = T.let([], T.untyped)
       execution_time = Benchmark.realtime do
         all_offenses = files.flat_map do |path|
-          @run_context.file_processor.call(path).tap { |offenses| mark_progress(offenses) }
+          file_processor.call(path).tap { |offenses| mark_progress(offenses) }
         end
 
         updating_deprecated_references.dump_deprecated_references_files
@@ -162,7 +162,7 @@ module Packwerk
       all_offenses = T.let([], T.untyped)
       execution_time = Benchmark.realtime do
         files.each do |path|
-          @run_context.file_processor.call(path).tap do |offenses|
+          file_processor.call(path).tap do |offenses|
             mark_progress(offenses)
             all_offenses.concat(offenses)
           end
@@ -177,6 +177,11 @@ module Packwerk
       @progress_formatter.finished(execution_time)
 
       all_offenses.empty?
+    end
+
+    sig { returns(FileProcessor) }
+    def file_processor
+      @file_processor ||= FileProcessor.new(run_context: @run_context)
     end
 
     def fetch_files_to_process(paths)

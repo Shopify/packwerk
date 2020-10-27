@@ -30,11 +30,11 @@ module Packwerk
         .returns([])
 
       run_context = stub
-      run_context.stubs(:file_processor).at_least_once.returns(file_processor)
 
       string_io = StringIO.new
 
       cli = ::Packwerk::Cli.new(out: string_io, run_context: run_context)
+      cli.stubs(:file_processor).at_least_once.returns(file_processor)
 
       # TODO: Dependency injection for a "target finder" (https://github.com/Shopify/packwerk/issues/164)
       ::Packwerk::FilesForProcessing.stubs(fetch: ["path/of/exile.rb"])
@@ -60,13 +60,11 @@ module Packwerk
         .returns([offense])
 
       run_context = stub
-      run_context
-        .stubs(:file_processor)
-        .at_least_once.returns(file_processor)
 
       string_io = StringIO.new
 
       cli = ::Packwerk::Cli.new(out: string_io, run_context: run_context)
+      cli.stubs(:file_processor).at_least_once.returns(file_processor)
 
       ::Packwerk::FilesForProcessing.stubs(fetch: ["path/of/exile.rb", "test.rb", "foo.rb"])
 

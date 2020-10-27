@@ -9,7 +9,6 @@ require "packwerk/checking_deprecated_references"
 require "packwerk/constant_discovery"
 require "packwerk/const_node_inspector"
 require "packwerk/dependency_checker"
-require "packwerk/file_processor"
 require "packwerk/node_processor"
 require "packwerk/package_set"
 require "packwerk/privacy_checker"
@@ -22,7 +21,6 @@ module Packwerk
       :constant_name_inspectors,
       :context_provider,
       :root_path,
-      :file_processor,
       :node_processor_class,
       :reference_lister
     )
@@ -80,7 +78,6 @@ module Packwerk
       ]
 
       @node_processor_class = node_processor_class
-      @file_processor = FileProcessor.new(run_context: self)
     end
 
     def node_processor_for(filename:, ast_node:)
