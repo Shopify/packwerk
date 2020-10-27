@@ -15,7 +15,7 @@ require "packwerk/privacy_checker"
 require "packwerk/reference_extractor"
 
 module Packwerk
-  class RunContext < T::Struct
+  class NodeProcessorBuilder < T::Struct
     DEFAULT_CHECKERS = [
       ::Packwerk::DependencyChecker,
       ::Packwerk::PrivacyChecker,

@@ -9,21 +9,27 @@ require "packwerk/files_for_processing"
 require "packwerk/formatters/progress_formatter"
 require "packwerk/inflector"
 require "packwerk/output_styles"
-require "packwerk/run_context"
+require "packwerk/node_processor_builder"
 require "packwerk/updating_deprecated_references"
 
 module Packwerk
   class Cli
     extend T::Sig
 
-    def initialize(run_context: nil, configuration: nil, out: $stdout, err_out: $stderr, style: OutputStyles::Plain)
+    def initialize(
+      node_processor_builder: nil,
+      configuration: nil,
+      out: $stdout,
+      err_out: $stderr,
+      style: OutputStyles::Plain
+    )
       @out = out
       @err_out = err_out
       @style = style
       @configuration = configuration || Configuration.from_path
       reference_lister = ::Packwerk::CheckingDeprecatedReferences.new(@configuration.root_path)
-      @run_context = run_context ||
-        Packwerk::RunContext.from_configuration(@configuration, reference_lister: reference_lister)
+      @node_processor_builder = node_processor_builder ||
+        Packwerk::NodeProcessorBuilder.from_configuration(@configuration, reference_lister: reference_lister)
       @progress_formatter = Formatters::ProgressFormatter.new(@out, style: style)
     end
 
@@ -128,7 +134,7 @@ module Packwerk
 
     def update_deprecations(paths)
       updating_deprecated_references = ::Packwerk::UpdatingDeprecatedReferences.new(@configuration.root_path)
-      @run_context = Packwerk::RunContext.from_configuration(
+      @node_processor_builder = Packwerk::NodeProcessorBuilder.from_configuration(
         @configuration,
         reference_lister: updating_deprecated_references
       )
@@ -181,7 +187,7 @@ module Packwerk
 
     sig { returns(FileProcessor) }
     def file_processor
-      @file_processor ||= FileProcessor.new(run_context: @run_context)
+      @file_processor ||= FileProcessor.new(node_processor_builder: @node_processor_builder)
     end
 
     def fetch_files_to_process(paths)
