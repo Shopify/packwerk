@@ -32,7 +32,7 @@ module Packwerk
 
       result = []
       if node
-        @node_processor = @node_processor_builder.node_processor_for(filename: file_path, ast_node: node)
+        @node_processor = @node_processor_builder.build(filename: file_path, ast_node: node)
         node_visitor = Packwerk::NodeVisitor.new(node_processor: @node_processor)
 
         node_visitor.visit(node, ancestors: [], result: result)

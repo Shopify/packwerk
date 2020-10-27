@@ -12,7 +12,7 @@ module Packwerk
     end
 
     test "#call visits all nodes in a file path with no offenses" do
-      @node_processor_builder.expects(:node_processor_for).returns(@node_processor)
+      @node_processor_builder.expects(:build).returns(@node_processor)
       @node_processor.expects(:call).twice.returns(nil)
 
       offenses = tempfile(name: "foo", content: "def food_bar; end") do |file_path|
@@ -27,7 +27,7 @@ module Packwerk
       location.stubs(line: 3, column: 22)
 
       offense = stub(location: location, file: "tempfile", message: "Use of unassigned variable")
-      @node_processor_builder.expects(:node_processor_for).returns(@node_processor)
+      @node_processor_builder.expects(:build).returns(@node_processor)
       @node_processor.expects(:call).returns(offense)
 
       offenses = tempfile(name: "foo", content: "a_variable_name") do |file_path|
@@ -45,7 +45,7 @@ module Packwerk
 
     test "#call provides node processor with the correct ancestors" do
       offense = mock
-      @node_processor_builder.expects(:node_processor_for).returns(@node_processor)
+      @node_processor_builder.expects(:build).returns(@node_processor)
       @node_processor.expects(:call).with do |node, ancestors:|
         Node.type(node) == Node::CLASS && # class Hello; world; end
           Node.class_or_module_name(node) == "Hello" &&
@@ -84,7 +84,7 @@ module Packwerk
     end
 
     test "#call with an invalid syntax doesn't parse node" do
-      node_processor_builder = mock.expects(:node_processor_for).never
+      node_processor_builder = mock.expects(:build).never
       file_processor = ::Packwerk::FileProcessor.new(node_processor_builder: node_processor_builder)
 
       tempfile(name: "foo", content: "def error") do |file_path|

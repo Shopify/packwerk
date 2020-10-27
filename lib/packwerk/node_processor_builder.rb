@@ -43,7 +43,7 @@ module Packwerk
       end
     end
 
-    def node_processor_for(filename:, ast_node:)
+    def build(filename:, ast_node:)
       node_processor_class.new(
         reference_extractor: reference_extractor_for_ast(ast_node),
         reference_lister: reference_lister,
