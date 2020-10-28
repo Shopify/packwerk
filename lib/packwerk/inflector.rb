@@ -43,8 +43,6 @@ module Packwerk
       end
     end
 
-    private
-
     def inflections(_ = nil)
       @inflections
     end
