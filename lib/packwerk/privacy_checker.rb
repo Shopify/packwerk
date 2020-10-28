@@ -2,9 +2,12 @@
 # frozen_string_literal: true
 
 require "packwerk/violation_type"
+require "packwerk/checker"
 
 module Packwerk
   class PrivacyChecker
+    include Checker
+
     def violation_type
       ViolationType::Privacy
     end

@@ -3,9 +3,21 @@
 
 require "packwerk/node"
 require "packwerk/offense"
+require "packwerk/checker"
+require "packwerk/reference_lister"
 
 module Packwerk
   class NodeProcessor
+    extend T::Sig
+
+    sig do
+      params(
+        reference_extractor: ReferenceExtractor,
+        reference_lister: ReferenceLister,
+        filename: String,
+        checkers: T::Array[Checker]
+      ).void
+    end
     def initialize(reference_extractor:, reference_lister:, filename:, checkers:)
       @reference_extractor = reference_extractor
       @reference_lister = reference_lister
