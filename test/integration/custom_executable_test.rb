@@ -3,6 +3,7 @@
 
 require "test_helper"
 require "rails_test_helper"
+require "fileutils"
 
 module Packwerk
   module Integration
@@ -53,6 +54,38 @@ module Packwerk
 
         Tempfile.create(["timeline_comment", ".rb"], timeline_path("app", "models")) do |file|
           file.write("class TimelineComment; belongs_to :order; end")
+          file.flush
+
+          assert_successful_run("update-deprecations")
+
+          assert(File.exist?(timeline_deprecated_reference_path),
+            "expected new deprecated_reference for timeline package to be created")
+
+          timeline_deprecated_reference_content = File.read(timeline_deprecated_reference_path)
+          assert_match(
+            "components/sales:\n  \"::Order\":\n    violations:\n    - privacy",
+            timeline_deprecated_reference_content
+          )
+
+          deprecated_reference_content_after_update =
+            read_deprecated_references.reject { |k, _v| k.match?(timeline_deprecated_reference_path) }
+
+          assert_equal(deprecated_reference_content, deprecated_reference_content_after_update,
+            "expected no updates to any deprecated references files besides timeline/deprecated_references.yml")
+
+          assert_match(/`deprecated_references.yml` has been updated./, captured_output)
+        ensure
+          File.delete(timeline_deprecated_reference_path) if File.exist?(timeline_deprecated_reference_path)
+        end
+      end
+
+      test "'packwerk update-deprecations' with violations succeeds and updates relevant deprecated_references for fixture" do
+        deprecated_reference_content = read_deprecated_references
+        timeline_deprecated_reference_path = timeline_path("deprecated_references.yml")
+
+        FileUtils.mkdir_p(timeline_path("test", "models"))
+        Tempfile.create(["timeline_comment_test", ".rb"], timeline_path("test", "models")) do |file|
+          file.write("class TimelineCommentTest; def test_order_fixture; orders(:snowdevil); end end")
           file.flush
 
           assert_successful_run("update-deprecations")

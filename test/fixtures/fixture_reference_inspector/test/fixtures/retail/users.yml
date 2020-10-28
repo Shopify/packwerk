@@ -1,0 +1,5 @@
+account_owner_retail:
+  retail_role: account_owner_role
+  user: bob
+  shop: snowdevil
+  pos_access: true 

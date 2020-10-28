@@ -66,6 +66,7 @@ Packwerk reads from the `packwerk.yml` configuration file in the root directory.
 | package_paths        | **/                                       | patterns to find package configuration files, see: Defining packages |
 | load_paths           | All application autoload paths            | list of load paths |
 | custom_associations  | N/A                                       | list of custom associations, if any |
+| fixture paths        | ["test/fixtures"]                         | list of test fixture paths |
 
 
 ### Inflections

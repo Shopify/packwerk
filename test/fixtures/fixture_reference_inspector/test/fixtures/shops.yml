@@ -1,0 +1,45 @@
+_fixture:
+  model_class: TestFixtures::Shop
+
+snowdevil: &snowdevil
+  name: Snowdevil
+  email: email@snowdevil.ca
+  domain: 'www.snowdevil.ca'
+  permanent_domain: 'snowdevil.myshopify.com'
+  billing_account_id: <%= ActiveRecord::FixtureSet.identify(:snowdevil) %>
+  created_at: 2005-05-05
+  settings: |+
+    #☠1☢
+    ---
+    :currency: USD
+    :unit_system: metric
+    :timezone: Eastern Time (US & Canada)
+    :analytics_account: UA-0000-1
+    :facebook_pixel_account: 12345
+    :county_taxes: true
+    :dynamic_remarketing_enabled: true
+    :google_apps_domain: shopify.com
+    :meta_title: Snowdevil
+    :meta_description: Snow devil
+    :password: thotwi
+    :email_logo_key: snowdevil.jpg
+    :signup: !ruby/hash:ActiveSupport::HashWithIndifferentAccess
+      industry: restaurants
+  phone: 6135551234
+  address1: 190 MacLaren Street
+  address2: suite 800
+  city: Ottawa
+  zip: K2P 0L6
+  country: CA
+  province: Ontario
+  active_subscription_id: <%= ActiveRecord::FixtureSet.identify(:snowdevil_plan) %>
+  longitude: -75.43
+  latitude: 45.45
+  mysql_timezone: 'America/New_York'
+  signup_status: successful
+  default_shipping_box: small_box
+  webhook_shared_secret: 'abracadabra'
+  company_name: 'Snowdevil'
+  privacy_state: 'unknown_privacy_state'
+  primary_location: snowdevil_shipping_origin
+  primary_locale: en 

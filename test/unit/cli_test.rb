@@ -116,6 +116,7 @@ module Packwerk
       configuration = stub(
         root_path: @temp_dir,
         load_paths: ["path"],
+        fixture_paths: ["test/fixtures"],
         package_paths: "**/",
         custom_associations: ["cached_belongs_to"]
       )
@@ -133,6 +134,7 @@ module Packwerk
       configuration = stub(
         root_path: @temp_dir,
         load_paths: ["path"],
+        fixture_paths: ["test/fixtures"],
         package_paths: "**/",
         custom_associations: ["cached_belongs_to"]
       )

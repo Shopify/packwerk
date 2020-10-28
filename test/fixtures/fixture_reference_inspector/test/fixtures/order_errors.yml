@@ -1,0 +1,5 @@
+_fixture:
+  model_class: Sales::Order::Error
+
+snowdevil:
+  message: "Test Error"
