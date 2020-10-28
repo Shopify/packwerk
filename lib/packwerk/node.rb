@@ -103,8 +103,24 @@ module Packwerk
         Location.new(location.line, location.column)
       end
 
+      def constant?(node)
+        type(node) == CONSTANT
+      end
+
+      def constant_assignment?(node)
+        type(node) == CONSTANT_ASSIGNMENT
+      end
+
+      def class?(node)
+        type(node) == CLASS
+      end
+
       def method_call?(node)
         type(node) == METHOD_CALL
+      end
+
+      def module?(node)
+        type(node) == MODULE
       end
 
       def hash?(node)
@@ -187,10 +203,6 @@ module Packwerk
         names.empty? ? "Object" : names.reverse.join("::")
       end
 
-      def type(node)
-        node.type
-      end
-
       def value_from_hash(hash_node, key)
         raise TypeError unless hash?(hash_node)
         pair = hash_pairs(hash_node).detect { |pair_node| literal_value(hash_pair_key(pair_node)) == key }
@@ -198,6 +210,10 @@ module Packwerk
       end
 
       private
+
+      def type(node)
+        node.type
+      end
 
       def hash_pair_key(hash_pair_node)
         raise TypeError unless type(hash_pair_node) == HASH_PAIR
