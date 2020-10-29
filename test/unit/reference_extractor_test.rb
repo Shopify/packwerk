@@ -208,9 +208,9 @@ module Packwerk
 
       def constant_name_from_node(node, ancestors:)
         return nil unless @association
-        return nil unless Node.method_call?(node)
+        return nil unless node.method_call?
 
-        args = Node.method_arguments(node)
+        args = node.method_arguments
         if @expected_args && @expected_args != args
           raise("expected arguments don't match.\nExpected:\n#{@expected_args}\nActual:\n#{args}")
         end

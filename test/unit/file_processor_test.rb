@@ -47,25 +47,25 @@ module Packwerk
       offense = mock
       @run_context.expects(:node_processor_for).returns(@node_processor)
       @node_processor.expects(:call).with do |node, ancestors:|
-        Node.class?(node) && # class Hello; world; end
-          Node.class_or_module_name(node) == "Hello" &&
+        node.class? && # class Hello; world; end
+          node.class_or_module_name == "Hello" &&
           ancestors.empty?
       end
       @node_processor.expects(:call).with do |node, ancestors:|
         parent = ancestors.first # class Hello; world; end
-        Node.constant?(node) && # Hello
-          Node.constant_name(node) == "Hello" &&
+        node.constant? && # Hello
+          node.constant_name == "Hello" &&
           ancestors.length == 1 &&
-          Node.class?(parent) &&
-          Node.class_or_module_name(parent) == "Hello"
+          parent.class? &&
+          parent.class_or_module_name == "Hello"
       end
       @node_processor.expects(:call).with do |node, ancestors:|
         parent = ancestors.first # class Hello; world; end
-        Node.method_call?(node) && # world
-          Node.method_name(node) == :world &&
+        node.method_call? && # world
+          node.method_name(node) == :world &&
           ancestors.length == 1 &&
-          Node.class?(parent) &&
-          Node.class_or_module_name(parent) == "Hello"
+          parent.class? &&
+          parent.class_or_module_name == "Hello"
       end.returns(offense)
 
       offenses = tempfile(name: "hello_world", content: "class Hello; world; end") do |file_path|

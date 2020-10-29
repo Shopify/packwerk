@@ -26,7 +26,7 @@ module Packwerk
     end
 
     def call(node, ancestors:)
-      if Node.method_call?(node) || Node.constant?(node)
+      if node.method_call? || node.constant?
         reference = @reference_extractor.reference_from_node(node, ancestors: ancestors, file_path: @filename)
         check_reference(reference, node) if reference
       end
@@ -40,7 +40,7 @@ module Packwerk
       constant = reference.constant
 
       Packwerk::Offense.new(
-        location: Node.location(node),
+        location: node.location,
         file: @filename,
         message: <<~EOS
           #{message}

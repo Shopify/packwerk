@@ -38,6 +38,7 @@ require "packwerk/run_context"
 require "packwerk/updating_deprecated_references"
 require "packwerk/version"
 require "packwerk/violation_type"
+require "packwerk/ancestors"
 
 module Packwerk
 end

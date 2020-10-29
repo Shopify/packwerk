@@ -14,7 +14,7 @@ module Packwerk
       result << offense if offense
 
       child_ancestors = [node] + ancestors
-      Node.each_child(node) do |child|
+      node.each_child do |child|
         visit(child, ancestors: child_ancestors, result: result)
       end
     end

@@ -58,7 +58,8 @@ module Packwerk
     private
 
     def parse(statement)
-      ParserTestHelper.parse(statement)
+      result = ParserTestHelper.parse(statement)
+      NodeFactory.for(result)
     end
   end
 end

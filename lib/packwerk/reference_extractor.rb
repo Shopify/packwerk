@@ -48,8 +48,8 @@ module Packwerk
     private
 
     def reference_from_constant(constant_name, node:, ancestors:, file_path:)
-      namespace_path = Node.enclosing_namespace_path(node, ancestors: ancestors)
-      return if local_reference?(constant_name, Node.name_location(node), namespace_path)
+      namespace_path = Ancestors.new(ancestors).enclosing_namespace_path(node)
+      return if local_reference?(constant_name, node.name_location, namespace_path)
 
       constant =
         @context_provider.context_for(

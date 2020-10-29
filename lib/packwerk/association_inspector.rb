@@ -22,15 +22,15 @@ module Packwerk
     end
 
     def constant_name_from_node(node, ancestors:)
-      return unless Node.method_call?(node)
+      return unless node.method_call?
       return unless association?(node)
 
-      arguments = Node.method_arguments(node)
+      arguments = node.method_arguments
       return unless (association_name = association_name(arguments))
 
       if (class_name_node = custom_class_name(arguments))
-        return unless Node.string?(class_name_node)
-        Node.literal_value(class_name_node)
+        return unless class_name_node.string?
+        class_name_node.literal_value
       else
         @inflector.classify(association_name.to_s)
       end
@@ -39,21 +39,19 @@ module Packwerk
     private
 
     def association?(node)
-      method_name = Node.method_name(node)
-      @associations.include?(method_name)
+      @associations.include?(node.method_name)
     end
 
     def custom_class_name(arguments)
-      association_options = arguments.detect { |n| Node.hash?(n) }
-      return unless association_options
+      return unless (association_options = arguments.detect(&:hash?))
 
-      Node.value_from_hash(association_options, :class_name)
+      association_options.value_from_hash(:class_name)
     end
 
     def association_name(arguments)
-      return unless Node.symbol?(arguments[0])
+      return unless arguments[0].symbol?
 
-      Node.literal_value(arguments[0])
+      arguments[0].literal_value
     end
   end
 end

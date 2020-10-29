@@ -20,7 +20,7 @@ module Packwerk
         # We're defining a class with this name, in which case the constant is implicitly fully qualified by its
         # enclosing namespace
         name = Node.parent_module_name(ancestors: ancestors)
-        name ||= Node.enclosing_namespace_path(node, ancestors: ancestors).push(Node.constant_name(node)).join("::")
+        name ||= Ancestors.new(ancestors).enclosing_namespace_path(node).push(Node.constant_name(node)).join("::")
 
         "::" + name
       else

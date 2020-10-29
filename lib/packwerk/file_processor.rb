@@ -6,6 +6,7 @@ require "ast/node"
 require "packwerk/node"
 require "packwerk/offense"
 require "packwerk/parsers"
+require "packwerk/node/node_factory"
 
 module Packwerk
   class FileProcessor
@@ -32,9 +33,9 @@ module Packwerk
 
       result = []
       if node
+        node = NodeFactory.for(node)
         @node_processor = @run_context.node_processor_for(filename: file_path, ast_node: node)
         node_visitor = Packwerk::NodeVisitor.new(node_processor: @node_processor)
-
         node_visitor.visit(node, ancestors: [], result: result)
       end
       result
