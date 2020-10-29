@@ -101,6 +101,8 @@ irregular:
   - ['reserve', 'reserves']
 uncountable:
   - 'payment_details'
+singular:
+  - [!ruby/regexp /status$/, 'status']
 ```
 
 Any new inflectors should be added to `config/inflections.yml`.
