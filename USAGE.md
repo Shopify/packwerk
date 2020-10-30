@@ -70,7 +70,7 @@ Packwerk reads from the `packwerk.yml` configuration file in the root directory.
 
 ### Inflections
 
-Packwerk requires custom inflections to be defined in `inflections.yml` instead of the traditional `inflections.rb`. This is because Packwerk accounts for custom inflections, such as acronyms, when resolving constants. Additionally, Packwerk interprets Active Record associations as references to constants. For example, `has_many :birds` is reference to the `Birds` constant.
+Packwerk requires custom inflections to be defined in `inflections.yml` instead of the traditional `inflections.rb`. This is because Packwerk accounts for custom inflections, such as acronyms, when resolving constants. Additionally, Packwerk interprets Active Record associations as references to constants. For example, `has_many :birds` is a reference to the `Birds` constant.
 
 In order to make your custom inflections compatible with Active Support and Packwerk, you must create a `config/inflections.yml` file and point `ActiveSupport::Inflector` to that file.
 
