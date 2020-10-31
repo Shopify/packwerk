@@ -133,6 +133,13 @@ module Packwerk
       assert_equal ["::Order", "::Sales::Order", "::Sales::Internal::Order"].sort, qualifications.sort
     end
 
+    test ".reference_qualifications generates all possible qualifications for a reference even when there are nil nodes in the namespace path" do
+      qualifications =
+        ParsedConstantDefinitions.reference_qualifications("Order", namespace_path: [nil, "Sales", "Internal"])
+
+      assert_equal ["::Order", "::Sales::Order", "::Sales::Internal::Order"].sort, qualifications.sort
+    end
+
     private
 
     def parse_code(string)
