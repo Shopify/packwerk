@@ -28,9 +28,8 @@ module Packwerk
 
       fully_qualified_constant_name = "::#{constant_name}"
 
-      possible_namespaces = namespace_path.reduce([""]) do |acc, current|
+      possible_namespaces = namespace_path.each_with_object([""]) do |current, acc|
         acc << "#{acc.last}::#{current}" if acc.last && current
-        acc
       end
 
       possible_namespaces.map { |namespace| namespace + fully_qualified_constant_name }
