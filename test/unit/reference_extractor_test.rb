@@ -50,6 +50,15 @@ module Packwerk
       assert_equal "::Order::Extension", reference.constant.name
     end
 
+    test "doesn't break on unusal constants it can't detect" do
+      references = process(
+        "class Entry; self::SOME_CONSTANT = :a; end",
+        "components/timeline/app/models/entry.rb"
+      )
+
+      assert_equal 0, references.count
+    end
+
     test "handles inherited class constants in the surrounding namespace" do
       references = process(
         "module Sales; class Order < Error; end; end",
