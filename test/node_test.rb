@@ -233,6 +233,10 @@ module Packwerk
       assert Node.symbol?(parse(":papaya"))
     end
 
+    test ".type returns nil when given a nil node" do
+      assert_nil Node.type(nil)
+    end
+
     test ".value_from_hash looks up the node for a key in a hash" do
       hash_node = parse("{ apples: 13, oranges: 27 }")
       assert_equal parse("13"), Node.value_from_hash(hash_node, :apples)
