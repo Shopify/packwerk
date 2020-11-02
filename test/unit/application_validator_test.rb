@@ -36,7 +36,7 @@ module Packwerk
       result = application_validator.check_autoload_path_cache
 
       refute result.ok?, result.error_value
-      assert_match /Extraneous load paths in file:.*components\/sales\/app\/models/m, result.error_value
+      assert_match %r{Extraneous load paths in file:.*components/sales/app/models}m, result.error_value
     end
 
     test "check_autoload_path_cache fails on missing config load paths" do
@@ -50,21 +50,21 @@ module Packwerk
       result = application_validator.check_autoload_path_cache
 
       refute result.ok?, result.error_value
-      assert_match /Paths missing from file:.*components\/timeline\/app\/models/m, result.error_value
+      assert_match %r{Paths missing from file:.*components/timeline/app/models}m, result.error_value
     end
 
     test "check_package_manifest_syntax returns an error for unknown package keys" do
       merge_into_yaml_file("package.yml", { "enforce_correctness" => false })
       result = validator.check_package_manifest_syntax
       refute result.ok?
-      assert_match /Unknown keys/, result.error_value
+      assert_match(/Unknown keys/, result.error_value)
     end
 
     test "check_package_manifest_syntax returns an error for invalid enforce_privacy value" do
       merge_into_yaml_file("package.yml", { "enforce_privacy" => "yes, please." })
       result = validator.check_package_manifest_syntax
       refute result.ok?
-      assert_match /Invalid 'enforce_privacy' option/, result.error_value
+      assert_match(/Invalid 'enforce_privacy' option/, result.error_value)
     end
 
     test "check_package_manifests_for_privacy returns an error for unresolvable privatized constants" do
@@ -106,19 +106,19 @@ module Packwerk
 
       result = validator.check_acyclic_graph
       refute result.ok?
-      assert_match /Expected the package dependency graph to be acyclic/, result.error_value
-      assert_match /components\/sales → components\/timeline → components\/sales/, result.error_value
+      assert_match(/Expected the package dependency graph to be acyclic/, result.error_value)
+      assert_match %r{components/sales → components/timeline → components/sales}, result.error_value
     end
 
     test "check_package_manifest_paths returns error when config only declares partial list of packages" do
       copy_template(:minimal)
       merge_into_yaml_file("components/timeline/package.yml", {})
-      merge_into_yaml_file("packwerk.yml", { "package_paths" => ["components/sales","."] })
+      merge_into_yaml_file("packwerk.yml", { "package_paths" => ["components/sales", "."] })
 
       result = validator.check_package_manifest_paths
       refute result.ok?
-      assert_match /Expected package paths for all package.ymls to be specified/, result.error_value
-      assert_match /manifests:\n\ncomponents\/timeline\/package.yml$/m, result.error_value
+      assert_match(/Expected package paths for all package.ymls to be specified/, result.error_value)
+      assert_match %r{manifests:\n\ncomponents/timeline/package.yml$}m, result.error_value
     end
 
     test "check_valid_package_dependencies returns error when config contains invalid package dependency" do
@@ -127,8 +127,8 @@ module Packwerk
 
       result = validator.check_valid_package_dependencies
       refute result.ok?
-      assert_match /These dependencies do not point to valid packages:/, result.error_value
-      assert_match /\n\ncomponents\/sales\/package.yml:\n  - components\/timeline\n\n$/m, result.error_value
+      assert_match(/These dependencies do not point to valid packages:/, result.error_value)
+      assert_match %r{\n\ncomponents/sales/package.yml:\n  - components/timeline\n\n$}m, result.error_value
     end
 
     test "check_root_package_exists returns error when root directory is missing a package.yml file" do
@@ -137,7 +137,7 @@ module Packwerk
 
       result = validator.check_root_package_exists
       refute result.ok?
-      assert_match /A root package does not exist./, result.error_value
+      assert_match(/A root package does not exist./, result.error_value)
     end
 
     def validator

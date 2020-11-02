@@ -11,7 +11,7 @@ require "packwerk"
 
 require "minitest/autorun"
 require "minitest/focus"
-require 'minitest/around/unit'
+require "minitest/around/unit"
 require "mocha/minitest"
 require "support/test_macro"
 require "support/test_assertions"

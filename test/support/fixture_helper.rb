@@ -52,7 +52,7 @@ module FixtureHelper
   end
 
   def copy_dir(path)
-    root = Dir.mktmpdir(self.name, TEMP_FIXTURE_DIR)
+    root = Dir.mktmpdir(name, TEMP_FIXTURE_DIR)
     FileUtils.cp_r("#{path}/.", root)
     @app_dir = root
   end
@@ -67,7 +67,7 @@ module FixtureHelper
     FileUtils.touch(path)
     data = YAML.load_file(path) || {}
     recursive_merge!(data, hash)
-    File.open(path, 'w') { |f| YAML.dump(data, f) }
+    File.open(path, "w") { |f| YAML.dump(data, f) }
   end
 
   def remove_app_entry(relative_path)
