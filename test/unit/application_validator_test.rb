@@ -3,7 +3,6 @@
 
 require "test_helper"
 require "rails_test_helper"
-
 require "packwerk/application_validator"
 
 # make sure PrivateThing.constantize succeeds to pass the privacy validity check
@@ -14,71 +13,55 @@ require "fixtures/skeleton/config/environment"
 
 module Packwerk
   class ApplicationValidatorTest < Minitest::Test
+    include FixtureHelper
+
     setup do
       @configuration = Packwerk::Configuration.from_path("test/fixtures/skeleton")
     end
 
     test "validity" do
-      application_validator = Packwerk::ApplicationValidator.new(
-        config_file_path: @configuration.config_path,
-        configuration: @configuration
-      )
-      result = application_validator.check_all
-
+      copy_template(:skeleton)
+      result = validator.check_all
       assert result.ok?, result.error_value
     end
 
-    test "returns an error for unresolvable privatized constants" do
-      application_validator = Packwerk::ApplicationValidator.new(
-        config_file_path: @configuration.config_path,
-        configuration: @configuration
-      )
-      ConstantResolver.expects(:new).returns(stub("resolver", resolve: nil))
+    test "check_package_manifests_for_privacy returns an error for unresolvable privatized constants" do
+      copy_template(:minimal)
+      merge_into_yaml_file("components/sales/package.yml", { "enforce_privacy" => ["Some::Constant"] })
 
-      result = application_validator.check_package_manifests_for_privacy
-
-      refute result.ok?, result.error_value
+      assert_raises(NameError) { validator.check_package_manifests_for_privacy }
     end
 
     test "returns error for mismatched inflections.yml file" do
-      config_path = "test/fixtures/skeleton/packwerk.yml"
-      configs = YAML.load_file(config_path)
-      configs["inflections_file"] = "different_inflections.yml"
+      copy_template(:skeleton)
+      merge_into_yaml_file("packwerk.yml", { "inflections_file" => "different_inflections.yml" })
 
-      configuration = Packwerk::Configuration.new(configs, config_path: config_path)
-
-      application_validator = Packwerk::ApplicationValidator.new(
-        config_file_path: configuration.config_path,
-        configuration: configuration
-      )
-
-      result = application_validator.check_all
+      result = validator.check_all
 
       refute(result.ok?, result.error_value)
     end
 
     test "works for custom inflections file with inflections matching ActiveSupport" do
+      copy_template(:skeleton)
+      merge_into_yaml_file("packwerk.yml", { "inflections_file" => "custom_inflections.yml" })
+
       inflections = ActiveSupport::Inflector.inflections.deep_dup
       Packwerk::Inflections::Custom.new(
-        Rails.root.join("custom_inflections.yml")
+        path_to("custom_inflections.yml")
       ).apply_to(inflections)
 
       ActiveSupport::Inflector.expects(:inflections).returns(inflections).at_least_once
 
-      config_path = "test/fixtures/skeleton/packwerk.yml"
-      configs = YAML.load_file(config_path)
-      configs["inflections_file"] = "custom_inflections.yml"
-
-      configuration = Packwerk::Configuration.new(configs, config_path: config_path)
-
-      application_validator = Packwerk::ApplicationValidator.new(
-        config_file_path: configuration.config_path,
-        configuration: configuration
-      )
-
-      result = application_validator.check_all
+      result = validator.check_all
 
       assert(result.ok?, result.error_value)
+    end
+
+    def validator
+      @application_validator ||= Packwerk::ApplicationValidator.new(
+        config_file_path: config.config_path,
+        configuration: config
+      )
     end
   end
 end
