@@ -19,4 +19,5 @@ gem("tapioca", require: false)
 
 group :development do
   gem("byebug", require: false)
+  gem("minitest-focus", require: false)
 end
