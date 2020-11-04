@@ -42,7 +42,7 @@ module Packwerk
     test "returns error for mismatched inflections.yml file" do
       config_path = "test/fixtures/skeleton/packwerk.yml"
       configs = YAML.load_file(config_path)
-      configs["inflections_file"] = "custom_inflections.yml"
+      configs["inflections_file"] = "different_inflections.yml"
 
       configuration = Packwerk::Configuration.new(configs, config_path: config_path)
 
