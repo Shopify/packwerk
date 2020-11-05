@@ -7,16 +7,15 @@
 ## What should reviewers focus on?
 
 
-
 ## Type of Change
 
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Code refactor (non-breaking change that doesn't add functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] This change requires a documentation update
+- [ ] Bugfix
+- [ ] New feature
+- [ ] Non-breaking change (a change that doesn't alter functionality - i.e., code refactor, configs, etc.)
 
 ### Additional Release Notes
+
+- [ ] Breaking change (fix or feature that would cause existing functionality to change)
 
 Include any notes here to include in the release description. For example, if you selected "breaking change" above, leave notes on how users can transition to this version.
 
@@ -24,4 +23,6 @@ If no additional notes are necessary, delete this section or leave it unchanged.
 
 ## Checklist
 
-- [ ] It is safe to simply rollback this change.
+- [ ] I have updated the documentation accordingly.
+- [ ] I have added tests to cover my changes.
+- [ ] It is safe to rollback this change.
