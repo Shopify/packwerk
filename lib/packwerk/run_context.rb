@@ -10,7 +10,6 @@ require "packwerk/const_node_inspector"
 require "packwerk/dependency_checker"
 require "packwerk/file_processor"
 require "packwerk/inflector"
-require "packwerk/node_processor"
 require "packwerk/package_set"
 require "packwerk/privacy_checker"
 require "packwerk/reference_extractor"
@@ -27,7 +26,6 @@ module Packwerk
       :inflector,
       :custom_associations,
       :checker_classes,
-      :node_processor_class,
       :reference_lister,
     )
 
@@ -59,7 +57,6 @@ module Packwerk
       inflector: nil,
       custom_associations: [],
       checker_classes: DEFAULT_CHECKERS,
-      node_processor_class: NodeProcessor,
       reference_lister: nil
     )
       @root_path = root_path
@@ -68,7 +65,6 @@ module Packwerk
       @inflector = inflector
       @custom_associations = custom_associations
       @checker_classes = checker_classes
-      @node_processor_class = node_processor_class
       @reference_lister = reference_lister || ::Packwerk::CheckingDeprecatedReferences.new(@root_path)
     end
 
@@ -87,7 +83,6 @@ module Packwerk
     sig { returns(NodeProcessorFactory) }
     def node_processor_factory
       NodeProcessorFactory.new(
-        node_processor_class: node_processor_class,
         context_provider: context_provider,
         checkers: checkers,
         root_path: root_path,
