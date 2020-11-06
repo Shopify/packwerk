@@ -4,7 +4,6 @@
 require "constant_resolver"
 
 require "packwerk/association_inspector"
-require "packwerk/checking_deprecated_references"
 require "packwerk/constant_discovery"
 require "packwerk/const_node_inspector"
 require "packwerk/dependency_checker"
@@ -35,9 +34,7 @@ module Packwerk
     ]
 
     class << self
-      def from_configuration(configuration, reference_lister: nil)
-        default_reference_lister = reference_lister ||
-          ::Packwerk::CheckingDeprecatedReferences.new(configuration.root_path)
+      def from_configuration(configuration, reference_lister:)
         inflector = ::Packwerk::Inflector.from_file(configuration.inflections_file)
         new(
           root_path: configuration.root_path,
@@ -45,7 +42,7 @@ module Packwerk
           package_paths: configuration.package_paths,
           inflector: inflector,
           custom_associations: configuration.custom_associations,
-          reference_lister: default_reference_lister,
+          reference_lister: reference_lister,
         )
       end
     end
@@ -57,7 +54,7 @@ module Packwerk
       inflector: nil,
       custom_associations: [],
       checker_classes: DEFAULT_CHECKERS,
-      reference_lister: nil
+      reference_lister:
     )
       @root_path = root_path
       @load_paths = load_paths
@@ -65,7 +62,7 @@ module Packwerk
       @inflector = inflector
       @custom_associations = custom_associations
       @checker_classes = checker_classes
-      @reference_lister = reference_lister || ::Packwerk::CheckingDeprecatedReferences.new(@root_path)
+      @reference_lister = reference_lister
     end
 
     sig { params(file: String).returns(T::Array[T.nilable(::Packwerk::Offense)]) }
