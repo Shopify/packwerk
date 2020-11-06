@@ -21,9 +21,6 @@ module Packwerk
     extend T::Sig
 
     attr_reader(
-      :checkers,
-      :constant_name_inspectors,
-      :context_provider,
       :root_path,
       :node_processor_class,
       :reference_lister
@@ -61,30 +58,13 @@ module Packwerk
       reference_lister: nil
     )
       @root_path = root_path
-
-      resolver = ConstantResolver.new(
-        root_path: @root_path,
-        load_paths: load_paths,
-        inflector: inflector,
-      )
-
-      package_set = ::Packwerk::PackageSet.load_all_from(@root_path, package_pathspec: package_paths)
-
-      @context_provider = ::Packwerk::ConstantDiscovery.new(
-        constant_resolver: resolver,
-        packages: package_set
-      )
-
-      @reference_lister = reference_lister || ::Packwerk::CheckingDeprecatedReferences.new(@root_path)
-
-      @checkers = checker_classes.map(&:new)
-
-      @constant_name_inspectors = [
-        ::Packwerk::ConstNodeInspector.new,
-        ::Packwerk::AssociationInspector.new(inflector: inflector, custom_associations: custom_associations),
-      ]
-
+      @load_paths = load_paths
+      @package_paths = package_paths
+      @inflector = inflector
+      @custom_associations = custom_associations
+      @checker_classes = checker_classes
       @node_processor_class = node_processor_class
+      @reference_lister = reference_lister || ::Packwerk::CheckingDeprecatedReferences.new(@root_path)
     end
 
     sig { params(file: String).returns(T::Array[T.nilable(::Packwerk::Offense)]) }
@@ -109,6 +89,41 @@ module Packwerk
         constant_name_inspectors: constant_name_inspectors,
         reference_lister: reference_lister
       )
+    end
+
+    sig { returns(ConstantDiscovery) }
+    def context_provider
+      ::Packwerk::ConstantDiscovery.new(
+        constant_resolver: resolver,
+        packages: package_set
+      )
+    end
+
+    sig { returns(ConstantResolver) }
+    def resolver
+      ConstantResolver.new(
+        root_path: @root_path,
+        load_paths: @load_paths,
+        inflector: @inflector,
+      )
+    end
+
+    sig { returns(PackageSet) }
+    def package_set
+      ::Packwerk::PackageSet.load_all_from(@root_path, package_pathspec: @package_paths)
+    end
+
+    sig { returns(T::Array[Checker]) }
+    def checkers
+      @checker_classes.map(&:new)
+    end
+
+    sig { returns(T::Array[ConstantNameInspector]) }
+    def constant_name_inspectors
+      [
+        ::Packwerk::ConstNodeInspector.new,
+        ::Packwerk::AssociationInspector.new(inflector: @inflector, custom_associations: @custom_associations),
+      ]
     end
   end
 end
