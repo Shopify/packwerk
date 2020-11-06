@@ -6,13 +6,13 @@ require "test_helper"
 module Packwerk
   class FileProcessorTest < Minitest::Test
     setup do
-      @run_context = mock
+      @node_processor_factory = mock
       @node_processor = mock
-      @file_processor = ::Packwerk::FileProcessor.new(run_context: @run_context)
+      @file_processor = ::Packwerk::FileProcessor.new(node_processor_factory: @node_processor_factory)
     end
 
     test "#call visits all nodes in a file path with no offenses" do
-      @run_context.expects(:node_processor_for).returns(@node_processor)
+      @node_processor_factory.expects(:for).returns(@node_processor)
       @node_processor.expects(:call).twice.returns(nil)
 
       offenses = tempfile(name: "foo", content: "def food_bar; end") do |file_path|
@@ -27,7 +27,7 @@ module Packwerk
       location.stubs(line: 3, column: 22)
 
       offense = stub(location: location, file: "tempfile", message: "Use of unassigned variable")
-      @run_context.expects(:node_processor_for).returns(@node_processor)
+      @node_processor_factory.expects(:for).returns(@node_processor)
       @node_processor.expects(:call).returns(offense)
 
       offenses = tempfile(name: "foo", content: "a_variable_name") do |file_path|
@@ -45,7 +45,7 @@ module Packwerk
 
     test "#call provides node processor with the correct ancestors" do
       offense = mock
-      @run_context.expects(:node_processor_for).returns(@node_processor)
+      @node_processor_factory.expects(:for).returns(@node_processor)
       @node_processor.expects(:call).with do |node, ancestors:|
         Node.type(node) == Node::CLASS && # class Hello; world; end
           Node.class_or_module_name(node) == "Hello" &&
@@ -84,8 +84,8 @@ module Packwerk
     end
 
     test "#call with an invalid syntax doesn't parse node" do
-      run_context = mock.expects(:node_processor_for).never
-      file_processor = ::Packwerk::FileProcessor.new(run_context: run_context)
+      @node_processor_factory.expects(:for).never
+      file_processor = ::Packwerk::FileProcessor.new(node_processor_factory: @node_processor_factory)
 
       tempfile(name: "foo", content: "def error") do |file_path|
         file_processor.call(file_path)

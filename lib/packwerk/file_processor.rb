@@ -15,8 +15,8 @@ module Packwerk
       end
     end
 
-    def initialize(run_context:, parser_factory: nil)
-      @run_context = run_context
+    def initialize(node_processor_factory:, parser_factory: nil)
+      @node_processor_factory = node_processor_factory
       @parser_factory = parser_factory || Packwerk::Parsers::Factory.instance
     end
 
@@ -32,8 +32,8 @@ module Packwerk
 
       result = []
       if node
-        @node_processor = @run_context.node_processor_for(filename: file_path, ast_node: node)
-        node_visitor = Packwerk::NodeVisitor.new(node_processor: @node_processor)
+        node_processor = @node_processor_factory.for(filename: file_path, node: node)
+        node_visitor = Packwerk::NodeVisitor.new(node_processor: node_processor)
 
         node_visitor.visit(node, ancestors: [], result: result)
       end

@@ -14,6 +14,7 @@ require "packwerk/node_processor"
 require "packwerk/package_set"
 require "packwerk/privacy_checker"
 require "packwerk/reference_extractor"
+require "packwerk/node_processor_factory"
 
 module Packwerk
   class RunContext
@@ -92,27 +93,23 @@ module Packwerk
       file_processor.call(file)
     end
 
-    def node_processor_for(filename:, ast_node:)
-      reference_extractor = ::Packwerk::ReferenceExtractor.new(
-        context_provider: context_provider,
-        constant_name_inspectors: constant_name_inspectors,
-        root_node: ast_node,
-        root_path: root_path,
-      )
-
-      node_processor_class.new(
-        reference_extractor: reference_extractor,
-        reference_lister: @reference_lister,
-        filename: filename,
-        checkers: checkers,
-      )
-    end
-
     private
 
     sig { returns(FileProcessor) }
     def file_processor
-      @file_processor ||= FileProcessor.new(run_context: self)
+      @file_processor ||= FileProcessor.new(node_processor_factory: node_processor_factory)
+    end
+
+    sig { returns(NodeProcessorFactory) }
+    def node_processor_factory
+      NodeProcessorFactory.new(
+        node_processor_class: node_processor_class,
+        context_provider: context_provider,
+        checkers: checkers,
+        root_path: root_path,
+        constant_name_inspectors: constant_name_inspectors,
+        reference_lister: reference_lister
+      )
     end
   end
 end
