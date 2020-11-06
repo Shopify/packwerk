@@ -60,7 +60,7 @@ module Packwerk
       node_processor_class: NodeProcessor,
       reference_lister: nil
     )
-      @root_path = File.expand_path(root_path)
+      @root_path = root_path
 
       resolver = ConstantResolver.new(
         root_path: @root_path,
