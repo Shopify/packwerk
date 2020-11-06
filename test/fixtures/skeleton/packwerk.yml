@@ -9,3 +9,4 @@ load_paths:
   - components/timeline/app/models
   - components/timeline/app/models/concerns
   - vendor/cache/gems/example/models
+inflections_file: "custom_inflections.yml"

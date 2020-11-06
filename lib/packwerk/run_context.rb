@@ -1,7 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "active_support/inflector"
 require "constant_resolver"
 
 require "packwerk/association_inspector"
@@ -10,6 +9,7 @@ require "packwerk/constant_discovery"
 require "packwerk/const_node_inspector"
 require "packwerk/dependency_checker"
 require "packwerk/file_processor"
+require "packwerk/inflector"
 require "packwerk/node_processor"
 require "packwerk/package_set"
 require "packwerk/privacy_checker"
@@ -36,11 +36,13 @@ module Packwerk
       def from_configuration(configuration, reference_lister: nil)
         default_reference_lister = reference_lister ||
           ::Packwerk::CheckingDeprecatedReferences.new(configuration.root_path)
+        inflector = ::Packwerk::Inflector.from_file(configuration.inflections_file)
+
         new(
           root_path: configuration.root_path,
           load_paths: configuration.load_paths,
           package_paths: configuration.package_paths,
-          inflector: ActiveSupport::Inflector,
+          inflector: inflector,
           custom_associations: configuration.custom_associations,
           reference_lister: default_reference_lister,
         )

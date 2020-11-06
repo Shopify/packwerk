@@ -8,20 +8,31 @@ require "packwerk/inflections/custom"
 module Packwerk
   class Inflector
     class << self
+      extend T::Sig
+
       def default
-        @default ||= new
+        @default ||= new(custom_inflector: Inflections::Custom.new)
+      end
+
+      sig { params(inflections_file: String).returns(::Packwerk::Inflector) }
+      def from_file(inflections_file)
+        new(custom_inflector: Inflections::Custom.new(inflections_file))
       end
     end
 
-    # For #camelize, #classify, #pluralize, #singularize
-    include ::ActiveSupport::Inflector
+    extend T::Sig
+    include ::ActiveSupport::Inflector # For #camelize, #classify, #pluralize, #singularize
 
-    def initialize(custom_inflection_file: nil)
+    sig do
+      params(
+        custom_inflector: Inflections::Custom
+      ).void
+    end
+    def initialize(custom_inflector:)
       @inflections = ::ActiveSupport::Inflector::Inflections.new
 
       Inflections::Default.apply_to(@inflections)
-
-      Inflections::Custom.new(custom_inflection_file).apply_to(@inflections)
+      custom_inflector.apply_to(@inflections)
     end
 
     def pluralize(word, count = nil)
@@ -31,8 +42,6 @@ module Packwerk
         super(word)
       end
     end
-
-    private
 
     def inflections(_ = nil)
       @inflections

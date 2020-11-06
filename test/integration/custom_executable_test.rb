@@ -35,6 +35,19 @@ module Packwerk
         assert_match(/1 offense detected/, captured_output)
       end
 
+      test "'packwerk check' with violations accounts for custom inflections, fails and displays violations" do
+        Tempfile.create(["timeline_comment", ".rb"], timeline_path("app", "models")) do |file|
+          # payment_details is an uncountable inflection
+          file.write("class TimelineComment; has_one :payment_details; end")
+          file.flush
+
+          refute_successful_run("check")
+        end
+
+        assert_match(/Privacy violation: '::PaymentDetails'/, captured_output)
+        assert_match(/1 offense detected/, captured_output)
+      end
+
       test "'packwerk update-deprecations' with no violations succeeds and updates no files" do
         deprecated_reference_content = read_deprecated_references
 
