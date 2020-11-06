@@ -39,7 +39,6 @@ module Packwerk
         default_reference_lister = reference_lister ||
           ::Packwerk::CheckingDeprecatedReferences.new(configuration.root_path)
         inflector = ::Packwerk::Inflector.from_file(configuration.inflections_file)
-
         new(
           root_path: configuration.root_path,
           load_paths: configuration.load_paths,
