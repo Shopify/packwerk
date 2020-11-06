@@ -42,7 +42,7 @@ module Packwerk
 
       Packwerk::Offense.new(
         location: Node.location(node),
-        file: @filename,
+        file: reference.relative_path,
         message: <<~EOS
           #{message}
           Inference details: this is a reference to #{constant.name} which seems to be defined in #{constant.location}.
