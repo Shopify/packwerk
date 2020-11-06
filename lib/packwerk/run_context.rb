@@ -22,8 +22,13 @@ module Packwerk
 
     attr_reader(
       :root_path,
+      :load_paths,
+      :package_paths,
+      :inflector,
+      :custom_associations,
+      :checker_classes,
       :node_processor_class,
-      :reference_lister
+      :reference_lister,
     )
 
     DEFAULT_CHECKERS = [
@@ -102,27 +107,27 @@ module Packwerk
     sig { returns(ConstantResolver) }
     def resolver
       ConstantResolver.new(
-        root_path: @root_path,
-        load_paths: @load_paths,
-        inflector: @inflector,
+        root_path: root_path,
+        load_paths: load_paths,
+        inflector: inflector,
       )
     end
 
     sig { returns(PackageSet) }
     def package_set
-      ::Packwerk::PackageSet.load_all_from(@root_path, package_pathspec: @package_paths)
+      ::Packwerk::PackageSet.load_all_from(root_path, package_pathspec: package_paths)
     end
 
     sig { returns(T::Array[Checker]) }
     def checkers
-      @checker_classes.map(&:new)
+      checker_classes.map(&:new)
     end
 
     sig { returns(T::Array[ConstantNameInspector]) }
     def constant_name_inspectors
       [
         ::Packwerk::ConstNodeInspector.new,
-        ::Packwerk::AssociationInspector.new(inflector: @inflector, custom_associations: @custom_associations),
+        ::Packwerk::AssociationInspector.new(inflector: inflector, custom_associations: custom_associations),
       ]
     end
   end
