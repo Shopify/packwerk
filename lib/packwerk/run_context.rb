@@ -17,12 +17,13 @@ require "packwerk/reference_extractor"
 
 module Packwerk
   class RunContext
+    extend T::Sig
+
     attr_reader(
       :checkers,
       :constant_name_inspectors,
       :context_provider,
       :root_path,
-      :file_processor,
       :node_processor_class,
       :reference_lister
     )
@@ -84,7 +85,11 @@ module Packwerk
       ]
 
       @node_processor_class = node_processor_class
-      @file_processor = FileProcessor.new(run_context: self)
+    end
+
+    sig { params(file: String).returns(T::Array[T.nilable(::Packwerk::Offense)]) }
+    def process_file(file:)
+      file_processor.call(file)
     end
 
     def node_processor_for(filename:, ast_node:)
@@ -101,6 +106,13 @@ module Packwerk
         filename: filename,
         checkers: checkers,
       )
+    end
+
+    private
+
+    sig { returns(FileProcessor) }
+    def file_processor
+      @file_processor ||= FileProcessor.new(run_context: self)
     end
   end
 end
