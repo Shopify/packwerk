@@ -34,7 +34,7 @@ Gem::Specification.new do |spec|
   spec.executables << "packwerk"
 
   spec.files = Dir.chdir(__dir__) do
-    %x(git ls-files -z).split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
+    %x(git ls-files -z).split("\x0").reject { |f| f.match(%r{^(test|spec|features|static)/}) }
   end
   spec.require_paths = %w(lib)
 
