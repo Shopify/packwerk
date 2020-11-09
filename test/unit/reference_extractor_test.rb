@@ -208,7 +208,7 @@ module Packwerk
 
       def constant_name_from_node(node, ancestors:)
         return nil unless @association
-        return nil unless Node.type(node) == Node::METHOD_CALL
+        return nil unless Node.method_call?(node)
 
         args = Node.method_arguments(node)
         if @expected_args && @expected_args != args

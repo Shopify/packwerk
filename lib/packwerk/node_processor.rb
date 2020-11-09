@@ -26,8 +26,7 @@ module Packwerk
     end
 
     def call(node, ancestors:)
-      case Node.type(node)
-      when Node::METHOD_CALL, Node::CONSTANT
+      if Node.method_call?(node) || Node.constant?(node)
         reference = @reference_extractor.reference_from_node(node, ancestors: ancestors, file_path: @filename)
         check_reference(reference, node) if reference
       end
