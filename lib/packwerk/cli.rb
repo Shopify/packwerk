@@ -12,10 +12,13 @@ require "packwerk/output_styles"
 require "packwerk/run_context"
 require "packwerk/updating_deprecated_references"
 require "packwerk/checking_deprecated_references"
+require "packwerk/commands/detect_stale_violations_command"
+require "packwerk/commands/offense_progress_marker"
 
 module Packwerk
   class Cli
     extend T::Sig
+    include OffenseProgressMarker
 
     def initialize(run_context: nil, configuration: nil, out: $stdout, err_out: $stderr, style: OutputStyles::Plain)
       @out = out
@@ -45,6 +48,8 @@ module Packwerk
         generate_configs
       when "check"
         check(args)
+      when "detect-stale-violations"
+        detect_stale_violations(args)
       when "update"
         update(args)
       when "update-deprecations"
@@ -142,7 +147,9 @@ module Packwerk
       all_offenses = T.let([], T.untyped)
       execution_time = Benchmark.realtime do
         all_offenses = files.flat_map do |path|
-          @run_context.process_file(file: path).tap { |offenses| mark_progress(offenses) }
+          @run_context.process_file(file: path).tap do |offenses|
+            mark_progress(offenses: offenses, progress_formatter: @progress_formatter)
+          end
         end
 
         updating_deprecated_references.dump_deprecated_references_files
@@ -165,7 +172,7 @@ module Packwerk
       execution_time = Benchmark.realtime do
         files.each do |path|
           @run_context.process_file(file: path).tap do |offenses|
-            mark_progress(offenses)
+            mark_progress(offenses: offenses, progress_formatter: @progress_formatter)
             all_offenses.concat(offenses)
           end
         end
@@ -181,19 +188,23 @@ module Packwerk
       all_offenses.empty?
     end
 
+    def detect_stale_violations(paths)
+      detect_stale_violations = DetectStaleViolationsCommand.new(
+        files: fetch_files_to_process(paths),
+        configuration: @configuration,
+        progress_formatter: @progress_formatter
+      )
+      result = detect_stale_violations.run
+      @out.puts
+      @out.puts(result.message)
+      result.status
+    end
+
     def fetch_files_to_process(paths)
       files = FilesForProcessing.fetch(paths: paths, configuration: @configuration)
       abort("No files found or given. "\
         "Specify files or check the include and exclude glob in the config file.") if files.empty?
       files
-    end
-
-    def mark_progress(offenses)
-      if offenses.empty?
-        @progress_formatter.mark_as_inspected
-      else
-        @progress_formatter.mark_as_failed
-      end
     end
 
     def validate(_paths)

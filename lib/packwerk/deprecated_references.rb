@@ -3,6 +3,7 @@
 
 require "sorbet-runtime"
 require "yaml"
+require "sorbet-runtime"
 
 require "packwerk/reference"
 require "packwerk/reference_lister"
@@ -47,6 +48,7 @@ module Packwerk
       @new_entries[reference.constant.package.name] = package_violations
     end
 
+    sig { returns(T::Boolean) }
     def stale_violations?
       prepare_entries_for_dump
       deprecated_references.any? do |package, package_violations|

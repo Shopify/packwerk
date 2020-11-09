@@ -11,11 +11,13 @@ require "packwerk/violation_type"
 module Packwerk
   class CacheDeprecatedReferences
     extend T::Sig
+    extend T::Helpers
     include ReferenceLister
+    abstract!
 
     def initialize(root_path, deprecated_references = {})
       @root_path = root_path
-      @deprecated_references = deprecated_references
+      @deprecated_references = T.let(deprecated_references, T::Hash[String, Packwerk::DeprecatedReferences])
     end
 
     sig do
