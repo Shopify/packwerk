@@ -107,6 +107,10 @@ module Packwerk
         type(node) == CONSTANT
       end
 
+      def constant_assignment?(node)
+        type(node) == CONSTANT_ASSIGNMENT
+      end
+
       def class?(node)
         type(node) == CLASS
       end
