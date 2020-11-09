@@ -47,7 +47,7 @@ module Packwerk
       offense = mock
       @node_processor_factory.expects(:for).returns(@node_processor)
       @node_processor.expects(:call).with do |node, ancestors:|
-        Node.type(node) == Node::CLASS && # class Hello; world; end
+        Node.class?(node) && # class Hello; world; end
           Node.class_or_module_name(node) == "Hello" &&
           ancestors.empty?
       end
@@ -56,7 +56,7 @@ module Packwerk
         Node.type(node) == Node::CONSTANT && # Hello
           Node.constant_name(node) == "Hello" &&
           ancestors.length == 1 &&
-          Node.type(parent) == Node::CLASS &&
+          Node.class?(parent) &&
           Node.class_or_module_name(parent) == "Hello"
       end
       @node_processor.expects(:call).with do |node, ancestors:|
@@ -64,7 +64,7 @@ module Packwerk
         Node.type(node) == Node::METHOD_CALL && # world
           Node.method_name(node) == :world &&
           ancestors.length == 1 &&
-          Node.type(parent) == Node::CLASS &&
+          Node.class?(parent) &&
           Node.class_or_module_name(parent) == "Hello"
       end.returns(offense)
 

@@ -107,6 +107,10 @@ module Packwerk
         type(node) == CONSTANT
       end
 
+      def class?(node)
+        type(node) == CLASS
+      end
+
       def method_call?(node)
         type(node) == METHOD_CALL
       end
