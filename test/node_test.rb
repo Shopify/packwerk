@@ -205,36 +205,32 @@ module Packwerk
       assert_equal "A::B", Node.parent_module_name(ancestors: [parent, grandparent])
     end
 
-    test ".type can identify a class node" do
-      assert_equal Node::CLASS, Node.type(parse("class Fruit; end"))
+    test ".class? can identify a class node" do
+      assert Node.class?(parse("class Fruit; end"))
     end
 
-    test ".type can identify a constant node" do
-      assert_equal Node::CONSTANT, Node.type(parse("Oranges"))
+    test ".constant? can identify a constant node" do
+      assert Node.constant?(parse("Oranges"))
     end
 
-    test ".type can identify a constant assignment node" do
-      assert_equal Node::CONSTANT_ASSIGNMENT, Node.type(parse("Apples = 13"))
+    test ".constant_assignment? can identify a constant assignment node" do
+      assert Node.constant_assignment?(parse("Apples = 13"))
     end
 
-    test ".type can identify a hash node" do
-      assert_equal Node::HASH, Node.type(parse("{ pears: 3, bananas: 6 }"))
+    test ".hash? can identify a hash node" do
+      assert Node.hash?(parse("{ pears: 3, bananas: 6 }"))
     end
 
-    test ".type can identify a method call node" do
-      assert_equal Node::METHOD_CALL, Node.type(parse("quantity(bananas)"))
+    test ".method_call? can identify a method call node" do
+      assert Node.method_call?(parse("quantity(bananas)"))
     end
 
-    test ".type can identify a module node" do
-      assert_equal Node::MODULE, Node.type(parse("module Food; end"))
+    test ".string? can identify a string node" do
+      assert Node.string?(parse("'cashew apple'"))
     end
 
-    test ".type can identify a string node" do
-      assert_equal Node::STRING, Node.type(parse("'cashew apple'"))
-    end
-
-    test ".type can identify a symbol node" do
-      assert_equal Node::SYMBOL, Node.type(parse(":papaya"))
+    test ".symbol? can identify a symbol node" do
+      assert Node.symbol?(parse(":papaya"))
     end
 
     test ".value_from_hash looks up the node for a key in a hash" do

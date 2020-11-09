@@ -5,18 +5,6 @@ require "parser/ast/node"
 
 module Packwerk
   module Node
-    BLOCK = :block
-    CLASS = :class
-    CONSTANT = :const
-    CONSTANT_ASSIGNMENT = :casgn
-    CONSTANT_ROOT_NAMESPACE = :cbase
-    HASH = :hash
-    HASH_PAIR = :pair
-    METHOD_CALL = :send
-    MODULE = :module
-    STRING = :str
-    SYMBOL = :sym
-
     class TypeError < ArgumentError; end
     Location = Struct.new(:line, :column)
 
@@ -199,10 +187,6 @@ module Packwerk
         names.empty? ? "Object" : names.reverse.join("::")
       end
 
-      def type(node)
-        node.type
-      end
-
       def value_from_hash(hash_node, key)
         raise TypeError unless hash?(hash_node)
         pair = hash_pairs(hash_node).detect { |pair_node| literal_value(hash_pair_key(pair_node)) == key }
@@ -210,6 +194,27 @@ module Packwerk
       end
 
       private
+
+      BLOCK = :block
+      CLASS = :class
+      CONSTANT = :const
+      CONSTANT_ASSIGNMENT = :casgn
+      CONSTANT_ROOT_NAMESPACE = :cbase
+      HASH = :hash
+      HASH_PAIR = :pair
+      METHOD_CALL = :send
+      MODULE = :module
+      STRING = :str
+      SYMBOL = :sym
+
+      private_constant(
+        :BLOCK, :CLASS, :CONSTANT, :CONSTANT_ASSIGNMENT, :CONSTANT_ROOT_NAMESPACE, :HASH, :HASH_PAIR, :METHOD_CALL,
+        :MODULE, :STRING, :SYMBOL,
+      )
+
+      def type(node)
+        node.type
+      end
 
       def hash_pair_key(hash_pair_node)
         raise TypeError unless type(hash_pair_node) == HASH_PAIR
