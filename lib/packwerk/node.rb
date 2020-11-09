@@ -27,7 +27,7 @@ module Packwerk
         case type_of(constant_node)
         when CONSTANT_ROOT_NAMESPACE
           ""
-        when CONSTANT, CONSTANT_ASSIGNMENT
+        when CONSTANT, CONSTANT_ASSIGNMENT, SELF
           # (const nil :Foo)
           #   "Foo"
           # (const (cbase) :Foo)
@@ -40,6 +40,8 @@ module Packwerk
           #   "::Foo = 1"
           # (casgn (lvar :a) :Foo (int 1))
           #   "a::Foo = 1"
+          # (casgn (self) :Foo (int 1))
+          #   "self::Foo = 1"
           namespace, name = constant_node.children
           if namespace
             [constant_name(namespace), name].join("::")
@@ -204,12 +206,14 @@ module Packwerk
       HASH_PAIR = :pair
       METHOD_CALL = :send
       MODULE = :module
+      SELF = :self
       STRING = :str
       SYMBOL = :sym
 
+
       private_constant(
         :BLOCK, :CLASS, :CONSTANT, :CONSTANT_ASSIGNMENT, :CONSTANT_ROOT_NAMESPACE, :HASH, :HASH_PAIR, :METHOD_CALL,
-        :MODULE, :STRING, :SYMBOL,
+        :MODULE, :SELF, :STRING, :SYMBOL,
       )
 
       def type_of(node)
