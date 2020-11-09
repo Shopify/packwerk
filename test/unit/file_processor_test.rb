@@ -53,7 +53,7 @@ module Packwerk
       end
       @node_processor.expects(:call).with do |node, ancestors:|
         parent = ancestors.first # class Hello; world; end
-        Node.type(node) == Node::CONSTANT && # Hello
+        Node.constant?(node) && # Hello
           Node.constant_name(node) == "Hello" &&
           ancestors.length == 1 &&
           Node.class?(parent) &&
@@ -61,7 +61,7 @@ module Packwerk
       end
       @node_processor.expects(:call).with do |node, ancestors:|
         parent = ancestors.first # class Hello; world; end
-        Node.type(node) == Node::METHOD_CALL && # world
+        Node.method_call?(node) && # world
           Node.method_name(node) == :world &&
           ancestors.length == 1 &&
           Node.class?(parent) &&
