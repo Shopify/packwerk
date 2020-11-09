@@ -22,15 +22,8 @@ module Packwerk
       violation_message = "This is a violation of code health."
       offense = stub(error?: true, to_s: violation_message)
 
-      file_processor = stub
-      file_processor
-        .stubs(:call)
-        .returns([offense])
-        .then
-        .returns([])
-
       run_context = stub
-      run_context.stubs(:file_processor).at_least_once.returns(file_processor)
+      run_context.stubs(:process_file).at_least_once.returns([offense])
 
       string_io = StringIO.new
 
@@ -52,17 +45,12 @@ module Packwerk
       violation_message = "This is a violation of code health."
       offense = stub(to_s: violation_message)
 
-      file_processor = stub
-      file_processor
-        .stubs(:call)
+      run_context = stub
+      run_context.stubs(:process_file)
+        .at_least(2)
         .returns([offense])
         .raises(Interrupt)
         .returns([offense])
-
-      run_context = stub
-      run_context
-        .stubs(:file_processor)
-        .at_least_once.returns(file_processor)
 
       string_io = StringIO.new
 

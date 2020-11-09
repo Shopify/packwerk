@@ -11,6 +11,7 @@ require "packwerk/inflector"
 require "packwerk/output_styles"
 require "packwerk/run_context"
 require "packwerk/updating_deprecated_references"
+require "packwerk/checking_deprecated_references"
 
 module Packwerk
   class Cli
@@ -21,7 +22,10 @@ module Packwerk
       @err_out = err_out
       @style = style
       @configuration = configuration || Configuration.from_path
-      @run_context = run_context || Packwerk::RunContext.from_configuration(@configuration)
+      @run_context = run_context || Packwerk::RunContext.from_configuration(
+        @configuration,
+        reference_lister: ::Packwerk::CheckingDeprecatedReferences.new(@configuration.root_path),
+      )
       @progress_formatter = Formatters::ProgressFormatter.new(@out, style: style)
     end
 
@@ -138,7 +142,7 @@ module Packwerk
       all_offenses = T.let([], T.untyped)
       execution_time = Benchmark.realtime do
         all_offenses = files.flat_map do |path|
-          @run_context.file_processor.call(path).tap { |offenses| mark_progress(offenses) }
+          @run_context.process_file(file: path).tap { |offenses| mark_progress(offenses) }
         end
 
         updating_deprecated_references.dump_deprecated_references_files
@@ -160,7 +164,7 @@ module Packwerk
       all_offenses = T.let([], T.untyped)
       execution_time = Benchmark.realtime do
         files.each do |path|
-          @run_context.file_processor.call(path).tap do |offenses|
+          @run_context.process_file(file: path).tap do |offenses|
             mark_progress(offenses)
             all_offenses.concat(offenses)
           end
