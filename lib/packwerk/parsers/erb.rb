@@ -19,6 +19,10 @@ module Packwerk
       def call(io:, file_path: "<unknown>")
         buffer = Parser::Source::Buffer.new(file_path)
         buffer.source = io.read
+        parse_buffer(buffer, file_path: file_path)
+      end
+
+      def parse_buffer(buffer, file_path:)
         parser = @parser_class.new(buffer, template_language: :html)
         to_ruby_ast(parser.ast, file_path)
       rescue EncodingError => e
