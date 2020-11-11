@@ -67,6 +67,27 @@ Packwerk reads from the `packwerk.yml` configuration file in the root directory.
 | load_paths           | All application autoload paths            | list of load paths |
 | custom_associations  | N/A                                       | list of custom associations, if any |
 
+### Using a custom ERB parser
+
+You can specify a custom ERB parser if needed. For example, if you're using `<%graphql>` tags from https://github.com/github/graphql-client in your ERBs, you can use a custom parser subclass to comment them out so that Packwerk can parse the rest of the file:
+
+```ruby
+class CustomParser < Packwerk::Parsers::Erb
+  def parse_buffer(buffer, file_path:)
+    preprocessed_source = buffer.source
+
+    # Comment out <%graphql ... %> tags. They won't contain any object
+    # references anyways.
+    preprocessed_source = preprocessed_source.gsub(/<%graphql/, "<%#")
+
+    preprocessed_buffer = Parser::Source::Buffer.new(file_path)
+    preprocessed_buffer.source = preprocessed_source
+    super(preprocessed_buffer, file_path: file_path)
+  end
+end
+
+Packwerk::Parsers::Factory.instance.erb_parser_class = CustomParser
+```
 
 ### Inflections
 
