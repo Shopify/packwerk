@@ -13,7 +13,7 @@ require "fixtures/skeleton/config/environment"
 
 module Packwerk
   class ApplicationValidatorTest < Minitest::Test
-    include FixtureHelper
+    include RailsFixtureHelper
 
     setup do
       @configuration = Packwerk::Configuration.from_path("test/fixtures/skeleton")

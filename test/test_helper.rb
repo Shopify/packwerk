@@ -16,6 +16,7 @@ require "mocha/minitest"
 require "support/test_macro"
 require "support/test_assertions"
 require "support/fixture_helper"
+require "support/rails_fixture_helper"
 
 Minitest::Test.extend(TestMacro)
 Minitest::Test.include(TestAssertions)

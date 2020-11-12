@@ -5,7 +5,7 @@ require "test_helper"
 
 module Packwerk
   class ConfigurationTest < Minitest::Test
-    include FixtureHelper
+    include RailsFixtureHelper
 
     test ".from_path raises ArgumentError if path does not exist" do
       File.expects(:exist?).with("foo").returns(false)
