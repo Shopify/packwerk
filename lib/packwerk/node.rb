@@ -210,7 +210,6 @@ module Packwerk
       STRING = :str
       SYMBOL = :sym
 
-
       private_constant(
         :BLOCK, :CLASS, :CONSTANT, :CONSTANT_ASSIGNMENT, :CONSTANT_ROOT_NAMESPACE, :HASH, :HASH_PAIR, :METHOD_CALL,
         :MODULE, :SELF, :STRING, :SYMBOL,
