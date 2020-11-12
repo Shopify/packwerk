@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "rails_test_helper"
 
 module Packwerk
   class ConfigurationTest < Minitest::Test
@@ -49,35 +48,9 @@ module Packwerk
       assert_equal ["**/*.{rb,rake,erb}"], configuration.include
       assert_equal ["{bin,node_modules,script,tmp,vendor}/**/*"], configuration.exclude
       assert_equal File.expand_path("."), configuration.root_path
-      assert_equal default_autoloads, configuration.load_paths.sort
       assert_equal "**/", configuration.package_paths
       assert_empty configuration.custom_associations
       assert_equal File.expand_path("config/inflections.yml"), configuration.inflections_file
-    end
-
-    test ".from_path doesn't include load paths from vendored gems" do
-      File.expects(:exist?).with(Dir.pwd).returns(true)
-      File.expects(:file?).with(File.join(Dir.pwd, "packwerk.yml")).returns(false)
-      Bundler.expects(:bundle_path).returns(Rails.root.join("vendor/cache/gems"))
-
-      configuration = Configuration.from_path
-      expected_autoloads = default_autoloads - ["vendor/cache/gems/example/models"]
-
-      assert_equal expected_autoloads, configuration.load_paths.sort
-    end
-
-    private
-
-    # TODO: this isn't great, so let's come back and refactor so that we're in more control
-    #       of the initial state.
-    def default_autoloads
-      [
-        "components/platform/app/models",
-        "components/sales/app/models",
-        "components/timeline/app/models",
-        "components/timeline/app/models/concerns",
-        "vendor/cache/gems/example/models",
-      ]
     end
   end
 end

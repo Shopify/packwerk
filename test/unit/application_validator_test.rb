@@ -21,7 +21,6 @@ module Packwerk
     test "validity" do
       application_validator = Packwerk::ApplicationValidator.new(
         config_file_path: @configuration.config_path,
-        application_load_paths: @configuration.all_application_autoload_paths,
         configuration: @configuration
       )
       result = application_validator.check_all
@@ -32,7 +31,6 @@ module Packwerk
     test "returns an error for unresolvable privatized constants" do
       application_validator = Packwerk::ApplicationValidator.new(
         config_file_path: @configuration.config_path,
-        application_load_paths: @configuration.all_application_autoload_paths,
         configuration: @configuration
       )
       ConstantResolver.expects(:new).returns(stub("resolver", resolve: nil))
@@ -51,7 +49,6 @@ module Packwerk
 
       application_validator = Packwerk::ApplicationValidator.new(
         config_file_path: configuration.config_path,
-        application_load_paths: configuration.all_application_autoload_paths,
         configuration: configuration
       )
 
@@ -76,7 +73,6 @@ module Packwerk
 
       application_validator = Packwerk::ApplicationValidator.new(
         config_file_path: configuration.config_path,
-        application_load_paths: configuration.all_application_autoload_paths,
         configuration: configuration
       )
 
