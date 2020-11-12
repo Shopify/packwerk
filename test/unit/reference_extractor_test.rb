@@ -50,7 +50,7 @@ module Packwerk
       assert_equal "::Order::Extension", reference.constant.name
     end
 
-    test "doesn't break on unusal constants it can't detect" do
+    test "reports properly on 'self anchored' constants" do
       references = process(
         "class Entry; self::SOME_CONSTANT = :a; end",
         "components/timeline/app/models/entry.rb"
