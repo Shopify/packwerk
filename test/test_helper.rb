@@ -18,3 +18,7 @@ ROOT = Pathname.new(__dir__).join("..").expand_path
 
 Minitest::Test.extend(TestMacro)
 Minitest::Test.include(TestAssertions)
+
+Mocha.configure do |c|
+  c.stubbing_non_existent_method = :prevent
+end
