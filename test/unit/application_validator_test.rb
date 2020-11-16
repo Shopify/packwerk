@@ -26,9 +26,10 @@ module Packwerk
 
     test "check_autoload_path_cache fails on extraneous config load paths" do
       copy_template(:minimal)
+      ApplicationLoadPaths.expects(:extract_relevant_paths).returns([])
+
       application_validator = Packwerk::ApplicationValidator.new(
         config_file_path: config.config_path,
-        application_load_paths: [],
         configuration: config
       )
 
@@ -40,9 +41,10 @@ module Packwerk
 
     test "check_autoload_path_cache fails on missing config load paths" do
       copy_template(:minimal)
+      ApplicationLoadPaths.expects(:extract_relevant_paths).returns(["components/sales/app/models", "components/timeline/app/models"])
+
       application_validator = Packwerk::ApplicationValidator.new(
         config_file_path: config.config_path,
-        application_load_paths: ["components/sales/app/models", "components/timeline/app/models"],
         configuration: config
       )
 
