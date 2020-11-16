@@ -48,6 +48,9 @@ module RailsFixtureHelper
       rails_root_path(app_dir)
       # make sure PrivateThing.constantize succeeds to pass the privacy validity check
       require "fixtures/skeleton/components/timeline/app/models/private_thing.rb"
+
+      # make sure the application has a chance to load its inflections
+      require "fixtures/skeleton/config/environment"
     else
       raise "Unknown fixture template #{template}"
     end
