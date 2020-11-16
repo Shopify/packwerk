@@ -32,6 +32,31 @@ module Packwerk
       assert_nil(@package_set.fetch("components/unknown"))
     end
 
+    test ".package_paths supports a path wildcard" do
+      package_paths = PackageSet.package_paths("test/fixtures/skeleton", "**")
+
+      assert_includes(package_paths, Pathname.new("test/fixtures/skeleton/components/sales/package.yml"))
+      assert_includes(package_paths, Pathname.new("test/fixtures/skeleton/package.yml"))
+    end
+
+    test ".package_paths supports a single path as a string" do
+      package_paths = PackageSet.package_paths("test/fixtures/skeleton", "components/sales")
+
+      assert_equal(package_paths, [Pathname.new("test/fixtures/skeleton/components/sales/package.yml")])
+    end
+
+    test ".package_paths supports many paths as an array" do
+      package_paths = PackageSet.package_paths("test/fixtures/skeleton", ["components/sales", "."])
+
+      assert_equal(
+        package_paths,
+        [
+          Pathname.new("test/fixtures/skeleton/components/sales/package.yml"),
+          Pathname.new("test/fixtures/skeleton/package.yml"),
+        ]
+      )
+    end
+
     test ".package_paths excludes paths inside the gem directory" do
       vendor_package_path = Pathname.new("test/fixtures/skeleton/vendor/cache/gems/example/package.yml")
 
