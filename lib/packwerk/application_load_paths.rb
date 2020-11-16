@@ -48,7 +48,9 @@ module Packwerk
 
       sig { params(paths: T::Array[Pathname], rails_root: Pathname).returns(T::Array[String]) }
       def relative_path_strings(paths, rails_root: Rails.root)
-        paths.map { |path| path.relative_path_from(rails_root).to_s }
+        paths
+          .map { |path| path.relative_path_from(rails_root).to_s }
+          .uniq
       end
 
       sig { params(paths: T::Array[T.untyped]).void }

@@ -29,7 +29,8 @@ module Packwerk
         bundle_path_match = Bundler.bundle_path.join("**").to_s
 
         Dir.glob(File.join(root_path, package_pathspec, PACKAGE_CONFIG_FILENAME))
-          .map { |path| Pathname.new(path) }.reject { |path| path.realpath.fnmatch(bundle_path_match) }
+          .map { |path| Pathname.new(path) }
+          .reject { |path| path.realpath.fnmatch(bundle_path_match) }
       end
 
       private

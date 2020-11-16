@@ -329,7 +329,8 @@ module Packwerk
     end
 
     def package_manifests(glob_pattern)
-      PackageSet.package_paths(@configuration.root_path, glob_pattern).map(&:to_s)
+      PackageSet.package_paths(@configuration.root_path, glob_pattern)
+        .map { |f| File.realpath(f) }
     end
 
     def relative_paths(paths)
