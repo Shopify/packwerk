@@ -207,7 +207,7 @@ module Packwerk
     end
 
     def check_acyclic_graph
-      packages = Packwerk::PackageSet.load_all_from(".")
+      packages = Packwerk::PackageSet.load_all_from(@configuration.root_path)
 
       edges = packages.flat_map do |package|
         package.dependencies.map { |dependency| [package, packages.fetch(dependency)] }
