@@ -9,15 +9,15 @@ require "yaml"
 require "packwerk/package_set"
 require "packwerk/graph"
 require "packwerk/inflector"
+require "packwerk/application_load_paths"
 
 module Packwerk
   class ApplicationValidator
-    def initialize(config_file_path:, application_load_paths:, configuration:)
+    def initialize(config_file_path:, configuration:)
       @config_file_path = config_file_path
       @configuration = configuration
 
-      # Load paths should be from the application
-      @application_load_paths = application_load_paths.sort.uniq
+      @application_load_paths = ApplicationLoadPaths.extract_relevant_paths
     end
 
     Result = Struct.new(:ok?, :error_value)

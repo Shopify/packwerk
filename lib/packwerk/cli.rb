@@ -204,7 +204,6 @@ module Packwerk
       @progress_formatter.started_validation do
         checker = Packwerk::ApplicationValidator.new(
           config_file_path: @configuration.config_path,
-          application_load_paths: @configuration.all_application_autoload_paths,
           configuration: @configuration
         )
         result = checker.check_all

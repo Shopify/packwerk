@@ -42,45 +42,10 @@ module Packwerk
       @root_path = File.expand_path(root)
       @package_paths = configs["package_paths"] || "**/"
       @custom_associations = configs["custom_associations"] || []
-      @load_paths = configs["load_paths"] || all_application_autoload_paths
+      @load_paths = configs["load_paths"]
       @inflections_file = File.expand_path(configs["inflections_file"] || "config/inflections.yml", @root_path)
 
       @config_path = config_path
-    end
-
-    def all_application_autoload_paths
-      return [] unless defined?(::Rails)
-
-      all_paths = Rails.application.railties
-        .select { |railtie| railtie.is_a?(Rails::Engine) }
-        .push(Rails.application)
-        .flat_map do |engine|
-        (engine.config.autoload_paths + engine.config.eager_load_paths + engine.config.autoload_once_paths).uniq
-      end
-
-      bundle_path_match = Bundler.bundle_path.join("**").to_s
-
-      all_paths = all_paths.each_with_object([]) do |path_string, paths|
-        # ignore paths inside gems
-        path = Pathname.new(path_string)
-
-        next unless path.exist?
-        next if path.realpath.fnmatch(bundle_path_match)
-
-        paths << path.relative_path_from(Rails.root).to_s
-      end
-
-      all_paths.tap do |paths|
-        if paths.empty?
-          raise <<~EOS
-            No autoload paths have been set up in your Rails app. This is likely a bug, and
-            packwerk is unlikely to work correctly without any autoload paths.
-
-            You can follow the Rails guides on setting up load paths, or manually configure
-            them in `packwerk.yml` with `load_paths`.
-          EOS
-        end
-      end
     end
   end
 end
