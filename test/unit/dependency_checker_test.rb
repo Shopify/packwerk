@@ -15,9 +15,14 @@ module Packwerk
     end
 
     setup do
+      setup_fixture
       copy_template(:skeleton)
       @destination_package = Package.new(name: "destination_package", config: {})
       @reference_lister = CheckingDeprecatedReferences.new(app_dir)
+    end
+
+    teardown do
+      teardown_fixture
     end
 
     test "recognizes simple cross package reference" do

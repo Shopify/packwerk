@@ -6,15 +6,25 @@ require "rails_test_helper"
 module RailsFixtureHelper
   include FixtureHelper
 
-  def around
-    super do
-      cache_rails_paths
-
-      yield
-
-      restore_rails_paths
-    end
+  def setup_fixture
+    super()
+    cache_rails_paths
   end
+
+  def teardown_fixture
+    restore_rails_paths
+    super()
+  end
+
+  # def around
+  #   super do
+  #     cache_rails_paths
+
+  #     yield
+
+  #     restore_rails_paths
+  #   end
+  # end
 
   def copy_template(template)
     super(template)

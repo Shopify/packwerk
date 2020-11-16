@@ -7,6 +7,14 @@ module Packwerk
   class ConfigurationTest < Minitest::Test
     include RailsFixtureHelper
 
+    setup do
+      setup_fixture
+    end
+
+    teardown do
+      teardown_fixture
+    end
+
     test ".from_path raises ArgumentError if path does not exist" do
       File.expects(:exist?).with("foo").returns(false)
       error = assert_raises ArgumentError do

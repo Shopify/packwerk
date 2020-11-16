@@ -16,7 +16,12 @@ module Packwerk
     include RailsFixtureHelper
 
     setup do
+      setup_fixture
       @configuration = Packwerk::Configuration.from_path("test/fixtures/skeleton")
+    end
+
+    teardown do
+      teardown_fixture
     end
 
     test "validity" do
