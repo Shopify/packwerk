@@ -4,12 +4,12 @@
 require "test_helper"
 
 module Packwerk
-  class UpdatingDeprecatedReferencesTest < Minitest::Test
+  class CacheDeprecatedReferencesTest < Minitest::Test
     setup do
-      @updating_deprecated_references = UpdatingDeprecatedReferences.new(".")
+      @updating_deprecated_references = CacheDeprecatedReferences.new(".")
     end
 
-    test "#listed? returns true when constant has been added to file" do
+    test "#listed? adds entry and returns true" do
       File.stubs(:open)
 
       source_package = Package.new(name: "source_package", config: {})

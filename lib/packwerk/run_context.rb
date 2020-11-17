@@ -25,8 +25,9 @@ module Packwerk
       :inflector,
       :custom_associations,
       :checker_classes,
-      :reference_lister,
     )
+
+    attr_accessor :reference_lister
 
     DEFAULT_CHECKERS = [
       ::Packwerk::DependencyChecker,
