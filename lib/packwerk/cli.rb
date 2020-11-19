@@ -13,6 +13,8 @@ require "packwerk/run_context"
 require "packwerk/updating_deprecated_references"
 require "packwerk/checking_deprecated_references"
 require "packwerk/commands/detect_stale_violations_command"
+require "packwerk/commands/generate_configs_command"
+require "packwerk/commands/init_command"
 require "packwerk/commands/offense_progress_marker"
 
 module Packwerk
@@ -78,54 +80,15 @@ module Packwerk
     private
 
     def init
-      @out.puts("📦 Initializing Packwerk...")
-
-      application_validation = Packwerk::Generators::ApplicationValidation.generate(
-        for_rails_app: rails_app?,
-        root: @configuration.root_path,
-        out: @out
-      )
-
-      if application_validation
-        if rails_app?
-          # To run in the same space as the Rails process,
-          # in order to fetch load paths for the configuration generator
-          exec("bin/packwerk", "generate_configs")
-        else
-          generate_configurations = generate_configs
-        end
-      end
-
-      application_validation && generate_configurations
+      init = InitCommand.new(out: @out, configuration: @configuration)
+      result = init.run
+      result.status
     end
 
     def generate_configs
-      configuration_file = Packwerk::Generators::ConfigurationFile.generate(
-        load_paths: @configuration.load_paths,
-        root: @configuration.root_path,
-        out: @out
-      )
-      inflections_file = Packwerk::Generators::InflectionsFile.generate(root: @configuration.root_path, out: @out)
-      root_package = Packwerk::Generators::RootPackage.generate(root: @configuration.root_path, out: @out)
-
-      success = configuration_file && inflections_file && root_package
-
-      result = if success
-        <<~EOS
-
-          🎉 Packwerk is ready to be used. You can start defining packages and run `packwerk check`.
-          For more information on how to use Packwerk, see: https://github.com/Shopify/packwerk/blob/main/USAGE.md
-        EOS
-      else
-        <<~EOS
-
-          ⚠️  Packwerk is not ready to be used.
-          Please check output and refer to https://github.com/Shopify/packwerk/blob/main/USAGE.md for more information.
-        EOS
-      end
-
-      @out.puts(result)
-      success
+      generate_configs = GenerateConfigsCommand.new(out: @out, configuration: @configuration)
+      result = generate_configs.run
+      result.status
     end
 
     def update(paths)
@@ -245,15 +208,6 @@ module Packwerk
       else
         @out.puts("Validation failed ❗")
         @out.puts(result.error_value)
-      end
-    end
-
-    sig { returns(T::Boolean) }
-    def rails_app?
-      if File.exist?("config/application.rb") && File.exist?("bin/rails")
-        File.foreach("Gemfile").any? { |line| line.match?(/['"]rails['"]/) }
-      else
-        false
       end
     end
   end
