@@ -63,7 +63,7 @@ Packwerk reads from the `packwerk.yml` configuration file in the root directory.
 |----------------------|-------------------------------------------|--------------|
 | include              | **/*.{rb,rake,erb}                        | list of patterns for folder paths to include |
 | exclude              | {bin,node_modules,script,tmp,vendor}/**/* | list of patterns for folder paths to exclude |
-| package_paths        | **/                                       | patterns to find package configuration files, see: Defining packages |
+| package_paths        | **/                                       | a single pattern or a list of patterns to find package configuration files, see: [Defining packages](#Defining-packages) |
 | load_paths           | All application autoload paths            | list of load paths |
 | custom_associations  | N/A                                       | list of custom associations, if any |
 

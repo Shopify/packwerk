@@ -32,7 +32,7 @@ module Packwerk
         check_acyclic_graph,
         check_package_manifest_paths,
         check_valid_package_dependencies,
-        check_root_package_exist,
+        check_root_package_exists,
       ]
 
       results.reject!(&:ok?)
@@ -207,7 +207,7 @@ module Packwerk
     end
 
     def check_acyclic_graph
-      packages = Packwerk::PackageSet.load_all_from(".")
+      packages = Packwerk::PackageSet.load_all_from(@configuration.root_path)
 
       edges = packages.flat_map do |package|
         package.dependencies.map { |dependency| [package, packages.fetch(dependency)] }
@@ -297,7 +297,7 @@ module Packwerk
       end
     end
 
-    def check_root_package_exist
+    def check_root_package_exists
       root_package_path = File.join(@configuration.root_path, "package.yml")
       all_packages_manifests = package_manifests(package_glob)
 

@@ -28,8 +28,12 @@ module Packwerk
       def package_paths(root_path, package_pathspec)
         bundle_path_match = Bundler.bundle_path.join("**").to_s
 
-        Dir.glob(File.join(root_path, package_pathspec, PACKAGE_CONFIG_FILENAME))
-          .map { |path| Pathname.new(path) }
+        glob_patterns = Array(package_pathspec).map do |pathspec|
+          File.join(root_path, pathspec, PACKAGE_CONFIG_FILENAME)
+        end
+
+        Dir.glob(glob_patterns)
+          .map { |path| Pathname.new(path).cleanpath }
           .reject { |path| path.realpath.fnmatch(bundle_path_match) }
       end
 
