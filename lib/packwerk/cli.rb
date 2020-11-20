@@ -12,12 +12,12 @@ require "packwerk/output_styles"
 require "packwerk/run_context"
 require "packwerk/updating_deprecated_references"
 require "packwerk/checking_deprecated_references"
-require "packwerk/commands/check_command"
-require "packwerk/commands/detect_stale_violations_command"
-require "packwerk/commands/generate_configs_command"
-require "packwerk/commands/init_command"
-require "packwerk/commands/update_deprecations_command"
-require "packwerk/commands/validate_command"
+require "packwerk/commands/check"
+require "packwerk/commands/detect_stale_violations"
+require "packwerk/commands/generate_configs"
+require "packwerk/commands/init"
+require "packwerk/commands/update_deprecations"
+require "packwerk/commands/validate"
 
 module Packwerk
   class Cli
@@ -81,11 +81,11 @@ module Packwerk
     private
 
     def init
-      InitCommand.new(out: @out, configuration: @configuration).run
+      Commands::Init.new(out: @out, configuration: @configuration).run
     end
 
     def generate_configs
-      GenerateConfigsCommand.new(out: @out, configuration: @configuration).run
+      Commands::GenerateConfigs.new(out: @out, configuration: @configuration).run
     end
 
     def update(paths)
@@ -94,7 +94,7 @@ module Packwerk
     end
 
     def update_deprecations(paths)
-      UpdateDeprecationsCommand.new(
+      Commands::UpdateDeprecations.new(
         out: @out,
         configuration: @configuration,
         files: fetch_files_to_process(paths),
@@ -104,7 +104,7 @@ module Packwerk
     end
 
     def check(paths)
-      CheckCommand.new(
+      Commands::Check.new(
         out: @out,
         files: fetch_files_to_process(paths),
         run_context: @run_context,
@@ -114,7 +114,7 @@ module Packwerk
     end
 
     def detect_stale_violations(paths)
-      DetectStaleViolationsCommand.new(
+      Commands::DetectStaleViolations.new(
         out: @out,
         files: fetch_files_to_process(paths),
         configuration: @configuration,
@@ -123,7 +123,7 @@ module Packwerk
     end
 
     def validate(_paths)
-      ValidateCommand.new(
+      Commands::Validate.new(
         out: @out,
         configuration: @configuration,
         progress_formatter: @progress_formatter
