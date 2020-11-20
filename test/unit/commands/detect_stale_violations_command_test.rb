@@ -2,7 +2,6 @@
 require "test_helper"
 require "rails_test_helper"
 require "packwerk/commands/detect_stale_violations_command"
-require "byebug"
 
 module Packwerk
   class DetectStaleViolationsCommandTest < Minitest::Test

@@ -1,12 +1,6 @@
 # typed: true
 # frozen_string_literal: true
-require "packwerk/cli"
-require "sorbet-runtime"
-require "benchmark"
-require "packwerk/configuration"
-require "packwerk/formatters/progress_formatter"
-require "packwerk/run_context"
-require "packwerk/detect_stale_deprecated_references"
+
 require "packwerk/commands/offense_progress_marker"
 
 module Packwerk
