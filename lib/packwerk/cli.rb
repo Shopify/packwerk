@@ -12,15 +12,17 @@ require "packwerk/output_styles"
 require "packwerk/run_context"
 require "packwerk/updating_deprecated_references"
 require "packwerk/checking_deprecated_references"
+require "packwerk/commands/check_command"
 require "packwerk/commands/detect_stale_violations_command"
 require "packwerk/commands/generate_configs_command"
 require "packwerk/commands/init_command"
+require "packwerk/commands/offense_printer"
 require "packwerk/commands/offense_progress_marker"
 
 module Packwerk
   class Cli
     extend T::Sig
-    include OffenseProgressMarker
+    include OffenseProgressMarker, OffensePrinter
 
     def initialize(run_context: nil, configuration: nil, out: $stdout, err_out: $stderr, style: OutputStyles::Plain)
       @out = out
@@ -119,7 +121,7 @@ module Packwerk
       end
 
       @out.puts # put a new line after the progress dots
-      show_offenses(all_offenses)
+      show_offenses(all_offenses, @out, @style)
       @progress_formatter.finished(execution_time)
       @out.puts("✅ `deprecated_references.yml` has been updated.")
 
@@ -127,28 +129,15 @@ module Packwerk
     end
 
     def check(paths)
-      files = fetch_files_to_process(paths)
-
-      @progress_formatter.started(files)
-
-      all_offenses = T.let([], T.untyped)
-      execution_time = Benchmark.realtime do
-        files.each do |path|
-          @run_context.process_file(file: path).tap do |offenses|
-            mark_progress(offenses: offenses, progress_formatter: @progress_formatter)
-            all_offenses.concat(offenses)
-          end
-        end
-      rescue Interrupt
-        @out.puts
-        @out.puts("Manually interrupted. Violations caught so far are listed below:")
-      end
-
-      @out.puts # put a new line after the progress dots
-      show_offenses(all_offenses)
-      @progress_formatter.finished(execution_time)
-
-      all_offenses.empty?
+      check = CheckCommand.new(
+        out: @out,
+        files: fetch_files_to_process(paths),
+        run_context: @run_context,
+        progress_formatter: @progress_formatter,
+        style: @style
+      )
+      result = check.run
+      result.status
     end
 
     def detect_stale_violations(paths)
@@ -185,19 +174,6 @@ module Packwerk
         list_validation_errors(result)
 
         return result.ok?
-      end
-    end
-
-    def show_offenses(offenses)
-      if offenses.empty?
-        @out.puts("No offenses detected 🎉")
-      else
-        offenses.each do |offense|
-          @out.puts(offense.to_s(@style))
-        end
-
-        offenses_string = Inflector.default.pluralize("offense", offenses.length)
-        @out.puts("#{offenses.length} #{offenses_string} detected")
       end
     end
 
