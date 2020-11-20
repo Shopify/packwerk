@@ -10,13 +10,11 @@ module Packwerk
       include OffenseProgressMarker
       Result = Struct.new(:message, :status)
 
-      def initialize(out:, files:, configuration:, run_context: nil, progress_formatter: nil, reference_lister: nil)
+      def initialize(out:, files:, configuration:, progress_formatter: nil)
         @out = out
-        @configuration = configuration
-        @run_context = run_context
-        @reference_lister = reference_lister
-        @progress_formatter = progress_formatter
         @files = files
+        @configuration = configuration
+        @progress_formatter = progress_formatter
       end
 
       sig { returns(T::Boolean) }
