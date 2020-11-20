@@ -31,7 +31,7 @@ module Packwerk
           end
         end
 
-        application_validation && generate_configurations
+        application_validation && generate_configurations || false
       end
 
       private

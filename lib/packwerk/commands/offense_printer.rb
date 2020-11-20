@@ -8,7 +8,7 @@ module Packwerk
 
       sig do
         params(
-          offenses: T::Array[T.nilable(Offense)],
+          offenses: T::Array[Offense],
           out: StringIO,
           style: T.any(T.class_of(OutputStyles::Plain), T.class_of(OutputStyles::Coloured))
         ).void

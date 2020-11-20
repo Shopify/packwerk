@@ -7,7 +7,6 @@ module Packwerk
   module Commands
     class DetectStaleViolationsTest < Minitest::Test
       test "#execute_command with the subcommand detect-stale-violations returns status code 1 if stale violations" do
-        stale_violations_message = "There were stale violations found, please run `packwerk update`"
         offense = stub
         detect_stale_deprecated_references = stub
         detect_stale_deprecated_references.stubs(:stale_violations?).returns(true)
