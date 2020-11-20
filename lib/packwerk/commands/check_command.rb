@@ -8,7 +8,6 @@ module Packwerk
   class CheckCommand
     extend T::Sig
     include OffenseProgressMarker, OffensePrinter
-    Result = Struct.new(:message, :status)
 
     def initialize(out:, files:, run_context:, progress_formatter:, style:)
       @out = out
@@ -18,16 +17,16 @@ module Packwerk
       @style = style
     end
 
-    sig { returns(Result) }
+    sig { returns(T::Boolean) }
     def run
       @progress_formatter.started(@files)
 
-      @all_offenses = T.let([], T.untyped)
+      all_offenses = T.let([], T.untyped)
       execution_time = Benchmark.realtime do
         @files.each do |path|
           @run_context.process_file(file: path).tap do |offenses|
             mark_progress(offenses: offenses, progress_formatter: @progress_formatter)
-            @all_offenses.concat(offenses)
+            all_offenses.concat(offenses)
           end
         end
       rescue Interrupt
@@ -36,19 +35,10 @@ module Packwerk
       end
 
       @out.puts # put a new line after the progress dots
-      show_offenses(@all_offenses, @out, @style)
+      show_offenses(all_offenses, @out, @style)
       @progress_formatter.finished(execution_time)
 
-      calculate_result
-    end
-
-    private
-
-    sig { returns Result }
-    def calculate_result
-      result_status = @all_offenses.empty?
-
-      Result.new(nil, result_status)
+      all_offenses.empty?
     end
   end
 end

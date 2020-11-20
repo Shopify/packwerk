@@ -11,7 +11,7 @@ module Packwerk
       @configuration = configuration
     end
 
-    sig { returns(Result) }
+    sig { returns(T::Boolean) }
     def run
       configuration_file = Packwerk::Generators::ConfigurationFile.generate(
         load_paths: @configuration.load_paths,
@@ -23,30 +23,31 @@ module Packwerk
 
       @success = configuration_file && inflections_file && root_package
 
-      result = calculate_result
       @out.puts(result.message)
-      result
+      result.status
     end
 
     private
 
     sig { returns Result }
-    def calculate_result
-      message = if @success
-        <<~EOS
+    def result
+      @result ||= begin
+        message = if @success
+          <<~EOS
 
-          🎉 Packwerk is ready to be used. You can start defining packages and run `packwerk check`.
-          For more information on how to use Packwerk, see: https://github.com/Shopify/packwerk/blob/main/USAGE.md
-        EOS
-      else
-        <<~EOS
+            🎉 Packwerk is ready to be used. You can start defining packages and run `packwerk check`.
+            For more information on how to use Packwerk, see: https://github.com/Shopify/packwerk/blob/main/USAGE.md
+          EOS
+        else
+          <<~EOS
 
-          ⚠️  Packwerk is not ready to be used.
-          Please check output and refer to https://github.com/Shopify/packwerk/blob/main/USAGE.md for more information.
-        EOS
+            ⚠️  Packwerk is not ready to be used.
+            Please check output and refer to https://github.com/Shopify/packwerk/blob/main/USAGE.md for more information.
+          EOS
+        end
+
+        Result.new(message, @success)
       end
-
-      Result.new(message, @success)
     end
   end
 end

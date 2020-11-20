@@ -8,7 +8,6 @@ module Packwerk
   class UpdateDeprecationsCommand
     extend T::Sig
     include OffenseProgressMarker, OffensePrinter
-    Result = Struct.new(:message, :status)
 
     def initialize(out:, configuration:, files:, progress_formatter:, style:)
       @out = out
@@ -18,7 +17,7 @@ module Packwerk
       @style = style
     end
 
-    sig { returns(Result) }
+    sig { returns(T::Boolean) }
     def run
       updating_deprecated_references = ::Packwerk::UpdatingDeprecatedReferences.new(@configuration.root_path)
       @run_context = Packwerk::RunContext.from_configuration(
@@ -28,9 +27,9 @@ module Packwerk
 
       @progress_formatter.started(@files)
 
-      @all_offenses = T.let([], T.untyped)
+      all_offenses = T.let([], T.untyped)
       execution_time = Benchmark.realtime do
-        @all_offenses = @files.flat_map do |path|
+        all_offenses = @files.flat_map do |path|
           @run_context.process_file(file: path).tap do |offenses|
             mark_progress(offenses: offenses, progress_formatter: @progress_formatter)
           end
@@ -40,20 +39,11 @@ module Packwerk
       end
 
       @out.puts # put a new line after the progress dots
-      show_offenses(@all_offenses, @out, @style)
+      show_offenses(all_offenses, @out, @style)
       @progress_formatter.finished(execution_time)
       @out.puts("✅ `deprecated_references.yml` has been updated.")
 
-      calculate_result
-    end
-
-    private
-
-    sig { returns Result }
-    def calculate_result
-      result_status = @all_offenses.empty?
-
-      Result.new(nil, result_status)
+      all_offenses.empty?
     end
   end
 end

@@ -23,6 +23,7 @@ module Packwerk
       ::Packwerk::RunContext.stubs(from_configuration: run_context)
 
       detect_stale_violations_command = ::Packwerk::DetectStaleViolationsCommand.new(
+        out: StringIO.new,
         files: ["path/of/exile.rb"],
         configuration: Configuration.from_path,
         run_context: run_context,
@@ -32,10 +33,7 @@ module Packwerk
 
       detect_stale_violations_command.stubs(:mark_progress)
 
-      no_stale_violations = detect_stale_violations_command.run
-
-      assert_equal no_stale_violations.message, stale_violations_message
-      refute no_stale_violations.status
+      refute detect_stale_violations_command.run
     end
   end
 end

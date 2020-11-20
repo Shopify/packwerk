@@ -9,7 +9,8 @@ module Packwerk
     include OffenseProgressMarker
     Result = Struct.new(:message, :status)
 
-    def initialize(files:, configuration:, run_context: nil, progress_formatter: nil, reference_lister: nil)
+    def initialize(out:, files:, configuration:, run_context: nil, progress_formatter: nil, reference_lister: nil)
+      @out = out
       @configuration = configuration
       @run_context = run_context
       @reference_lister = reference_lister
@@ -17,7 +18,7 @@ module Packwerk
       @files = files
     end
 
-    sig { returns(Result) }
+    sig { returns(T::Boolean) }
     def run
       @progress_formatter.started(@files)
 
@@ -31,7 +32,11 @@ module Packwerk
       end
 
       @progress_formatter.finished(execution_time)
-      calculate_result
+
+      @out.puts
+      @out.puts(result.message)
+
+      result.status
     end
 
     private
@@ -45,13 +50,15 @@ module Packwerk
     end
 
     sig { returns Result }
-    def calculate_result
-      result_status = !reference_lister.stale_violations?
-      message = "There were stale violations found, please run `packwerk update`"
-      if result_status
-        message = "No stale violations detected"
+    def result
+      @result ||= begin
+        result_status = !reference_lister.stale_violations?
+        message = "There were stale violations found, please run `packwerk update`"
+        if result_status
+          message = "No stale violations detected"
+        end
+        Result.new(message, result_status)
       end
-      Result.new(message, result_status)
     end
   end
 end

@@ -81,15 +81,11 @@ module Packwerk
     private
 
     def init
-      init = InitCommand.new(out: @out, configuration: @configuration)
-      result = init.run
-      result.status
+      InitCommand.new(out: @out, configuration: @configuration).run
     end
 
     def generate_configs
-      generate_configs = GenerateConfigsCommand.new(out: @out, configuration: @configuration)
-      result = generate_configs.run
-      result.status
+      GenerateConfigsCommand.new(out: @out, configuration: @configuration).run
     end
 
     def update(paths)
@@ -98,49 +94,40 @@ module Packwerk
     end
 
     def update_deprecations(paths)
-      update_deprecations = UpdateDeprecationsCommand.new(
+      UpdateDeprecationsCommand.new(
         out: @out,
         configuration: @configuration,
         files: fetch_files_to_process(paths),
         progress_formatter: @progress_formatter,
         style: @style
-      )
-      result = update_deprecations.run
-      result.status
+      ).run
     end
 
     def check(paths)
-      check = CheckCommand.new(
+      CheckCommand.new(
         out: @out,
         files: fetch_files_to_process(paths),
         run_context: @run_context,
         progress_formatter: @progress_formatter,
         style: @style
-      )
-      result = check.run
-      result.status
+      ).run
     end
 
     def detect_stale_violations(paths)
-      detect_stale_violations = DetectStaleViolationsCommand.new(
+      DetectStaleViolationsCommand.new(
+        out: @out,
         files: fetch_files_to_process(paths),
         configuration: @configuration,
         progress_formatter: @progress_formatter
-      )
-      result = detect_stale_violations.run
-      @out.puts
-      @out.puts(result.message)
-      result.status
+      ).run
     end
 
     def validate(_paths)
-      validate = ValidateCommand.new(
+      ValidateCommand.new(
         out: @out,
         configuration: @configuration,
         progress_formatter: @progress_formatter
-      )
-      result = validate.run
-      result.status
+      ).run
     end
 
     def fetch_files_to_process(paths)

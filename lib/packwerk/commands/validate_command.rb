@@ -4,7 +4,6 @@
 module Packwerk
   class ValidateCommand
     extend T::Sig
-    Result = Struct.new(:message, :status)
 
     def initialize(out:, configuration:, progress_formatter:)
       @out = out
@@ -12,7 +11,7 @@ module Packwerk
       @progress_formatter = progress_formatter
     end
 
-    sig { returns(Result) }
+    sig { returns(T::Boolean) }
     def run
       warn("`packwerk validate` should be run within the application. "\
         "Generate the bin script using `packwerk init` and"\
@@ -23,31 +22,24 @@ module Packwerk
           config_file_path: @configuration.config_path,
           configuration: @configuration
         )
-        @result = checker.check_all
+        result = checker.check_all
 
-        list_validation_errors
+        list_validation_errors(result)
 
-        return calculate_result
+        return result.ok?
       end
     end
 
     private
 
-    def list_validation_errors
+    def list_validation_errors(result)
       @out.puts
-      if @result.ok?
+      if result.ok?
         @out.puts("Validation successful 🎉")
       else
         @out.puts("Validation failed ❗")
-        @out.puts(@result.error_value)
+        @out.puts(result.error_value)
       end
-    end
-
-    sig { returns Result }
-    def calculate_result
-      result_status = @result.ok?
-
-      Result.new(nil, result_status)
     end
   end
 end
