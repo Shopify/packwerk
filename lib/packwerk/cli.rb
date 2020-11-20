@@ -16,13 +16,11 @@ require "packwerk/commands/check_command"
 require "packwerk/commands/detect_stale_violations_command"
 require "packwerk/commands/generate_configs_command"
 require "packwerk/commands/init_command"
-require "packwerk/commands/offense_printer"
-require "packwerk/commands/offense_progress_marker"
+require "packwerk/commands/update_deprecations_command"
 
 module Packwerk
   class Cli
     extend T::Sig
-    include OffenseProgressMarker, OffensePrinter
 
     def initialize(run_context: nil, configuration: nil, out: $stdout, err_out: $stderr, style: OutputStyles::Plain)
       @out = out
@@ -99,33 +97,15 @@ module Packwerk
     end
 
     def update_deprecations(paths)
-      updating_deprecated_references = ::Packwerk::UpdatingDeprecatedReferences.new(@configuration.root_path)
-      @run_context = Packwerk::RunContext.from_configuration(
-        @configuration,
-        reference_lister: updating_deprecated_references
+      update_deprecations = UpdateDeprecationsCommand.new(
+        out: @out,
+        configuration: @configuration,
+        files: fetch_files_to_process(paths),
+        progress_formatter: @progress_formatter,
+        style: @style
       )
-
-      files = fetch_files_to_process(paths)
-
-      @progress_formatter.started(files)
-
-      all_offenses = T.let([], T.untyped)
-      execution_time = Benchmark.realtime do
-        all_offenses = files.flat_map do |path|
-          @run_context.process_file(file: path).tap do |offenses|
-            mark_progress(offenses: offenses, progress_formatter: @progress_formatter)
-          end
-        end
-
-        updating_deprecated_references.dump_deprecated_references_files
-      end
-
-      @out.puts # put a new line after the progress dots
-      show_offenses(all_offenses, @out, @style)
-      @progress_formatter.finished(execution_time)
-      @out.puts("✅ `deprecated_references.yml` has been updated.")
-
-      all_offenses.empty?
+      result = update_deprecations.run
+      result.status
     end
 
     def check(paths)
