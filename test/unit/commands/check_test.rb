@@ -6,7 +6,29 @@ require "packwerk/commands/check"
 module Packwerk
   module Commands
     class CheckTest < Minitest::Test
-      test "#execute_command with the subcommand check starts processing files" do
+      test "#run prints no violations and return true" do
+        run_context = stub
+        run_context.stubs(:process_file).at_least_once.returns([])
+
+        string_io = StringIO.new
+        style = OutputStyles::Plain
+
+        # TODO: Dependency injection for a "target finder" (https://github.com/Shopify/packwerk/issues/164)
+        FilesForProcessing.stubs(fetch: ["path/of/exile.rb"])
+
+        check_command = Commands::Check.new(
+          out: string_io,
+          files: ["path/of/exile.rb"],
+          run_context: run_context,
+          progress_formatter: Formatters::ProgressFormatter.new(string_io, style: style),
+          style: style
+        )
+
+        assert check_command.run
+        assert_includes string_io.string, "No offenses detected"
+      end
+
+      test "#run prints violations and return false" do
         violation_message = "This is a violation of code health."
         offense = stub(error?: true, to_s: violation_message)
 
@@ -14,46 +36,23 @@ module Packwerk
         run_context.stubs(:process_file).at_least_once.returns([offense])
 
         string_io = StringIO.new
-
-        cli = Cli.new(out: string_io, run_context: run_context)
+        style = OutputStyles::Plain
 
         # TODO: Dependency injection for a "target finder" (https://github.com/Shopify/packwerk/issues/164)
         FilesForProcessing.stubs(fetch: ["path/of/exile.rb"])
 
-        success = cli.execute_command(["check", "path/of/exile.rb"])
+        check_command = Commands::Check.new(
+          out: string_io,
+          files: ["path/of/exile.rb"],
+          run_context: run_context,
+          progress_formatter: Formatters::ProgressFormatter.new(string_io, style: style),
+          style: style
+        )
 
+        refute check_command.run
         assert_includes string_io.string, violation_message
         assert_includes string_io.string, "1 offense detected"
         assert_includes string_io.string, "E\n"
-        refute success
-      end
-
-      test "#execute_command with the subcommand check traps the interrupt signal" do
-        interrupt_message = "Manually interrupted. Violations caught so far are listed below:"
-        violation_message = "This is a violation of code health."
-        offense = stub(to_s: violation_message)
-
-        run_context = stub
-        run_context.stubs(:process_file)
-          .at_least(2)
-          .returns([offense])
-          .raises(Interrupt)
-          .returns([offense])
-
-        string_io = StringIO.new
-
-        cli = Cli.new(out: string_io, run_context: run_context)
-
-        FilesForProcessing.stubs(fetch: ["path/of/exile.rb", "test.rb", "foo.rb"])
-
-        success = cli.execute_command(["check", "path/of/exile.rb"])
-
-        assert_includes string_io.string, "Packwerk is inspecting 3 files"
-        assert_includes string_io.string, "E\n"
-        assert_includes string_io.string, interrupt_message
-        assert_includes string_io.string, violation_message
-        assert_includes string_io.string, "1 offense detected"
-        refute success
       end
     end
   end

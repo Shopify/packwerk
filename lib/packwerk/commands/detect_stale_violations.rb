@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "packwerk/detect_stale_deprecated_references"
 require "packwerk/commands/offense_progress_marker"
 
 module Packwerk

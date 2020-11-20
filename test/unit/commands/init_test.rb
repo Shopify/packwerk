@@ -14,7 +14,7 @@ module Packwerk
         FileUtils.remove_entry(@temp_dir)
       end
 
-      test "#execute_command with init subcommand runs application validation generator for non-Rails app" do
+      test "#run runs application validation generator for non-Rails app" do
         string_io = StringIO.new
         configuration = stub(
           root_path: @temp_dir,
@@ -23,16 +23,19 @@ module Packwerk
           custom_associations: ["cached_belongs_to"],
           inflections_file: "config/inflections.yml"
         )
-        cli = Cli.new(configuration: configuration, out: string_io)
 
         Generators::ApplicationValidation.expects(:generate).returns(true)
-        success = cli.execute_command(["init"])
 
+        init_command = Commands::Init.new(
+          out: string_io,
+          configuration: configuration
+        )
+
+        assert init_command.run
         assert_includes string_io.string, "is ready to be used"
-        assert success
       end
 
-      test "#execute_command with init subcommand runs application validation generator, fails and prints error" do
+      test "#run runs application validation generator, fails and prints error" do
         string_io = StringIO.new
         configuration = stub(
           root_path: @temp_dir,
@@ -41,12 +44,15 @@ module Packwerk
           custom_associations: ["cached_belongs_to"],
           inflections_file: "config/inflections.yml"
         )
-        cli = Cli.new(configuration: configuration, out: string_io)
 
         Generators::ApplicationValidation.expects(:generate).returns(false)
-        success = cli.execute_command(["init"])
 
-        refute success
+        init_command = Commands::Init.new(
+          out: string_io,
+          configuration: configuration
+        )
+
+        refute init_command.run
       end
     end
   end

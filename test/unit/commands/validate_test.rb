@@ -8,29 +8,37 @@ module Packwerk
     class ValidateTest < Minitest::Test
       FakeResult = Struct.new(:ok?, :error_value)
 
-      test "#execute_command with validate subcommand runs application validator and succeeds if no errors" do
+      test "#run runs application validator and succeeds if no errors" do
         string_io = StringIO.new
-        cli = Cli.new(out: string_io)
+        style = OutputStyles::Plain
 
         ApplicationValidator.expects(:new).returns(stub(check_all: FakeResult.new(true)))
 
-        success = cli.execute_command(["validate"])
+        validate_command = Commands::Validate.new(
+          out: string_io,
+          configuration: Configuration.from_path,
+          progress_formatter: Formatters::ProgressFormatter.new(string_io, style: style),
+        )
 
+        assert validate_command.run
         assert_includes string_io.string, "Validation successful 🎉\n"
-        assert success
       end
 
-      test "#execute_command with validate subcommand runs application validator, fails and prints errors if any" do
+      test "#run runs application validator, fails and prints errors if any" do
         string_io = StringIO.new
-        cli = Cli.new(out: string_io)
+        style = OutputStyles::Plain
 
         ApplicationValidator.expects(:new).returns(stub(check_all: FakeResult.new(false, "I'm an error")))
 
-        success = cli.execute_command(["validate"])
+        validate_command = Commands::Validate.new(
+          out: string_io,
+          configuration: Configuration.from_path,
+          progress_formatter: Formatters::ProgressFormatter.new(string_io, style: style),
+        )
 
+        refute validate_command.run
         assert_includes string_io.string, "Validation failed ❗\n"
         assert_includes string_io.string, "I'm an error"
-        refute success
       end
     end
   end
