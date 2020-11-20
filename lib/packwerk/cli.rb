@@ -17,6 +17,7 @@ require "packwerk/commands/detect_stale_violations_command"
 require "packwerk/commands/generate_configs_command"
 require "packwerk/commands/init_command"
 require "packwerk/commands/update_deprecations_command"
+require "packwerk/commands/validate_command"
 
 module Packwerk
   class Cli
@@ -132,39 +133,21 @@ module Packwerk
       result.status
     end
 
+    def validate(_paths)
+      validate = ValidateCommand.new(
+        out: @out,
+        configuration: @configuration,
+        progress_formatter: @progress_formatter
+      )
+      result = validate.run
+      result.status
+    end
+
     def fetch_files_to_process(paths)
       files = FilesForProcessing.fetch(paths: paths, configuration: @configuration)
       abort("No files found or given. "\
         "Specify files or check the include and exclude glob in the config file.") if files.empty?
       files
-    end
-
-    def validate(_paths)
-      warn("`packwerk validate` should be run within the application. "\
-        "Generate the bin script using `packwerk init` and"\
-        " use `bin/packwerk validate` instead.") unless defined?(::Rails)
-
-      @progress_formatter.started_validation do
-        checker = Packwerk::ApplicationValidator.new(
-          config_file_path: @configuration.config_path,
-          configuration: @configuration
-        )
-        result = checker.check_all
-
-        list_validation_errors(result)
-
-        return result.ok?
-      end
-    end
-
-    def list_validation_errors(result)
-      @out.puts
-      if result.ok?
-        @out.puts("Validation successful 🎉")
-      else
-        @out.puts("Validation failed ❗")
-        @out.puts(result.error_value)
-      end
     end
   end
 end
