@@ -7,6 +7,7 @@ require "packwerk/application_load_paths"
 require "packwerk/application_validator"
 require "packwerk/configuration"
 require "packwerk/files_for_processing"
+require "packwerk/formatters/offenses_formatter"
 require "packwerk/formatters/progress_formatter"
 require "packwerk/inflector"
 require "packwerk/output_styles"
@@ -14,6 +15,7 @@ require "packwerk/run_context"
 require "packwerk/updating_deprecated_references"
 require "packwerk/checking_deprecated_references"
 require "packwerk/commands/detect_stale_violations_command"
+require "packwerk/commands/update_deprecations_command"
 require "packwerk/commands/offense_progress_marker"
 
 module Packwerk
@@ -135,33 +137,15 @@ module Packwerk
     end
 
     def update_deprecations(paths)
-      updating_deprecated_references = ::Packwerk::UpdatingDeprecatedReferences.new(@configuration.root_path)
-      @run_context = Packwerk::RunContext.from_configuration(
-        @configuration,
-        reference_lister: updating_deprecated_references
+      update_deprecations = Commands::UpdateDeprecationsCommand.new(
+        files: fetch_files_to_process(paths),
+        configuration: @configuration,
+        offenses_formatter: offenses_formatter,
+        progress_formatter: @progress_formatter
       )
-
-      files = fetch_files_to_process(paths)
-
-      @progress_formatter.started(files)
-
-      all_offenses = T.let([], T.untyped)
-      execution_time = Benchmark.realtime do
-        all_offenses = files.flat_map do |path|
-          @run_context.process_file(file: path).tap do |offenses|
-            mark_progress(offenses: offenses, progress_formatter: @progress_formatter)
-          end
-        end
-
-        updating_deprecated_references.dump_deprecated_references_files
-      end
-
-      @out.puts # put a new line after the progress dots
-      show_offenses(all_offenses)
-      @progress_formatter.finished(execution_time)
-      @out.puts("✅ `deprecated_references.yml` has been updated.")
-
-      all_offenses.empty?
+      result = update_deprecations.run
+      @out.puts(result.message)
+      result.status
     end
 
     def check(paths)
@@ -182,8 +166,7 @@ module Packwerk
         @out.puts("Manually interrupted. Violations caught so far are listed below:")
       end
 
-      @out.puts # put a new line after the progress dots
-      show_offenses(all_offenses)
+      offenses_formatter.show_offenses(all_offenses)
       @progress_formatter.finished(execution_time)
 
       all_offenses.empty?
@@ -226,19 +209,6 @@ module Packwerk
       end
     end
 
-    def show_offenses(offenses)
-      if offenses.empty?
-        @out.puts("No offenses detected 🎉")
-      else
-        offenses.each do |offense|
-          @out.puts(offense.to_s(@style))
-        end
-
-        offenses_string = Inflector.default.pluralize("offense", offenses.length)
-        @out.puts("#{offenses.length} #{offenses_string} detected")
-      end
-    end
-
     def list_validation_errors(result)
       @out.puts
       if result.ok?
@@ -256,6 +226,10 @@ module Packwerk
       else
         false
       end
+    end
+
+    def offenses_formatter
+      @offenses_formatter ||= Formatters::OffensesFormatter.new(@out, style: @style)
     end
   end
 end
