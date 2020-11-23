@@ -173,7 +173,7 @@ module Packwerk
     end
 
     def detect_stale_violations(paths)
-      detect_stale_violations = DetectStaleViolationsCommand.new(
+      detect_stale_violations = Commands::DetectStaleViolationsCommand.new(
         files: fetch_files_to_process(paths),
         configuration: @configuration,
         progress_formatter: @progress_formatter
