@@ -3,6 +3,7 @@
 require "benchmark"
 require "sorbet-runtime"
 
+require "packwerk/application_load_paths"
 require "packwerk/application_validator"
 require "packwerk/configuration"
 require "packwerk/files_for_processing"
@@ -101,7 +102,7 @@ module Packwerk
 
     def generate_configs
       configuration_file = Packwerk::Generators::ConfigurationFile.generate(
-        load_paths: @configuration.load_paths,
+        load_paths: Packwerk::ApplicationLoadPaths.extract_relevant_paths,
         root: @configuration.root_path,
         out: @out
       )
