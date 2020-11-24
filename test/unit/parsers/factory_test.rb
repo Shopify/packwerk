@@ -23,6 +23,11 @@ module Packwerk
         assert_instance_of(Parsers::Erb, factory.for_path("foo.html.erb"))
         assert_instance_of(Parsers::Erb, factory.for_path("foo.md.erb"))
         assert_instance_of(Parsers::Erb, factory.for_path("/sub/directory/foo.erb"))
+
+        fake_class = Class.new
+        with_erb_parser_class(fake_class) do
+          assert_instance_of(fake_class, factory.for_path("foo.html.erb"))
+        end
       end
 
       test "#for_path gives nil for unknown path" do
@@ -32,6 +37,13 @@ module Packwerk
       end
 
       private
+
+      def with_erb_parser_class(klass)
+        factory.erb_parser_class = klass
+        yield
+      ensure
+        factory.erb_parser_class = nil
+      end
 
       def factory
         Parsers::Factory.instance

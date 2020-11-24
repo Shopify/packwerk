@@ -26,8 +26,17 @@ module Packwerk
         when RUBY_REGEX
           @ruby_parser ||= Ruby.new
         when ERB_REGEX
-          @erb_parser ||= Erb.new
+          @erb_parser ||= erb_parser_class.new
         end
+      end
+
+      def erb_parser_class
+        @erb_parser_class || Erb
+      end
+
+      def erb_parser_class=(klass)
+        @erb_parser_class = klass
+        @erb_parser = nil
       end
     end
   end
