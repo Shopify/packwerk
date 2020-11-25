@@ -42,7 +42,7 @@ module Packwerk
       @root_path = File.expand_path(root)
       @package_paths = configs["package_paths"] || "**/"
       @custom_associations = configs["custom_associations"] || []
-      @load_paths = configs["load_paths"]
+      @load_paths = configs["load_paths"] || []
       @inflections_file = File.expand_path(configs["inflections_file"] || "config/inflections.yml", @root_path)
 
       @config_path = config_path

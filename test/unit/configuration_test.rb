@@ -48,6 +48,7 @@ module Packwerk
       assert_equal ["**/*.{rb,rake,erb}"], configuration.include
       assert_equal ["{bin,node_modules,script,tmp,vendor}/**/*"], configuration.exclude
       assert_equal File.expand_path("."), configuration.root_path
+      assert_empty configuration.load_paths
       assert_equal "**/", configuration.package_paths
       assert_empty configuration.custom_associations
       assert_equal File.expand_path("config/inflections.yml"), configuration.inflections_file
