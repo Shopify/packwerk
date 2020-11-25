@@ -5,14 +5,13 @@ require "benchmark"
 require "packwerk/run_context"
 require "packwerk/detect_stale_deprecated_references"
 require "packwerk/commands/offense_progress_marker"
+require "packwerk/commands/result"
 
 module Packwerk
   module Commands
     class DetectStaleViolationsCommand
       extend T::Sig
       include OffenseProgressMarker
-      Result = Struct.new(:message, :status)
-
       def initialize(files:, configuration:, run_context: nil, progress_formatter: nil, reference_lister: nil)
         @configuration = configuration
         @run_context = run_context
@@ -54,7 +53,7 @@ module Packwerk
         if result_status
           message = "No stale violations detected"
         end
-        Result.new(message, result_status)
+        Result.new(message: message, status: result_status)
       end
     end
   end

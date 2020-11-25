@@ -7,7 +7,7 @@ module Packwerk
   module Commands
     class UpdateDeprecationsCommandTest < Minitest::Test
       test "#run returns success when there are no offenses" do
-        run_context = stub
+        run_context = RunContext.new(root_path: ".", load_paths: ".", reference_lister: nil)
         run_context.stubs(:process_file).returns([])
 
         string_io = StringIO.new
@@ -29,7 +29,7 @@ module Packwerk
 
       test "#run returns exit code 1 when there are offenses" do
         offense = Offense.new(file: "path/of/exile.rb", message: "something")
-        run_context = stub
+        run_context = RunContext.new(root_path: ".", load_paths: ".", reference_lister: nil)
         run_context.stubs(:process_file).returns([offense])
 
         string_io = StringIO.new

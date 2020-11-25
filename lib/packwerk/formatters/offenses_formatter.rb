@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "benchmark"
@@ -12,6 +12,12 @@ module Packwerk
     class OffensesFormatter
       extend T::Sig
 
+      sig do
+        params(
+          out: StringIO,
+          style: T.any(T.class_of(OutputStyles::Plain), T.class_of(OutputStyles::Coloured))
+        ).void
+      end
       def initialize(out, style: OutputStyles::Plain)
         @out = out
         @style = style

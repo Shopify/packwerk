@@ -1,10 +1,11 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "sorbet-runtime"
 require "benchmark"
 
 require "packwerk/commands/offense_progress_marker"
+require "packwerk/commands/result"
 require "packwerk/run_context"
 require "packwerk/updating_deprecated_references"
 
@@ -13,8 +14,14 @@ module Packwerk
     class UpdateDeprecationsCommand
       extend T::Sig
       include OffenseProgressMarker
-      Result = Struct.new(:message, :status)
-
+      sig do
+        params(
+          files: T::Enumerable[String],
+          configuration: Configuration,
+          offenses_formatter: Formatters::OffensesFormatter,
+          progress_formatter: Formatters::ProgressFormatter
+        ).void
+      end
       def initialize(files:, configuration:, offenses_formatter:, progress_formatter:)
         @files = files
         @configuration = configuration
@@ -44,14 +51,20 @@ module Packwerk
 
       private
 
+      sig { returns RunContext }
       def run_context
+        @run_context = T.let(@run_context, T.nilable(RunContext))
         @run_context ||= RunContext.from_configuration(
           @configuration,
           reference_lister: updating_deprecated_references
         )
       end
 
+      sig { returns UpdatingDeprecatedReferences }
       def updating_deprecated_references
+        @updating_deprecated_references = T.let(
+          @updating_deprecated_references, T.nilable(UpdatingDeprecatedReferences)
+        )
         @updating_deprecated_references ||= UpdatingDeprecatedReferences.new(@configuration.root_path)
       end
 
@@ -60,7 +73,7 @@ module Packwerk
         result_status = all_offenses.empty?
         message = "✅ `deprecated_references.yml` has been updated."
 
-        Result.new(message, result_status)
+        Result.new(message: message, status: result_status)
       end
     end
   end
