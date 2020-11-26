@@ -44,7 +44,6 @@ module Packwerk
           updating_deprecated_references.dump_deprecated_references_files
         end
 
-        @offenses_formatter.show_offenses(all_offenses)
         @progress_formatter.finished(execution_time)
         calculate_result(all_offenses)
       end
@@ -71,7 +70,10 @@ module Packwerk
       sig { params(all_offenses: T::Array[T.nilable(::Packwerk::Offense)]).returns(Result) }
       def calculate_result(all_offenses)
         result_status = all_offenses.empty?
-        message = "✅ `deprecated_references.yml` has been updated."
+        message = <<~EOS
+          #{@offenses_formatter.show_offenses(all_offenses)}
+          ✅ `deprecated_references.yml` has been updated.
+        EOS
 
         Result.new(message: message, status: result_status)
       end

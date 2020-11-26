@@ -144,6 +144,7 @@ module Packwerk
         progress_formatter: @progress_formatter
       )
       result = update_deprecations.run
+      @out.puts
       @out.puts(result.message)
       result.status
     end
@@ -166,8 +167,9 @@ module Packwerk
         @out.puts("Manually interrupted. Violations caught so far are listed below:")
       end
 
-      offenses_formatter.show_offenses(all_offenses)
       @progress_formatter.finished(execution_time)
+      @out.puts
+      @out.puts(offenses_formatter.show_offenses(all_offenses))
 
       all_offenses.empty?
     end
@@ -229,7 +231,7 @@ module Packwerk
     end
 
     def offenses_formatter
-      @offenses_formatter ||= Formatters::OffensesFormatter.new(@out, style: @style)
+      @offenses_formatter ||= Formatters::OffensesFormatter.new(style: @style)
     end
   end
 end

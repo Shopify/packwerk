@@ -13,29 +13,36 @@ module Packwerk
       extend T::Sig
 
       sig do
-        params(
-          out: StringIO,
-          style: T.any(T.class_of(OutputStyles::Plain), T.class_of(OutputStyles::Coloured))
-        ).void
+        params(style: T.any(T.class_of(OutputStyles::Plain), T.class_of(OutputStyles::Coloured))).void
       end
-      def initialize(out, style: OutputStyles::Plain)
-        @out = out
+      def initialize(style: OutputStyles::Plain)
         @style = style
       end
 
-      sig { params(offenses: T::Array[T.nilable(Offense)]).void }
+      sig { params(offenses: T::Array[T.nilable(Offense)]).returns(String) }
       def show_offenses(offenses)
-        @out.puts # put a new line after the progress dots
-        if offenses.empty?
-          @out.puts("No offenses detected 🎉")
-        else
-          offenses.each do |offense|
-            @out.puts(offense.to_s(@style)) if offense
-          end
+        return "No offenses detected 🎉" if offenses.empty?
 
-          offenses_string = Inflector.default.pluralize("offense", offenses.length)
-          @out.puts("#{offenses.length} #{offenses_string} detected")
-        end
+        <<~EOS
+          #{offenses_list(offenses)}
+          #{offenses_summary(offenses)}
+        EOS
+      end
+
+      private
+
+      sig { params(offenses: T::Array[T.nilable(Offense)]).returns(String) }
+      def offenses_list(offenses)
+        offenses
+          .compact
+          .map { |offense| offense.to_s(@style) }
+          .join("\n")
+      end
+
+      sig { params(offenses: T::Array[T.nilable(Offense)]).returns(String) }
+      def offenses_summary(offenses)
+        offenses_string = Inflector.default.pluralize("offense", offenses.length)
+        "#{offenses.length} #{offenses_string} detected"
       end
     end
   end

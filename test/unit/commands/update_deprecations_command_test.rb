@@ -18,12 +18,15 @@ module Packwerk
         update_deprecations_command = Commands::UpdateDeprecationsCommand.new(
           configuration: Configuration.from_path,
           files: ["path/of/exile.rb"],
-          offenses_formatter: Formatters::OffensesFormatter.new(string_io, style: style),
+          offenses_formatter: Formatters::OffensesFormatter.new(style: style),
           progress_formatter: Formatters::ProgressFormatter.new(string_io, style: style),
         )
         result = update_deprecations_command.run
 
-        assert_equal result.message, "✅ `deprecated_references.yml` has been updated."
+        assert_equal result.message, <<~EOS
+          No offenses detected 🎉
+          ✅ `deprecated_references.yml` has been updated.
+        EOS
         assert result.status
       end
 
@@ -40,12 +43,19 @@ module Packwerk
         update_deprecations_command = Commands::UpdateDeprecationsCommand.new(
           configuration: Configuration.from_path,
           files: ["path/of/exile.rb"],
-          offenses_formatter: Formatters::OffensesFormatter.new(string_io, style: style),
+          offenses_formatter: Formatters::OffensesFormatter.new(style: style),
           progress_formatter: Formatters::ProgressFormatter.new(string_io, style: style),
         )
         result = update_deprecations_command.run
 
-        assert_equal result.message, "✅ `deprecated_references.yml` has been updated."
+        assert_equal result.message, <<~EOS
+          path/of/exile.rb
+          something
+
+          1 offense detected
+
+          ✅ `deprecated_references.yml` has been updated.
+        EOS
         refute result.status
       end
     end
