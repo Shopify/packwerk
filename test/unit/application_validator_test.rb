@@ -28,7 +28,7 @@ module Packwerk
       assert result.ok?, result.error_value
     end
 
-    test "returns an error for unresolvable privatized constants" do
+    test "check_package_manifests_for_privacy returns an error for unresolvable privatized constants" do
       application_validator = Packwerk::ApplicationValidator.new(
         config_file_path: @configuration.config_path,
         configuration: @configuration
@@ -40,7 +40,7 @@ module Packwerk
       refute result.ok?, result.error_value
     end
 
-    test "returns error for mismatched inflections.yml file" do
+    test "check_inflection_file returns error for mismatched inflections.yml file" do
       config_path = "test/fixtures/skeleton/packwerk.yml"
       configs = YAML.load_file(config_path)
       configs["inflections_file"] = "different_inflections.yml"
@@ -52,12 +52,14 @@ module Packwerk
         configuration: configuration
       )
 
-      result = application_validator.check_all
+      result = application_validator.check_inflection_file
 
       refute(result.ok?, result.error_value)
+      assert_match %r{Inflections specified in (.)+/different_inflections.yml don't line up},
+        result.error_value
     end
 
-    test "works for custom inflections file with inflections matching ActiveSupport" do
+    test "check_inflection_file works for custom inflections file with inflections matching ActiveSupport" do
       inflections = ActiveSupport::Inflector.inflections.deep_dup
       Packwerk::Inflections::Custom.new(
         Rails.root.join("custom_inflections.yml")
@@ -67,7 +69,6 @@ module Packwerk
 
       config_path = "test/fixtures/skeleton/packwerk.yml"
       configs = YAML.load_file(config_path)
-      configs["inflections_file"] = "custom_inflections.yml"
 
       configuration = Packwerk::Configuration.new(configs, config_path: config_path)
 
@@ -76,7 +77,7 @@ module Packwerk
         configuration: configuration
       )
 
-      result = application_validator.check_all
+      result = application_validator.check_inflection_file
 
       assert(result.ok?, result.error_value)
     end
