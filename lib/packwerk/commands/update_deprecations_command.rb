@@ -14,6 +14,7 @@ module Packwerk
     class UpdateDeprecationsCommand
       extend T::Sig
       include OffenseProgressMarker
+
       sig do
         params(
           files: T::Enumerable[String],
@@ -27,6 +28,8 @@ module Packwerk
         @configuration = configuration
         @progress_formatter = progress_formatter
         @offenses_formatter = offenses_formatter
+        @updating_deprecated_references = T.let(nil, T.nilable(UpdatingDeprecatedReferences))
+        @run_context = T.let(nil, T.nilable(RunContext))
       end
 
       sig { returns(Result) }
@@ -50,20 +53,16 @@ module Packwerk
 
       private
 
-      sig { returns RunContext }
+      sig { returns(RunContext) }
       def run_context
-        @run_context = T.let(@run_context, T.nilable(RunContext))
         @run_context ||= RunContext.from_configuration(
           @configuration,
           reference_lister: updating_deprecated_references
         )
       end
 
-      sig { returns UpdatingDeprecatedReferences }
+      sig { returns(UpdatingDeprecatedReferences) }
       def updating_deprecated_references
-        @updating_deprecated_references = T.let(
-          @updating_deprecated_references, T.nilable(UpdatingDeprecatedReferences)
-        )
         @updating_deprecated_references ||= UpdatingDeprecatedReferences.new(@configuration.root_path)
       end
 
