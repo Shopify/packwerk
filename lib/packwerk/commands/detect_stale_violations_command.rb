@@ -1,10 +1,7 @@
 # typed: true
 # frozen_string_literal: true
-require "packwerk/cli"
 require "sorbet-runtime"
 require "benchmark"
-require "packwerk/configuration"
-require "packwerk/formatters/progress_formatter"
 require "packwerk/run_context"
 require "packwerk/detect_stale_deprecated_references"
 require "packwerk/commands/offense_progress_marker"
@@ -27,9 +24,8 @@ module Packwerk
     def run
       @progress_formatter.started(@files)
 
-      all_offenses = T.let([], T.untyped)
       execution_time = Benchmark.realtime do
-        all_offenses = @files.flat_map do |path|
+        @files.flat_map do |path|
           run_context.process_file(file: path).tap do |offenses|
             mark_progress(offenses: offenses, progress_formatter: @progress_formatter)
           end
