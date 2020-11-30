@@ -31,7 +31,7 @@ module Packwerk
       end
 
       def erb_parser_class
-        @erb_parser_class || Erb
+        @erb_parser_class ||= Erb
       end
 
       def erb_parser_class=(klass)
