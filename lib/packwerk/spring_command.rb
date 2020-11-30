@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-# typed: ignore
+# typed: false
 
 require "spring/commands"
 
