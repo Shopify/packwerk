@@ -54,10 +54,18 @@ module Packwerk
         assert_successful_run("update-deprecations")
 
         deprecated_reference_content_after_update = read_deprecated_references
+        expected_output = <<~EOS
+          📦 Packwerk is inspecting 12 files
+          ............
+          📦 Finished in \\d+\\.\\d+ seconds
+
+          No offenses detected 🎉
+          ✅ `deprecated_references.yml` has been updated.
+        EOS
 
         assert_equal(deprecated_reference_content, deprecated_reference_content_after_update,
           "expected no updates to any deprecated references file")
-        assert_match(/`deprecated_references.yml` has been updated./, captured_output)
+        assert_match(/#{expected_output}/, captured_output)
       end
 
       test "'packwerk update-deprecations' with violations succeeds and updates relevant deprecated_references" do
@@ -81,11 +89,18 @@ module Packwerk
 
           deprecated_reference_content_after_update =
             read_deprecated_references.reject { |k, _v| k.match?(timeline_deprecated_reference_path) }
+          expected_output = <<~EOS
+            📦 Packwerk is inspecting 13 files
+            .............
+            📦 Finished in \\d+\\.\\d+ seconds
+
+            No offenses detected 🎉
+            ✅ `deprecated_references.yml` has been updated.
+          EOS
 
           assert_equal(deprecated_reference_content, deprecated_reference_content_after_update,
             "expected no updates to any deprecated references files besides timeline/deprecated_references.yml")
-
-          assert_match(/`deprecated_references.yml` has been updated./, captured_output)
+          assert_match(/#{expected_output}/, captured_output)
         ensure
           File.delete(timeline_deprecated_reference_path) if File.exist?(timeline_deprecated_reference_path)
         end
