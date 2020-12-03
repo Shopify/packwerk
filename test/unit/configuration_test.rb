@@ -63,5 +63,11 @@ module Packwerk
       assert_empty configuration.custom_associations
       assert_equal to_app_path("config/inflections.yml"), configuration.inflections_file
     end
+
+    test ".from_path falls back to empty config when existing config is an empty document" do
+      use_template(:blank)
+      Configuration.expects(:new).with({}, config_path: to_app_path("packwerk.yml"))
+      Configuration.from_path
+    end
   end
 end
