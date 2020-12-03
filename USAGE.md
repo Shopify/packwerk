@@ -285,3 +285,13 @@ Above is an example of a constant violation entry in `deprecated_references.yml`
 * `components/merchant/app/public/merchant/generate_order.rb` - path to the file containing the violated constant
 
 Violations exist within the package that makes a violating reference. This means privacy violations of your package can be found listed in `deprecated_references.yml` files in the packages with the reference to a private constant.
+
+## Visualizing dependencies
+You can visualize dependencies specified in package.yml and deprecated_references.yml files by using:
+
+    bin/packwerk visualize-dependencies 
+
+You can also visualize dependencies for specific package and specify output folder for visualization file by using following options:               
+    
+    -p package                       Visualize dependencies for specific package
+    -o out_dir                       Output folder

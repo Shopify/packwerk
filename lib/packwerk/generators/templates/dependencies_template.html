@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+    <title>Dependencies visualization</title>
+
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+    <style type="text/css">
+        #dependencies {
+            width: 1280px;
+            height: 720px;
+        }
+    </style>
+</head>
+<body>
+<label for="hideDeprecatedDependencies">Hide deprecated dependencies</label>
+<input id="hideDeprecatedDependencies" type="checkbox" onchange="hideDeprecatedDependencies(this)"/>
+
+<div id="dependencies"></div>
+
+<script type="text/javascript">
+    var data = {};
+    data.nodes = $nodesValues$;
+    data.edges = $edgesValues$;
+    var nodes = new vis.DataSet(data.nodes);
+    var edges = new vis.DataSet(data.edges);
+    var deprecatedDependenciesIds = data.edges.filter(edge => edge.color === 'red').map(edge => edge.id);
+    var container = document.getElementById('dependencies');
+    var networkData = {
+        nodes: nodes,
+        edges: edges
+    };
+    var options = {}
+    var network = new vis.Network(container, networkData, options);
+    network.on("stabilizationIterationsDone", function () {
+        network.setOptions({physics: false});
+    });
+
+    function hideDeprecatedDependencies(checkbox) {
+        deprecatedDependenciesIds.forEach(edgeId => edges.update([{
+            id: edgeId,
+            hidden: checkbox.checked
+        }]))
+    }
+</script>
+</body>
+</html>
