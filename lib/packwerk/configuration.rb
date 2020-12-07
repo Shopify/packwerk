@@ -22,7 +22,10 @@ module Packwerk
       private
 
       def from_packwerk_config(path)
-        new(YAML.load_file(path), config_path: path)
+        new(
+          YAML.load_file(path) || {},
+          config_path: path
+        )
       end
     end
 
