@@ -60,7 +60,8 @@ module Packwerk
     end
 
     def package_from_path(file_path)
-      @packages.values.find { |package| package.package_path?(file_path) }
+      path_string = file_path.to_s
+      @packages.values.find { |package| package.package_path?(path_string) }
     end
   end
 end

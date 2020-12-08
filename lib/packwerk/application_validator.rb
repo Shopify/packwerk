@@ -65,31 +65,42 @@ module Packwerk
     def check_package_manifests_for_privacy
       privacy_settings = package_manifests_settings_for("enforce_privacy")
 
-      autoload_paths = @configuration.load_paths
-
       resolver = ConstantResolver.new(
         root_path: @configuration.root_path,
-        load_paths: autoload_paths
+        load_paths: @configuration.load_paths
       )
+
+      package_set = Packwerk::PackageSet.load_all_from(@configuration.root_path, package_pathspec: package_glob)
 
       errors = []
 
       privacy_settings.each do |filepath, setting|
         next unless setting.is_a?(Array)
 
+        this_package = package_set.package_from_path(relative_path(filepath))
+
         setting.each do |constant|
           # make sure the constant can be loaded
           constant.constantize # rubocop:disable Sorbet/ConstantsFromStrings
 
+          # make sure the constant can be resolved
           constant_context = resolver.resolve(constant)
-          next if constant_context
 
-          explicit_filepath = (constant.start_with?("::") ? constant[2..-1] : constant).underscore + ".rb"
+          if constant_context
+            constant_package = package_set.package_from_path(constant_context.location)
 
-          errors << "'#{constant}', listed in #{filepath.inspect}, could not be resolved.\n"\
-            "This is probably because it is an autovivified namespace - a namespace module that doesn't have a\n"\
-            "file explicitly defining it. Packwerk currently doesn't support declaring autovivified namespaces as\n"\
-            "private. Add a '#{explicit_filepath}' file to explicitly define the constant."
+            unless constant_package == this_package
+              errors << "'#{constant}' is declared as private in the '#{this_package}' package but appears to be "\
+              "defined\nin the '#{constant_package}' package. Packwerk resolved it to #{constant_context.location}."
+            end
+          else
+            explicit_filepath = (constant.start_with?("::") ? constant[2..-1] : constant).underscore + ".rb"
+
+            errors << "'#{constant}', listed in #{filepath.inspect}, could not be resolved.\n"\
+              "This is probably because it is an autovivified namespace - a namespace module that doesn't have a\n"\
+              "file explicitly defining it. Packwerk currently doesn't support declaring autovivified namespaces as\n"\
+              "private. Add a '#{explicit_filepath}' file to explicitly define the constant."
+          end
         end
       end
 
@@ -201,7 +212,7 @@ module Packwerk
     end
 
     def check_acyclic_graph
-      packages = Packwerk::PackageSet.load_all_from(@configuration.root_path)
+      packages = Packwerk::PackageSet.load_all_from(@configuration.root_path, package_pathspec: package_glob)
 
       edges = packages.flat_map do |package|
         package.dependencies.map { |dependency| [package, packages.fetch(dependency)] }
@@ -328,7 +339,11 @@ module Packwerk
     end
 
     def relative_paths(paths)
-      paths.map { |path| Pathname.new(path).relative_path_from(@configuration.root_path) }
+      paths.map { |path| relative_path(path) }
+    end
+
+    def relative_path(path)
+      Pathname.new(path).relative_path_from(@configuration.root_path)
     end
 
     def invalid_package_path?(path)

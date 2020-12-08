@@ -120,6 +120,25 @@ module Packwerk
       )
     end
 
+    test "check_package_manifests_for_privacy returns an error for privatized constants in other packages" do
+      use_template(:skeleton)
+      context = ConstantResolver::ConstantContext.new("::PrivateThing", "private_thing.rb")
+
+      ConstantResolver.expects(:new).returns(stub("resolver", resolve: context))
+
+      result = validator.check_package_manifests_for_privacy
+
+      refute result.ok?, result.error_value
+      assert_match(
+        %r{'::PrivateThing' is declared as private in the 'components/timeline' package},
+        result.error_value
+      )
+      assert_match(
+        /but appears to be defined\sin the '.' package/,
+        result.error_value
+      )
+    end
+
     test "check_inflection_file returns error for mismatched inflections.yml file" do
       use_template(:skeleton)
       merge_into_app_yaml_file("different_inflections.yml", { "acronym" => %w(TLA WTF LOL) })
