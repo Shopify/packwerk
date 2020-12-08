@@ -80,22 +80,16 @@ module Packwerk
         setting.each do |constant|
           # make sure the constant can be loaded
           constant.constantize # rubocop:disable Sorbet/ConstantsFromStrings
-          context = resolver.resolve(constant)
 
-          unless context
-            errors << "#{constant}, listed in #{filepath.inspect}, could not be resolved"
-            next
-          end
+          constant_context = resolver.resolve(constant)
+          next if constant_context
 
-          expected_filename = constant.underscore + ".rb"
+          explicit_filepath = (constant.start_with?("::") ? constant[2..-1] : constant).underscore + ".rb"
 
-          # We don't support all custom inflections yet, so we may accidentally resolve constants to the
-          # file that defines their parent namespace. This restriction makes sure that we don't.
-          next if context.location.end_with?(expected_filename)
-
-          errors << "Explicitly private constants need to have their own files.\n"\
-            "#{constant}, listed in #{filepath.inspect}, was resolved to #{context.location.inspect}.\n"\
-            "It should be in something like #{expected_filename.inspect}"
+          errors << "'#{constant}', listed in #{filepath.inspect}, could not be resolved.\n"\
+            "This is probably because it is an autovivified namespace - a namespace module that doesn't have a\n"\
+            "file explicitly defining it. Packwerk currently doesn't support declaring autovivified namespaces as\n"\
+            "private. Add a '#{explicit_filepath}' file to explicitly define the constant."
         end
       end
 
