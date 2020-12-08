@@ -49,6 +49,11 @@ module ApplicationFixtureHelper
     FileUtils.remove_entry(to_app_path(relative_path))
   end
 
+  def open_app_file(*path, mode: "w+")
+    expanded_path = to_app_path(File.join(*path))
+    File.open(expanded_path, mode) { |file| yield file }
+  end
+
   private
 
   def using_template?

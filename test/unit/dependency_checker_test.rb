@@ -5,6 +5,8 @@ require "test_helper"
 
 module Packwerk
   class DependencyCheckerTest < Minitest::Test
+    include ApplicationFixtureHelper
+
     class CheckingDeprecatedReferencesStub
       include ReferenceLister
 
@@ -14,15 +16,14 @@ module Packwerk
     end
 
     setup do
-      @temp_dir = Dir.mktmpdir
-      FileUtils.cp_r("test/fixtures/skeleton", @temp_dir)
-      @root_path = File.join(@temp_dir, "skeleton/")
+      setup_application_fixture
+      use_template(:skeleton)
       @destination_package = Package.new(name: "destination_package", config: {})
-      @reference_lister = CheckingDeprecatedReferences.new(@root_path)
+      @reference_lister = CheckingDeprecatedReferences.new(app_dir)
     end
 
     teardown do
-      FileUtils.remove_entry(@temp_dir)
+      teardown_application_fixture
     end
 
     test "recognizes simple cross package reference" do

@@ -5,16 +5,17 @@ require "test_helper"
 
 module Packwerk
   class PrivacyCheckerTest < Minitest::Test
+    include ApplicationFixtureHelper
+
     setup do
-      @temp_dir = Dir.mktmpdir
-      FileUtils.cp_r("test/fixtures/skeleton", @temp_dir)
-      @root_path = File.join(@temp_dir, "skeleton/")
-      @reference_lister = CheckingDeprecatedReferences.new(@root_path)
+      setup_application_fixture
+      use_template(:skeleton)
+      @reference_lister = CheckingDeprecatedReferences.new(app_dir)
       @source_package = Package.new(name: "source_package", config: {})
     end
 
     teardown do
-      FileUtils.remove_entry(@temp_dir)
+      teardown_application_fixture
     end
 
     test "ignores if destination package is not enforcing" do
