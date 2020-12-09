@@ -111,11 +111,11 @@ module Packwerk
 
       refute result.ok?, result.error_value
       assert_match(
-        /'::PrivateThing', listed in \"#{to_app_path('components\/timeline\/package.yml')}\", could not be resolved/,
+        /'::PrivateThing', listed in #{to_app_path('components\/timeline\/package.yml')}, could not be resolved/,
         result.error_value
       )
       assert_match(
-        /Add a 'private_thing.rb'/,
+        /Add a private_thing.rb file/,
         result.error_value
       )
     end

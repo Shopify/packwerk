@@ -35,16 +35,7 @@ module Packwerk
         check_root_package_exists,
       ]
 
-      results.reject!(&:ok?)
-
-      if results.empty?
-        Result.new(true)
-      else
-        Result.new(
-          false,
-          results.map(&:error_value).join("\n===\n")
-        )
-      end
+      merge_results(results)
     end
 
     def check_autoload_path_cache
@@ -70,51 +61,32 @@ module Packwerk
         load_paths: @configuration.load_paths
       )
 
-      package_set = Packwerk::PackageSet.load_all_from(@configuration.root_path, package_pathspec: package_glob)
+      results = []
 
-      errors = []
-
-      privacy_settings.each do |filepath, setting|
+      privacy_settings.each do |config_file_path, setting|
         next unless setting.is_a?(Array)
+        constants = setting
 
-        this_package = package_set.package_from_path(relative_path(filepath))
+        assert_constants_can_be_loaded(constants)
 
-        setting.each do |constant|
-          # make sure the constant can be loaded
-          constant.constantize # rubocop:disable Sorbet/ConstantsFromStrings
+        constant_locations = constants.map { |c| [c, resolver.resolve(c)&.location] }
 
-          # make sure the constant can be resolved
-          constant_context = resolver.resolve(constant)
-
-          if constant_context
-            constant_package = package_set.package_from_path(constant_context.location)
-
-            unless constant_package == this_package
-              errors << "'#{constant}' is declared as private in the '#{this_package}' package but appears to be "\
-              "defined\nin the '#{constant_package}' package. Packwerk resolved it to #{constant_context.location}."
-            end
+        constant_locations.each do |name, location|
+          results << if location
+            check_private_constant_location(name, location, config_file_path)
           else
-            explicit_filepath = (constant.start_with?("::") ? constant[2..-1] : constant).underscore + ".rb"
-
-            errors << "'#{constant}', listed in #{filepath.inspect}, could not be resolved.\n"\
-              "This is probably because it is an autovivified namespace - a namespace module that doesn't have a\n"\
-              "file explicitly defining it. Packwerk currently doesn't support declaring autovivified namespaces as\n"\
-              "private. Add a '#{explicit_filepath}' file to explicitly define the constant."
+            private_constant_unresolvable(name, config_file_path)
           end
         end
       end
 
-      if errors.empty?
-        Result.new(true)
-      else
-        Result.new(false, errors.join("\n---\n"))
-      end
+      merge_results(results, separator: "\n---\n")
     end
 
     def check_package_manifest_syntax
       errors = []
 
-      package_manifests(package_glob).each do |f|
+      package_manifests.each do |f|
         hash = YAML.load_file(f)
         next unless hash
 
@@ -198,24 +170,16 @@ module Packwerk
         end
       end
 
-      errors = results.reject(&:ok?)
-
-      if errors.empty?
-        Result.new(true)
-      else
-        Result.new(
-          false,
-          "Inflections specified in #{inflections_file} don't line up with application!\n" +
-            errors.map(&:error_value).join("\n")
-        )
-      end
+      merge_results(
+        results,
+        separator: "\n",
+        errors_headline: "Inflections specified in #{inflections_file} don't line up with application!\n"
+      )
     end
 
     def check_acyclic_graph
-      packages = Packwerk::PackageSet.load_all_from(@configuration.root_path, package_pathspec: package_glob)
-
-      edges = packages.flat_map do |package|
-        package.dependencies.map { |dependency| [package, packages.fetch(dependency)] }
+      edges = package_set.flat_map do |package|
+        package.dependencies.map { |dependency| [package, package_set.fetch(dependency)] }
       end
       dependency_graph = Packwerk::Graph.new(*edges)
 
@@ -321,8 +285,7 @@ module Packwerk
     private
 
     def package_manifests_settings_for(setting)
-      package_manifests(package_glob)
-        .map { |f| [f, (YAML.load_file(File.join(f)) || {})[setting]] }
+      package_manifests.map { |f| [f, (YAML.load_file(File.join(f)) || {})[setting]] }
     end
 
     def format_yaml_strings(list)
@@ -333,7 +296,7 @@ module Packwerk
       @configuration.package_paths || "**"
     end
 
-    def package_manifests(glob_pattern)
+    def package_manifests(glob_pattern = package_glob)
       PackageSet.package_paths(@configuration.root_path, glob_pattern)
         .map { |f| File.realpath(f) }
     end
@@ -352,6 +315,55 @@ module Packwerk
 
       package_path = File.join(@configuration.root_path, path, Packwerk::PackageSet::PACKAGE_CONFIG_FILENAME)
       !File.file?(package_path)
+    end
+
+    def assert_constants_can_be_loaded(constants)
+      constants.each(&:constantize)
+      nil
+    end
+
+    def private_constant_unresolvable(name, config_file_path)
+      explicit_filepath = (name.start_with?("::") ? name[2..-1] : name).underscore + ".rb"
+
+      Result.new(
+        false,
+        "'#{name}', listed in #{config_file_path}, could not be resolved.\n"\
+        "This is probably because it is an autovivified namespace - a namespace module that doesn't have a\n"\
+        "file explicitly defining it. Packwerk currently doesn't support declaring autovivified namespaces as\n"\
+        "private. Add a #{explicit_filepath} file to explicitly define the constant."
+      )
+    end
+
+    def check_private_constant_location(name, location, config_file_path)
+      declared_package = package_set.package_from_path(relative_path(config_file_path))
+      constant_package = package_set.package_from_path(location)
+
+      if constant_package == declared_package
+        Result.new(true)
+      else
+        Result.new(
+          false,
+          "'#{name}' is declared as private in the '#{declared_package}' package but appears to be "\
+          "defined\nin the '#{constant_package}' package. Packwerk resolved it to #{location}."
+        )
+      end
+    end
+
+    def package_set
+      @package_set ||= Packwerk::PackageSet.load_all_from(@configuration.root_path, package_pathspec: package_glob)
+    end
+
+    def merge_results(results, separator: "\n===\n", errors_headline: "")
+      results.reject!(&:ok?)
+
+      if results.empty?
+        Result.new(true)
+      else
+        Result.new(
+          false,
+          errors_headline + results.map(&:error_value).join(separator)
+        )
+      end
     end
   end
 end
