@@ -53,5 +53,21 @@ module Packwerk
 
       assert_equal 1, ApplicationLoadPaths.extract_relevant_paths.count
     end
+
+    test ".extract_application_autoload_paths returns unique autoload paths" do
+      path = Pathname.new("/application/app/models")
+      Rails.application.config.expects(:autoload_paths).once.returns([path])
+      Rails.application.config.expects(:eager_load_paths).once.returns([path])
+      Rails.application.config.expects(:autoload_once_paths).once.returns([path])
+
+      assert_equal 1, ApplicationLoadPaths.extract_application_autoload_paths.count
+    end
+
+    test ".extract_application_autoload_paths returns autoload paths as strings" do
+      path = Pathname.new("/application/app/models")
+      Rails.application.config.expects(:autoload_paths).once.returns([path])
+
+      assert_instance_of String, ApplicationLoadPaths.extract_application_autoload_paths.first
+    end
   end
 end
