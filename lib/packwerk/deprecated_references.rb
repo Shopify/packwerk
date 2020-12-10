@@ -35,7 +35,7 @@ module Packwerk
       violated_constants_found.fetch("violations", []).include?(violation_type.serialize)
     end
 
-    sig { params(reference: Packwerk::Reference, violation_type: ViolationType).void }
+    sig { params(reference: Packwerk::Reference, violation_type: String).void }
     def add_entries(reference, violation_type)
       package_violations = @new_entries.fetch(reference.constant.package.name, {})
       entries_for_file = package_violations[reference.constant.name] ||= {}
