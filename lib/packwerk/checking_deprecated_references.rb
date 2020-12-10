@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "sorbet-runtime"
@@ -10,9 +10,10 @@ module Packwerk
     extend T::Sig
     include ReferenceLister
 
+    sig { params(root_path: String).void }
     def initialize(root_path)
       @root_path = root_path
-      @deprecated_references = {}
+      @deprecated_references = T.let({}, T::Hash[Packwerk::Package, Packwerk::DeprecatedReferences])
     end
 
     sig do
@@ -26,6 +27,7 @@ module Packwerk
 
     private
 
+    sig { params(source_package: Packwerk::Package).returns(Packwerk::DeprecatedReferences) }
     def deprecated_references_for(source_package)
       @deprecated_references[source_package] ||= Packwerk::DeprecatedReferences.new(
         source_package,
@@ -33,6 +35,7 @@ module Packwerk
       )
     end
 
+    sig { params(package: Packwerk::Package).returns(String) }
     def deprecated_references_file_for(package)
       File.join(@root_path, package.name, "deprecated_references.yml")
     end
