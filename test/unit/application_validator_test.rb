@@ -111,7 +111,30 @@ module Packwerk
 
       refute result.ok?, result.error_value
       assert_match(
-        /::PrivateThing, listed in \"#{to_app_path('components\/timeline\/package.yml')}\", could not be resolved/,
+        /'::PrivateThing', listed in #{to_app_path('components\/timeline\/package.yml')}, could not be resolved/,
+        result.error_value
+      )
+      assert_match(
+        /Add a private_thing.rb file/,
+        result.error_value
+      )
+    end
+
+    test "check_package_manifests_for_privacy returns an error for privatized constants in other packages" do
+      use_template(:skeleton)
+      context = ConstantResolver::ConstantContext.new("::PrivateThing", "private_thing.rb")
+
+      ConstantResolver.expects(:new).returns(stub("resolver", resolve: context))
+
+      result = validator.check_package_manifests_for_privacy
+
+      refute result.ok?, result.error_value
+      assert_match(
+        %r{'::PrivateThing' is declared as private in the 'components/timeline' package},
+        result.error_value
+      )
+      assert_match(
+        /but appears to be defined\sin the '.' package/,
         result.error_value
       )
     end
