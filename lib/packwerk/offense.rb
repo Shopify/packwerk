@@ -23,10 +23,7 @@ module Packwerk
       @message = message
     end
 
-    sig do
-      params(style: T.any(T.class_of(OutputStyles::Plain), T.class_of(OutputStyles::Coloured)))
-        .returns(String)
-    end
+    sig { params(style: OutputStyles::Any).returns(String) }
     def to_s(style = OutputStyles::Plain)
       if location
         <<~EOS

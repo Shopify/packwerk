@@ -12,9 +12,7 @@ module Packwerk
     class OffensesFormatter
       extend T::Sig
 
-      sig do
-        params(style: T.any(T.class_of(OutputStyles::Plain), T.class_of(OutputStyles::Coloured))).void
-      end
+      sig { params(style: OutputStyles::Any).void }
       def initialize(style: OutputStyles::Plain)
         @style = style
       end
