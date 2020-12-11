@@ -23,6 +23,15 @@ module Packwerk
     extend T::Sig
     include OffenseProgressMarker
 
+    sig do
+      params(
+        run_context: T.nilable(Packwerk::RunContext),
+        configuration: T.nilable(Configuration),
+        out: T.any(StringIO, IO),
+        err_out: T.any(StringIO, IO),
+        style: OutputStyles::Any
+      ).void
+    end
     def initialize(run_context: nil, configuration: nil, out: $stdout, err_out: $stderr, style: OutputStyles::Plain)
       @out = out
       @err_out = err_out

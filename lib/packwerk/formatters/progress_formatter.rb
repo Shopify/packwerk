@@ -9,6 +9,9 @@ require "packwerk/output_styles"
 module Packwerk
   module Formatters
     class ProgressFormatter
+      extend T::Sig
+
+      sig { params(out: T.any(StringIO, IO), style: OutputStyles::Any).void }
       def initialize(out, style: OutputStyles::Plain)
         @out = out
         @style = style
