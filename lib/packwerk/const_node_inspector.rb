@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "packwerk/constant_name_inspector"
@@ -20,7 +20,7 @@ module Packwerk
       return nil unless root_constant?(parent)
 
       if parent && constant_in_module_or_class_definition?(node, parent: parent)
-        fully_qualify_constant(node, ancestors: ancestors)
+        fully_qualify_constant(ancestors)
       else
         begin
           Node.constant_name(node)
@@ -45,20 +45,11 @@ module Packwerk
       parent_name && parent_name == Node.constant_name(node)
     end
 
-    sig { params(node: AST::Node, ancestors: T::Array[AST::Node]).returns(String) }
-    def fully_qualify_constant(node, ancestors:)
+    sig { params(ancestors: T::Array[AST::Node]).returns(String) }
+    def fully_qualify_constant(ancestors)
       # We're defining a class with this name, in which case the constant is implicitly fully qualified by its
       # enclosing namespace
-      name = Node.parent_module_name(ancestors: ancestors)
-      name ||= generate_qualified_constant(node, ancestors: ancestors)
-      "::" + name
-    end
-
-    sig { params(node: AST::Node, ancestors: T::Array[AST::Node]).returns(String) }
-    def generate_qualified_constant(node, ancestors:)
-      namespace_path = Node.enclosing_namespace_path(node, ancestors: ancestors)
-      constant_name = Node.constant_name(node)
-      namespace_path.push(constant_name).join("::")
+      "::" + Node.parent_module_name(ancestors: ancestors)
     end
   end
 end
