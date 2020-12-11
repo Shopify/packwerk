@@ -42,16 +42,25 @@ module Packwerk
       assert_equal valid_paths, filtered_paths.map(&:to_s)
     end
 
+    test ".extract_relevant_paths loads the application if not already loaded" do
+      ApplicationLoadPaths.expects(:application_loaded?).once.returns(false)
+      ApplicationLoadPaths
+        .expects(:require)
+        .once
+        .with("/my-root/config/environment")
+      ApplicationLoadPaths.extract_relevant_paths("/my-root")
+    end
+
     test ".extract_relevant_paths calls out to filter the paths" do
       ApplicationLoadPaths.expects(:filter_relevant_paths).once.returns([Pathname.new("/fake_path")])
-      ApplicationLoadPaths.extract_relevant_paths
+      ApplicationLoadPaths.extract_relevant_paths(".")
     end
 
     test ".extract_relevant_paths returns unique load paths" do
       path = Pathname.new("/application/app/models")
       ApplicationLoadPaths.expects(:filter_relevant_paths).once.returns([path, path])
 
-      assert_equal 1, ApplicationLoadPaths.extract_relevant_paths.count
+      assert_equal 1, ApplicationLoadPaths.extract_relevant_paths(".").count
     end
   end
 end

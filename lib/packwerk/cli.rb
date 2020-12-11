@@ -104,7 +104,7 @@ module Packwerk
 
     def generate_configs
       configuration_file = Packwerk::Generators::ConfigurationFile.generate(
-        load_paths: Packwerk::ApplicationLoadPaths.extract_relevant_paths,
+        load_paths: Packwerk::ApplicationLoadPaths.extract_relevant_paths(@configuration.root_path),
         root: @configuration.root_path,
         out: @out
       )
@@ -194,10 +194,6 @@ module Packwerk
     end
 
     def validate(_paths)
-      warn("`packwerk validate` should be run within the application. "\
-        "Generate the bin script using `packwerk init` and"\
-        " use `bin/packwerk validate` instead.") unless defined?(::Rails)
-
       @progress_formatter.started_validation do
         checker = Packwerk::ApplicationValidator.new(
           config_file_path: @configuration.config_path,

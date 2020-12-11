@@ -8,18 +8,25 @@ module Packwerk
     class << self
       extend T::Sig
 
-      sig { returns(T::Array[String]) }
-      def extract_relevant_paths
-        assert_application_booted
+      sig { params(root_path: String).returns(T::Array[String]) }
+      def extract_relevant_paths(root_path)
+        load_application(root_path) unless application_loaded?
         all_paths = extract_application_autoload_paths
         relevant_paths = filter_relevant_paths(all_paths)
         assert_load_paths_present(relevant_paths)
         relative_path_strings(relevant_paths)
       end
 
-      sig { void }
-      def assert_application_booted
-        raise "The application needs to be booted to extract load paths" unless defined?(::Rails)
+      sig { params(root_path: String).void }
+      def load_application(root_path)
+        require File.expand_path(File.join(root_path, "config/environment"))
+      rescue LoadError
+        raise LoadError, "Packwerk must be running in application root directory"
+      end
+
+      sig { returns(T::Boolean) }
+      def application_loaded?
+        !defined?(::Rails).nil?
       end
 
       sig { returns(T::Array[String]) }
