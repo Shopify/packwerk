@@ -3,7 +3,7 @@
 Packwerk is a Ruby gem used to enforce boundaries and modularize Rails applications.
 
 Packwerk can be used to:
-* Combine group of files into packages
+* Combine groups of files into packages
 * Define package-level constant visibility (i.e. have publicly accessible constants)
 * Enforce privacy (inbound) and dependency (outbound) boundaries between packages
 * Help existing codebases to become more modular without obstructing development
