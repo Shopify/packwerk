@@ -11,7 +11,7 @@ module Packwerk
         run_context.stubs(:process_file).returns([])
 
         string_io = StringIO.new
-        style = OutputStyles::Plain
+        style = OutputStyles::Plain.new
 
         RunContext.stubs(from_configuration: run_context)
 
@@ -36,7 +36,7 @@ module Packwerk
         run_context.stubs(:process_file).returns([offense])
 
         string_io = StringIO.new
-        style = OutputStyles::Plain
+        style = OutputStyles::Plain.new
 
         RunContext.stubs(from_configuration: run_context)
 

@@ -10,7 +10,8 @@ require "packwerk/files_for_processing"
 require "packwerk/formatters/offenses_formatter"
 require "packwerk/formatters/progress_formatter"
 require "packwerk/inflector"
-require "packwerk/output_styles"
+require "packwerk/output_style"
+require "packwerk/output_styles/plain"
 require "packwerk/run_context"
 require "packwerk/updating_deprecated_references"
 require "packwerk/checking_deprecated_references"
@@ -29,10 +30,10 @@ module Packwerk
         configuration: T.nilable(Configuration),
         out: T.any(StringIO, IO),
         err_out: T.any(StringIO, IO),
-        style: OutputStyles::Any
+        style: Packwerk::OutputStyle
       ).void
     end
-    def initialize(run_context: nil, configuration: nil, out: $stdout, err_out: $stderr, style: OutputStyles::Plain)
+    def initialize(run_context: nil, configuration: nil, out: $stdout, err_out: $stderr, style: OutputStyles::Plain.new)
       @out = out
       @err_out = err_out
       @style = style

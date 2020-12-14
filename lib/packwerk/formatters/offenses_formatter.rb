@@ -5,15 +5,16 @@ require "benchmark"
 require "sorbet-runtime"
 
 require "packwerk/inflector"
-require "packwerk/output_styles"
+require "packwerk/output_style"
+require "packwerk/output_styles/plain"
 
 module Packwerk
   module Formatters
     class OffensesFormatter
       extend T::Sig
 
-      sig { params(style: OutputStyles::Any).void }
-      def initialize(style: OutputStyles::Plain)
+      sig { params(style: OutputStyle).void }
+      def initialize(style: OutputStyles::Plain.new)
         @style = style
       end
 

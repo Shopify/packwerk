@@ -3,4 +3,4 @@
 
 require "packwerk"
 
-Packwerk::Cli.new(style: Packwerk::OutputStyles::Coloured).run(ARGV.dup)
+Packwerk::Cli.new(style: Packwerk::OutputStyles::Coloured.new).run(ARGV.dup)
