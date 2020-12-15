@@ -49,7 +49,7 @@ module Packwerk
       sig { returns(Result) }
       def calculate_result
         result_status = !reference_lister.stale_violations?
-        message = "There were stale violations found, please run `packwerk update`"
+        message = "There were stale violations found, please run `packwerk update-deprecations`"
         if result_status
           message = "No stale violations detected"
         end
