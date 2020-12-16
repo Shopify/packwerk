@@ -4,12 +4,16 @@
 require "benchmark"
 
 require "packwerk/inflector"
-require "packwerk/output_styles"
+require "packwerk/output_style"
+require "packwerk/output_styles/plain"
 
 module Packwerk
   module Formatters
     class ProgressFormatter
-      def initialize(out, style: OutputStyles::Plain)
+      extend T::Sig
+
+      sig { params(out: T.any(StringIO, IO), style: OutputStyle).void }
+      def initialize(out, style: OutputStyles::Plain.new)
         @out = out
         @style = style
       end

@@ -4,7 +4,8 @@
 require "parser/source/map"
 require "sorbet-runtime"
 
-require "packwerk/output_styles"
+require "packwerk/output_style"
+require "packwerk/output_styles/plain"
 
 module Packwerk
   class Offense
@@ -23,11 +24,8 @@ module Packwerk
       @message = message
     end
 
-    sig do
-      params(style: T.any(T.class_of(OutputStyles::Plain), T.class_of(OutputStyles::Coloured)))
-        .returns(String)
-    end
-    def to_s(style = OutputStyles::Plain)
+    sig { params(style: OutputStyle).returns(String) }
+    def to_s(style = OutputStyles::Plain.new)
       if location
         <<~EOS
           #{style.filename}#{file}#{style.reset}:#{location.line}:#{location.column}
