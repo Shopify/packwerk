@@ -43,12 +43,25 @@ module Packwerk
     end
 
     test ".extract_relevant_paths loads the application if not already loaded" do
-      ApplicationLoadPaths.expects(:application_loaded?).once.returns(false)
+      ApplicationLoadPaths.expects(:application_loaded?).twice.returns(false, true)
       ApplicationLoadPaths
         .expects(:require)
         .once
         .with("/my-root/config/environment")
       ApplicationLoadPaths.extract_relevant_paths("/my-root")
+    end
+
+    test ".extract_relevant_paths raises if after loading application Rails isn't loaded" do
+      ApplicationLoadPaths.expects(:application_loaded?).twice.returns(false, false)
+      ApplicationLoadPaths
+        .expects(:require)
+        .once
+        .with("/my-root/config/environment")
+
+      exception = assert_raises(RuntimeError) do
+        ApplicationLoadPaths.extract_relevant_paths("/my-root")
+      end
+      assert_equal("Packwerk must be running in a Rails application", exception.message)
     end
 
     test ".extract_relevant_paths calls out to filter the paths" do

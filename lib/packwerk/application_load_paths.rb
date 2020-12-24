@@ -20,6 +20,7 @@ module Packwerk
       sig { params(root_path: String).void }
       def load_application(root_path)
         require File.expand_path(File.join(root_path, "config/environment"))
+        raise "Packwerk must be running in a Rails application" unless application_loaded?
       rescue LoadError
         raise LoadError, "Packwerk must be running in application root directory"
       end
