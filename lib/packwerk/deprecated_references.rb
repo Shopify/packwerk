@@ -3,7 +3,6 @@
 
 require "sorbet-runtime"
 require "yaml"
-require "sorbet-runtime"
 
 require "packwerk/reference"
 require "packwerk/reference_lister"
@@ -14,6 +13,7 @@ module Packwerk
     extend T::Sig
     include ReferenceLister
 
+    sig { params(package: Packwerk::Package, filepath: String).void }
     def initialize(package, filepath)
       @package = package
       @filepath = filepath
@@ -35,6 +35,7 @@ module Packwerk
       violated_constants_found.fetch("violations", []).include?(violation_type.serialize)
     end
 
+    sig { params(reference: Packwerk::Reference, violation_type: String).void }
     def add_entries(reference, violation_type)
       package_violations = @new_entries.fetch(reference.constant.package.name, {})
       entries_for_file = package_violations[reference.constant.name] ||= {}
@@ -66,6 +67,7 @@ module Packwerk
       end
     end
 
+    sig { void }
     def dump
       if @new_entries.empty?
         File.delete(@filepath) if File.exist?(@filepath)
@@ -88,6 +90,7 @@ module Packwerk
 
     private
 
+    sig { returns(Hash) }
     def prepare_entries_for_dump
       @new_entries.each do |package_name, package_violations|
         package_violations.each do |_, entries_for_file|
@@ -100,6 +103,7 @@ module Packwerk
       @new_entries = @new_entries.sort.to_h
     end
 
+    sig { returns(Hash) }
     def deprecated_references
       @deprecated_references ||= if File.exist?(@filepath)
         YAML.load_file(@filepath) || {}

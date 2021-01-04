@@ -11,18 +11,21 @@ module Packwerk
     end
 
     test "#listed? returns true if constant is listed in file" do
-      deprecated_references = stub(listed?: true)
-      Packwerk::DeprecatedReferences
-        .stubs(:new)
-        .with(@package, "./buyer/deprecated_references.yml")
-        .returns(deprecated_references)
-
       reference =
         Reference.new(
           @package,
           "some/path.rb",
           ConstantDiscovery::ConstantContext.new(nil, nil, nil, false)
         )
+      deprecated_references = Packwerk::DeprecatedReferences.new(@package, ".")
+      deprecated_references
+        .stubs(:listed?)
+        .with(reference, violation_type: Packwerk::ViolationType::Dependency)
+        .returns(true)
+      Packwerk::DeprecatedReferences
+        .stubs(:new)
+        .with(@package, "./buyer/deprecated_references.yml")
+        .returns(deprecated_references)
 
       assert @checking_deprecated_references.listed?(reference, violation_type: ViolationType::Dependency)
     end
