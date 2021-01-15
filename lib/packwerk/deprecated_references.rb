@@ -95,6 +95,7 @@ module Packwerk
       @new_entries.each do |package_name, package_violations|
         package_violations.each do |_, entries_for_file|
           entries_for_file["violations"].sort!.uniq!
+          entries_for_file["violation_count"] = entries_for_file["files"].count
           entries_for_file["files"].sort!.uniq!
         end
         @new_entries[package_name] = package_violations.sort.to_h

@@ -275,6 +275,7 @@ components/merchant:
     - dependency
     files:
     - components/merchant/app/public/merchant/generate_order.rb
+    violation_count: 3
 ```
 
 Above is an example of a constant violation entry in `deprecated_references.yml`.
@@ -283,5 +284,6 @@ Above is an example of a constant violation entry in `deprecated_references.yml`
 * `::Checkouts::Core::CheckoutId` - violated constant in question
 * `dependency` - type of violation, either dependency or privacy
 * `components/merchant/app/public/merchant/generate_order.rb` - path to the file containing the violated constant
+* `violation_count` - the number of distinct reference violations for this constant, accounting for the fact a single file can have multiple violations for the same constant
 
 Violations exist within the package that makes a violating reference. This means privacy violations of your package can be found listed in `deprecated_references.yml` files in the packages with the reference to a private constant.
