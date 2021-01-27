@@ -1,5 +1,10 @@
 # Packwerk [![Build Status](https://github.com/Shopify/packwerk/workflows/CI/badge.svg)](https://github.com/Shopify/packwerk/actions?query=workflow%3ACI)
 
+> "I know who you are and because of that I know what you do."  
+> This knowledge is a dependency that raises the cost of change.  
+
+-- _Sandi Metz, Practical Object-Oriented Design in Ruby_
+
 Packwerk is a Ruby gem used to enforce boundaries and modularize Rails applications.
 
 Packwerk can be used to:
