@@ -3,4 +3,4 @@ name: Packwerk
 stewards:
 - "@Shopify/kernel-architecture-patterns"
 slack_channels:
-- architecture-patterns
+- code-foundations
