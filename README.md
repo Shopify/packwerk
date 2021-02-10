@@ -1,5 +1,7 @@
 # Packwerk [![Build Status](https://github.com/Shopify/packwerk/workflows/CI/badge.svg)](https://github.com/Shopify/packwerk/actions?query=workflow%3ACI)
 
+## NOTE: Packwerk is currently accepting bug fixes only, and is not being actively developed. Please fork this project if you are interested in adding new features.
+
 > "I know who you are and because of that I know what you do."  
 > This knowledge is a dependency that raises the cost of change.  
 
