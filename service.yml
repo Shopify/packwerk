@@ -1,6 +1,6 @@
 # https://services.shopify.io/services/packwerk/production
 org_line: Kernel
-owners: Shopify/kernel-architecture-patterns
+owners: Shopify/core-stewardship
 classification: library
 slack_channels:
-  - architecture-patterns
+  - core-stewardship
