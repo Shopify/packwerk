@@ -4,6 +4,7 @@
 require "sorbet-runtime"
 require "active_support"
 require "constant_resolver"
+require "fileutils"
 
 require "packwerk/offense"
 
