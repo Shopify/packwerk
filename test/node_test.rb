@@ -4,8 +4,6 @@
 require "test_helper"
 require "parser_test_helper"
 
-require "parser"
-
 module Packwerk
   class NodeTest < ActiveSupport::TestCase
     test ".class_or_module_name returns the name of a class being defined with the class keyword" do
@@ -19,11 +17,21 @@ module Packwerk
     end
 
     test ".constant_name returns the name of a constant being referenced" do
+      node = parse("MyConstant")
+      assert_equal "MyConstant", Node.constant_name(node)
+    end
+
+    test ".constant_name returns the name of a namespaced constant being referenced" do
       node = parse("My::Constant")
       assert_equal "My::Constant", Node.constant_name(node)
     end
 
     test ".constant_name returns the name of a constant being assigned to" do
+      node = parse("MyConstant = 42")
+      assert_equal "MyConstant", Node.constant_name(node)
+    end
+
+    test ".constant_name returns the name of a namespaced constant being assigned to" do
       node = parse("My::Constant = 42")
       assert_equal "My::Constant", Node.constant_name(node)
     end
@@ -40,18 +48,30 @@ module Packwerk
 
     test ".each_child with a block iterates over all child nodes" do
       node = parse("My::Constant = 6 * 7")
+
       children = []
       Node.each_child(node) do |child|
         children << child
       end
-      assert_equal [parse("My"), parse("6 * 7")], children
+      assert_equal 2, children.length
+      a, b = children
+      assert_equal "My::Constant", Node.constant_name(a)
+
+      children = []
+      Node.each_child(b) do |child|
+        children << child
+      end
+      assert_equal 2, children.length
+      c, _d = children
+      assert_equal 6, Node.literal_value(c)
     end
 
     test ".each_child without a block returns an enumerator" do
       node = parse("My::Constant = 6 * 7")
       children = Node.each_child(node)
       assert_instance_of Enumerator, children
-      assert_equal [parse("My"), parse("6 * 7")], children.entries
+      a, _b = children.entries
+      assert_equal "My::Constant", Node.constant_name(a)
     end
 
     test "#enclosing_namespace_path should return empty path for const node" do
@@ -73,8 +93,8 @@ module Packwerk
 
     test "#enclosing_namespace_path should skip child class name when finding path for parent class" do
       grandparent = parse("module Sales; class Order < Base; end; end")
-      parent = Node.each_child(grandparent).entries[1] # module node; second child is the body of the module
-      node = Node.each_child(parent).entries[1] # class node; second child is parent
+      parent = Node.each_child(Node.each_child(grandparent).entries[1]).entries[1]
+      node = Node.each_child(parent).entries[1]
 
       path = Node.enclosing_namespace_path(node, ancestors: [parent, grandparent])
 
@@ -83,8 +103,8 @@ module Packwerk
 
     test "#enclosing_namespace_path should return correct path for nested and compact class definition" do
       grandparent = parse("module Foo::Bar; class Sales::Order; end; end")
-      parent = Node.each_child(grandparent).entries[1] # module node; second child is the body of the module
-      node = Node.each_child(parent).entries[0] # class node; first child is constant
+      parent = Node.each_child(Node.each_child(grandparent).entries[1]).entries[1]
+      node = Node.each_child(parent).entries[0]
 
       path = Node.enclosing_namespace_path(node, ancestors: [parent, grandparent])
 
@@ -106,13 +126,29 @@ module Packwerk
       assert_kind_of Node::Location, Node.location(node)
     end
 
-    test ".method_arguments returns the arguments of a method call" do
+    test ".method_arguments returns the arguments of a method call with explicit receiver" do
       node = parse("a.b(:c, 'd', E)")
-      assert_equal [parse(":c"), parse("'d'"), parse("E")], Node.method_arguments(node)
+      c, d, e = Node.method_arguments(node)
+      assert_equal :c, Node.literal_value(c)
+      assert_equal "d", Node.literal_value(d)
+      assert_equal "E", Node.constant_name(e)
     end
 
-    test ".method_name returns the name of a method call" do
+    test ".method_arguments returns the arguments of a method call with implicit receiver" do
+      node = parse("b(:c, 'd', E)")
+      c, d, e = Node.method_arguments(node)
+      assert_equal :c, Node.literal_value(c)
+      assert_equal "d", Node.literal_value(d)
+      assert_equal "E", Node.constant_name(e)
+    end
+
+    test ".method_name returns the name of a method call with explicit receiver" do
       node = parse("a.b(:c, 'd', E)")
+      assert_equal :b, Node.method_name(node)
+    end
+
+    test ".method_name returns the name of a method call with implicit receiver" do
+      node = parse("b(:c, 'd', E)")
       assert_equal :b, Node.method_name(node)
     end
 
@@ -174,12 +210,12 @@ module Packwerk
 
     test ".parent_class returns the constant referring to the parent class in a class being defined with the class keyword" do
       node = parse("class B < A; end")
-      assert_equal parse("A"), Node.parent_class(node)
+      assert_equal "A", Node.constant_name(Node.parent_class(node))
     end
 
     test ".parent_module_name returns the name of a constant’s enclosing module" do
       grandparent = parse("module A; class B; C; end end")
-      parent = Node.each_child(grandparent).entries[1] # "class B; C; end"
+      parent = Node.each_child(Node.each_child(grandparent).entries[1]).entries[1] # "class B; C; end"
       assert_equal "A::B", Node.parent_module_name(ancestors: [parent, grandparent])
     end
 
@@ -189,19 +225,19 @@ module Packwerk
 
     test ".parent_module_name supports constant assignment" do
       grandparent = parse("module A; B = Class.new do C end end")
-      parent = Node.each_child(grandparent).entries[1] # "B = Class.new do C end"
+      parent = Node.each_child(Node.each_child(grandparent).entries[1]).entries[1] # "B = Class.new do C end"
       assert_equal "A::B", Node.parent_module_name(ancestors: [parent, grandparent])
     end
 
     test ".parent_module_name supports class_eval with no receiver" do
       grandparent = parse("module A; class_eval do C; end end")
-      parent = Node.each_child(grandparent).entries[1] # "class_eval do C; end"
+      parent = Node.each_child(Node.each_child(grandparent).entries[1]).entries[1] # "class_eval do C; end"
       assert_equal "A", Node.parent_module_name(ancestors: [parent, grandparent])
     end
 
     test ".parent_module_name supports class_eval with an explicit receiver" do
       grandparent = parse("module A; B.class_eval do C; end end")
-      parent = Node.each_child(grandparent).entries[1] # "B.class_eval do C; end"
+      parent = Node.each_child(Node.each_child(grandparent).entries[1]).entries[1] # "B.class_eval do C; end"
       assert_equal "A::B", Node.parent_module_name(ancestors: [parent, grandparent])
     end
 
@@ -221,8 +257,8 @@ module Packwerk
       assert Node.hash?(parse("{ pears: 3, bananas: 6 }"))
     end
 
-    test ".method_call? can identify a method call node" do
-      assert Node.method_call?(parse("quantity(bananas)"))
+    test ".type can identify a method call node" do
+      assert_equal Node::METHOD_CALL, Node.type(parse("quantity(bananas)")) # FIXME: there is also CALL
     end
 
     test ".string? can identify a string node" do
@@ -235,7 +271,7 @@ module Packwerk
 
     test ".value_from_hash looks up the node for a key in a hash" do
       hash_node = parse("{ apples: 13, oranges: 27 }")
-      assert_equal parse("13"), Node.value_from_hash(hash_node, :apples)
+      assert_equal 13, Node.literal_value(Node.value_from_hash(hash_node, :apples))
     end
 
     test ".value_from_hash returns nil if a key isn't found in a hash" do

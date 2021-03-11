@@ -8,14 +8,14 @@ module Packwerk
   class NodeVisitorTest < Minitest::Test
     test "#visit visits the correct number of nodes" do
       node_processor = mock
-      node_processor.expects(:call).times(3).returns("an offense")
+      node_processor.expects(:call).times(5).returns("an offense")
       file_node_visitor = Packwerk::NodeVisitor.new(node_processor: node_processor)
 
       node = ParserTestHelper.parse("class Hello; world; end")
       result = []
       file_node_visitor.visit(node, ancestors: [], result: result)
 
-      assert_equal 3, result.count
+      assert_equal 5, result.count
     end
   end
 end

@@ -228,8 +228,12 @@ module Packwerk
         return nil unless Node.method_call?(node)
 
         args = Node.method_arguments(node)
-        if @expected_args && @expected_args != args
-          raise("expected arguments don't match.\nExpected:\n#{@expected_args}\nActual:\n#{args}")
+        if @expected_args
+          same_length = @expected_args.length == args.length
+          same_content = @expected_args.zip(args).all? { |a, b| Node.same_content?(a, b) }
+          unless same_length && same_content
+            raise("expected arguments don't match.\nExpected:\n#{@expected_args}\nActual:\n#{args}")
+          end
         end
 
         @reference_name

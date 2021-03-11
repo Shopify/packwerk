@@ -1,7 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "parser/source/map"
 require "sorbet-runtime"
 
 require "packwerk/output_style"

@@ -18,7 +18,7 @@ module Packwerk
       params(
         context_provider: Packwerk::ConstantDiscovery,
         constant_name_inspectors: T::Array[Packwerk::ConstantNameInspector],
-        root_node: ::AST::Node,
+        root_node: ::RubyVM::AbstractSyntaxTree::Node,
         root_path: String,
       ).void
     end

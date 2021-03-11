@@ -1,10 +1,20 @@
 # typed: true
 # frozen_string_literal: true
 
-require "parser/ast/node"
-
 module Packwerk
   module Node
+    BLOCK = :ITER
+    CLASS = :CLASS
+    CONSTANT = :CONST
+    CONSTANT_ASSIGNMENT = :CDECL
+    CONSTANT_ROOT_NAMESPACE = :cbase
+    HASH = :HASH
+    METHOD_CALL = :FCALL
+    MODULE = :MODULE
+    SCOPE = :SCOPE
+    STRING = :STR
+    SYMBOL = :LIT # FIXME: could contain a string or a symbol or a number etc
+
     class TypeError < ArgumentError; end
     Location = Struct.new(:line, :column)
 
@@ -18,7 +28,7 @@ module Packwerk
           #   "class Foo < Bar; end"
           # (module (const nil :Foo) (nil))
           #   "module Foo; end"
-          identifier = class_or_module_node.children[0]
+          identifier = enter_scope(class_or_module_node).children[0]
           constant_name(identifier)
         else
           raise TypeError
@@ -26,30 +36,30 @@ module Packwerk
       end
 
       def constant_name(constant_node)
-        case type_of(constant_node)
-        when CONSTANT_ROOT_NAMESPACE
-          ""
-        when CONSTANT, CONSTANT_ASSIGNMENT, SELF
-          # (const nil :Foo)
-          #   "Foo"
-          # (const (cbase) :Foo)
-          #   "::Foo"
-          # (const (lvar :a) :Foo)
-          #   "a::Foo"
-          # (casgn nil :Foo (int 1))
-          #   "Foo = 1"
-          # (casgn (cbase) :Foo (int 1))
-          #   "::Foo = 1"
-          # (casgn (lvar :a) :Foo (int 1))
-          #   "a::Foo = 1"
-          # (casgn (self) :Foo (int 1))
-          #   "self::Foo = 1"
+        constant_node = enter_scope(constant_node)
+
+        case type(constant_node)
+        when CONSTANT_ASSIGNMENT
+          identifier = constant_node.children[0]
+
+          case identifier
+          when RubyVM::AbstractSyntaxTree::Node
+            constant_name(identifier)
+          else
+            identifier.to_s
+          end
+        when :COLON2
           namespace, name = constant_node.children
+
           if namespace
             [constant_name(namespace), name].join("::")
           else
             name.to_s
           end
+        when :COLON3
+          "::" + constant_node.children[0].to_s
+        when CONSTANT
+          constant_node.children[0].to_s
         else
           raise TypeError
         end
@@ -57,8 +67,11 @@ module Packwerk
 
       def each_child(node)
         if block_given?
-          node.children.each do |child|
-            yield child if child.is_a?(Parser::AST::Node)
+          enter_scope(node).children.each do |child|
+            if child.is_a?(RubyVM::AbstractSyntaxTree::Node)
+              child = enter_scope(child)
+              yield child if child&.is_a?(RubyVM::AbstractSyntaxTree::Node)
+            end
           end
         else
           enum_for(:each_child, node)
@@ -71,18 +84,22 @@ module Packwerk
           # when evaluating `class Child < Parent`, the const node for `Parent` is a child of the class
           # node, so it'll be an ancestor, but `Parent` is not evaluated in the namespace of `Child`, so
           # we need to skip it here
-          next if type_of(node) == CLASS && parent_class(node) == starting_node
+
+          next if type(node) == CLASS && !(parent = parent_class(node)).nil? &&
+            same_content?(parent, starting_node, check_location: true)
 
           namespace.prepend(class_or_module_name(node))
         end
       end
 
       def literal_value(string_or_symbol_node)
-        case type_of(string_or_symbol_node)
+        string_or_symbol_node = enter_scope(string_or_symbol_node)
+
+        case type(string_or_symbol_node)
         when STRING, SYMBOL
-          # (str "foo")
+          # (STR "foo")
           #   "'foo'"
-          # (sym :foo)
+          # (LIT :foo)
           #   ":foo"
           string_or_symbol_node.children[0]
         else
@@ -91,8 +108,7 @@ module Packwerk
       end
 
       def location(node)
-        location = node.location
-        Location.new(location.line, location.column)
+        Location.new(node.first_lineno, node.first_column)
       end
 
       def constant?(node)
@@ -124,23 +140,33 @@ module Packwerk
       end
 
       def method_arguments(method_call_node)
-        raise TypeError unless method_call?(method_call_node)
+        method_call_node = enter_scope(method_call_node)
 
-        # (send (lvar :foo) :bar (int 1))
-        #   "foo.bar(1)"
-        method_call_node.children.slice(2..-1)
+        case type(method_call_node)
+        when :CALL # FIXME
+          method_call_node.children[2].children.slice(0..-2)
+        when :FCALL # FIXME
+          method_call_node.children[1].children.slice(0..-2)
+        end
       end
 
       def method_name(method_call_node)
-        raise TypeError unless method_call?(method_call_node)
+        method_call_node = enter_scope(method_call_node)
 
-        # (send (lvar :foo) :bar (int 1))
-        #   "foo.bar(1)"
-        method_call_node.children[1]
+        case type(method_call_node)
+        when :CALL # FIXME
+          method_call_node.children[1]
+        when :FCALL, :VCALL # FIXME
+          method_call_node.children[0]
+        else
+          raise TypeError
+        end
       end
 
       def module_name_from_definition(node)
-        case type_of(node)
+        node = enter_scope(node)
+
+        case type(node)
         when CLASS, MODULE
           # "class My::Class; end"
           # "module My::Module; end"
@@ -150,8 +176,8 @@ module Packwerk
           # "My::Module = ..."
           rvalue = node.children.last
 
-          case type_of(rvalue)
-          when METHOD_CALL
+          case type(rvalue)
+          when :CALL
             # "Class.new"
             # "Module.new"
             constant_name(node) if module_creation?(rvalue)
@@ -164,20 +190,19 @@ module Packwerk
       end
 
       def name_location(node)
-        location = node.location
+        node = enter_scope(node)
 
-        if location.respond_to?(:name)
-          name = location.name
-          Location.new(name.line, name.column)
+        case type(node)
+        when CONSTANT, CONSTANT_ASSIGNMENT, :COLON2, :COLON3
+          name = node
+          Location.new(name.first_lineno, name.first_column)
         end
       end
 
       def parent_class(class_node)
         raise TypeError unless type_of(class_node) == CLASS
 
-        # (class (const nil :Foo) (const nil :Bar) (nil))
-        #   "class Foo < Bar; end"
-        class_node.children[1]
+        enter_scope(class_node).children[1]
       end
 
       sig { params(ancestors: T::Array[AST::Node]).returns(String) }
@@ -192,6 +217,33 @@ module Packwerk
         names.empty? ? "Object" : names.reverse.join("::")
       end
 
+      def same_content?(a, b, check_location: false)
+        return false unless
+          !check_location ||
+          [:first_lineno, :first_column, :last_lineno, :last_column].all? do |attr|
+            a.send(attr) == b.send(attr)
+          end
+        return false unless a.type == b.type
+
+        a_children = a.children
+        b_children = b.children
+        return false unless a_children.length == b_children.length
+
+        a_children.zip(b_children).all? do |c, d|
+          return false unless c.class == d.class
+
+          if c.is_a?(RubyVM::AbstractSyntaxTree::Node)
+            same_content?(c, d, check_location: check_location)
+          else
+            c == d
+          end
+        end
+      end
+
+      def type(node)
+        enter_scope(node).type
+      end
+
       def value_from_hash(hash_node, key)
         raise TypeError unless hash?(hash_node)
         pair = hash_pairs(hash_node).detect { |pair_node| literal_value(hash_pair_key(pair_node)) == key }
@@ -200,54 +252,30 @@ module Packwerk
 
       private
 
-      BLOCK = :block
-      CLASS = :class
-      CONSTANT = :const
-      CONSTANT_ASSIGNMENT = :casgn
-      CONSTANT_ROOT_NAMESPACE = :cbase
-      HASH = :hash
-      HASH_PAIR = :pair
-      METHOD_CALL = :send
-      MODULE = :module
-      SELF = :self
-      STRING = :str
-      SYMBOL = :sym
-
-      private_constant(
-        :BLOCK, :CLASS, :CONSTANT, :CONSTANT_ASSIGNMENT, :CONSTANT_ROOT_NAMESPACE, :HASH, :HASH_PAIR, :METHOD_CALL,
-        :MODULE, :SELF, :STRING, :SYMBOL,
-      )
-
-      def type_of(node)
-        node.type
+      def enter_scope(node)
+        case node.type
+        when SCOPE
+          body = node.children[2]
+          body if body
+        else
+          node
+        end
       end
 
-      def hash_pair_key(hash_pair_node)
-        raise TypeError unless type_of(hash_pair_node) == HASH_PAIR
-
-        # (pair (int 1) (int 2))
-        #   "1 => 2"
-        # (pair (sym :answer) (int 42))
-        #   "answer: 42"
-        hash_pair_node.children[0]
+      def hash_pair_key(hash_pair)
+        hash_pair[0]
       end
 
-      def hash_pair_value(hash_pair_node)
-        raise TypeError unless type_of(hash_pair_node) == HASH_PAIR
-
-        # (pair (int 1) (int 2))
-        #   "1 => 2"
-        # (pair (sym :answer) (int 42))
-        #   "answer: 42"
-        hash_pair_node.children[1]
+      def hash_pair_value(hash_pair)
+        hash_pair[1]
       end
 
       def hash_pairs(hash_node)
         raise TypeError unless hash?(hash_node)
 
-        # (hash (pair (int 1) (int 2)) (pair (int 3) (int 4)))
+        # (HASH (ARRAY (LIT 1) (LIT 2) (LIT 3) (LIT 4) nil))
         #   "{1 => 2, 3 => 4}"
-        hash_node.children.select { |n| type_of(n) == HASH_PAIR }
+        enter_scope(hash_node).children[0].children.slice(0..-2).each_slice(2)
       end
 
       def method_call_node(block_node)
@@ -261,8 +289,8 @@ module Packwerk
       def module_creation?(node)
         # "Class.new"
         # "Module.new"
-        method_call?(node) &&
-          constant?(receiver(node)) &&
+        type(node) == :CALL && # FIXME
+          type(receiver(node)) == CONSTANT &&
           ["Class", "Module"].include?(constant_name(receiver(node))) &&
           method_name(node) == :new
       end
@@ -284,9 +312,11 @@ module Packwerk
       end
 
       def receiver(method_call_or_block_node)
-        case type_of(method_call_or_block_node)
-        when METHOD_CALL
+        case type(method_call_or_block_node)
+        when :CALL # FIXME
           method_call_or_block_node.children[0]
+        when :FCALL # FIXME
+          nil
         when BLOCK
           receiver(method_call_node(method_call_or_block_node))
         else

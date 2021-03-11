@@ -14,12 +14,12 @@ module Packwerk
           Erb.new.call(io: fixture)
         end
 
-        assert_kind_of(::AST::Node, node)
+        assert_kind_of(::RubyVM::AbstractSyntaxTree::Node, node)
       end
 
       test "#call writes parse error to stdout" do
         error_message = "stub error"
-        err = Parser::SyntaxError.new(stub(message: error_message))
+        err = SyntaxError.new(error_message)
         parser = stub
         parser.stubs(:ast).raises(err)
 

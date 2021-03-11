@@ -12,8 +12,8 @@ module Packwerk
     end
 
     test "#call visits all nodes in a file path with no offenses" do
-      @node_processor_factory.expects(:for).returns(@node_processor)
-      @node_processor.expects(:call).twice.returns(nil)
+      @run_context.expects(:node_processor_for).returns(@node_processor)
+      @node_processor.expects(:call).once.returns(nil)
 
       offenses = tempfile(name: "foo", content: "def food_bar; end") do |file_path|
         @file_processor.call(file_path)
@@ -53,7 +53,7 @@ module Packwerk
       end
       @node_processor.expects(:call).with do |node, ancestors:|
         parent = ancestors.first # class Hello; world; end
-        Node.constant?(node) && # Hello
+        [Node::CONSTANT, :COLON2, :COLON3].include?(Node.type(node)) && # Hello
           Node.constant_name(node) == "Hello" &&
           ancestors.length == 1 &&
           Node.class?(parent) &&
@@ -61,11 +61,22 @@ module Packwerk
       end
       @node_processor.expects(:call).with do |node, ancestors:|
         parent = ancestors.first # class Hello; world; end
-        Node.method_call?(node) && # world
-          Node.method_name(node) == :world &&
+        Node.type(node) == :BLOCK && # class body
           ancestors.length == 1 &&
-          Node.class?(parent) &&
-          Node.class_or_module_name(parent) == "Hello"
+          Node.type(parent) == Node::CLASS
+      end
+      @node_processor.expects(:call).with do |node, ancestors:|
+        parent = ancestors.first # class body
+        Node.type(node) == :BEGIN && # start of class body
+          ancestors.length == 2 &&
+          Node.type(parent) == :BLOCK
+      end
+      @node_processor.expects(:call).with do |node, ancestors:|
+        parent = ancestors.first # class body
+        Node.type(node) == :VCALL && # world
+          Node.method_name(node) == :world &&
+          ancestors.length == 2 &&
+          Node.type(parent) == :BLOCK
       end.returns(offense)
 
       offenses = tempfile(name: "hello_world", content: "class Hello; world; end") do |file_path|
@@ -76,6 +87,11 @@ module Packwerk
     end
 
     test "#call reports no offenses for an empty file" do
+      @run_context.expects(:node_processor_for).returns(@node_processor)
+      @node_processor.expects(:call).with do |node, ancestors:|
+        Node.type(node) == :BEGIN && ancestors.empty?
+      end
+
       offenses = tempfile(name: "foo", content: "# no fun") do |file_path|
         @file_processor.call(file_path)
       end

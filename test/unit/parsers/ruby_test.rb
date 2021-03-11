@@ -11,18 +11,16 @@ module Packwerk
           Ruby.new.call(io: fixture)
         end
 
-        assert_kind_of(::AST::Node, node)
+        assert_kind_of(::RubyVM::AbstractSyntaxTree::Node, node)
       end
 
       test "#call writes parse error to stdout" do
         error_message = "stub error"
-        err = Parser::SyntaxError.new(stub(message: error_message))
-        parser = stub
-        parser.stubs(:parse).raises(err)
+        err = SyntaxError.new(error_message)
+        parser_stub = stub
+        parser_stub.stubs(:parse).raises(err)
 
-        parser_class_stub = stub(new: parser)
-
-        parser = Ruby.new(parser_class: parser_class_stub)
+        parser = Ruby.new(parser: parser_stub)
         file_path = fixture_path("invalid.rb")
 
         exc = assert_raises(Parsers::ParseError) do
@@ -38,12 +36,10 @@ module Packwerk
       test "#call writes encoding error to stdout" do
         error_message = "stub error"
         err = EncodingError.new(error_message)
-        parser = stub
-        parser.stubs(:parse).raises(err)
+        parser_stub = stub
+        parser_stub.stubs(:parse).raises(err)
 
-        parser_class_stub = stub(new: parser)
-
-        parser = Ruby.new(parser_class: parser_class_stub)
+        parser = Ruby.new(parser: parser_stub)
         file_path = fixture_path("invalid.rb")
 
         exc = assert_raises(Parsers::ParseError) do
@@ -61,13 +57,33 @@ module Packwerk
           Ruby.new.call(io: fixture)
         end
 
-        assert_kind_of(::AST::Node, node)
+        assert_kind_of(::RubyVM::AbstractSyntaxTree::Node, node)
+      end
+
+      test "#call doesn’t emit warnings about parsed code" do
+        parser = Ruby.new
+        source = StringIO.new("UselessConstant")
+
+        with_warnings do
+          assert_silent { parser.call(io: source) }
+        end
       end
 
       private
 
       def fixture_path(name)
         ROOT.join("test/fixtures/formats/ruby", name).to_s
+      end
+
+      def with_warnings
+        previous_verbosity = $VERBOSE
+        $VERBOSE = true
+
+        begin
+          yield
+        ensure
+          $VERBOSE = previous_verbosity
+        end
       end
     end
   end

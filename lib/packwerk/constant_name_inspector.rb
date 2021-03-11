@@ -13,7 +13,7 @@ module Packwerk
     interface!
 
     sig do
-      params(node: ::AST::Node, ancestors: T::Array[::AST::Node])
+      params(node: ::RubyVM::AbstractSyntaxTree::Node, ancestors: T::Array[::RubyVM::AbstractSyntaxTree::Node])
         .returns(T.nilable(String))
         .abstract
     end

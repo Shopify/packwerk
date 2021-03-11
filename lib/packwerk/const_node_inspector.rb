@@ -15,9 +15,12 @@ module Packwerk
         .returns(T.nilable(String))
     end
     def constant_name_from_node(node, ancestors:)
-      return nil unless Node.constant?(node)
+      return nil unless [Node::CONSTANT, :COLON2, :COLON3].include?(Node.type(node))
+
+      # Only process the root `const` node for namespaced constant references. For example, in the
+      # reference `Spam::Eggs::Thing`, we only process the const node associated with `Spam`.
       parent = ancestors.first
-      return nil unless root_constant?(parent)
+      return nil if parent && [Node::CONSTANT, :COLON2, :COLON3].include?(Node.type(parent))
 
       if parent && constant_in_module_or_class_definition?(node, parent: parent)
         fully_qualify_constant(ancestors)

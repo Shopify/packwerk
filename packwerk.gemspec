@@ -49,10 +49,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency("sorbet")
   spec.add_development_dependency("m")
 
-  # For Ruby parsing
-  spec.add_dependency("ast")
-  spec.add_dependency("parser")
-
   # For ERB parsing
   spec.add_dependency("better_html")
 end

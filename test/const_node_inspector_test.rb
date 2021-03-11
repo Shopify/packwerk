@@ -53,8 +53,8 @@ module Packwerk
 
     test "#constant_name_from_node should return correct name for nested and compact class definition" do
       grandparent = parse("module Foo::Bar; class Sales::Order; end; end")
-      parent = Node.each_child(grandparent).entries[1] # module node; second child is the body of the module
-      node = Node.each_child(parent).entries[0] # class node; first child is constant
+      parent = Node.each_child(Node.each_child(grandparent).entries[1]).entries[1]
+      node = Node.each_child(parent).entries[0]
 
       constant_name = @inspector.constant_name_from_node(node, ancestors: [parent, grandparent])
 
@@ -63,8 +63,8 @@ module Packwerk
 
     test "#constant_name_from_node should gracefully return nil for dynamically namespaced constants" do
       grandparent = parse("module CsvExportSharedTests; setup do self.class::HEADERS end; end")
-      parent = Node.each_child(grandparent).entries[1] # setup do self.class::HEADERS end
-      node = Node.each_child(parent).entries[2] # self.class::HEADERS
+      parent = Node.each_child(Node.each_child(grandparent).entries[1]).entries[1] # setup do self.class::HEADERS end
+      node = Node.each_child(parent).entries[1] # self.class::HEADERS
 
       constant_name = @inspector.constant_name_from_node(node, ancestors: [parent, grandparent])
 

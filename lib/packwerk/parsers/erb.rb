@@ -4,7 +4,6 @@
 require "ast/node"
 require "better_html"
 require "better_html/parser"
-require "parser/source/buffer"
 
 require "packwerk/parsers"
 
@@ -28,7 +27,7 @@ module Packwerk
       rescue EncodingError => e
         result = ParseResult.new(file: file_path, message: e.message)
         raise Parsers::ParseError, result
-      rescue Parser::SyntaxError => e
+      rescue SyntaxError => e
         result = ParseResult.new(file: file_path, message: "Syntax error: #{e}")
         raise Parsers::ParseError, result
       end
