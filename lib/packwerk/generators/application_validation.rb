@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "fileutils"
+
 module Packwerk
   module Generators
     class ApplicationValidation
