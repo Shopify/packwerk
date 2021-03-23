@@ -32,9 +32,12 @@ module Packwerk
         .override
     end
     def listed?(reference, violation_type:)
-      deprecated_references = deprecated_references_for(reference.source_package)
-      deprecated_references.add_entries(reference, violation_type.serialize)
-      true
+      false
+    end
+
+    def add_offense(offense)
+      deprecated_references = deprecated_references_for(offense.reference.source_package)
+      deprecated_references.add_entries(offense.reference, offense.violation_type.serialize)
     end
 
     private

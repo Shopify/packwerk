@@ -35,13 +35,20 @@ module Packwerk
     private
 
     def check_reference(reference, node)
-      return nil unless (message = failed_check(reference))
+      failed_checker = @checkers.find do |checker|
+        checker.invalid_reference?(reference, @reference_lister)
+      end
+
+      return nil unless failed_checker
 
       constant = reference.constant
+      message = failed_checker.message_for(reference)
 
       Packwerk::Offense.new(
         location: Node.location(node),
         file: reference.relative_path,
+        reference: reference,
+        violation_type: failed_checker.violation_type,
         message: <<~EOS
           #{message}
           Inference details: this is a reference to #{constant.name} which seems to be defined in #{constant.location}.
@@ -50,11 +57,10 @@ module Packwerk
       )
     end
 
-    def failed_check(reference)
-      failing_checker = @checkers.find do |checker|
+    def failed_checker(reference)
+      @checkers.find do |checker|
         checker.invalid_reference?(reference, @reference_lister)
       end
-      failing_checker&.message_for(reference)
     end
   end
 end

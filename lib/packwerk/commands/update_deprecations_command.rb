@@ -8,6 +8,7 @@ require "packwerk/commands/offense_progress_marker"
 require "packwerk/commands/result"
 require "packwerk/run_context"
 require "packwerk/updating_deprecated_references"
+require "parallel"
 
 module Packwerk
   module Commands
@@ -38,17 +39,28 @@ module Packwerk
 
         all_offenses = T.let([], T.untyped)
         execution_time = Benchmark.realtime do
-          all_offenses = @files.flat_map do |path|
+          File.write("files-to-process", @files.join("\n"))
+          all_offenses = Parallel.flat_map(@files) do |path|
             run_context.process_file(file: path).tap do |offenses|
-              mark_progress(offenses: offenses, progress_formatter: @progress_formatter)
+              mark_progress(offenses: [], progress_formatter: @progress_formatter)
+              puts "found #{offenses.count} offenses in #{path}!"
+              offenses
             end
           end
 
-          updating_deprecated_references.dump_deprecated_references_files
+          puts "found #{all_offenses.count} total offenses!"
+
+          deprecated_references = UpdatingDeprecatedReferences.new(@configuration.root_path)
+          all_offenses.each do |offense|
+            deprecated_references.add_offense(offense)
+          end
+          require "pry"
+          binding.pry
+          deprecated_references.dump_deprecated_references_files
         end
 
         @progress_formatter.finished(execution_time)
-        calculate_result(all_offenses)
+        calculate_result([])
       end
 
       private
