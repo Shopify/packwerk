@@ -35,31 +35,23 @@ module Packwerk
     private
 
     def check_reference(reference, node)
-      failed_checker = @checkers.find do |checker|
-        checker.invalid_reference?(reference, @reference_lister)
-      end
+      @checkers.each_with_object([]) do |checker, violations|
+        next unless checker.invalid_reference?(reference, @reference_lister)
+        constant = reference.constant
+        message = checker.message_for(reference)
 
-      return nil unless failed_checker
-
-      constant = reference.constant
-      message = failed_checker.message_for(reference)
-
-      Packwerk::Offense.new(
-        location: Node.location(node),
-        file: reference.relative_path,
-        reference: reference,
-        violation_type: failed_checker.violation_type,
-        message: <<~EOS
-          #{message}
-          Inference details: this is a reference to #{constant.name} which seems to be defined in #{constant.location}.
-          To receive help interpreting or resolving this error message, see: https://github.com/Shopify/packwerk/blob/main/TROUBLESHOOT.md#Troubleshooting-violations
-        EOS
-      )
-    end
-
-    def failed_checker(reference)
-      @checkers.find do |checker|
-        checker.invalid_reference?(reference, @reference_lister)
+        offense = Packwerk::Offense.new(
+          location: Node.location(node),
+          file: reference.relative_path,
+          reference: reference,
+          violation_type: checker.violation_type,
+          message: <<~EOS
+            #{message}
+            Inference details: this is a reference to #{constant.name} which seems to be defined in #{constant.location}.
+            To receive help interpreting or resolving this error message, see: https://github.com/Shopify/packwerk/blob/main/TROUBLESHOOT.md#Troubleshooting-violations
+          EOS
+        )
+        violations << offense
       end
     end
   end

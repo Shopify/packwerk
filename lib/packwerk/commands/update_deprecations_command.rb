@@ -43,7 +43,6 @@ module Packwerk
           all_offenses = Parallel.flat_map(@files) do |path|
             run_context.process_file(file: path).tap do |offenses|
               mark_progress(offenses: [], progress_formatter: @progress_formatter)
-              puts "found #{offenses.count} offenses in #{path}!"
               offenses
             end
           end
@@ -54,8 +53,7 @@ module Packwerk
           all_offenses.each do |offense|
             deprecated_references.add_offense(offense)
           end
-          require "pry"
-          binding.pry
+
           deprecated_references.dump_deprecated_references_files
         end
 
