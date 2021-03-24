@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "packwerk/detect_stale_deprecated_references"
+
 module Packwerk
   class DetectStaleDeprecatedReferencesTest < Minitest::Test
     setup do
@@ -24,22 +24,6 @@ module Packwerk
         ".",
         { package.name => deprecated_reference }
       )
-    end
-
-    test "#stale_violations? returns true if there are stale violations" do
-      Packwerk::DeprecatedReferences.any_instance
-        .expects(:stale_violations?)
-        .returns(true)
-
-      assert @detect_stale_deprecated_references.stale_violations?
-    end
-
-    test "#stale_violations? returns false if no stale violations" do
-      Packwerk::DeprecatedReferences.any_instance
-        .expects(:stale_violations?)
-        .returns(false)
-
-      refute @detect_stale_deprecated_references.stale_violations?
     end
   end
 end

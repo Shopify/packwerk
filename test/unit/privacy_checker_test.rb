@@ -10,7 +10,6 @@ module Packwerk
     setup do
       setup_application_fixture
       use_template(:skeleton)
-      @reference_lister = CheckingDeprecatedReferences.new(app_dir)
       @source_package = Package.new(name: "source_package", config: {})
     end
 
@@ -34,7 +33,7 @@ module Packwerk
           )
         )
 
-      refute checker.invalid_reference?(reference, @reference_lister)
+      refute checker.invalid_reference?(reference)
     end
 
     test "ignores if destination package is only enforcing for other constants" do
@@ -56,7 +55,7 @@ module Packwerk
           )
         )
 
-      refute checker.invalid_reference?(reference, @reference_lister)
+      refute checker.invalid_reference?(reference)
     end
 
     test "complains about private constant if enforcing privacy for everything" do
@@ -75,7 +74,7 @@ module Packwerk
           )
         )
 
-      assert checker.invalid_reference?(reference, @reference_lister)
+      assert checker.invalid_reference?(reference)
     end
 
     test "complains about private constant if enforcing for specific constants" do
@@ -94,7 +93,7 @@ module Packwerk
           )
         )
 
-      assert checker.invalid_reference?(reference, @reference_lister)
+      assert checker.invalid_reference?(reference)
     end
 
     test "complains about nested constant if enforcing for specific constants" do
@@ -113,7 +112,7 @@ module Packwerk
           )
         )
 
-      assert checker.invalid_reference?(reference, @reference_lister)
+      assert checker.invalid_reference?(reference)
     end
 
     test "ignores constant that starts like enforced constant" do
@@ -132,7 +131,7 @@ module Packwerk
           )
         )
 
-      refute checker.invalid_reference?(reference, @reference_lister)
+      refute checker.invalid_reference?(reference)
     end
 
     test "ignores public constant even if enforcing privacy for everything" do
@@ -151,7 +150,7 @@ module Packwerk
           )
         )
 
-      refute checker.invalid_reference?(reference, @reference_lister)
+      refute checker.invalid_reference?(reference)
     end
 
     test "only checks the deprecated references file for private constants" do
@@ -170,9 +169,7 @@ module Packwerk
           )
         )
 
-      @reference_lister.expects(:listed?).with(reference, violation_type: ViolationType::Privacy).once
-
-      checker.invalid_reference?(reference, @reference_lister)
+      checker.invalid_reference?(reference)
     end
 
     test "generates nice message for violation" do

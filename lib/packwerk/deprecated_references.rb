@@ -5,13 +5,11 @@ require "sorbet-runtime"
 require "yaml"
 
 require "packwerk/reference"
-require "packwerk/reference_lister"
 require "packwerk/violation_type"
 
 module Packwerk
   class DeprecatedReferences
     extend T::Sig
-    include ReferenceLister
 
     sig { params(package: Packwerk::Package, filepath: String).void }
     def initialize(package, filepath)
@@ -23,7 +21,6 @@ module Packwerk
     sig do
       params(reference: Packwerk::Reference, violation_type: ViolationType)
         .returns(T::Boolean)
-        .override
     end
     def listed?(reference, violation_type:)
       violated_constants_found = deprecated_references.dig(reference.constant.package.name, reference.constant.name)

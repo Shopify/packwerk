@@ -4,10 +4,11 @@
 require "sorbet-runtime"
 require "benchmark"
 
+require "packwerk/cache_deprecated_references"
 require "packwerk/commands/offense_progress_marker"
 require "packwerk/commands/result"
+require "packwerk/reference_offense"
 require "packwerk/run_context"
-require "packwerk/updating_deprecated_references"
 require "parallel"
 
 module Packwerk
@@ -29,7 +30,6 @@ module Packwerk
         @configuration = configuration
         @progress_formatter = progress_formatter
         @offenses_formatter = offenses_formatter
-        @updating_deprecated_references = T.let(nil, T.nilable(UpdatingDeprecatedReferences))
         @run_context = T.let(nil, T.nilable(RunContext))
       end
 
@@ -39,7 +39,6 @@ module Packwerk
 
         all_offenses = T.let([], T.untyped)
         execution_time = Benchmark.realtime do
-          File.write("files-to-process", @files.join("\n"))
           all_offenses = Parallel.flat_map(@files) do |path|
             run_context.process_file(file: path).tap do |offenses|
               mark_progress(offenses: [], progress_formatter: @progress_formatter)
@@ -47,10 +46,9 @@ module Packwerk
             end
           end
 
-          puts "found #{all_offenses.count} total offenses!"
-
-          deprecated_references = UpdatingDeprecatedReferences.new(@configuration.root_path)
+          deprecated_references = CacheDeprecatedReferences.new(@configuration.root_path)
           all_offenses.each do |offense|
+            next unless offense.is_a?(ReferenceOffense)
             deprecated_references.add_offense(offense)
           end
 
@@ -65,24 +63,13 @@ module Packwerk
 
       sig { returns(RunContext) }
       def run_context
-        @run_context ||= RunContext.from_configuration(
-          @configuration,
-          reference_lister: updating_deprecated_references
-        )
-      end
-
-      sig { returns(UpdatingDeprecatedReferences) }
-      def updating_deprecated_references
-        @updating_deprecated_references ||= UpdatingDeprecatedReferences.new(@configuration.root_path)
+        @run_context ||= RunContext.from_configuration(@configuration)
       end
 
       sig { params(all_offenses: T::Array[T.nilable(::Packwerk::Offense)]).returns(Result) }
       def calculate_result(all_offenses)
         result_status = all_offenses.empty?
-        message = <<~EOS
-          #{@offenses_formatter.show_offenses(all_offenses)}
-          ✅ `deprecated_references.yml` has been updated.
-        EOS
+        message = "✅ `deprecated_references.yml` has been updated."
 
         Result.new(message: message, status: result_status)
       end

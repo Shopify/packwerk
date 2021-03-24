@@ -27,23 +27,20 @@ module Packwerk
       :checker_classes,
     )
 
-    attr_accessor :reference_lister
-
     DEFAULT_CHECKERS = [
       ::Packwerk::DependencyChecker,
       ::Packwerk::PrivacyChecker,
     ]
 
     class << self
-      def from_configuration(configuration, reference_lister:)
+      def from_configuration(configuration)
         inflector = ::Packwerk::Inflector.from_file(configuration.inflections_file)
         new(
           root_path: configuration.root_path,
           load_paths: configuration.load_paths,
           package_paths: configuration.package_paths,
           inflector: inflector,
-          custom_associations: configuration.custom_associations,
-          reference_lister: reference_lister,
+          custom_associations: configuration.custom_associations
         )
       end
     end
@@ -54,8 +51,7 @@ module Packwerk
       package_paths: nil,
       inflector: nil,
       custom_associations: [],
-      checker_classes: DEFAULT_CHECKERS,
-      reference_lister:
+      checker_classes: DEFAULT_CHECKERS
     )
       @root_path = root_path
       @load_paths = load_paths
@@ -63,7 +59,6 @@ module Packwerk
       @inflector = inflector
       @custom_associations = custom_associations
       @checker_classes = checker_classes
-      @reference_lister = reference_lister
     end
 
     sig { params(file: String).returns(T::Array[T.nilable(::Packwerk::Offense)]) }
@@ -84,8 +79,7 @@ module Packwerk
         context_provider: context_provider,
         checkers: checkers,
         root_path: root_path,
-        constant_name_inspectors: constant_name_inspectors,
-        reference_lister: reference_lister
+        constant_name_inspectors: constant_name_inspectors
       )
     end
 

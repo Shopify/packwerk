@@ -28,7 +28,7 @@ module Packwerk
 
       offense = stub(location: location, file: "tempfile", message: "Use of unassigned variable")
       @node_processor_factory.expects(:for).returns(@node_processor)
-      @node_processor.expects(:call).returns(offense)
+      @node_processor.expects(:call).returns([offense])
 
       offenses = tempfile(name: "foo", content: "a_variable_name") do |file_path|
         @file_processor.call(file_path)
@@ -66,7 +66,7 @@ module Packwerk
           ancestors.length == 1 &&
           Node.class?(parent) &&
           Node.class_or_module_name(parent) == "Hello"
-      end.returns(offense)
+      end.returns([offense])
 
       offenses = tempfile(name: "hello_world", content: "class Hello; world; end") do |file_path|
         @file_processor.call(file_path)

@@ -7,19 +7,10 @@ module Packwerk
   class DependencyCheckerTest < Minitest::Test
     include ApplicationFixtureHelper
 
-    class CheckingDeprecatedReferencesStub
-      include ReferenceLister
-
-      def listed?(_references, violation_type:)
-        violation_type == ViolationType::Dependency
-      end
-    end
-
     setup do
       setup_application_fixture
       use_template(:skeleton)
       @destination_package = Package.new(name: "destination_package", config: {})
-      @reference_lister = CheckingDeprecatedReferences.new(app_dir)
     end
 
     teardown do
@@ -42,7 +33,7 @@ module Packwerk
           )
         )
 
-      assert checker.invalid_reference?(reference, @reference_lister)
+      assert checker.invalid_reference?(reference)
     end
 
     test "ignores violations when enforcement is disabled in that package" do
@@ -61,7 +52,7 @@ module Packwerk
           )
         )
 
-      refute checker.invalid_reference?(reference, @reference_lister)
+      refute checker.invalid_reference?(reference)
     end
 
     test "allows reference to constants of a declared dependency" do
@@ -83,12 +74,11 @@ module Packwerk
           )
         )
 
-      refute checker.invalid_reference?(reference, @reference_lister)
+      refute checker.invalid_reference?(reference)
     end
 
     test "allows reference if it is in the deprecated references file" do
       source_package = Package.new(name: "components/sales", config: { "enforce_dependencies" => true })
-      @reference_lister = CheckingDeprecatedReferencesStub.new
 
       reference =
         Reference.new(
@@ -104,7 +94,7 @@ module Packwerk
 
       # create checker after reference is added to deprecated references list, as checker reads list on instantiation
       checker = dependency_checker
-      refute checker.invalid_reference?(reference, @reference_lister)
+      refute checker.invalid_reference?(reference)
     end
 
     test "renders a sensible error message" do

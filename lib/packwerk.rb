@@ -37,7 +37,6 @@ require "packwerk/parsers"
 require "packwerk/privacy_checker"
 require "packwerk/reference_extractor"
 require "packwerk/run_context"
-require "packwerk/updating_deprecated_references"
 require "packwerk/version"
 require "packwerk/violation_type"
 

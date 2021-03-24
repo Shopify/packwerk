@@ -3,12 +3,9 @@
 
 require "sorbet-runtime"
 
-require "packwerk/reference_lister"
-
 module Packwerk
   class CheckingDeprecatedReferences
     extend T::Sig
-    include ReferenceLister
 
     sig { params(root_path: String).void }
     def initialize(root_path)
@@ -19,7 +16,6 @@ module Packwerk
     sig do
       params(reference: Packwerk::Reference, violation_type: ViolationType)
         .returns(T::Boolean)
-        .override
     end
     def listed?(reference, violation_type:)
       deprecated_references_for(reference.source_package).listed?(reference, violation_type: violation_type)

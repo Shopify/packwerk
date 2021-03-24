@@ -2,30 +2,51 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "packwerk/cache_deprecated_references"
 
 module Packwerk
   class CacheDeprecatedReferencesTest < Minitest::Test
     setup do
-      @updating_deprecated_references = CacheDeprecatedReferences.new(".")
-    end
-
-    test "#listed? adds entry and returns true" do
-      File.stubs(:open)
-
+      @cache_deprecated_references = CacheDeprecatedReferences.new(".")
       source_package = Package.new(name: "source_package", config: {})
       destination_package = Package.new(name: "destination_package", config: {})
-      reference =
+      @reference =
         Reference.new(
           source_package,
           "some/path.rb",
           ConstantDiscovery::ConstantContext.new(nil, nil, destination_package, false)
         )
+      @offense = ReferenceOffense.new(file: "some/path.rb", message: "foo", reference: @reference, violation_type: ViolationType::Dependency)
+    end
+
+    test "#add_offense adds entry" do
+      File.stubs(:open)
 
       Packwerk::DeprecatedReferences.any_instance
         .expects(:add_entries)
-        .with(reference, "dependency")
+        .with(@reference, "dependency")
 
-      assert @updating_deprecated_references.listed?(reference, violation_type: ViolationType::Dependency)
+      @cache_deprecated_references.add_offense(@offense)
+    end
+
+    test "#stale_violations? returns true if there are stale violations" do
+      @cache_deprecated_references.add_offense(@offense)
+
+      Packwerk::DeprecatedReferences.any_instance
+        .expects(:stale_violations?)
+        .returns(true)
+
+      assert @cache_deprecated_references.stale_violations?
+    end
+
+    test "#stale_violations? returns false if no stale violations" do
+      @cache_deprecated_references.add_offense(@offense)
+
+      Packwerk::DeprecatedReferences.any_instance
+        .expects(:stale_violations?)
+        .returns(false)
+
+      refute @cache_deprecated_references.stale_violations?
     end
   end
 end

@@ -7,7 +7,7 @@ module Packwerk
   module Commands
     class UpdateDeprecationsCommandTest < Minitest::Test
       test "#run returns success when there are no offenses" do
-        run_context = RunContext.new(root_path: ".", load_paths: ".", reference_lister: nil)
+        run_context = RunContext.new(root_path: ".", load_paths: ".")
         run_context.stubs(:process_file).returns([])
 
         string_io = StringIO.new
@@ -23,16 +23,14 @@ module Packwerk
         )
         result = update_deprecations_command.run
 
-        assert_equal result.message, <<~EOS
-          No offenses detected 🎉
-          ✅ `deprecated_references.yml` has been updated.
-        EOS
+        expected_message = "✅ `deprecated_references.yml` has been updated."
+        assert_equal expected_message, result.message
         assert result.status
       end
 
       test "#run returns exit code 1 when there are offenses" do
         offense = Offense.new(file: "path/of/exile.rb", message: "something")
-        run_context = RunContext.new(root_path: ".", load_paths: ".", reference_lister: nil)
+        run_context = RunContext.new(root_path: ".", load_paths: ".")
         run_context.stubs(:process_file).returns([offense])
 
         string_io = StringIO.new
@@ -48,14 +46,8 @@ module Packwerk
         )
         result = update_deprecations_command.run
 
-        assert_equal result.message, <<~EOS
-          path/of/exile.rb
-          something
-
-          1 offense detected
-
-          ✅ `deprecated_references.yml` has been updated.
-        EOS
+        expected_message = "✅ `deprecated_references.yml` has been updated."
+        assert_equal expected_message, result.message
         refute result.status
       end
     end

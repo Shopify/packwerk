@@ -19,7 +19,13 @@ module Packwerk
     FakeResult = Struct.new(:ok?, :error_value)
 
     class FakeOffense < Packwerk::Offense
-      def initialize; end
+      def initialize(message)
+        @message = message
+      end
+
+      def to_s(*args)
+        @message
+      end
     end
 
     class FakeRunContext < Packwerk::RunContext
@@ -31,9 +37,7 @@ module Packwerk
     end
 
     test "#execute_command with the subcommand check starts processing files" do
-      violation_message = "This is a violation of code health."
-      offense = FakeOffense.new
-      offense.stubs(:to_s).returns(violation_message)
+      offense = FakeOffense.new("This is a violation of code health.")
 
       run_context = FakeRunContext.new
       run_context.stubs(:process_file).at_least_once.returns([offense])
@@ -47,7 +51,7 @@ module Packwerk
 
       success = cli.execute_command(["check", "path/of/exile.rb"])
 
-      assert_includes string_io.string, violation_message
+      assert_includes string_io.string, offense.to_s
       assert_includes string_io.string, "1 offense detected"
       assert_includes string_io.string, "E\n"
       refute success
@@ -56,8 +60,7 @@ module Packwerk
     test "#execute_command with the subcommand check traps the interrupt signal" do
       interrupt_message = "Manually interrupted. Violations caught so far are listed below:"
       violation_message = "This is a violation of code health."
-      offense = FakeOffense.new
-      offense.stubs(:to_s).returns(violation_message)
+      offense = FakeOffense.new(violation_message)
 
       run_context = FakeRunContext.new
       run_context.stubs(:process_file)
@@ -75,7 +78,6 @@ module Packwerk
       success = cli.execute_command(["check", "path/of/exile.rb"])
 
       assert_includes string_io.string, "Packwerk is inspecting 3 files"
-      assert_includes string_io.string, "E\n"
       assert_includes string_io.string, interrupt_message
       assert_includes string_io.string, violation_message
       assert_includes string_io.string, "1 offense detected"
