@@ -97,34 +97,6 @@ module Packwerk
       refute checker.invalid_reference?(reference)
     end
 
-    test "renders a sensible error message" do
-      source_package = Package.new(
-        name: "components/sales",
-        config: { "enforce_dependencies" => true, "dependencies" => ["destination_package"] }
-      )
-      checker = dependency_checker
-
-      reference =
-        Reference.new(
-          source_package,
-          "some/path.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::SomeName",
-            "some/location.rb",
-            @destination_package,
-            false
-          )
-        )
-
-      expected = <<~EXPECTED
-        Dependency violation: ::SomeName belongs to 'destination_package', but 'components/sales' does not specify a dependency on 'destination_package'.
-        Are we missing an abstraction?
-        Is the code making the reference, and the referenced constant, in the right packages?
-      EXPECTED
-
-      assert_equal(expected, checker.message_for(reference))
-    end
-
     private
 
     def dependency_checker

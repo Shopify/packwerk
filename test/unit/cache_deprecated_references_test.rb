@@ -16,7 +16,7 @@ module Packwerk
           "some/path.rb",
           ConstantDiscovery::ConstantContext.new(nil, nil, @destination_package, false)
         )
-      @offense = ReferenceOffense.new(file: "some/path.rb", message: "foo", reference: @reference, violation_type: ViolationType::Dependency)
+      @offense = ReferenceOffense.new(reference: @reference, violation_type: ViolationType::Dependency)
     end
 
     test "#add_offense adds entry" do
@@ -57,12 +57,7 @@ module Packwerk
           ConstantDiscovery::ConstantContext.new(nil, nil, nil, false)
         )
 
-      offense = ReferenceOffense.new(
-        message: "bad reference!",
-        file: reference.relative_path,
-        reference: reference,
-        violation_type: ViolationType::Dependency
-      )
+      offense = ReferenceOffense.new(reference: reference, violation_type: ViolationType::Dependency)
 
       deprecated_references = Packwerk::DeprecatedReferences.new(@source_package, ".")
       deprecated_references
@@ -90,12 +85,7 @@ module Packwerk
           )
         )
 
-      offense = ReferenceOffense.new(
-        message: "bad reference!",
-        file: reference.relative_path,
-        reference: reference,
-        violation_type: ViolationType::Dependency
-      )
+      offense = ReferenceOffense.new(reference: reference, violation_type: ViolationType::Dependency)
 
       refute @cache_deprecated_references.listed?(offense)
     end

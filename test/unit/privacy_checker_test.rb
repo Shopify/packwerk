@@ -172,29 +172,6 @@ module Packwerk
       checker.invalid_reference?(reference)
     end
 
-    test "generates nice message for violation" do
-      destination_package = Package.new(name: "destination_package", config: { "enforce_privacy" => true })
-      checker = privacy_checker
-
-      reference =
-        Reference.new(
-          @source_package,
-          "some/path.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::SomeName",
-            "some/location.rb",
-            destination_package,
-            false
-          )
-        )
-
-      assert_match(
-        "Privacy violation: '::SomeName' is private to 'destination_package' but referenced from " \
-          "'source_package'.",
-        checker.message_for(reference)
-      )
-    end
-
     private
 
     def privacy_checker

@@ -25,14 +25,5 @@ module Packwerk
       return false if reference.source_package.dependency?(reference.constant.package)
       true
     end
-
-    sig { override.params(reference: Packwerk::Reference).returns(String) }
-    def message_for(reference)
-      "Dependency violation: #{reference.constant.name} belongs to '#{reference.constant.package}', but " \
-        "'#{reference.source_package}' does not specify a dependency on " \
-        "'#{reference.constant.package}'.\n" \
-        "Are we missing an abstraction?\n" \
-        "Is the code making the reference, and the referenced constant, in the right packages?\n"
-    end
   end
 end

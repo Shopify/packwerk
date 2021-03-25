@@ -18,12 +18,7 @@ module Packwerk
           )
         )
 
-      offense = ReferenceOffense.new(
-        file: violated_reference.relative_path,
-        message: "bad!",
-        reference: violated_reference,
-        violation_type: ViolationType::Dependency
-      )
+      offense = ReferenceOffense.new(reference: violated_reference, violation_type: ViolationType::Dependency)
 
       deprecated_references = DeprecatedReferences.new(destination_package, "test/fixtures/deprecated_references.yml")
 
@@ -148,12 +143,7 @@ module Packwerk
           )
         )
 
-      offense = ReferenceOffense.new(
-        file: reference.relative_path,
-        message: "bad!",
-        reference: reference,
-        violation_type: ViolationType::Privacy
-      )
+      offense = ReferenceOffense.new(reference: reference, violation_type: ViolationType::Privacy)
       deprecated_references = DeprecatedReferences.new(destination_package, "test/fixtures/deprecated_references.yml")
 
       refute deprecated_references.listed?(offense)
@@ -172,12 +162,7 @@ module Packwerk
           )
         )
 
-        offense = ReferenceOffense.new(
-          file: violated_reference.relative_path,
-          message: "bad!",
-          reference: violated_reference,
-          violation_type: ViolationType::Dependency
-        )
+      offense = ReferenceOffense.new(reference: violated_reference, violation_type: ViolationType::Dependency)
 
       deprecated_references = DeprecatedReferences.new(destination_package, "test/fixtures/deprecated_references.yml")
 
