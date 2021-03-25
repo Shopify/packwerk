@@ -19,17 +19,19 @@ module Packwerk
     end
 
     sig do
-      params(reference: Packwerk::Reference, violation_type: ViolationType)
+      params(offense: Packwerk::ReferenceOffense)
         .returns(T::Boolean)
     end
-    def listed?(reference, violation_type:)
+    def listed?(offense)
+      reference = offense.reference
+      violation_type = offense.violation_type
       violated_constants_found = deprecated_references.dig(reference.constant.package.name, reference.constant.name)
       return false unless violated_constants_found
 
       violated_constant_in_file = violated_constants_found.fetch("files", []).include?(reference.relative_path)
       return false unless violated_constant_in_file
 
-      violated_constants_found.fetch("violations", []).include?(violation_type.serialize)
+      violated_constants_found.fetch("violations", []).include?(offense.violation_type.serialize)
     end
 
     sig { params(reference: Packwerk::Reference, violation_type: String).void }

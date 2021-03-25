@@ -45,6 +45,15 @@ module Packwerk
       @deprecated_references.values.any?(&:stale_violations?)
     end
 
+    sig do
+      params(offense: Packwerk::ReferenceOffense)
+        .returns(T::Boolean)
+    end
+    def listed?(offense)
+      deprecated_references = deprecated_references_for(offense.reference.source_package)
+      deprecated_references.listed?(offense)
+    end
+
     private
 
     sig { params(package: Packwerk::Package).returns(Packwerk::DeprecatedReferences) }

@@ -13,7 +13,8 @@ module Packwerk
 
     sig do
       params(
-        file: String, message: String,
+        file: String,
+        message: String,
         reference: Packwerk::Reference,
         violation_type: Packwerk::ViolationType,
         location: T.nilable(Node::Location)

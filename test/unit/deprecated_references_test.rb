@@ -17,12 +17,17 @@ module Packwerk
             false
           )
         )
-      deprecated_references = DeprecatedReferences.new(destination_package, "test/fixtures/deprecated_references.yml")
 
-      assert deprecated_references.listed?(
-        violated_reference,
+      offense = ReferenceOffense.new(
+        file: violated_reference.relative_path,
+        message: "bad!",
+        reference: violated_reference,
         violation_type: ViolationType::Dependency
       )
+
+      deprecated_references = DeprecatedReferences.new(destination_package, "test/fixtures/deprecated_references.yml")
+
+      assert deprecated_references.listed?(offense)
     end
 
     test "#stale_violations? returns true if deprecated references exist but no violations can be found in code" do
@@ -142,12 +147,16 @@ module Packwerk
             false
           )
         )
-      deprecated_references = DeprecatedReferences.new(destination_package, "test/fixtures/deprecated_references.yml")
 
-      refute deprecated_references.listed?(
-        reference,
+      offense = ReferenceOffense.new(
+        file: reference.relative_path,
+        message: "bad!",
+        reference: reference,
         violation_type: ViolationType::Privacy
       )
+      deprecated_references = DeprecatedReferences.new(destination_package, "test/fixtures/deprecated_references.yml")
+
+      refute deprecated_references.listed?(offense)
     end
 
     test "#listed? returns false for a constant with the same violation in deprecated references but different file" do
@@ -162,12 +171,17 @@ module Packwerk
             false
           )
         )
+
+        offense = ReferenceOffense.new(
+          file: violated_reference.relative_path,
+          message: "bad!",
+          reference: violated_reference,
+          violation_type: ViolationType::Dependency
+        )
+
       deprecated_references = DeprecatedReferences.new(destination_package, "test/fixtures/deprecated_references.yml")
 
-      refute deprecated_references.listed?(
-        violated_reference,
-        violation_type: ViolationType::Dependency
-      )
+      refute deprecated_references.listed?(offense)
     end
 
     test "#add_entries and #dump adds constant violation to file in the appropriate format" do

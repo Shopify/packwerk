@@ -8,13 +8,13 @@ module Packwerk
   class CacheDeprecatedReferencesTest < Minitest::Test
     setup do
       @cache_deprecated_references = CacheDeprecatedReferences.new(".")
-      source_package = Package.new(name: "source_package", config: {})
-      destination_package = Package.new(name: "destination_package", config: {})
+      @source_package = Package.new(name: "source_package", config: {})
+      @destination_package = Package.new(name: "destination_package", config: {})
       @reference =
         Reference.new(
-          source_package,
+          @source_package,
           "some/path.rb",
-          ConstantDiscovery::ConstantContext.new(nil, nil, destination_package, false)
+          ConstantDiscovery::ConstantContext.new(nil, nil, @destination_package, false)
         )
       @offense = ReferenceOffense.new(file: "some/path.rb", message: "foo", reference: @reference, violation_type: ViolationType::Dependency)
     end
@@ -47,6 +47,57 @@ module Packwerk
         .returns(false)
 
       refute @cache_deprecated_references.stale_violations?
+    end
+
+    test "#listed? returns true if constant is listed in file" do
+      reference =
+        Reference.new(
+          @source_package,
+          "some/path.rb",
+          ConstantDiscovery::ConstantContext.new(nil, nil, nil, false)
+        )
+
+      offense = ReferenceOffense.new(
+        message: "bad reference!",
+        file: reference.relative_path,
+        reference: reference,
+        violation_type: ViolationType::Dependency
+      )
+
+      deprecated_references = Packwerk::DeprecatedReferences.new(@source_package, ".")
+      deprecated_references
+        .stubs(:listed?)
+        .with(offense)
+        .returns(true)
+      Packwerk::DeprecatedReferences
+        .stubs(:new)
+        .with(@source_package, "./source_package/deprecated_references.yml")
+        .returns(deprecated_references)
+
+      assert @cache_deprecated_references.listed?(offense)
+    end
+
+    test "#listed? returns false if constant is not listed in file " do
+      reference =
+        Reference.new(
+          @source_package,
+          "some/path.rb",
+          ConstantDiscovery::ConstantContext.new(
+            "::SomeName",
+            "some/location.rb",
+            @destination_package,
+            false
+          )
+        )
+
+      offense = ReferenceOffense.new(
+        message: "bad reference!",
+        file: reference.relative_path,
+        reference: reference,
+        violation_type: ViolationType::Dependency
+      )
+
+      refute @cache_deprecated_references.listed?(offense)
     end
   end
 end

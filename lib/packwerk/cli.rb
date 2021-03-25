@@ -13,7 +13,6 @@ require "packwerk/inflector"
 require "packwerk/output_style"
 require "packwerk/output_styles/plain"
 require "packwerk/run_context"
-require "packwerk/checking_deprecated_references"
 require "packwerk/commands/detect_stale_violations_command"
 require "packwerk/commands/update_deprecations_command"
 require "packwerk/commands/offense_progress_marker"
@@ -173,11 +172,17 @@ module Packwerk
         @out.puts("Manually interrupted. Violations caught so far are listed below:")
       end
 
+      cached_deprecated_references = CacheDeprecatedReferences.new(@configuration.root_path)
+      new_offenses = all_offenses.reject do |offense|
+        next false unless offense.is_a?(ReferenceOffense)
+        cached_deprecated_references.listed?(offense)
+      end
+
       @progress_formatter.finished(execution_time)
       @out.puts
-      @out.puts(offenses_formatter.show_offenses(all_offenses))
+      @out.puts(offenses_formatter.show_offenses(new_offenses))
 
-      all_offenses.empty?
+      new_offenses.empty?
     end
 
     def detect_stale_violations(paths)

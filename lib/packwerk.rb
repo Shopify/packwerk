@@ -10,7 +10,6 @@ require "packwerk/offense"
 
 require "packwerk/application_validator"
 require "packwerk/association_inspector"
-require "packwerk/checking_deprecated_references"
 require "packwerk/cli"
 require "packwerk/configuration"
 require "packwerk/const_node_inspector"

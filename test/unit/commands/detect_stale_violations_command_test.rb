@@ -9,8 +9,6 @@ module Packwerk
       test "#run returns status code 1 if stale violations" do
         stale_violations_message = "There were stale violations found, please run `packwerk update-deprecations`"
         offense = Packwerk::Offense.new(file: "path/of/exile.rb", message: stale_violations_message)
-        detect_stale_deprecated_references = stub
-        detect_stale_deprecated_references.stubs(:stale_violations?).returns(true)
 
         progress_formatter = stub
         progress_formatter.stubs(:started)
