@@ -79,7 +79,7 @@ module Packwerk
           file.write("class TimelineComment; belongs_to :order; end")
           file.flush
 
-          assert_successful_run("update-deprecations")
+          refute_successful_run("update-deprecations")
 
           assert(File.exist?(timeline_deprecated_reference_path),
             "expected new deprecated_reference for timeline package to be created")

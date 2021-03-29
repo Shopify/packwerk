@@ -43,7 +43,8 @@ module Packwerk
             false
           )
         )
-      deprecated_references.add_entries(reference, "dependency")
+      offense = ReferenceOffense.new(reference: reference, violation_type: ViolationType::Dependency)
+      deprecated_references.add_entries(offense)
       refute deprecated_references.stale_violations?
     end
 
@@ -61,6 +62,8 @@ module Packwerk
             false
           )
         )
+      first_offense = ReferenceOffense.new(reference: first_violated_reference, violation_type: ViolationType::Dependency)
+
       second_violated_reference =
         Reference.new(
           nil,
@@ -72,10 +75,11 @@ module Packwerk
             false
           )
         )
+      second_offense = ReferenceOffense.new(reference: second_violated_reference, violation_type: ViolationType::Dependency)
 
       deprecated_references = DeprecatedReferences.new(package, "test/fixtures/deprecated_references.yml")
-      deprecated_references.add_entries(first_violated_reference, "dependency")
-      deprecated_references.add_entries(second_violated_reference, "dependency")
+      deprecated_references.add_entries(first_offense)
+      deprecated_references.add_entries(second_offense)
       refute deprecated_references.stale_violations?
     end
 
@@ -93,6 +97,7 @@ module Packwerk
             false
           )
         )
+      first_offense = ReferenceOffense.new(reference: first_violated_reference, violation_type: ViolationType::Privacy)
       second_violated_reference =
         Reference.new(
           nil,
@@ -104,10 +109,11 @@ module Packwerk
             false
           )
         )
+      second_offense = ReferenceOffense.new(reference: second_violated_reference, violation_type: ViolationType::Privacy)
 
       deprecated_references = DeprecatedReferences.new(package, "test/fixtures/deprecated_references.yml")
-      deprecated_references.add_entries(first_violated_reference, "privacy")
-      deprecated_references.add_entries(second_violated_reference, "privacy")
+      deprecated_references.add_entries(first_offense)
+      deprecated_references.add_entries(second_offense)
       assert deprecated_references.stale_violations?
     end
 
@@ -126,7 +132,8 @@ module Packwerk
           )
         )
       deprecated_references = DeprecatedReferences.new(package, "test/fixtures/deprecated_references.yml")
-      deprecated_references.add_entries(violated_reference, "dependency")
+      offense = ReferenceOffense.new(reference: violated_reference, violation_type: ViolationType::Dependency)
+      deprecated_references.add_entries(offense)
       assert deprecated_references.stale_violations?
     end
 
@@ -192,7 +199,8 @@ module Packwerk
             )
           )
 
-        deprecated_references.add_entries(reference, "privacy")
+        offense = ReferenceOffense.new(reference: reference, violation_type: ViolationType::Privacy)
+        deprecated_references.add_entries(offense)
         deprecated_references.dump
 
         assert_equal expected_output, YAML.load_file(file)
@@ -212,61 +220,61 @@ module Packwerk
 
       Tempfile.create("test_file.yml") do |file|
         deprecated_references = DeprecatedReferences.new(destination_package, file.path)
-
-        first_package = Package.new(name: "a_package", config: {})
-        first_package_reference =
-          Reference.new(
-            nil,
-            "some/violated/path.rb",
-            ConstantDiscovery::ConstantContext.new(
-              "::Checkout::Wallet",
-              "checkout/wallet/cash_money.rb",
-              first_package,
-              false
-            )
-          )
+        offenses = []
 
         second_package = Package.new(name: "another_package", config: {})
-        second_package_first_reference =
-          Reference.new(
-            nil,
-            "some/violated/path.rb",
-            ConstantDiscovery::ConstantContext.new(
-              "::Checkout::Wallet",
-              "checkout/wallet.rb",
-              second_package,
-              false
-            )
+        second_package_first_reference = Reference.new(
+          nil,
+          "some/violated/path.rb",
+          ConstantDiscovery::ConstantContext.new(
+            "::Checkout::Wallet",
+            "checkout/wallet.rb",
+            second_package,
+            false
           )
-        second_package_second_reference =
-          Reference.new(
-            nil,
-            "a/b/c.rb",
-            ConstantDiscovery::ConstantContext.new(
-              "::Abc::Constant",
-              "abc/test/ordering/constant.rb",
-              second_package,
-              false
-            )
-          )
-        second_package_third_reference =
-          Reference.new(
-            nil,
-            "this/should/come/last.rb",
-            ConstantDiscovery::ConstantContext.new(
-              "::Abc::Constant",
-              "abc/test/ordering/constant.rb",
-              second_package,
-              false
-            )
-          )
+        )
+        offenses << ReferenceOffense.new(reference: second_package_first_reference, violation_type: ViolationType::Privacy)
+        offenses << ReferenceOffense.new(reference: second_package_first_reference, violation_type: ViolationType::Dependency)
 
-        deprecated_references.add_entries(second_package_first_reference, "privacy")
-        deprecated_references.add_entries(second_package_first_reference, "dependency")
-        deprecated_references.add_entries(second_package_second_reference, "dependency")
-        deprecated_references.add_entries(second_package_second_reference, "dependency")
-        deprecated_references.add_entries(second_package_third_reference, "dependency")
-        deprecated_references.add_entries(first_package_reference, "privacy")
+        second_package_second_reference = Reference.new(
+          nil,
+          "a/b/c.rb",
+          ConstantDiscovery::ConstantContext.new(
+            "::Abc::Constant",
+            "abc/test/ordering/constant.rb",
+            second_package,
+            false
+          )
+        )
+        offenses << ReferenceOffense.new(reference: second_package_second_reference, violation_type: ViolationType::Dependency)
+        offenses << ReferenceOffense.new(reference: second_package_second_reference, violation_type: ViolationType::Dependency)
+
+        second_package_third_reference = Reference.new(
+          nil,
+          "this/should/come/last.rb",
+          ConstantDiscovery::ConstantContext.new(
+            "::Abc::Constant",
+            "abc/test/ordering/constant.rb",
+            second_package,
+            false
+          )
+        )
+        offenses << ReferenceOffense.new(reference: second_package_third_reference, violation_type: ViolationType::Dependency)
+
+        first_package = Package.new(name: "a_package", config: {})
+        first_package_reference = Reference.new(
+          nil,
+          "some/violated/path.rb",
+          ConstantDiscovery::ConstantContext.new(
+            "::Checkout::Wallet",
+            "checkout/wallet/cash_money.rb",
+            first_package,
+            false
+          )
+        )
+        offenses << ReferenceOffense.new(reference: first_package_reference, violation_type: ViolationType::Privacy)
+
+        offenses.each { |offense| deprecated_references.add_entries(offense) }
 
         deprecated_references.dump
 

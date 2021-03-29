@@ -24,7 +24,7 @@ module Packwerk
 
       Packwerk::DeprecatedReferences.any_instance
         .expects(:add_entries)
-        .with(@reference, "dependency")
+        .with(@offense)
 
       @cache_deprecated_references.add_offense(@offense)
     end

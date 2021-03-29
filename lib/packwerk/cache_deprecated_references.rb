@@ -25,13 +25,11 @@ module Packwerk
     end
 
     sig do
-      params(
-        offense: Packwerk::ReferenceOffense
-      ).void
+      params(reference_offense: Packwerk::ReferenceOffense).void
     end
-    def add_offense(offense)
-      deprecated_references = deprecated_references_for(offense.reference.source_package)
-      deprecated_references.add_entries(offense.reference, offense.violation_type.serialize)
+    def add_offense(reference_offense)
+      deprecated_references = deprecated_references_for(reference_offense.reference.source_package)
+      deprecated_references.add_entries(reference_offense)
     end
 
     def dump_deprecated_references_files
@@ -43,6 +41,11 @@ module Packwerk
     sig { returns(T::Boolean) }
     def stale_violations?
       @deprecated_references.values.any?(&:stale_violations?)
+    end
+
+    sig { returns(T::Boolean) }
+    def new_offenses?
+      @deprecated_references.values.any?(&:new_offenses?)
     end
 
     sig do

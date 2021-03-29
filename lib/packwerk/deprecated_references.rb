@@ -16,7 +16,10 @@ module Packwerk
       @package = package
       @filepath = filepath
       @new_entries = {}
+      @new_offenses = []
     end
+
+    attr_reader :new_offenses
 
     sig do
       params(offense: Packwerk::ReferenceOffense)
@@ -34,8 +37,11 @@ module Packwerk
       violated_constants_found.fetch("violations", []).include?(offense.violation_type.serialize)
     end
 
-    sig { params(reference: Packwerk::Reference, violation_type: String).void }
-    def add_entries(reference, violation_type)
+    sig { params(reference_offense: Packwerk::ReferenceOffense).void }
+    def add_entries(reference_offense)
+      new_offenses << reference_offense
+      reference = reference_offense.reference
+      violation_type = reference_offense.violation_type.serialize
       package_violations = @new_entries.fetch(reference.constant.package.name, {})
       entries_for_file = package_violations[reference.constant.name] ||= {}
 
@@ -46,6 +52,11 @@ module Packwerk
       entries_for_file["files"] << reference.relative_path.to_s
 
       @new_entries[reference.constant.package.name] = package_violations
+    end
+
+    sig { returns(T::Boolean) }
+    def new_offenses?
+      new_offenses.any? { |offense| !listed?(offense) }
     end
 
     sig { returns(T::Boolean) }

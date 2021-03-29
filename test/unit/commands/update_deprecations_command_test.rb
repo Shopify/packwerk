@@ -29,9 +29,18 @@ module Packwerk
       end
 
       test "#run returns exit code 1 when there are offenses" do
-        offense = Offense.new(file: "path/of/exile.rb", message: "something")
+        source_package = Package.new(name: ".", config: {})
+        destination_package = Package.new(name: "destination_package", config: {})
+        reference =
+          Reference.new(
+            source_package,
+            "some/path.rb",
+            ConstantDiscovery::ConstantContext.new("::SomethingSpecial", "some/location.rb", destination_package, false)
+          )
+        offense = ReferenceOffense.new(reference: reference, violation_type: ViolationType::Privacy)
         run_context = RunContext.new(root_path: ".", load_paths: ".")
         run_context.stubs(:process_file).returns([offense])
+        CacheDeprecatedReferences.any_instance.stubs(:dump_deprecated_references_files).returns(nil)
 
         string_io = StringIO.new
         style = OutputStyles::Plain.new

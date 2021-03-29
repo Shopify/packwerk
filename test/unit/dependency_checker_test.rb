@@ -77,26 +77,6 @@ module Packwerk
       refute checker.invalid_reference?(reference)
     end
 
-    test "allows reference if it is in the deprecated references file" do
-      source_package = Package.new(name: "components/sales", config: { "enforce_dependencies" => true })
-
-      reference =
-        Reference.new(
-          source_package,
-          "some/path.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::SomeName",
-            "some/location.rb",
-            @destination_package,
-            false
-          )
-        )
-
-      # create checker after reference is added to deprecated references list, as checker reads list on instantiation
-      checker = dependency_checker
-      refute checker.invalid_reference?(reference)
-    end
-
     private
 
     def dependency_checker

@@ -37,7 +37,9 @@ module Packwerk
       def run
         @progress_formatter.started(@files)
 
-        all_offenses = T.let([], T.untyped)
+        deprecated_references = CacheDeprecatedReferences.new(@configuration.root_path)
+        new_offenses = false
+
         execution_time = Benchmark.realtime do
           all_offenses = Parallel.flat_map(@files) do |path|
             run_context.process_file(file: path).tap do |offenses|
@@ -46,17 +48,18 @@ module Packwerk
             end
           end
 
-          deprecated_references = CacheDeprecatedReferences.new(@configuration.root_path)
           all_offenses.each do |offense|
             next unless offense.is_a?(ReferenceOffense)
             deprecated_references.add_offense(offense)
           end
 
+          new_offenses = deprecated_references.new_offenses?
+
           deprecated_references.dump_deprecated_references_files
         end
 
         @progress_formatter.finished(execution_time)
-        calculate_result([])
+        calculate_result(new_offenses)
       end
 
       private
@@ -66,9 +69,9 @@ module Packwerk
         @run_context ||= RunContext.from_configuration(@configuration)
       end
 
-      sig { params(all_offenses: T::Array[T.nilable(::Packwerk::Offense)]).returns(Result) }
-      def calculate_result(all_offenses)
-        result_status = all_offenses.empty?
+      sig { params(new_offenses: T::Boolean).returns(Result) }
+      def calculate_result(new_offenses)
+        result_status = !new_offenses
         message = "✅ `deprecated_references.yml` has been updated."
 
         Result.new(message: message, status: result_status)

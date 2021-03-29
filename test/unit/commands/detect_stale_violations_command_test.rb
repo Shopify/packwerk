@@ -20,6 +20,7 @@ module Packwerk
 
         FilesForProcessing.stubs(fetch: ["path/of/exile.rb"])
         RunContext.stubs(from_configuration: run_context)
+        CacheDeprecatedReferences.any_instance.stubs(:stale_violations?).returns(true)
 
         detect_stale_violations_command = Commands::DetectStaleViolationsCommand.new(
           files: ["path/of/exile.rb"],
