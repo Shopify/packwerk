@@ -113,13 +113,14 @@ module Packwerk
     end
 
     def generate_configs
+      root_path = @configuration.root_path
       configuration_file = Packwerk::Generators::ConfigurationFile.generate(
-        load_paths: Packwerk::ApplicationLoadPaths.extract_relevant_paths,
-        root: @configuration.root_path,
+        load_paths: Packwerk::ApplicationLoadPaths.extract_relevant_paths(root_path),
+        root: root_path,
         out: @out
       )
-      inflections_file = Packwerk::Generators::InflectionsFile.generate(root: @configuration.root_path, out: @out)
-      root_package = Packwerk::Generators::RootPackage.generate(root: @configuration.root_path, out: @out)
+      inflections_file = Packwerk::Generators::InflectionsFile.generate(root: root_path, out: @out)
+      root_package = Packwerk::Generators::RootPackage.generate(root: root_path, out: @out)
 
       success = configuration_file && inflections_file && root_package
 
@@ -204,10 +205,6 @@ module Packwerk
     end
 
     def validate(_paths)
-      warn("`packwerk validate` should be run within the application. "\
-        "Generate the bin script using `packwerk init` and"\
-        " use `bin/packwerk validate` instead.") unless defined?(::Rails)
-
       @progress_formatter.started_validation do
         checker = Packwerk::ApplicationValidator.new(
           config_file_path: @configuration.config_path,

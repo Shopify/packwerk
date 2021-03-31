@@ -147,6 +147,8 @@ module Packwerk
     def check_inflection_file
       inflections_file = @configuration.inflections_file
 
+      ApplicationLoader.ensure_app_loaded(@configuration.root_path)
+
       application_inflections = ActiveSupport::Inflector.inflections
       packwerk_inflections = Packwerk::Inflector.from_file(inflections_file).inflections
 

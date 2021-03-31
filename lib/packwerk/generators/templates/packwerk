@@ -15,8 +15,6 @@ rescue LoadError => e
   raise unless e.message.include?("spring")
 end
 
-require File.expand_path("../config/environment", __dir__)
-
 require "packwerk"
 
 cli = Packwerk::Cli.new

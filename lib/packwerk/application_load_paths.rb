@@ -8,18 +8,13 @@ module Packwerk
     class << self
       extend T::Sig
 
-      sig { returns(T::Array[String]) }
-      def extract_relevant_paths
-        assert_application_booted
+      sig { params(root_path: Pathname).returns(T::Array[String]) }
+      def extract_relevant_paths(root_path)
+        ApplicationLoader.ensure_app_loaded(root_path)
         all_paths = extract_application_autoload_paths
         relevant_paths = filter_relevant_paths(all_paths)
         assert_load_paths_present(relevant_paths)
         relative_path_strings(relevant_paths)
-      end
-
-      sig { void }
-      def assert_application_booted
-        raise "The application needs to be booted to extract load paths" unless defined?(::Rails)
       end
 
       sig { returns(T::Array[String]) }
