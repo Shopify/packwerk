@@ -19,15 +19,21 @@ module Packwerk
     FakeResult = Struct.new(:ok?, :error_value)
 
     class FakeOffense < Packwerk::Offense
-      def initialize; end
+      def initialize
+        super
+      end
     end
 
     class FakeRunContext < Packwerk::RunContext
-      def initialize; end
+      def initialize
+        super
+      end
     end
 
     class FakeConfiguration < Packwerk::Configuration
-      def initialize; end
+      def initialize
+        super
+      end
     end
 
     test "#execute_command with the subcommand check starts processing files" do
