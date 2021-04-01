@@ -134,11 +134,15 @@ GEM
     marcel (1.0.0)
     method_source (1.0.0)
     mini_mime (1.0.3)
+    mini_portile2 (2.5.0)
     minitest (5.14.4)
     minitest-focus (1.2.1)
       minitest (>= 4, < 6)
     mocha (1.12.0)
     nio4r (2.5.7)
+    nokogiri (1.11.2)
+      mini_portile2 (~> 2.5.0)
+      racc (~> 1.4)
     nokogiri (1.11.2-x86_64-darwin)
       racc (~> 1.4)
     parallel (1.20.1)
@@ -188,7 +192,14 @@ GEM
     sorbet (0.5.6360)
       sorbet-static (= 0.5.6360)
     sorbet-runtime (0.5.6360)
+    sorbet-static (0.5.6360-universal-darwin-14)
+    sorbet-static (0.5.6360-universal-darwin-15)
+    sorbet-static (0.5.6360-universal-darwin-16)
+    sorbet-static (0.5.6360-universal-darwin-17)
+    sorbet-static (0.5.6360-universal-darwin-18)
+    sorbet-static (0.5.6360-universal-darwin-19)
     sorbet-static (0.5.6360-universal-darwin-20)
+    sorbet-static (0.5.6360-x86_64-linux)
     spoom (1.1.0)
       colorize
       sorbet (>= 0.5.6347)
@@ -220,6 +231,7 @@ GEM
     zeitwerk (2.4.2)
 
 PLATFORMS
+  ruby
   x86_64-darwin-20
 
 DEPENDENCIES
