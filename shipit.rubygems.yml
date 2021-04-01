@@ -1,2 +1,5 @@
 dependencies:
   override: []
+deploy:
+  override:
+  - release-gem packwerk.gemspec rake release
