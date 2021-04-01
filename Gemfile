@@ -5,8 +5,6 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}.git" }
 
 gemspec
 
-# Specify the same dependency sources as the application Gemfile
-
 gem("spring")
 gem("rails", github: "rails/rails", branch: "main")
 gem("constant_resolver", require: false)
