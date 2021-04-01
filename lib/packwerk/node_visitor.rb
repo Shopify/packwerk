@@ -10,7 +10,7 @@ module Packwerk
     end
 
     def visit(node, ancestors:, result:)
-      offense = @node_processor.call(node, ancestors: ancestors)
+      offense = @node_processor.call(node, ancestors)
       result << offense if offense
 
       child_ancestors = [node] + ancestors

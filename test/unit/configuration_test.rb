@@ -17,11 +17,11 @@ module Packwerk
 
     test ".from_path raises ArgumentError if path does not exist" do
       File.expects(:exist?).with("foo").returns(false)
-      error = assert_raises ArgumentError do
+      error = assert_raises(ArgumentError) do
         Configuration.from_path("foo")
       end
 
-      assert_equal("#{File.expand_path('foo')} does not exist", error.message)
+      assert_equal("#{File.expand_path("foo")} does not exist", error.message)
     end
 
     test ".from_path uses packwerk config when it exists" do

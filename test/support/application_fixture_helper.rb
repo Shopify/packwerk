@@ -67,6 +67,6 @@ module ApplicationFixtureHelper
   end
 
   def fixture_path
-    File.join(TEMP_FIXTURE_DIR, "#{name}-#{Time.now.strftime('%Y_%m_%d_%H_%M_%S')}")
+    File.join(TEMP_FIXTURE_DIR, "#{name}-#{Time.now.strftime("%Y_%m_%d_%H_%M_%S")}")
   end
 end
