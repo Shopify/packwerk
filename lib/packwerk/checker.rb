@@ -16,8 +16,5 @@ module Packwerk
 
     sig { params(reference: Reference, reference_lister: ReferenceLister).returns(T::Boolean).abstract }
     def invalid_reference?(reference, reference_lister); end
-
-    sig { params(reference: Reference).returns(String).abstract }
-    def message_for(reference); end
   end
 end
