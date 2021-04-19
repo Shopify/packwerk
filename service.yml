@@ -1,6 +1,3 @@
-# https://services.shopify.io/services/packwerk/production
-org_line: Kernel
-owners: Shopify/core-stewardship
 classification: library
 slack_channels:
-  - core-stewardship
+- core-stewardship
