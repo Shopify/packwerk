@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require "packwerk/node"
-require "packwerk/offense"
+require "packwerk/reference_offense"
 require "packwerk/checker"
 require "packwerk/reference_lister"
 
@@ -36,26 +36,19 @@ module Packwerk
     private
 
     def check_reference(reference, node)
-      return nil unless (message = failed_check(reference))
+      return nil unless (failing_checker = failed_check(reference))
 
-      constant = reference.constant
-
-      Packwerk::Offense.new(
+      Packwerk::ReferenceOffense.new(
         location: Node.location(node),
-        file: reference.relative_path,
-        message: <<~EOS
-          #{message}
-          Inference details: this is a reference to #{constant.name} which seems to be defined in #{constant.location}.
-          To receive help interpreting or resolving this error message, see: https://github.com/Shopify/packwerk/blob/main/TROUBLESHOOT.md#Troubleshooting-violations
-        EOS
+        reference: reference,
+        violation_type: failing_checker.violation_type
       )
     end
 
     def failed_check(reference)
-      failing_checker = @checkers.find do |checker|
+      @checkers.find do |checker|
         checker.invalid_reference?(reference, @reference_lister)
       end
-      failing_checker&.message_for(reference)
     end
   end
 end
