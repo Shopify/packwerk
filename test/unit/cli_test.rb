@@ -24,10 +24,7 @@ module Packwerk
       offense = Offense.new(file: file_path, message: violation_message)
 
       configuration = Configuration.new
-      run_context = RunContext.from_configuration(
-        configuration,
-        reference_lister: CheckingDeprecatedReferences.new(configuration.root_path)
-      )
+      run_context = RunContext.from_configuration(configuration)
       run_context.stubs(:process_file).at_least_once.returns([offense])
 
       string_io = StringIO.new
@@ -52,10 +49,7 @@ module Packwerk
       offense = Offense.new(file: file_path, message: violation_message)
 
       configuration = Configuration.new
-      run_context = RunContext.from_configuration(
-        configuration,
-        reference_lister: CheckingDeprecatedReferences.new(configuration.root_path)
-      )
+      run_context = RunContext.from_configuration(configuration)
       run_context.stubs(:process_file)
         .at_least(2)
         .returns([offense])

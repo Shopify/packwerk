@@ -5,11 +5,11 @@ require "test_helper"
 
 module Packwerk
   class ReferenceOffenseTest < Minitest::Test
-    test "generates a sensible message for privacy violations" do
+    setup do
       destination_package = Package.new(name: "destination_package", config: { "enforce_privacy" => true })
       source_package = Package.new(name: "source_package", config: nil)
 
-      reference =
+      @reference =
         Reference.new(
           source_package,
           "some/path.rb",
@@ -20,7 +20,15 @@ module Packwerk
             false
           )
         )
-      offense = ReferenceOffense.new(reference: reference, violation_type: ViolationType::Privacy)
+    end
+
+    test "has its file attribute set to the relative path of the reference" do
+      offense = ReferenceOffense.new(reference: @reference, violation_type: ViolationType::Privacy)
+      assert_equal(@reference.relative_path, offense.file)
+    end
+
+    test "generates a sensible message for privacy violations" do
+      offense = ReferenceOffense.new(reference: @reference, violation_type: ViolationType::Privacy)
 
       assert_match(
         "Privacy violation: '::SomeName' is private to 'destination_package' but referenced from " \
@@ -29,21 +37,7 @@ module Packwerk
     end
 
     test "generates a sensible message for dependency violations" do
-      destination_package = Package.new(name: "destination_package", config: { "enforce_privacy" => true })
-      source_package = Package.new(name: "source_package", config: nil)
-
-      reference =
-        Reference.new(
-          source_package,
-          "some/path.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::SomeName",
-            "some/location.rb",
-            destination_package,
-            false
-          )
-        )
-      offense = ReferenceOffense.new(reference: reference, violation_type: ViolationType::Dependency)
+      offense = ReferenceOffense.new(reference: @reference, violation_type: ViolationType::Dependency)
 
       expected = <<~EXPECTED
         Dependency violation: ::SomeName belongs to 'destination_package', but 'source_package' does not specify a dependency on 'destination_package'.

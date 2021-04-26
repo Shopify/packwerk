@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require "packwerk/node"
-require "packwerk/offense"
+require "packwerk/reference_offense"
 require "packwerk/checker"
 
 module Packwerk
@@ -22,7 +22,7 @@ module Packwerk
       @checkers = checkers
     end
 
-    sig { params(node: Parser::AST::Node, ancestors: T::Array[Parser::AST::Node]).returns(T.nilable(Offense)) }
+    sig { params(node: Parser::AST::Node, ancestors: T::Array[Parser::AST::Node]).returns(T.nilable(T::Array[ReferenceOffense])) }
     def call(node, ancestors)
       if Node.method_call?(node) || Node.constant?(node)
         reference = @reference_extractor.reference_from_node(node, ancestors: ancestors, file_path: @filename)

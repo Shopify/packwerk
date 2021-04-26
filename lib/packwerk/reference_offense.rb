@@ -43,10 +43,10 @@ module Packwerk
       end
 
       <<~EOS
-      #{violation_message}
-      Inference details: this is a reference to #{reference.constant.name} which seems to be defined in #{reference.constant.location}.
-      To receive help interpreting or resolving this error message, see: https://github.com/Shopify/packwerk/blob/main/TROUBLESHOOT.md#Troubleshooting-violations
-    EOS
+        #{violation_message}
+        Inference details: this is a reference to #{reference.constant.name} which seems to be defined in #{reference.constant.location}.
+        To receive help interpreting or resolving this error message, see: https://github.com/Shopify/packwerk/blob/main/TROUBLESHOOT.md#Troubleshooting-violations
+      EOS
     end
   end
 end
