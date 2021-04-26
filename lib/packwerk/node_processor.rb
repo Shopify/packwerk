@@ -22,7 +22,8 @@ module Packwerk
       @checkers = checkers
     end
 
-    def call(node, ancestors:)
+    sig { params(node: Parser::AST::Node, ancestors: T::Array[Parser::AST::Node]).returns(T.nilable(Offense)) }
+    def call(node, ancestors)
       if Node.method_call?(node) || Node.constant?(node)
         reference = @reference_extractor.reference_from_node(node, ancestors: ancestors, file_path: @filename)
         check_reference(reference, node) if reference

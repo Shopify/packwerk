@@ -10,7 +10,7 @@ module Packwerk
     end
 
     def visit(node, ancestors:, result:)
-      offenses = @node_processor.call(node, ancestors: ancestors)
+      offenses = @node_processor.call(node, ancestors)
       result.concat(offenses) unless offenses.nil? || offenses.empty?
 
       child_ancestors = [node] + ancestors

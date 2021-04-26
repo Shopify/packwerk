@@ -18,38 +18,26 @@ module Packwerk
 
     FakeResult = Struct.new(:ok?, :error_value)
 
-    class FakeOffense < Packwerk::Offense
-      def initialize(message)
-        @message = message
-      end
-
-      def to_s(*args)
-        @message
-      end
-    end
-
-    class FakeRunContext < Packwerk::RunContext
-      def initialize; end
-    end
-
-    class FakeConfiguration < Packwerk::Configuration
-      def initialize; end
-    end
-
     test "#execute_command with the subcommand check starts processing files" do
-      offense = FakeOffense.new("This is a violation of code health.")
+      file_path = "path/of/exile.rb"
+      violation_message = "This is a violation of code health."
+      offense = Offense.new(file: file_path, message: violation_message)
 
-      run_context = FakeRunContext.new
+      configuration = Configuration.new
+      run_context = RunContext.from_configuration(
+        configuration,
+        reference_lister: CheckingDeprecatedReferences.new(configuration.root_path)
+      )
       run_context.stubs(:process_file).at_least_once.returns([offense])
 
       string_io = StringIO.new
 
-      cli = ::Packwerk::Cli.new(out: string_io, run_context: run_context)
+      cli = ::Packwerk::Cli.new(out: string_io, configuration: configuration, run_context: run_context)
 
       # TODO: Dependency injection for a "target finder" (https://github.com/Shopify/packwerk/issues/164)
-      ::Packwerk::FilesForProcessing.stubs(fetch: ["path/of/exile.rb"])
+      ::Packwerk::FilesForProcessing.stubs(fetch: [file_path])
 
-      success = cli.execute_command(["check", "path/of/exile.rb"])
+      success = cli.execute_command(["check", file_path])
 
       assert_includes string_io.string, offense.to_s
       assert_includes string_io.string, "1 offense detected"
@@ -58,11 +46,16 @@ module Packwerk
     end
 
     test "#execute_command with the subcommand check traps the interrupt signal" do
+      file_path = "path/of/exile.rb"
       interrupt_message = "Manually interrupted. Violations caught so far are listed below:"
       violation_message = "This is a violation of code health."
-      offense = FakeOffense.new(violation_message)
+      offense = Offense.new(file: file_path, message: violation_message)
 
-      run_context = FakeRunContext.new
+      configuration = Configuration.new
+      run_context = RunContext.from_configuration(
+        configuration,
+        reference_lister: CheckingDeprecatedReferences.new(configuration.root_path)
+      )
       run_context.stubs(:process_file)
         .at_least(2)
         .returns([offense])
@@ -71,11 +64,11 @@ module Packwerk
 
       string_io = StringIO.new
 
-      cli = ::Packwerk::Cli.new(out: string_io, run_context: run_context)
+      cli = ::Packwerk::Cli.new(out: string_io, configuration: configuration, run_context: run_context)
 
-      ::Packwerk::FilesForProcessing.stubs(fetch: ["path/of/exile.rb", "test.rb", "foo.rb"])
+      ::Packwerk::FilesForProcessing.stubs(fetch: [file_path, "test.rb", "foo.rb"])
 
-      success = cli.execute_command(["check", "path/of/exile.rb"])
+      success = cli.execute_command(["check", file_path])
 
       assert_includes string_io.string, "Packwerk is inspecting 3 files"
       assert_includes string_io.string, interrupt_message
@@ -117,7 +110,7 @@ module Packwerk
 
     test "#execute_command with init subcommand runs application validation generator for non-Rails app" do
       string_io = StringIO.new
-      configuration = FakeConfiguration.new
+      configuration = Configuration.new
       configuration.stubs(
         root_path: @temp_dir,
         load_paths: ["path"],
@@ -136,7 +129,7 @@ module Packwerk
 
     test "#execute_command with init subcommand runs application validation generator, fails and prints error" do
       string_io = StringIO.new
-      configuration = FakeConfiguration.new
+      configuration = Configuration.new
       configuration.stubs(
         root_path: @temp_dir,
         load_paths: ["path"],

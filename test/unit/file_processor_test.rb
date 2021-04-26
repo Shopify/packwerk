@@ -46,12 +46,12 @@ module Packwerk
     test "#call provides node processor with the correct ancestors" do
       offense = mock
       @node_processor_factory.expects(:for).returns(@node_processor)
-      @node_processor.expects(:call).with do |node, ancestors:|
+      @node_processor.expects(:call).with do |node, ancestors|
         Node.class?(node) && # class Hello; world; end
           Node.class_or_module_name(node) == "Hello" &&
           ancestors.empty?
       end
-      @node_processor.expects(:call).with do |node, ancestors:|
+      @node_processor.expects(:call).with do |node, ancestors|
         parent = ancestors.first # class Hello; world; end
         Node.constant?(node) && # Hello
           Node.constant_name(node) == "Hello" &&
@@ -59,7 +59,7 @@ module Packwerk
           Node.class?(parent) &&
           Node.class_or_module_name(parent) == "Hello"
       end
-      @node_processor.expects(:call).with do |node, ancestors:|
+      @node_processor.expects(:call).with do |node, ancestors|
         parent = ancestors.first # class Hello; world; end
         Node.method_call?(node) && # world
           Node.method_name(node) == :world &&

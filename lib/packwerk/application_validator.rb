@@ -101,26 +101,26 @@ module Packwerk
 
         if hash.key?("enforce_privacy")
           unless [TrueClass, FalseClass, Array].include?(hash["enforce_privacy"].class)
-            errors << "Invalid 'enforce_privacy' option in #{f.inspect}: #{hash['enforce_privacy'].inspect}"
+            errors << "Invalid 'enforce_privacy' option in #{f.inspect}: #{hash["enforce_privacy"].inspect}"
           end
         end
 
         if hash.key?("enforce_dependencies")
           unless [TrueClass, FalseClass].include?(hash["enforce_dependencies"].class)
-            errors << "Invalid 'enforce_dependencies' option in #{f.inspect}: #{hash['enforce_dependencies'].inspect}"
+            errors << "Invalid 'enforce_dependencies' option in #{f.inspect}: #{hash["enforce_dependencies"].inspect}"
           end
         end
 
         if hash.key?("public_path")
           unless hash["public_path"].is_a?(String)
-            errors << "'public_path' option must be a string in #{f.inspect}: #{hash['public_path'].inspect}"
+            errors << "'public_path' option must be a string in #{f.inspect}: #{hash["public_path"].inspect}"
           end
         end
 
         next unless hash.key?("dependencies")
         next if hash["dependencies"].is_a?(Array)
 
-        errors << "Invalid 'dependencies' option in #{f.inspect}: #{hash['dependencies'].inspect}"
+        errors << "Invalid 'dependencies' option in #{f.inspect}: #{hash["dependencies"].inspect}"
       end
 
       if errors.empty?
@@ -194,7 +194,7 @@ module Packwerk
       cycle_strings = dependency_graph.cycles.map do |cycle|
         cycle_strings = cycle.map(&:to_s)
         cycle_strings << cycle.first.to_s
-        "\t- #{cycle_strings.join(' → ')}"
+        "\t- #{cycle_strings.join(" → ")}"
       end
 
       if dependency_graph.acyclic?
