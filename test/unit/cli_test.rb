@@ -150,5 +150,44 @@ module Packwerk
       expected_output = "'beep boop' is not a packwerk command. See `packwerk help`.\n"
       assert_equal expected_output, @err_out.string
     end
+
+    test "#execute_command using a custom offenses class" do
+      offenses_formatter = Class.new do
+        include Packwerk::OffensesFormatter
+
+        def show_offenses(offenses)
+          ["hi i am a custom offense formatter", *offenses].join("\n")
+        end
+      end
+      file_path = "path/of/exile.rb"
+      violation_message = "This is a violation of code health."
+      offense = Offense.new(file: file_path, message: violation_message)
+
+      configuration = Configuration.new
+      run_context = RunContext.from_configuration(
+        configuration,
+        reference_lister: CheckingDeprecatedReferences.new(configuration.root_path)
+      )
+      run_context.stubs(:process_file).at_least_once.returns([offense])
+
+      string_io = StringIO.new
+
+      cli = ::Packwerk::Cli.new(
+        out: string_io,
+        configuration: configuration,
+        run_context: run_context,
+        offenses_formatter: offenses_formatter.new
+      )
+
+      # TODO: Dependency injection for a "target finder" (https://github.com/Shopify/packwerk/issues/164)
+      ::Packwerk::FilesForProcessing.stubs(fetch: [file_path])
+
+      success = cli.execute_command(["check", file_path])
+
+      assert_includes string_io.string, "hi i am a custom offense formatter"
+      assert_includes string_io.string, violation_message
+
+      refute success
+    end
   end
 end
