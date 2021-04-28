@@ -6,6 +6,7 @@ require "test_helper"
 module Packwerk
   class DependencyCheckerTest < Minitest::Test
     include ApplicationFixtureHelper
+    include FactoryHelper
 
     class CheckingDeprecatedReferencesStub
       include ReferenceLister
@@ -27,20 +28,11 @@ module Packwerk
     end
 
     test "recognizes simple cross package reference" do
+      reference = build_reference
+
       source_package = Package.new(name: "components/sales", config: { "enforce_dependencies" => true })
       checker = dependency_checker
-
-      reference =
-        Reference.new(
-          source_package,
-          "some/path.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::SomeName",
-            "some/location.rb",
-            @destination_package,
-            false
-          )
-        )
+      reference = build_reference(source_package: source_package)
 
       assert checker.invalid_reference?(reference, @reference_lister)
     end
@@ -48,18 +40,7 @@ module Packwerk
     test "ignores violations when enforcement is disabled in that package" do
       source_package = Package.new(name: "components/sales", config: { "enforce_dependencies" => false })
       checker = dependency_checker
-
-      reference =
-        Reference.new(
-          source_package,
-          "some/path.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::SomeName",
-            "some/location.rb",
-            @destination_package,
-            false
-          )
-        )
+      reference = build_reference(source_package: source_package)
 
       refute checker.invalid_reference?(reference, @reference_lister)
     end
@@ -67,21 +48,10 @@ module Packwerk
     test "allows reference to constants of a declared dependency" do
       source_package = Package.new(
         name: "components/sales",
-        config: { "enforce_dependencies" => true, "dependencies" => ["destination_package"] }
+        config: { "enforce_dependencies" => true, "dependencies" => ["components/destination"] }
       )
       checker = dependency_checker
-
-      reference =
-        Reference.new(
-          source_package,
-          "some/path.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::SomeName",
-            "some/location.rb",
-            @destination_package,
-            false
-          )
-        )
+      reference = build_reference(source_package: source_package)
 
       refute checker.invalid_reference?(reference, @reference_lister)
     end
@@ -89,18 +59,7 @@ module Packwerk
     test "allows reference if it is in the deprecated references file" do
       source_package = Package.new(name: "components/sales", config: { "enforce_dependencies" => true })
       @reference_lister = CheckingDeprecatedReferencesStub.new
-
-      reference =
-        Reference.new(
-          source_package,
-          "some/path.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::SomeName",
-            "some/location.rb",
-            @destination_package,
-            false
-          )
-        )
+      reference = build_reference(source_package: source_package)
 
       # create checker after reference is added to deprecated references list, as checker reads list on instantiation
       checker = dependency_checker
