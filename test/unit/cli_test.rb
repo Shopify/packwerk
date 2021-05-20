@@ -24,15 +24,11 @@ module Packwerk
       offense = Offense.new(file: file_path, message: violation_message)
 
       configuration = Configuration.new
-      run_context = RunContext.from_configuration(
-        configuration,
-        reference_lister: CheckingDeprecatedReferences.new(configuration.root_path)
-      )
-      run_context.stubs(:process_file).at_least_once.returns([offense])
+      RunContext.any_instance.stubs(:process_file).at_least_once.returns([offense])
 
       string_io = StringIO.new
 
-      cli = ::Packwerk::Cli.new(out: string_io, configuration: configuration, run_context: run_context)
+      cli = ::Packwerk::Cli.new(out: string_io, configuration: configuration)
 
       # TODO: Dependency injection for a "target finder" (https://github.com/Shopify/packwerk/issues/164)
       ::Packwerk::FilesForProcessing.stubs(fetch: [file_path])
@@ -52,11 +48,7 @@ module Packwerk
       offense = Offense.new(file: file_path, message: violation_message)
 
       configuration = Configuration.new
-      run_context = RunContext.from_configuration(
-        configuration,
-        reference_lister: CheckingDeprecatedReferences.new(configuration.root_path)
-      )
-      run_context.stubs(:process_file)
+      RunContext.any_instance.stubs(:process_file)
         .at_least(2)
         .returns([offense])
         .raises(Interrupt)
@@ -64,7 +56,7 @@ module Packwerk
 
       string_io = StringIO.new
 
-      cli = ::Packwerk::Cli.new(out: string_io, configuration: configuration, run_context: run_context)
+      cli = ::Packwerk::Cli.new(out: string_io, configuration: configuration)
 
       ::Packwerk::FilesForProcessing.stubs(fetch: [file_path, "test.rb", "foo.rb"])
 
