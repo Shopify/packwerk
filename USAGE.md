@@ -1,22 +1,22 @@
 # Packwerk usage
 
 ## Table of Contents
-* [What problem does Packwerk solve?](#What-problem-does-Packwerk-solve?)
-* [What is a package?](#What-is-a-package?)
-  * [Package principles](#Package-principles)
-* [Getting started](#Getting-started)
-* [Setting up the configuration file](#Setting-up-the-configuration-file)
-  * [Inflections](#Inflections)
-* [Validating the package system](#Validating-the-package-system)
-* [Defining packages](#Defining-packages)
-  * [Package metadata](#Package-metadata)
-* [Types of boundary checks](#Types-of-boundary-checks)
-  * [Enforcing privacy boundary](#Enforcing-privacy-boundary)
-    * [Using public folders](#Using-public-folders)
-  * [Enforcing dependency boundary](#Enforcing-dependency-boundary)
-* [Checking for violations](#Checking-for-violations)
-* [Recording existing violations](#Recording-existing-violations)
-  * [Understanding the list of deprecated references](#Understanding-the-list-of-deprecated-references)
+* [What problem does Packwerk solve?](#what-problem-does-packwerk-solve)
+* [What is a package?](#what-is-a-package)
+  * [Package principles](#package-principles)
+* [Getting started](#getting-started)
+* [Setting up the configuration file](#setting-up-the-configuration-file)
+  * [Inflections](#inflections)
+* [Validating the package system](#validating-the-package-system)
+* [Defining packages](#defining-packages)
+  * [Package metadata](#package-metadata)
+* [Types of boundary checks](#types-of-boundary-checks)
+  * [Enforcing privacy boundary](#enforcing-privacy-boundary)
+    * [Using public folders](#using-public-folders)
+  * [Enforcing dependency boundary](#enforcing-dependency-boundary)
+* [Checking for violations](#checking-for-violations)
+* [Recording existing violations](#recording-existing-violations)
+  * [Understanding the list of deprecated references](#understanding-the-list-of-deprecated-references)
 
 ## What problem does Packwerk solve?
 Large applications need clear boundaries to avoid turning into a [ball of mud](https://en.wikipedia.org/wiki/Big_ball_of_mud). However, Ruby does not provide a good solution to enforcing boundaries between code.
