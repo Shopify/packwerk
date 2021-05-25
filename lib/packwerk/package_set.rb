@@ -3,8 +3,6 @@
 
 require "pathname"
 
-require "packwerk/package"
-
 module Packwerk
   class PackageSet
     include Enumerable

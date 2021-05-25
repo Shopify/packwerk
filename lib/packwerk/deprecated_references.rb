@@ -3,10 +3,6 @@
 
 require "yaml"
 
-require "packwerk/reference"
-require "packwerk/reference_lister"
-require "packwerk/violation_type"
-
 module Packwerk
   class DeprecatedReferences
     extend T::Sig

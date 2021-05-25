@@ -1,8 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "packwerk/reference_lister"
-
 module Packwerk
   class CheckingDeprecatedReferences
     extend T::Sig

@@ -2,10 +2,6 @@
 # frozen_string_literal: true
 
 require "benchmark"
-require "packwerk/run_context"
-require "packwerk/detect_stale_deprecated_references"
-require "packwerk/commands/offense_progress_marker"
-require "packwerk/result"
 
 module Packwerk
   class ParseRun

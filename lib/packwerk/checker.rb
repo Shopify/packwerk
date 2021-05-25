@@ -1,8 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "packwerk/reference_lister"
-
 module Packwerk
   module Checker
     extend T::Sig

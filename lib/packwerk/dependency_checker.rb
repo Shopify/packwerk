@@ -1,9 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "packwerk/violation_type"
-require "packwerk/checker"
-
 module Packwerk
   class DependencyChecker
     extend T::Sig

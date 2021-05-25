@@ -1,9 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "packwerk/constant_name_inspector"
-require "packwerk/node"
-
 module Packwerk
   # Extracts the implicit constant reference from an active record association
   class AssociationInspector

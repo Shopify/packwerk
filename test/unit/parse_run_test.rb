@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 require "test_helper"
 require "rails_test_helper"
-require "packwerk/parse_run"
 
 module Packwerk
   class ParseRunTest < Minitest::Test

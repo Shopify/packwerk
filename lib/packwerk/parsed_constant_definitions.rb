@@ -3,8 +3,6 @@
 
 require "ast/node"
 
-require "packwerk/node"
-
 module Packwerk
   class ParsedConstantDefinitions
     def initialize(root_node:)

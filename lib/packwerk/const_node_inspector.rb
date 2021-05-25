@@ -1,8 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "packwerk/constant_name_inspector"
-
 module Packwerk
   # Extracts a constant name from an AST node of type :const
   class ConstNodeInspector

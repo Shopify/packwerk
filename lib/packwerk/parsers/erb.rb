@@ -6,8 +6,6 @@ require "better_html"
 require "better_html/parser"
 require "parser/source/buffer"
 
-require "packwerk/parsers"
-
 module Packwerk
   module Parsers
     class Erb

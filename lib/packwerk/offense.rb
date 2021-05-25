@@ -3,9 +3,6 @@
 
 require "parser/source/map"
 
-require "packwerk/output_style"
-require "packwerk/output_styles/plain"
-
 module Packwerk
   class Offense
     extend T::Sig

@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 # typed: strict
 
-require "packwerk/formatters/progress_formatter"
-
 module Packwerk
   module OffenseProgressMarker
     extend T::Sig

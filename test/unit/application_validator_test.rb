@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "packwerk/application_validator"
 
 # make sure PrivateThing.constantize succeeds to pass the privacy validity check
 require "fixtures/skeleton/components/timeline/app/models/private_thing.rb"

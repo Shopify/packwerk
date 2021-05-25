@@ -1,8 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "packwerk/cache_deprecated_references"
-
 module Packwerk
   class UpdatingDeprecatedReferences < CacheDeprecatedReferences
     def dump_deprecated_references_files

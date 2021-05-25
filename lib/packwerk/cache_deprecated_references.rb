@@ -1,11 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "packwerk/deprecated_references"
-require "packwerk/reference"
-require "packwerk/reference_lister"
-require "packwerk/violation_type"
-
 module Packwerk
   class CacheDeprecatedReferences
     extend T::Sig

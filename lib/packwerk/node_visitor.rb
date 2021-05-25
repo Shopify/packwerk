@@ -1,8 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-require "packwerk/node"
-
 module Packwerk
   class NodeVisitor
     def initialize(node_processor:)

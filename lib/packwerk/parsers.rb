@@ -1,8 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "packwerk/offense"
-
 module Packwerk
   module Parsers
     autoload :Erb, "packwerk/parsers/erb"
