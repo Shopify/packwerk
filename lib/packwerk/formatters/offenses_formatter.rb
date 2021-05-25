@@ -1,7 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "benchmark"
 require "packwerk/inflector"
 require "packwerk/output_style"
 require "packwerk/output_styles/plain"
