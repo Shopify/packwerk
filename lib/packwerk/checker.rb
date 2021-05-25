@@ -1,7 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "sorbet-runtime"
 require "packwerk/reference_lister"
 
 module Packwerk

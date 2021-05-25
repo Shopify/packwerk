@@ -7,7 +7,6 @@ require "constant_resolver"
 require "fileutils"
 
 require "packwerk/offense"
-
 require "packwerk/application_validator"
 require "packwerk/association_inspector"
 require "packwerk/checking_deprecated_references"

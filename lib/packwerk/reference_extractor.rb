@@ -1,8 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "sorbet-runtime"
-
 require "packwerk/constant_discovery"
 require "packwerk/constant_name_inspector"
 require "packwerk/node"

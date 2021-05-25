@@ -1,7 +1,5 @@
 # typed: true
 # frozen_string_literal: true
-require "benchmark"
-require "sorbet-runtime"
 
 require "packwerk/application_load_paths"
 require "packwerk/application_validator"

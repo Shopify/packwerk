@@ -1,6 +1,6 @@
 # typed: true
 # frozen_string_literal: true
-require "sorbet-runtime"
+
 require "benchmark"
 require "packwerk/run_context"
 require "packwerk/detect_stale_deprecated_references"

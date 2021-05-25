@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 # typed: strict
-require "sorbet-runtime"
+
 require "packwerk/formatters/progress_formatter"
 
 module Packwerk
