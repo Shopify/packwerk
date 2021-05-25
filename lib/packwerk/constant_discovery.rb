@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "constant_resolver"
+
 module Packwerk
   # Get information about (partially qualified) constants without loading the application code.
   # Information gathered: Fully qualified name, path to file containing the definition, package,
