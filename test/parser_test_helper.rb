@@ -1,8 +1,6 @@
 # typed: false
 # frozen_string_literal: true
 
-require "packwerk/parsers/ruby"
-
 module ParserTestHelper
   class << self
     def parse(source)

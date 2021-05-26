@@ -1,9 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "packwerk/constant_name_inspector"
-require "packwerk/checker"
-
 module Packwerk
   class NodeProcessorFactory < T::Struct
     extend T::Sig

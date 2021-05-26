@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "packwerk/detect_stale_deprecated_references"
+
 module Packwerk
   class DetectStaleDeprecatedReferencesTest < Minitest::Test
     setup do

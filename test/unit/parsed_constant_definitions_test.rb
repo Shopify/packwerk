@@ -4,8 +4,6 @@
 require "test_helper"
 require "parser_test_helper"
 
-require "packwerk/node"
-
 module Packwerk
   class ParsedConstantDefinitionsTest < Minitest::Test
     test "recognizes constant assignment" do

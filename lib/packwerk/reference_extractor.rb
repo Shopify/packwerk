@@ -1,14 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "sorbet-runtime"
-
-require "packwerk/constant_discovery"
-require "packwerk/constant_name_inspector"
-require "packwerk/node"
-require "packwerk/parsed_constant_definitions"
-require "packwerk/reference"
-
 module Packwerk
   # extracts a possible constant reference from a given AST node
   class ReferenceExtractor

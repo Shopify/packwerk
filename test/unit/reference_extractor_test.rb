@@ -4,8 +4,6 @@
 require "test_helper"
 require "parser_test_helper"
 
-require "packwerk/node"
-
 module Packwerk
   class ReferenceExtractorTest < Minitest::Test
     include ApplicationFixtureHelper

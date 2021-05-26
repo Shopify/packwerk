@@ -1,11 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "sorbet-runtime"
-
-require "packwerk/reference"
-require "packwerk/violation_type"
-
 module Packwerk
   module ReferenceLister
     extend T::Sig

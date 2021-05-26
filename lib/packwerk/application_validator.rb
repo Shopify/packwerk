@@ -6,11 +6,6 @@ require "constant_resolver"
 require "pathname"
 require "yaml"
 
-require "packwerk/package_set"
-require "packwerk/graph"
-require "packwerk/inflector"
-require "packwerk/application_load_paths"
-
 module Packwerk
   class ApplicationValidator
     def initialize(config_file_path:, configuration:)

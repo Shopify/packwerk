@@ -1,20 +1,5 @@
 # typed: true
 # frozen_string_literal: true
-require "benchmark"
-require "sorbet-runtime"
-
-require "packwerk/application_load_paths"
-require "packwerk/application_validator"
-require "packwerk/configuration"
-require "packwerk/files_for_processing"
-require "packwerk/formatters/offenses_formatter"
-require "packwerk/formatters/progress_formatter"
-require "packwerk/inflector"
-require "packwerk/output_style"
-require "packwerk/output_styles/plain"
-require "packwerk/updating_deprecated_references"
-require "packwerk/checking_deprecated_references"
-require "packwerk/commands/offense_progress_marker"
 
 module Packwerk
   class Cli

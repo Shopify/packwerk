@@ -3,10 +3,6 @@
 
 require "ast/node"
 
-require "packwerk/node"
-require "packwerk/offense"
-require "packwerk/parsers"
-
 module Packwerk
   class FileProcessor
     class UnknownFileTypeResult < Offense

@@ -3,10 +3,6 @@
 
 require "benchmark"
 
-require "packwerk/inflector"
-require "packwerk/output_style"
-require "packwerk/output_styles/plain"
-
 module Packwerk
   module Formatters
     class ProgressFormatter

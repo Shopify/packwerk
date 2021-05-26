@@ -1,9 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "packwerk/offense"
-require "sorbet-runtime"
-
 module Packwerk
   class ReferenceOffense < Offense
     extend T::Sig

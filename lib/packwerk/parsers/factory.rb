@@ -3,8 +3,6 @@
 
 require "singleton"
 
-require "packwerk/parsers"
-
 module Packwerk
   module Parsers
     class Factory

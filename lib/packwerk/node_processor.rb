@@ -1,11 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "packwerk/node"
-require "packwerk/reference_offense"
-require "packwerk/checker"
-require "packwerk/reference_lister"
-
 module Packwerk
   class NodeProcessor
     extend T::Sig

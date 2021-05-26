@@ -3,17 +3,6 @@
 
 require "constant_resolver"
 
-require "packwerk/association_inspector"
-require "packwerk/constant_discovery"
-require "packwerk/const_node_inspector"
-require "packwerk/dependency_checker"
-require "packwerk/file_processor"
-require "packwerk/inflector"
-require "packwerk/package_set"
-require "packwerk/privacy_checker"
-require "packwerk/reference_extractor"
-require "packwerk/node_processor_factory"
-
 module Packwerk
   class RunContext
     extend T::Sig

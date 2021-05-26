@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "ast"
-require "sorbet-runtime"
 
 module Packwerk
   # An interface describing some object that can extract a constant name from an AST node

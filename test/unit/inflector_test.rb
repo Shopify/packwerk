@@ -3,8 +3,6 @@
 
 require "test_helper"
 
-require "packwerk/inflector"
-
 module Packwerk
   class InflectorTest < Minitest::Test
     def setup
