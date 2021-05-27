@@ -28,8 +28,6 @@ module Packwerk
     end
 
     test "recognizes simple cross package reference" do
-      reference = build_reference
-
       source_package = Package.new(name: "components/sales", config: { "enforce_dependencies" => true })
       checker = dependency_checker
       reference = build_reference(source_package: source_package)

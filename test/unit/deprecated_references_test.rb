@@ -109,7 +109,6 @@ module Packwerk
     end
 
     test "#add_entries and #dump adds constant violation to file in the appropriate format" do
-
       Tempfile.create("test_file.yml") do |file|
         reference = build_reference
         deprecated_references = DeprecatedReferences.new(reference.constant.package, file.path)
