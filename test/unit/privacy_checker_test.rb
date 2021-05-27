@@ -6,12 +6,12 @@ require "test_helper"
 module Packwerk
   class PrivacyCheckerTest < Minitest::Test
     include ApplicationFixtureHelper
+    include FactoryHelper
 
     setup do
       setup_application_fixture
       use_template(:skeleton)
       @reference_lister = CheckingDeprecatedReferences.new(app_dir)
-      @source_package = Package.new(name: "source_package", config: {})
     end
 
     teardown do
@@ -19,20 +19,8 @@ module Packwerk
     end
 
     test "ignores if destination package is not enforcing" do
-      destination_package = Package.new(name: "destination_package", config: { "enforce_privacy" => false })
       checker = privacy_checker
-
-      reference =
-        Reference.new(
-          @source_package,
-          "some/path.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::SomeName",
-            "some/location.rb",
-            destination_package,
-            false
-          )
-        )
+      reference = build_reference
 
       refute checker.invalid_reference?(reference, @reference_lister)
     end
@@ -43,18 +31,7 @@ module Packwerk
         config: { "enforce_privacy" => ["::OtherConstant"] }
       )
       checker = privacy_checker
-
-      reference =
-        Reference.new(
-          @source_package,
-          "some/path.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::SomeName",
-            "some/location.rb",
-            destination_package,
-            false
-          )
-        )
+      reference = build_reference(destination_package: destination_package)
 
       refute checker.invalid_reference?(reference, @reference_lister)
     end
@@ -62,18 +39,7 @@ module Packwerk
     test "complains about private constant if enforcing privacy for everything" do
       destination_package = Package.new(name: "destination_package", config: { "enforce_privacy" => true })
       checker = privacy_checker
-
-      reference =
-        Reference.new(
-          @source_package,
-          "some/path.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::SomeName",
-            "some/location.rb",
-            destination_package,
-            false
-          )
-        )
+      reference = build_reference(destination_package: destination_package)
 
       assert checker.invalid_reference?(reference, @reference_lister)
     end
@@ -81,18 +47,7 @@ module Packwerk
     test "complains about private constant if enforcing for specific constants" do
       destination_package = Package.new(name: "destination_package", config: { "enforce_privacy" => ["::SomeName"] })
       checker = privacy_checker
-
-      reference =
-        Reference.new(
-          @source_package,
-          "some/path.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::SomeName",
-            "some/location.rb",
-            destination_package,
-            false
-          )
-        )
+      reference = build_reference(destination_package: destination_package)
 
       assert checker.invalid_reference?(reference, @reference_lister)
     end
@@ -100,18 +55,7 @@ module Packwerk
     test "complains about nested constant if enforcing for specific constants" do
       destination_package = Package.new(name: "destination_package", config: { "enforce_privacy" => ["::SomeName"] })
       checker = privacy_checker
-
-      reference =
-        Reference.new(
-          @source_package,
-          "some/path.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::SomeName::SomeOtherThing",
-            "some/location.rb",
-            destination_package,
-            false
-          )
-        )
+      reference = build_reference(destination_package: destination_package)
 
       assert checker.invalid_reference?(reference, @reference_lister)
     end
@@ -119,18 +63,7 @@ module Packwerk
     test "ignores constant that starts like enforced constant" do
       destination_package = Package.new(name: "destination_package", config: { "enforce_privacy" => ["::SomeName"] })
       checker = privacy_checker
-
-      reference =
-        Reference.new(
-          @source_package,
-          "some/path.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::SomeNameButNotQuite",
-            "some/location.rb",
-            destination_package,
-            false
-          )
-        )
+      reference = build_reference(destination_package: destination_package, constant_name: "::SomeNameButNotQuite")
 
       refute checker.invalid_reference?(reference, @reference_lister)
     end
@@ -138,37 +71,15 @@ module Packwerk
     test "ignores public constant even if enforcing privacy for everything" do
       destination_package = Package.new(name: "destination_package", config: { "enforce_privacy" => true })
       checker = privacy_checker
-
-      reference =
-        Reference.new(
-          @source_package,
-          "some/path.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::SomeName",
-            "some/location.rb",
-            destination_package,
-            true
-          )
-        )
+      reference = build_reference(destination_package: destination_package, public_constant: true)
 
       refute checker.invalid_reference?(reference, @reference_lister)
     end
 
     test "only checks the deprecated references file for private constants" do
-      destination_package = Package.new(name: "destination_package", config: { "enforce_privacy" => ["::Foo::Bar"] })
+      destination_package = Package.new(name: "destination_package", config: { "enforce_privacy" => ["::SomeName"] })
       checker = privacy_checker
-
-      reference =
-        Reference.new(
-          @source_package,
-          "some/path.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::Foo::Bar",
-            "some/location.rb",
-            destination_package,
-            false
-          )
-        )
+      reference = build_reference(destination_package: destination_package)
 
       @reference_lister.expects(:listed?).with(reference, violation_type: ViolationType::Privacy).once
 

@@ -3,6 +3,7 @@
 
 require "test_helper"
 require "parser_test_helper"
+require "constant_resolver"
 
 module Packwerk
   class ReferenceExtractorTest < Minitest::Test

@@ -5,18 +5,14 @@ require "test_helper"
 
 module Packwerk
   class DeprecatedReferencesTest < Minitest::Test
+    include FactoryHelper
+
     test "#listed? returns true if constant is violated" do
-      violated_reference =
-        Reference.new(
-          nil,
-          "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::Buyers::Document",
-            "autoload/buyers/document.rb",
-            destination_package,
-            false
-          )
-        )
+      violated_reference = build_reference(
+        destination_package: destination_package,
+        path: "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
+        constant_name: "::Buyers::Document"
+      )
       deprecated_references = DeprecatedReferences.new(destination_package, "test/fixtures/deprecated_references.yml")
 
       assert deprecated_references.listed?(
@@ -32,46 +28,23 @@ module Packwerk
 
     test "#stale_violations? returns false if deprecated references does not exist but violations are found in code" do
       deprecated_references = DeprecatedReferences.new(destination_package, "nonexistant_file_path")
-      reference =
-        Reference.new(
-          nil,
-          "some/path.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::Buyers::Wallet",
-            "autoload/buyers/wallet.rb",
-            destination_package,
-            false
-          )
-        )
-      deprecated_references.add_entries(reference, "dependency")
+      deprecated_references.add_entries(build_reference, "dependency")
       refute deprecated_references.stale_violations?
     end
 
     test "#stale_violations? returns false if deprecated references violation match violations found in code" do
       package = Package.new(name: "buyers", config: { "enforce_dependencies" => true })
 
-      first_violated_reference =
-        Reference.new(
-          nil,
-          "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::Buyers::Document",
-            "autoload/buyers/document.rb",
-            package,
-            false
-          )
-        )
-      second_violated_reference =
-        Reference.new(
-          nil,
-          "orders/app/models/orders/services/adjustment_engine.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::Buyers::Document",
-            "autoload/buyers/document.rb",
-            package,
-            false
-          )
-        )
+      first_violated_reference = build_reference(
+        destination_package: package,
+        path: "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
+        constant_name: "::Buyers::Document"
+      )
+      second_violated_reference = build_reference(
+        destination_package: package,
+        path: "orders/app/models/orders/services/adjustment_engine.rb",
+        constant_name: "::Buyers::Document"
+      )
 
       deprecated_references = DeprecatedReferences.new(package, "test/fixtures/deprecated_references.yml")
       deprecated_references.add_entries(first_violated_reference, "dependency")
@@ -82,28 +55,16 @@ module Packwerk
     test "#stale_violations? returns true if dependency deprecated references violation turns into privacy deprecated references violation" do
       package = Package.new(name: "buyers", config: { "enforce_dependencies" => true })
 
-      first_violated_reference =
-        Reference.new(
-          nil,
-          "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::Buyers::Document",
-            "autoload/buyers/document.rb",
-            package,
-            false
-          )
-        )
-      second_violated_reference =
-        Reference.new(
-          nil,
-          "orders/app/models/orders/services/adjustment_engine.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::Buyers::Document",
-            "autoload/buyers/document.rb",
-            package,
-            false
-          )
-        )
+      first_violated_reference = build_reference(
+        destination_package: package,
+        path: "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
+        constant_name: "::Buyers::Document"
+      )
+      second_violated_reference = build_reference(
+        destination_package: package,
+        path: "orders/app/models/orders/services/adjustment_engine.rb",
+        constant_name: "::Buyers::Document"
+      )
 
       deprecated_references = DeprecatedReferences.new(package, "test/fixtures/deprecated_references.yml")
       deprecated_references.add_entries(first_violated_reference, "privacy")
@@ -114,34 +75,18 @@ module Packwerk
     test "#stale_violations? returns true if violations in deprecated_references.yml exist but are not found when checking for violations" do
       package = Package.new(name: "buyers", config: { "enforce_dependencies" => true })
 
-      violated_reference =
-        Reference.new(
-          nil,
-          "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::Buyers::Document",
-            "autoload/buyers/document.rb",
-            package,
-            false
-          )
-        )
+      violated_reference = build_reference(
+        destination_package: package,
+        path: "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
+        constant_name: "::Buyers::Document"
+      )
       deprecated_references = DeprecatedReferences.new(package, "test/fixtures/deprecated_references.yml")
       deprecated_references.add_entries(violated_reference, "dependency")
       assert deprecated_references.stale_violations?
     end
 
     test "#listed? returns false if constant is not violated" do
-      reference =
-        Reference.new(
-          nil,
-          "some/path.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::Buyers::Wallet",
-            "autoload/buyers/wallet.rb",
-            destination_package,
-            false
-          )
-        )
+      reference = build_reference(destination_package: destination_package)
       deprecated_references = DeprecatedReferences.new(destination_package, "test/fixtures/deprecated_references.yml")
 
       refute deprecated_references.listed?(
@@ -151,17 +96,10 @@ module Packwerk
     end
 
     test "#listed? returns false for a constant with the same violation in deprecated references but different file" do
-      violated_reference =
-        Reference.new(
-          nil,
-          "some/path.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::Buyers::Document",
-            "autoload/buyers/document.rb",
-            destination_package,
-            false
-          )
-        )
+      violated_reference = build_reference(
+        destination_package: destination_package,
+        constant_name: "::Buyers::Document"
+      )
       deprecated_references = DeprecatedReferences.new(destination_package, "test/fixtures/deprecated_references.yml")
 
       refute deprecated_references.listed?(
@@ -171,30 +109,18 @@ module Packwerk
     end
 
     test "#add_entries and #dump adds constant violation to file in the appropriate format" do
-      expected_output = {
-        "buyers" => {
-          "::Checkout::Wallet" => { "violations" => ["privacy"], "files" => ["some/violated/path.rb"] },
-        },
-      }
-
       Tempfile.create("test_file.yml") do |file|
-        deprecated_references = DeprecatedReferences.new(destination_package, file.path)
-        package = destination_package
-
-        reference =
-          Reference.new(
-            nil,
-            "some/violated/path.rb",
-            ConstantDiscovery::ConstantContext.new(
-              "::Checkout::Wallet",
-              "checkout/wallet.rb",
-              package,
-              false
-            )
-          )
+        reference = build_reference
+        deprecated_references = DeprecatedReferences.new(reference.constant.package, file.path)
 
         deprecated_references.add_entries(reference, "privacy")
         deprecated_references.dump
+
+        expected_output = {
+          reference.constant.package.name => {
+            reference.constant.name => { "violations" => ["privacy"], "files" => [reference.relative_path] },
+          },
+        }
 
         assert_equal expected_output, YAML.load_file(file)
       end
@@ -215,52 +141,30 @@ module Packwerk
         deprecated_references = DeprecatedReferences.new(destination_package, file.path)
 
         first_package = Package.new(name: "a_package", config: {})
-        first_package_reference =
-          Reference.new(
-            nil,
-            "some/violated/path.rb",
-            ConstantDiscovery::ConstantContext.new(
-              "::Checkout::Wallet",
-              "checkout/wallet/cash_money.rb",
-              first_package,
-              false
-            )
-          )
-
         second_package = Package.new(name: "another_package", config: {})
-        second_package_first_reference =
-          Reference.new(
-            nil,
-            "some/violated/path.rb",
-            ConstantDiscovery::ConstantContext.new(
-              "::Checkout::Wallet",
-              "checkout/wallet.rb",
-              second_package,
-              false
-            )
-          )
-        second_package_second_reference =
-          Reference.new(
-            nil,
-            "a/b/c.rb",
-            ConstantDiscovery::ConstantContext.new(
-              "::Abc::Constant",
-              "abc/test/ordering/constant.rb",
-              second_package,
-              false
-            )
-          )
-        second_package_third_reference =
-          Reference.new(
-            nil,
-            "this/should/come/last.rb",
-            ConstantDiscovery::ConstantContext.new(
-              "::Abc::Constant",
-              "abc/test/ordering/constant.rb",
-              second_package,
-              false
-            )
-          )
+        first_package_reference = build_reference(
+          destination_package: first_package,
+          constant_name: "::Checkout::Wallet",
+          path: "some/violated/path.rb"
+        )
+
+        second_package_first_reference = build_reference(
+          destination_package: second_package,
+          constant_name: "::Checkout::Wallet",
+          path: "some/violated/path.rb"
+        )
+
+        second_package_second_reference = build_reference(
+          destination_package: second_package,
+          constant_name: "::Abc::Constant",
+          path: "a/b/c.rb"
+        )
+
+        second_package_third_reference = build_reference(
+          destination_package: second_package,
+          constant_name: "::Abc::Constant",
+          path: "this/should/come/last.rb"
+        )
 
         deprecated_references.add_entries(second_package_first_reference, "privacy")
         deprecated_references.add_entries(second_package_first_reference, "dependency")

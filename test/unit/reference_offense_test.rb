@@ -5,21 +5,11 @@ require "test_helper"
 
 module Packwerk
   class ReferenceOffenseTest < Minitest::Test
+    include FactoryHelper
+
     setup do
       destination_package = Package.new(name: "destination_package", config: { "enforce_privacy" => true })
-      source_package = Package.new(name: "source_package", config: nil)
-
-      @reference =
-        Reference.new(
-          source_package,
-          "some/path.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::SomeName",
-            "some/location.rb",
-            destination_package,
-            false
-          )
-        )
+      @reference = build_reference(destination_package: destination_package)
     end
 
     test "has its file attribute set to the relative path of the reference" do
@@ -32,7 +22,7 @@ module Packwerk
 
       assert_match(
         "Privacy violation: '::SomeName' is private to 'destination_package' but referenced from " \
-          "'source_package'.", offense.message
+          "'components/source'.", offense.message
       )
     end
 
@@ -40,7 +30,7 @@ module Packwerk
       offense = ReferenceOffense.new(reference: @reference, violation_type: ViolationType::Dependency)
 
       expected = <<~EXPECTED
-        Dependency violation: ::SomeName belongs to 'destination_package', but 'source_package' does not specify a dependency on 'destination_package'.
+        Dependency violation: ::SomeName belongs to 'destination_package', but 'components/source' does not specify a dependency on 'destination_package'.
         Are we missing an abstraction?
         Is the code making the reference, and the referenced constant, in the right packages?
 

@@ -5,19 +5,15 @@ require "test_helper"
 
 module Packwerk
   class DetectStaleDeprecatedReferencesTest < Minitest::Test
+    include FactoryHelper
+
     setup do
       package = Package.new(name: "buyers", config: {})
-      violated_reference =
-        Reference.new(
-          nil,
-          "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
-          ConstantDiscovery::ConstantContext.new(
-            "::Buyers::Document",
-            "autoload/buyers/document.rb",
-            package,
-            false
-          )
-        )
+      violated_reference = build_reference(
+        destination_package: package,
+        path: "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
+        constant_name: "::Buyers::Document"
+      )
       deprecated_reference = DeprecatedReferences.new(package, "test/fixtures/deprecated_references.yml")
       deprecated_reference.add_entries(violated_reference, "dependency")
       @detect_stale_deprecated_references = DetectStaleDeprecatedReferences.new(
