@@ -19,7 +19,6 @@ module Packwerk
     setup do
       setup_application_fixture
       use_template(:skeleton)
-      @destination_package = Package.new(name: "destination_package", config: {})
       @reference_lister = CheckingDeprecatedReferences.new(app_dir)
     end
 
