@@ -6,7 +6,6 @@ module Packwerk
     extend T::Sig
 
     const :root_path, String
-    const :reference_lister, ReferenceLister
     const :context_provider, Packwerk::ConstantDiscovery
     const :constant_name_inspectors, T::Array[ConstantNameInspector]
     const :checkers, T::Array[Checker]
@@ -15,7 +14,6 @@ module Packwerk
     def for(filename:, node:)
       ::Packwerk::NodeProcessor.new(
         reference_extractor: reference_extractor(node: node),
-        reference_lister: reference_lister,
         filename: filename,
         checkers: checkers,
       )

@@ -22,7 +22,7 @@ module Packwerk
 
     def detect_stale_violations
       reference_lister = DetectStaleDeprecatedReferences.new(@configuration.root_path)
-      run(reference_lister)
+      offenses = run
       result_status = !reference_lister.stale_violations?
 
       message = if result_status
@@ -36,7 +36,7 @@ module Packwerk
 
     def update_deprecations
       reference_lister = UpdatingDeprecatedReferences.new(@configuration.root_path)
-      offenses = run(reference_lister)
+      offenses = run
       reference_lister.dump_deprecated_references_files
 
       message = <<~EOS
@@ -49,18 +49,15 @@ module Packwerk
 
     def check
       reference_lister = CheckingDeprecatedReferences.new(@configuration.root_path)
-      offenses = run(reference_lister)
-
-      message = @offenses_formatter.show_offenses(offenses)
-      Result.new(message: message, status: offenses.empty?)
+      offenses = run
     end
 
     private
 
-    def run(reference_lister)
+    def run
       @progress_formatter.started(@files)
 
-      run_context = Packwerk::RunContext.from_configuration(@configuration, reference_lister: reference_lister)
+      run_context = Packwerk::RunContext.from_configuration(@configuration)
       all_offenses = T.let([], T.untyped)
       execution_time = Benchmark.realtime do
         @files.each do |path|
