@@ -6,7 +6,6 @@ require "benchmark"
 module Packwerk
   class ParseRun
     extend T::Sig
-    include OffenseProgressMarker
 
     def initialize(
       files:,
@@ -40,7 +39,7 @@ module Packwerk
 
     def update_deprecations
       reference_lister = UpdatingDeprecatedReferences.new(@configuration.root_path)
-      offenses = find_offenses
+      offenses = find_offenses(show_errors: false)
 
       offenses = offenses.select do |offense|
         next true unless offense.is_a?(ReferenceOffense)
@@ -70,7 +69,7 @@ module Packwerk
 
     private
 
-    def find_offenses
+    def find_offenses(show_errors: true)
       @progress_formatter.started(@files)
 
       run_context = Packwerk::RunContext.from_configuration(@configuration)
@@ -78,7 +77,11 @@ module Packwerk
       execution_time = Benchmark.realtime do
         @files.each do |path|
           run_context.process_file(file: path).tap do |offenses|
-            mark_progress(offenses: offenses, progress_formatter: @progress_formatter)
+            if offenses.any? && show_errors
+              @progress_formatter.mark_as_failed
+            else
+              @progress_formatter.mark_as_inspected
+            end
             all_offenses.concat(offenses)
           end
         end

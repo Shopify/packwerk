@@ -36,7 +36,7 @@ module Packwerk
       parse_run = Packwerk::ParseRun.new(files: ["path/of/exile.rb"], configuration: Configuration.from_path)
       result = parse_run.update_deprecations
 
-      assert_equal result.message, <<~EOS
+      expected = <<~EOS
         path/of/exile.rb
         something
 
@@ -44,6 +44,7 @@ module Packwerk
 
         ✅ `deprecated_references.yml` has been updated.
       EOS
+      assert_equal expected, result.message
       refute result.status
     end
   end
