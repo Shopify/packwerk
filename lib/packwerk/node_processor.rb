@@ -42,7 +42,7 @@ module Packwerk
 
     def failed_check(reference)
       @checkers.find do |checker|
-        checker.invalid_reference?(reference, @reference_lister)
+        checker.invalid_reference?(reference)
       end
     end
   end

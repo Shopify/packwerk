@@ -11,7 +11,7 @@ module Packwerk
     sig { returns(ViolationType).abstract }
     def violation_type; end
 
-    sig { params(reference: Reference, reference_lister: ReferenceLister).returns(T::Boolean).abstract }
-    def invalid_reference?(reference, reference_lister); end
+    sig { params(reference: Reference).returns(T::Boolean).abstract }
+    def invalid_reference?(reference); end
   end
 end

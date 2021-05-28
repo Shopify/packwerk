@@ -31,7 +31,7 @@ module Packwerk
       checker = dependency_checker
       reference = build_reference(source_package: source_package)
 
-      assert checker.invalid_reference?(reference, @reference_lister)
+      assert checker.invalid_reference?(reference)
     end
 
     test "ignores violations when enforcement is disabled in that package" do
@@ -39,7 +39,7 @@ module Packwerk
       checker = dependency_checker
       reference = build_reference(source_package: source_package)
 
-      refute checker.invalid_reference?(reference, @reference_lister)
+      refute checker.invalid_reference?(reference)
     end
 
     test "allows reference to constants of a declared dependency" do
@@ -50,17 +50,7 @@ module Packwerk
       checker = dependency_checker
       reference = build_reference(source_package: source_package)
 
-      refute checker.invalid_reference?(reference, @reference_lister)
-    end
-
-    test "allows reference if it is in the deprecated references file" do
-      source_package = Package.new(name: "components/sales", config: { "enforce_dependencies" => true })
-      @reference_lister = CheckingDeprecatedReferencesStub.new
-      reference = build_reference(source_package: source_package)
-
-      # create checker after reference is added to deprecated references list, as checker reads list on instantiation
-      checker = dependency_checker
-      refute checker.invalid_reference?(reference, @reference_lister)
+      refute checker.invalid_reference?(reference)
     end
 
     private
