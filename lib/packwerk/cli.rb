@@ -4,7 +4,6 @@
 module Packwerk
   class Cli
     extend T::Sig
-    include OffenseProgressMarker
 
     sig do
       params(

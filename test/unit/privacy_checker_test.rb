@@ -22,7 +22,7 @@ module Packwerk
       checker = privacy_checker
       reference = build_reference
 
-      refute checker.invalid_reference?(reference, @reference_lister)
+      refute checker.invalid_reference?(reference)
     end
 
     test "ignores if destination package is only enforcing for other constants" do
@@ -33,7 +33,7 @@ module Packwerk
       checker = privacy_checker
       reference = build_reference(destination_package: destination_package)
 
-      refute checker.invalid_reference?(reference, @reference_lister)
+      refute checker.invalid_reference?(reference)
     end
 
     test "complains about private constant if enforcing privacy for everything" do
@@ -41,7 +41,7 @@ module Packwerk
       checker = privacy_checker
       reference = build_reference(destination_package: destination_package)
 
-      assert checker.invalid_reference?(reference, @reference_lister)
+      assert checker.invalid_reference?(reference)
     end
 
     test "complains about private constant if enforcing for specific constants" do
@@ -49,7 +49,7 @@ module Packwerk
       checker = privacy_checker
       reference = build_reference(destination_package: destination_package)
 
-      assert checker.invalid_reference?(reference, @reference_lister)
+      assert checker.invalid_reference?(reference)
     end
 
     test "complains about nested constant if enforcing for specific constants" do
@@ -57,7 +57,7 @@ module Packwerk
       checker = privacy_checker
       reference = build_reference(destination_package: destination_package)
 
-      assert checker.invalid_reference?(reference, @reference_lister)
+      assert checker.invalid_reference?(reference)
     end
 
     test "ignores constant that starts like enforced constant" do
@@ -65,7 +65,7 @@ module Packwerk
       checker = privacy_checker
       reference = build_reference(destination_package: destination_package, constant_name: "::SomeNameButNotQuite")
 
-      refute checker.invalid_reference?(reference, @reference_lister)
+      refute checker.invalid_reference?(reference)
     end
 
     test "ignores public constant even if enforcing privacy for everything" do
@@ -73,7 +73,7 @@ module Packwerk
       checker = privacy_checker
       reference = build_reference(destination_package: destination_package, public_constant: true)
 
-      refute checker.invalid_reference?(reference, @reference_lister)
+      refute checker.invalid_reference?(reference)
     end
 
     test "only checks the deprecated references file for private constants" do
@@ -81,9 +81,7 @@ module Packwerk
       checker = privacy_checker
       reference = build_reference(destination_package: destination_package)
 
-      @reference_lister.expects(:listed?).with(reference, violation_type: ViolationType::Privacy).once
-
-      checker.invalid_reference?(reference, @reference_lister)
+      checker.invalid_reference?(reference)
     end
 
     private

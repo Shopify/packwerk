@@ -60,7 +60,7 @@ module Packwerk
         deprecated_reference_content_after_update = read_deprecated_references
         expected_output = <<~EOS
           📦 Packwerk is inspecting 12 files
-          ............
+          \\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.
           📦 Finished in \\d+\\.\\d+ seconds
 
           No offenses detected 🎉
@@ -95,7 +95,7 @@ module Packwerk
             read_deprecated_references.reject { |k, _v| k.match?(timeline_deprecated_reference_path) }
           expected_output = <<~EOS
             📦 Packwerk is inspecting 13 files
-            .............
+            \\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.
             📦 Finished in \\d+\\.\\d+ seconds
 
             No offenses detected 🎉

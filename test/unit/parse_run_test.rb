@@ -4,6 +4,8 @@ require "rails_test_helper"
 
 module Packwerk
   class ParseRunTest < Minitest::Test
+    include FactoryHelper
+
     test "#detect_stale_violations returns expected Result when stale violations present" do
       DetectStaleDeprecatedReferences.any_instance.stubs(:stale_violations?).returns(true)
       RunContext.any_instance.stubs(:process_file).returns([])
@@ -36,7 +38,7 @@ module Packwerk
       parse_run = Packwerk::ParseRun.new(files: ["path/of/exile.rb"], configuration: Configuration.from_path)
       result = parse_run.update_deprecations
 
-      assert_equal result.message, <<~EOS
+      expected = <<~EOS
         path/of/exile.rb
         something
 
@@ -44,7 +46,31 @@ module Packwerk
 
         ✅ `deprecated_references.yml` has been updated.
       EOS
+      assert_equal expected, result.message
       refute result.status
+    end
+
+    test "#check only reports error progress for unlisted violations" do
+      offense = ReferenceOffense.new(reference: build_reference, violation_type: ViolationType::Privacy)
+      CheckingDeprecatedReferences.any_instance.stubs(:listed?).returns(true)
+      out = StringIO.new
+      parse_run = Packwerk::ParseRun.new(
+        files: ["some/path.rb"],
+        configuration: Configuration.from_path,
+        progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
+      )
+      RunContext.any_instance.stubs(:process_file).returns([offense])
+      result = parse_run.check
+
+      expected_output = <<~EOS
+        📦 Packwerk is inspecting 1 file
+        \\.
+        📦 Finished in \\d+\\.\\d+ seconds
+      EOS
+      assert_match(/#{expected_output}/, out.string)
+
+      assert result.status
+      assert_equal "No offenses detected 🎉", result.message
     end
   end
 end
