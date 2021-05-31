@@ -72,7 +72,8 @@ module Packwerk
       execution_time = Benchmark.realtime do
         @files.each do |path|
           run_context.process_file(file: path).tap do |offenses|
-            update_progress(failed: show_errors)
+            includes_unlisted = show_errors && includes_unlisted_offense?(offenses, reference_lister)
+            update_progress(failed: includes_unlisted)
             all_offenses.concat(offenses)
           end
         end
@@ -89,6 +90,13 @@ module Packwerk
         @progress_formatter.mark_as_failed
       else
         @progress_formatter.mark_as_inspected
+      end
+    end
+
+    def includes_unlisted_offense?(offenses, reference_lister)
+      offenses.any? do |offense|
+        next true unless offense.is_a?(ReferenceOffense)
+        !reference_lister.listed?(offense.reference, violation_type: offense.violation_type)
       end
     end
   end
