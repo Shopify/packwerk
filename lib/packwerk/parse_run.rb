@@ -59,8 +59,7 @@ module Packwerk
 
     def filtered_offenses(reference_lister, show_errors: true)
       find_offenses(reference_lister, show_errors: show_errors).select do |offense|
-        next true unless offense.is_a?(ReferenceOffense)
-        !reference_lister.listed?(offense.reference, violation_type: offense.violation_type)
+        unlisted?(offense, reference_lister)
       end
     end
 
@@ -72,7 +71,7 @@ module Packwerk
       execution_time = Benchmark.realtime do
         @files.each do |path|
           run_context.process_file(file: path).tap do |offenses|
-            includes_unlisted = show_errors && includes_unlisted_offense?(offenses, reference_lister)
+            includes_unlisted = show_errors && offenses.any? { |offense| unlisted?(offense, reference_lister) }
             update_progress(failed: includes_unlisted)
             all_offenses.concat(offenses)
           end
@@ -93,11 +92,9 @@ module Packwerk
       end
     end
 
-    def includes_unlisted_offense?(offenses, reference_lister)
-      offenses.any? do |offense|
-        next true unless offense.is_a?(ReferenceOffense)
-        !reference_lister.listed?(offense.reference, violation_type: offense.violation_type)
-      end
+    def unlisted?(offense, reference_lister)
+      return true unless offense.is_a?(ReferenceOffense)
+      !reference_lister.listed?(offense.reference, violation_type: offense.violation_type)
     end
   end
 end
