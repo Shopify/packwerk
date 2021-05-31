@@ -21,10 +21,7 @@ module Packwerk
 
     def detect_stale_violations
       reference_lister = DetectStaleDeprecatedReferences.new(@configuration.root_path)
-      find_offenses.each do |offense|
-        next unless offense.is_a?(ReferenceOffense)
-        reference_lister.listed?(offense.reference, violation_type: offense.violation_type)
-      end
+      filtered_offenses(reference_lister, show_errors: false)
 
       result_status = !reference_lister.stale_violations?
 
@@ -39,14 +36,7 @@ module Packwerk
 
     def update_deprecations
       reference_lister = UpdatingDeprecatedReferences.new(@configuration.root_path)
-      offenses = find_offenses(show_errors: false)
-
-      offenses = offenses.select do |offense|
-        next true unless offense.is_a?(ReferenceOffense)
-        reference_lister.listed?(offense.reference, violation_type: offense.violation_type)
-        false
-      end
-
+      offenses = filtered_offenses(reference_lister, show_errors: false)
       reference_lister.dump_deprecated_references_files
 
       message = <<~EOS
@@ -59,17 +49,22 @@ module Packwerk
 
     def check
       reference_lister = CheckingDeprecatedReferences.new(@configuration.root_path)
-      new_offenses = find_offenses.reject do |offense|
-        next false unless offense.is_a?(ReferenceOffense)
-        reference_lister.listed?(offense.reference, violation_type: offense.violation_type)
-      end
+      new_offenses = filtered_offenses(reference_lister)
+
       message = @offenses_formatter.show_offenses(new_offenses)
       Result.new(message: message, status: new_offenses.empty?)
     end
 
     private
 
-    def find_offenses(show_errors: true)
+    def filtered_offenses(reference_lister, show_errors: true)
+      find_offenses(reference_lister, show_errors: show_errors).select do |offense|
+        next true unless offense.is_a?(ReferenceOffense)
+        !reference_lister.listed?(offense.reference, violation_type: offense.violation_type)
+      end
+    end
+
+    def find_offenses(reference_lister, show_errors:)
       @progress_formatter.started(@files)
 
       run_context = Packwerk::RunContext.from_configuration(@configuration)
@@ -77,11 +72,7 @@ module Packwerk
       execution_time = Benchmark.realtime do
         @files.each do |path|
           run_context.process_file(file: path).tap do |offenses|
-            if offenses.any? && show_errors
-              @progress_formatter.mark_as_failed
-            else
-              @progress_formatter.mark_as_inspected
-            end
+            update_progress(failed: show_errors)
             all_offenses.concat(offenses)
           end
         end
@@ -91,6 +82,14 @@ module Packwerk
 
       @progress_formatter.finished(execution_time)
       all_offenses
+    end
+
+    def update_progress(failed: false)
+      if failed
+        @progress_formatter.mark_as_failed
+      else
+        @progress_formatter.mark_as_inspected
+      end
     end
   end
 end
