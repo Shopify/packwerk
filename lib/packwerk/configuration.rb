@@ -47,8 +47,13 @@ module Packwerk
       @custom_associations = configs["custom_associations"] || []
       @load_paths = configs["load_paths"] || []
       @inflections_file = File.expand_path(configs["inflections_file"] || "config/inflections.yml", @root_path)
+      @parallel = configs.key?("parallel") ? configs["parallel"] : true
 
       @config_path = config_path
+    end
+
+    def parallel?
+      @parallel
     end
   end
 end

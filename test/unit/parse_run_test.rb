@@ -56,7 +56,7 @@ module Packwerk
       out = StringIO.new
       parse_run = Packwerk::ParseRun.new(
         files: ["some/path.rb"],
-        configuration: Configuration.from_path,
+        configuration: Configuration.new({ "parallel" => false }),
         progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
       )
       RunContext.any_instance.stubs(:process_file).returns([offense])

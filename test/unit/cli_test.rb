@@ -23,7 +23,7 @@ module Packwerk
       violation_message = "This is a violation of code health."
       offense = Offense.new(file: file_path, message: violation_message)
 
-      configuration = Configuration.new
+      configuration = Configuration.new({ "parallel" => false })
       RunContext.any_instance.stubs(:process_file).at_least_once.returns([offense])
 
       string_io = StringIO.new
@@ -47,7 +47,7 @@ module Packwerk
       violation_message = "This is a violation of code health."
       offense = Offense.new(file: file_path, message: violation_message)
 
-      configuration = Configuration.new
+      configuration = Configuration.new({ "parallel" => false })
       RunContext.any_instance.stubs(:process_file)
         .at_least(2)
         .returns([offense])
