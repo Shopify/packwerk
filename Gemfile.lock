@@ -92,6 +92,7 @@ PATH
       ast
       better_html
       constant_resolver
+      parallel
       parser
       sorbet-runtime
 
