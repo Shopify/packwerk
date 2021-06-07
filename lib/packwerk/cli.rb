@@ -26,7 +26,7 @@ module Packwerk
       @style = style
       @configuration = configuration || Configuration.from_path
       @progress_formatter = Formatters::ProgressFormatter.new(@out, style: style)
-      @offenses_formatter = offenses_formatter
+      @offenses_formatter = offenses_formatter || Formatters::OffensesFormatter.new(style: @style)
     end
 
     sig { params(args: T::Array[String]).returns(T.noreturn) }
@@ -187,10 +187,6 @@ module Packwerk
         progress_formatter: @progress_formatter,
         offenses_formatter: offenses_formatter
       )
-    end
-
-    def offenses_formatter
-      @offenses_formatter ||= Formatters::OffensesFormatter.new(style: @style)
     end
   end
 end
