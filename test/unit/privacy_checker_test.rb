@@ -11,7 +11,6 @@ module Packwerk
     setup do
       setup_application_fixture
       use_template(:skeleton)
-      @reference_lister = CheckingDeprecatedReferences.new(app_dir)
     end
 
     teardown do

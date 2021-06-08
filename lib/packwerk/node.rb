@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "parser"
 require "parser/ast/node"
 
 module Packwerk

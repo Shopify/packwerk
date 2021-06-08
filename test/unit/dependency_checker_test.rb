@@ -8,18 +8,9 @@ module Packwerk
     include ApplicationFixtureHelper
     include FactoryHelper
 
-    class CheckingDeprecatedReferencesStub
-      include ReferenceLister
-
-      def listed?(_references, violation_type:)
-        violation_type == ViolationType::Dependency
-      end
-    end
-
     setup do
       setup_application_fixture
       use_template(:skeleton)
-      @reference_lister = CheckingDeprecatedReferences.new(app_dir)
     end
 
     teardown do

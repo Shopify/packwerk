@@ -6,7 +6,6 @@ require "yaml"
 module Packwerk
   class DeprecatedReferences
     extend T::Sig
-    include ReferenceLister
 
     sig { params(package: Packwerk::Package, filepath: String).void }
     def initialize(package, filepath)
@@ -18,7 +17,6 @@ module Packwerk
     sig do
       params(reference: Packwerk::Reference, violation_type: ViolationType)
         .returns(T::Boolean)
-        .override
     end
     def listed?(reference, violation_type:)
       violated_constants_found = deprecated_references.dig(reference.constant.package.name, reference.constant.name)
@@ -30,18 +28,19 @@ module Packwerk
       violated_constants_found.fetch("violations", []).include?(violation_type.serialize)
     end
 
-    sig { params(reference: Packwerk::Reference, violation_type: String).void }
+    sig { params(reference: Packwerk::Reference, violation_type: Packwerk::ViolationType).returns(T::Boolean) }
     def add_entries(reference, violation_type)
       package_violations = @new_entries.fetch(reference.constant.package.name, {})
       entries_for_file = package_violations[reference.constant.name] ||= {}
 
       entries_for_file["violations"] ||= []
-      entries_for_file["violations"] << violation_type
+      entries_for_file["violations"] << violation_type.serialize
 
       entries_for_file["files"] ||= []
       entries_for_file["files"] << reference.relative_path.to_s
 
       @new_entries[reference.constant.package.name] = package_violations
+      listed?(reference, violation_type: violation_type)
     end
 
     sig { returns(T::Boolean) }

@@ -20,11 +20,9 @@ module Packwerk
     end
 
     def detect_stale_violations
-      reference_lister = DetectStaleDeprecatedReferences.new(@configuration.root_path)
-      filtered_offenses(reference_lister, show_errors: false)
+      offense_collection = find_offenses
 
-      result_status = !reference_lister.stale_violations?
-
+      result_status = !offense_collection.stale_violations?
       message = if result_status
         "No stale violations detected"
       else
@@ -35,35 +33,27 @@ module Packwerk
     end
 
     def update_deprecations
-      reference_lister = UpdatingDeprecatedReferences.new(@configuration.root_path)
-      offenses = filtered_offenses(reference_lister, show_errors: false)
-      reference_lister.dump_deprecated_references_files
+      offense_collection = find_offenses
+      offense_collection.dump_deprecated_references_files
 
       message = <<~EOS
-        #{@offenses_formatter.show_offenses(offenses)}
+        #{@offenses_formatter.show_offenses(offense_collection.errors)}
         ✅ `deprecated_references.yml` has been updated.
       EOS
 
-      Result.new(message: message, status: offenses.empty?)
+      Result.new(message: message, status: offense_collection.errors.empty?)
     end
 
     def check
-      reference_lister = CheckingDeprecatedReferences.new(@configuration.root_path)
-      new_offenses = filtered_offenses(reference_lister)
-
-      message = @offenses_formatter.show_offenses(new_offenses)
-      Result.new(message: message, status: new_offenses.empty?)
+      offense_collection = find_offenses(show_errors: true)
+      message = @offenses_formatter.show_offenses(offense_collection.outstanding_offenses)
+      Result.new(message: message, status: offense_collection.outstanding_offenses.empty?)
     end
 
     private
 
-    def filtered_offenses(reference_lister, show_errors: true)
-      find_offenses(reference_lister, show_errors: show_errors).select do |offense|
-        unlisted?(offense, reference_lister)
-      end
-    end
-
-    def find_offenses(reference_lister, show_errors:)
+    def find_offenses(show_errors: false)
+      offense_collection = OffenseCollection.new(@configuration.root_path)
       @progress_formatter.started(@files)
 
       run_context = Packwerk::RunContext.from_configuration(@configuration)
@@ -71,8 +61,8 @@ module Packwerk
       execution_time = Benchmark.realtime do
         @files.each do |path|
           run_context.process_file(file: path).tap do |offenses|
-            includes_unlisted = show_errors && offenses.any? { |offense| unlisted?(offense, reference_lister) }
-            update_progress(failed: includes_unlisted)
+            failed = show_errors && offenses.any? { |offense| !offense_collection.listed?(offense) }
+            update_progress(failed: failed)
             all_offenses.concat(offenses)
           end
         end
@@ -81,7 +71,9 @@ module Packwerk
       end
 
       @progress_formatter.finished(execution_time)
-      all_offenses
+
+      all_offenses.each { |offense| offense_collection.add_offense(offense) }
+      offense_collection
     end
 
     def update_progress(failed: false)
@@ -90,11 +82,6 @@ module Packwerk
       else
         @progress_formatter.mark_as_inspected
       end
-    end
-
-    def unlisted?(offense, reference_lister)
-      return true unless offense.is_a?(ReferenceOffense)
-      !reference_lister.listed?(offense.reference, violation_type: offense.violation_type)
     end
   end
 end

@@ -7,7 +7,7 @@ module Packwerk
     include FactoryHelper
 
     test "#detect_stale_violations returns expected Result when stale violations present" do
-      DetectStaleDeprecatedReferences.any_instance.stubs(:stale_violations?).returns(true)
+      OffenseCollection.any_instance.stubs(:stale_violations?).returns(true)
       RunContext.any_instance.stubs(:process_file).returns([])
 
       parse_run = Packwerk::ParseRun.new(files: ["path/of/exile.rb"], configuration: Configuration.from_path)
@@ -18,7 +18,7 @@ module Packwerk
 
     test "#update_deprecations returns success when there are no offenses" do
       RunContext.any_instance.stubs(:process_file).returns([])
-      UpdatingDeprecatedReferences.any_instance.expects(:dump_deprecated_references_files).once
+      OffenseCollection.any_instance.expects(:dump_deprecated_references_files).once
 
       parse_run = Packwerk::ParseRun.new(files: ["path/of/exile.rb"], configuration: Configuration.from_path)
       result = parse_run.update_deprecations
@@ -33,7 +33,7 @@ module Packwerk
     test "#update_deprecations returns exit code 1 when there are offenses" do
       offense = Offense.new(file: "path/of/exile.rb", message: "something")
       RunContext.any_instance.stubs(:process_file).returns([offense])
-      UpdatingDeprecatedReferences.any_instance.expects(:dump_deprecated_references_files).once
+      OffenseCollection.any_instance.expects(:dump_deprecated_references_files).once
 
       parse_run = Packwerk::ParseRun.new(files: ["path/of/exile.rb"], configuration: Configuration.from_path)
       result = parse_run.update_deprecations
@@ -52,7 +52,7 @@ module Packwerk
 
     test "#check only reports error progress for unlisted violations" do
       offense = ReferenceOffense.new(reference: build_reference, violation_type: ViolationType::Privacy)
-      CheckingDeprecatedReferences.any_instance.stubs(:listed?).returns(true)
+      DeprecatedReferences.any_instance.stubs(:listed?).returns(true)
       out = StringIO.new
       parse_run = Packwerk::ParseRun.new(
         files: ["some/path.rb"],
