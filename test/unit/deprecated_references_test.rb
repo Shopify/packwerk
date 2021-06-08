@@ -28,7 +28,7 @@ module Packwerk
 
     test "#stale_violations? returns false if deprecated references does not exist but violations are found in code" do
       deprecated_references = DeprecatedReferences.new(destination_package, "nonexistant_file_path")
-      deprecated_references.add_entries(build_reference, "dependency")
+      deprecated_references.add_entries(build_reference, ViolationType::Dependency)
       refute deprecated_references.stale_violations?
     end
 
@@ -47,8 +47,8 @@ module Packwerk
       )
 
       deprecated_references = DeprecatedReferences.new(package, "test/fixtures/deprecated_references.yml")
-      deprecated_references.add_entries(first_violated_reference, "dependency")
-      deprecated_references.add_entries(second_violated_reference, "dependency")
+      deprecated_references.add_entries(first_violated_reference, Packwerk::ViolationType::Dependency)
+      deprecated_references.add_entries(second_violated_reference, Packwerk::ViolationType::Dependency)
       refute deprecated_references.stale_violations?
     end
 
@@ -67,8 +67,8 @@ module Packwerk
       )
 
       deprecated_references = DeprecatedReferences.new(package, "test/fixtures/deprecated_references.yml")
-      deprecated_references.add_entries(first_violated_reference, "privacy")
-      deprecated_references.add_entries(second_violated_reference, "privacy")
+      deprecated_references.add_entries(first_violated_reference, Packwerk::ViolationType::Privacy)
+      deprecated_references.add_entries(second_violated_reference, Packwerk::ViolationType::Privacy)
       assert deprecated_references.stale_violations?
     end
 
@@ -81,7 +81,7 @@ module Packwerk
         constant_name: "::Buyers::Document"
       )
       deprecated_references = DeprecatedReferences.new(package, "test/fixtures/deprecated_references.yml")
-      deprecated_references.add_entries(violated_reference, "dependency")
+      deprecated_references.add_entries(violated_reference, ViolationType::Dependency)
       assert deprecated_references.stale_violations?
     end
 
@@ -113,7 +113,7 @@ module Packwerk
         reference = build_reference
         deprecated_references = DeprecatedReferences.new(reference.constant.package, file.path)
 
-        deprecated_references.add_entries(reference, "privacy")
+        deprecated_references.add_entries(reference, Packwerk::ViolationType::Privacy)
         deprecated_references.dump
 
         expected_output = {
@@ -166,12 +166,12 @@ module Packwerk
           path: "this/should/come/last.rb"
         )
 
-        deprecated_references.add_entries(second_package_first_reference, "privacy")
-        deprecated_references.add_entries(second_package_first_reference, "dependency")
-        deprecated_references.add_entries(second_package_second_reference, "dependency")
-        deprecated_references.add_entries(second_package_second_reference, "dependency")
-        deprecated_references.add_entries(second_package_third_reference, "dependency")
-        deprecated_references.add_entries(first_package_reference, "privacy")
+        deprecated_references.add_entries(second_package_first_reference, Packwerk::ViolationType::Privacy)
+        deprecated_references.add_entries(second_package_first_reference, Packwerk::ViolationType::Dependency)
+        deprecated_references.add_entries(second_package_second_reference, Packwerk::ViolationType::Dependency)
+        deprecated_references.add_entries(second_package_second_reference, Packwerk::ViolationType::Dependency)
+        deprecated_references.add_entries(second_package_third_reference, Packwerk::ViolationType::Dependency)
+        deprecated_references.add_entries(first_package_reference, Packwerk::ViolationType::Privacy)
 
         deprecated_references.dump
 

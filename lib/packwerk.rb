@@ -11,9 +11,8 @@ module Packwerk
   autoload :ApplicationLoadPaths
   autoload :ApplicationValidator
   autoload :AssociationInspector
-  autoload :CacheDeprecatedReferences
+  autoload :OffenseCollection
   autoload :Checker
-  autoload :CheckingDeprecatedReferences
   autoload :Cli
   autoload :Configuration
   autoload :ConstantDiscovery
@@ -21,7 +20,6 @@ module Packwerk
   autoload :ConstNodeInspector
   autoload :DependencyChecker
   autoload :DeprecatedReferences
-  autoload :DetectStaleDeprecatedReferences
   autoload :FileProcessor
   autoload :FilesForProcessing
   autoload :Graph
@@ -40,11 +38,9 @@ module Packwerk
   autoload :PrivacyChecker
   autoload :Reference
   autoload :ReferenceExtractor
-  autoload :ReferenceLister
   autoload :ReferenceOffense
   autoload :Result
   autoload :RunContext
-  autoload :UpdatingDeprecatedReferences
   autoload :Version
   autoload :ViolationType
 
