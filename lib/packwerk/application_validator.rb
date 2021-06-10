@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "active_support/inflector/inflections"
@@ -176,7 +176,7 @@ module Packwerk
       edges = package_set.flat_map do |package|
         package.dependencies.map { |dependency| [package, package_set.fetch(dependency)] }
       end
-      dependency_graph = Packwerk::Graph.new(*edges)
+      dependency_graph = Packwerk::Graph.new(*T.unsafe(edges))
 
       cycle_strings = build_cycle_strings(dependency_graph.cycles)
 
