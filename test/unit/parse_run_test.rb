@@ -56,7 +56,7 @@ module Packwerk
       out = StringIO.new
       parse_run = Packwerk::ParseRun.new(
         files: ["some/path.rb"],
-        configuration: Configuration.from_path,
+        configuration: Configuration.new({ "parallel" => false }),
         progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
       )
       RunContext.any_instance.stubs(:process_file).returns([offense])
@@ -71,6 +71,23 @@ module Packwerk
 
       assert result.status
       assert_equal "No offenses detected 🎉", result.message
+    end
+
+    test "runs in parallel" do
+      offense = ReferenceOffense.new(reference: build_reference, violation_type: ViolationType::Privacy)
+      offense2 = ReferenceOffense.new(
+        reference: build_reference(path: "some/other_path.rb"),
+        violation_type: ViolationType::Privacy
+      )
+      parse_run = Packwerk::ParseRun.new(
+        files: ["some/path.rb", "some/other_path.rb"],
+        configuration: Configuration.new
+      )
+      RunContext.any_instance.stubs(:process_file).returns([offense]).returns([offense2])
+
+      result = parse_run.check
+      refute result.status
+      assert_match(/2 offenses detected/, result.message)
     end
   end
 end

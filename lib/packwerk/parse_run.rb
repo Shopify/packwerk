@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "benchmark"
+require "parallel"
 
 module Packwerk
   class ParseRun
@@ -58,22 +59,38 @@ module Packwerk
 
       run_context = Packwerk::RunContext.from_configuration(@configuration)
       all_offenses = T.let([], T.untyped)
-      execution_time = Benchmark.realtime do
-        @files.each do |path|
-          run_context.process_file(file: path).tap do |offenses|
-            failed = show_errors && offenses.any? { |offense| !offense_collection.listed?(offense) }
-            update_progress(failed: failed)
-            all_offenses.concat(offenses)
-          end
+
+      process_file = -> (path) do
+        run_context.process_file(file: path).tap do |offenses|
+          failed = show_errors && offenses.any? { |offense| !offense_collection.listed?(offense) }
+          update_progress(failed: failed)
         end
-      rescue Interrupt
-        @progress_formatter.interrupted
+      end
+
+      execution_time = Benchmark.realtime do
+        all_offenses = if @configuration.parallel?
+          Parallel.flat_map(@files, &process_file)
+        else
+          serial_find_offenses(&process_file)
+        end
       end
 
       @progress_formatter.finished(execution_time)
 
       all_offenses.each { |offense| offense_collection.add_offense(offense) }
       offense_collection
+    end
+
+    def serial_find_offenses
+      all_offenses = T.let([], T.untyped)
+      @files.each do |path|
+        offenses = yield path
+        all_offenses.concat(offenses)
+      end
+      all_offenses
+    rescue Interrupt
+      @progress_formatter.interrupted
+      all_offenses
     end
 
     def update_progress(failed: false)
