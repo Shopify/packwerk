@@ -185,7 +185,7 @@ module Packwerk
         files: fetch_files_to_process(paths),
         configuration: @configuration,
         progress_formatter: @progress_formatter,
-        offenses_formatter: offenses_formatter
+        offenses_formatter: @offenses_formatter
       )
     end
   end
