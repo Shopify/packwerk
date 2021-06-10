@@ -178,19 +178,7 @@ module Packwerk
       end
       dependency_graph = Packwerk::Graph.new(*edges)
 
-      # Convert the cycle
-      #
-      #   [a, b, c]
-      #
-      # to the string
-      #
-      #   a -> b -> c -> a
-      #
-      cycle_strings = dependency_graph.cycles.map do |cycle|
-        cycle_strings = cycle.map(&:to_s)
-        cycle_strings << cycle.first.to_s
-        "\t- #{cycle_strings.join(" → ")}"
-      end
+      cycle_strings = build_cycle_strings(dependency_graph.cycles)
 
       if dependency_graph.acyclic?
         Result.new(true)
@@ -278,6 +266,21 @@ module Packwerk
     end
 
     private
+
+    # Convert the cycles:
+    #
+    #   [[a, b, c], [b, c]]
+    #
+    # to the string:
+    #
+    #   ["a -> b -> c -> a", "b -> c -> b"]
+    def build_cycle_strings(cycles)
+      cycles.map do |cycle|
+        cycle_strings = cycle.map(&:to_s)
+        cycle_strings << cycle.first.to_s
+        "\t- #{cycle_strings.join(" → ")}"
+      end
+    end
 
     def package_manifests_settings_for(setting)
       package_manifests.map { |f| [f, (YAML.load_file(File.join(f)) || {})[setting]] }
