@@ -31,6 +31,7 @@ module Packwerk
   autoload :NodeProcessorFactory
   autoload :NodeVisitor
   autoload :Offense
+  autoload :OffensesFormatter
   autoload :OutputStyle
   autoload :Package
   autoload :PackageSet
