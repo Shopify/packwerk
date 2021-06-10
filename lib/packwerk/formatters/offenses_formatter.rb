@@ -4,6 +4,8 @@
 module Packwerk
   module Formatters
     class OffensesFormatter
+      include Packwerk::OffensesFormatter
+
       extend T::Sig
 
       sig { params(style: OutputStyle).void }
@@ -11,7 +13,7 @@ module Packwerk
         @style = style
       end
 
-      sig { params(offenses: T::Array[T.nilable(Offense)]).returns(String) }
+      sig { override.params(offenses: T::Array[T.nilable(Offense)]).returns(String) }
       def show_offenses(offenses)
         return "No offenses detected 🎉" if offenses.empty?
 

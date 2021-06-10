@@ -10,15 +10,23 @@ module Packwerk
         configuration: T.nilable(Configuration),
         out: T.any(StringIO, IO),
         err_out: T.any(StringIO, IO),
-        style: Packwerk::OutputStyle
+        style: Packwerk::OutputStyle,
+        offenses_formatter: T.nilable(Packwerk::OffensesFormatter)
       ).void
     end
-    def initialize(configuration: nil, out: $stdout, err_out: $stderr, style: OutputStyles::Plain.new)
+    def initialize(
+      configuration: nil,
+      out: $stdout,
+      err_out: $stderr,
+      style: OutputStyles::Plain.new,
+      offenses_formatter: nil
+    )
       @out = out
       @err_out = err_out
       @style = style
       @configuration = configuration || Configuration.from_path
       @progress_formatter = Formatters::ProgressFormatter.new(@out, style: style)
+      @offenses_formatter = offenses_formatter || Formatters::OffensesFormatter.new(style: @style)
     end
 
     sig { params(args: T::Array[String]).returns(T.noreturn) }
@@ -177,12 +185,8 @@ module Packwerk
         files: fetch_files_to_process(paths),
         configuration: @configuration,
         progress_formatter: @progress_formatter,
-        offenses_formatter: offenses_formatter
+        offenses_formatter: @offenses_formatter
       )
-    end
-
-    def offenses_formatter
-      @offenses_formatter ||= Formatters::OffensesFormatter.new(style: @style)
     end
   end
 end

@@ -150,5 +150,40 @@ module Packwerk
       expected_output = "'beep boop' is not a packwerk command. See `packwerk help`.\n"
       assert_equal expected_output, @err_out.string
     end
+
+    test "#execute_command using a custom offenses class" do
+      offenses_formatter = Class.new do
+        include Packwerk::OffensesFormatter
+
+        def show_offenses(offenses)
+          ["hi i am a custom offense formatter", *offenses].join("\n")
+        end
+      end
+
+      file_path = "path/of/exile.rb"
+      violation_message = "This is a violation of code health."
+      offense = Offense.new(file: file_path, message: violation_message)
+
+      configuration = Configuration.new
+      RunContext.any_instance.stubs(:process_file)
+        .returns([offense])
+
+      string_io = StringIO.new
+
+      cli = ::Packwerk::Cli.new(
+        out: string_io,
+        configuration: configuration,
+        offenses_formatter: offenses_formatter.new
+      )
+
+      ::Packwerk::FilesForProcessing.stubs(fetch: [file_path])
+
+      success = cli.execute_command(["check", file_path])
+
+      assert_includes string_io.string, "hi i am a custom offense formatter"
+      assert_includes string_io.string, violation_message
+
+      refute success
+    end
   end
 end
