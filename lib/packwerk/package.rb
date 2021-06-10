@@ -52,6 +52,14 @@ module Packwerk
       name <=> other.name
     end
 
+    def eql?(other)
+      self == other
+    end
+
+    def hash
+      name.hash
+    end
+
     def to_s
       name
     end
