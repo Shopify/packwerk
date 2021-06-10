@@ -9,14 +9,10 @@ module Packwerk
 
     setup do
       @offense_collection = OffenseCollection.new(".")
-      reference = build_reference
-
-      @offense = ReferenceOffense.new(reference: reference, violation_type: ViolationType::Dependency)
+      @offense = ReferenceOffense.new(reference: build_reference, violation_type: ViolationType::Dependency)
     end
 
     test "#add_violation adds entry and returns true" do
-      File.stubs(:open)
-
       Packwerk::DeprecatedReferences.any_instance
         .expects(:add_entries)
         .with(@offense.reference, @offense.violation_type)

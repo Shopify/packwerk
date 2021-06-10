@@ -70,5 +70,15 @@ module Packwerk
 
       assert_equal("my/path/", package.user_defined_public_path)
     end
+
+    test "logical object equality is respected" do
+      package = Package.new(name: "components/timeline", config: { "public_path" => "my/path" })
+      package2 = Package.new(name: "components/timeline", config: { "public_path" => "my/path" })
+
+      assert_equal package, package2
+
+      hash = { package => "a" }
+      assert_equal "a", hash[package2]
+    end
   end
 end

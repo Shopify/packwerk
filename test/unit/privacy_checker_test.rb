@@ -5,17 +5,7 @@ require "test_helper"
 
 module Packwerk
   class PrivacyCheckerTest < Minitest::Test
-    include ApplicationFixtureHelper
     include FactoryHelper
-
-    setup do
-      setup_application_fixture
-      use_template(:skeleton)
-    end
-
-    teardown do
-      teardown_application_fixture
-    end
 
     test "ignores if destination package is not enforcing" do
       checker = privacy_checker

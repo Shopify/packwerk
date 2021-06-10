@@ -5,17 +5,7 @@ require "test_helper"
 
 module Packwerk
   class DependencyCheckerTest < Minitest::Test
-    include ApplicationFixtureHelper
     include FactoryHelper
-
-    setup do
-      setup_application_fixture
-      use_template(:skeleton)
-    end
-
-    teardown do
-      teardown_application_fixture
-    end
 
     test "recognizes simple cross package reference" do
       source_package = Package.new(name: "components/sales", config: { "enforce_dependencies" => true })
