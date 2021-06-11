@@ -101,7 +101,7 @@ module Packwerk
       refute success
     end
 
-    test "#execute_command with init subcommand runs application validation generator for non-Rails app" do
+    test "#execute_command with init subcommand fails application validation generator for non-Rails app" do
       string_io = StringIO.new
       configuration = Configuration.new
       configuration.stubs(
@@ -114,10 +114,12 @@ module Packwerk
       cli = ::Packwerk::Cli.new(configuration: configuration, out: string_io)
 
       Packwerk::Generators::ApplicationValidation.expects(:generate).returns(true)
-      success = cli.execute_command(["init"])
 
-      assert_includes string_io.string, "is ready to be used"
-      assert success
+      e = assert_raises(RuntimeError) do
+        cli.execute_command(["init"])
+      end
+
+      assert_includes e.message, "A Rails application could not be found in"
     end
 
     test "#execute_command with empty subcommand lists all the valid subcommands" do

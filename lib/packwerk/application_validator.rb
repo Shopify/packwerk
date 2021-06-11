@@ -12,7 +12,7 @@ module Packwerk
       @config_file_path = config_file_path
       @configuration = configuration
 
-      @application_load_paths = ApplicationLoadPaths.extract_relevant_paths
+      @application_load_paths = ApplicationLoadPaths.extract_relevant_paths(configuration.root_path)
     end
 
     Result = Struct.new(:ok?, :error_value)

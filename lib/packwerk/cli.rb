@@ -96,7 +96,7 @@ module Packwerk
 
     def generate_configs
       configuration_file = Packwerk::Generators::ConfigurationFile.generate(
-        load_paths: Packwerk::ApplicationLoadPaths.extract_relevant_paths,
+        load_paths: Packwerk::ApplicationLoadPaths.extract_relevant_paths(@configuration.root_path),
         root: @configuration.root_path,
         out: @out
       )
