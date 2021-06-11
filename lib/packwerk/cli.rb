@@ -77,23 +77,21 @@ module Packwerk
     def init
       @out.puts("📦 Initializing Packwerk...")
 
-      application_validation = Packwerk::Generators::ApplicationValidation.generate(
+      Packwerk::Generators::ApplicationValidation.generate(
         for_rails_app: rails_app?,
         root: @configuration.root_path,
         out: @out
       )
 
-      if application_validation
-        if rails_app?
-          # To run in the same space as the Rails process,
-          # in order to fetch load paths for the configuration generator
-          exec("bin/packwerk", "generate_configs")
-        else
-          generate_configurations = generate_configs
-        end
+      if rails_app?
+        # To run in the same space as the Rails process,
+        # in order to fetch load paths for the configuration generator
+        exec("bin/packwerk", "generate_configs")
+      else
+        generate_configurations = generate_configs
       end
 
-      application_validation && generate_configurations
+      generate_configurations
     end
 
     def generate_configs

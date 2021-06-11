@@ -120,24 +120,6 @@ module Packwerk
       assert success
     end
 
-    test "#execute_command with init subcommand runs application validation generator, fails and prints error" do
-      string_io = StringIO.new
-      configuration = Configuration.new
-      configuration.stubs(
-        root_path: @temp_dir,
-        load_paths: ["path"],
-        package_paths: "**/",
-        custom_associations: ["cached_belongs_to"],
-        inflections_file: "config/inflections.yml"
-      )
-      cli = ::Packwerk::Cli.new(configuration: configuration, out: string_io)
-
-      Packwerk::Generators::ApplicationValidation.expects(:generate).returns(false)
-      success = cli.execute_command(["init"])
-
-      refute success
-    end
-
     test "#execute_command with empty subcommand lists all the valid subcommands" do
       @cli.execute_command([])
 

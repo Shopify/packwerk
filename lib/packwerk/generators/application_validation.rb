@@ -17,6 +17,7 @@ module Packwerk
 
       def generate(for_rails_app:)
         @out.puts("📦 Generating application validator...")
+
         if for_rails_app
           generate_packwerk_validate_script
         else
@@ -32,6 +33,7 @@ module Packwerk
 
         if File.exist?(File.join(destination_file_path, "packwerk"))
           @out.puts("⚠️  Packwerk application validation bin script already exists.")
+
           return true
         end
 
@@ -39,6 +41,7 @@ module Packwerk
         FileUtils.cp(source_file_path, destination_file_path)
 
         @out.puts("✅ Packwerk application validation bin script generated in #{destination_file_path}")
+
         true
       end
 
@@ -48,6 +51,7 @@ module Packwerk
 
         if File.exist?(File.join(destination_file_path, "packwerk_validator_test.rb"))
           @out.puts("⚠️  Packwerk application validation test already exists.")
+
           return true
         end
 
@@ -55,6 +59,7 @@ module Packwerk
         FileUtils.cp(source_file_path, destination_file_path)
 
         @out.puts("✅ Packwerk application validation test generated in #{destination_file_path}")
+
         true
       end
     end
