@@ -17,11 +17,6 @@ module Packwerk
         relative_path_strings(relevant_paths)
       end
 
-      sig { void }
-      def assert_application_booted
-        raise "The application needs to be booted to extract load paths" unless defined?(::Rails)
-      end
-
       sig { returns(T::Array[String]) }
       def extract_application_autoload_paths
         Rails.application.railties
@@ -52,6 +47,13 @@ module Packwerk
         paths
           .map { |path| path.relative_path_from(rails_root).to_s }
           .uniq
+      end
+
+      private
+
+      sig { void }
+      def assert_application_booted
+        raise "The application needs to be booted to extract load paths" unless defined?(::Rails)
       end
 
       sig { params(paths: T::Array[T.untyped]).void }
