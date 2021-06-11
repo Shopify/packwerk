@@ -113,8 +113,6 @@ module Packwerk
       )
       cli = ::Packwerk::Cli.new(configuration: configuration, out: string_io)
 
-      Packwerk::Generators::ApplicationValidation.expects(:generate).returns(true)
-
       e = assert_raises(RuntimeError) do
         cli.execute_command(["init"])
       end

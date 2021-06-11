@@ -77,21 +77,7 @@ module Packwerk
     def init
       @out.puts("📦 Initializing Packwerk...")
 
-      Packwerk::Generators::ApplicationValidation.generate(
-        for_rails_app: rails_app?,
-        root: @configuration.root_path,
-        out: @out
-      )
-
-      if rails_app?
-        # To run in the same space as the Rails process,
-        # in order to fetch load paths for the configuration generator
-        exec("bin/packwerk", "generate_configs")
-      else
-        generate_configurations = generate_configs
-      end
-
-      generate_configurations
+      generate_configs
     end
 
     def generate_configs
@@ -142,10 +128,6 @@ module Packwerk
     end
 
     def validate(_paths)
-      warn("`packwerk validate` should be run within the application. "\
-        "Generate the bin script using `packwerk init` and"\
-        " use `bin/packwerk validate` instead.") unless defined?(::Rails)
-
       @progress_formatter.started_validation do
         checker = Packwerk::ApplicationValidator.new(
           config_file_path: @configuration.config_path,
@@ -166,15 +148,6 @@ module Packwerk
       else
         @out.puts("Validation failed ❗")
         @out.puts(result.error_value)
-      end
-    end
-
-    sig { returns(T::Boolean) }
-    def rails_app?
-      if File.exist?("config/application.rb") && File.exist?("bin/rails")
-        File.foreach("Gemfile").any? { |line| line.match?(/['"]rails['"]/) }
-      else
-        false
       end
     end
 
