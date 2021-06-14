@@ -8,9 +8,9 @@ module Packwerk
     class << self
       extend T::Sig
 
-      sig { params(root: String).returns(T::Array[String]) }
-      def extract_relevant_paths(root)
-        require_application(root)
+      sig { params(root: String, environment: String).returns(T::Array[String]) }
+      def extract_relevant_paths(root, environment)
+        require_application(root, environment)
         all_paths = extract_application_autoload_paths
         relevant_paths = filter_relevant_paths(all_paths)
         assert_load_paths_present(relevant_paths)
@@ -51,11 +51,13 @@ module Packwerk
 
       private
 
-      sig { params(root: String).void }
-      def require_application(root)
+      sig { params(root: String, environment: String).void }
+      def require_application(root, environment)
         environment_file = "#{root}/config/environment"
 
         if File.file?("#{environment_file}.rb")
+          ENV["RAILS_ENV"] ||= environment
+
           require environment_file
         else
           raise "A Rails application could not be found in #{root}"

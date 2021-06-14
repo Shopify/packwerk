@@ -8,11 +8,12 @@ require "yaml"
 
 module Packwerk
   class ApplicationValidator
-    def initialize(config_file_path:, configuration:)
+    def initialize(config_file_path:, configuration:, environment:)
       @config_file_path = config_file_path
       @configuration = configuration
+      @environment = environment
 
-      @application_load_paths = ApplicationLoadPaths.extract_relevant_paths(configuration.root_path)
+      @application_load_paths = ApplicationLoadPaths.extract_relevant_paths(configuration.root_path, environment)
     end
 
     Result = Struct.new(:ok?, :error_value)

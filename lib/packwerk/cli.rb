@@ -10,6 +10,7 @@ module Packwerk
         configuration: T.nilable(Configuration),
         out: T.any(StringIO, IO),
         err_out: T.any(StringIO, IO),
+        environment: String,
         style: Packwerk::OutputStyle,
         offenses_formatter: T.nilable(Packwerk::OffensesFormatter)
       ).void
@@ -18,11 +19,13 @@ module Packwerk
       configuration: nil,
       out: $stdout,
       err_out: $stderr,
+      environment: "test",
       style: OutputStyles::Plain.new,
       offenses_formatter: nil
     )
       @out = out
       @err_out = err_out
+      @environment = environment
       @style = style
       @configuration = configuration || Configuration.from_path
       @progress_formatter = Formatters::ProgressFormatter.new(@out, style: style)
@@ -82,7 +85,7 @@ module Packwerk
 
     def generate_configs
       configuration_file = Packwerk::Generators::ConfigurationFile.generate(
-        load_paths: Packwerk::ApplicationLoadPaths.extract_relevant_paths(@configuration.root_path),
+        load_paths: Packwerk::ApplicationLoadPaths.extract_relevant_paths(@configuration.root_path, @environment),
         root: @configuration.root_path,
         out: @out
       )
@@ -131,7 +134,8 @@ module Packwerk
       @progress_formatter.started_validation do
         checker = Packwerk::ApplicationValidator.new(
           config_file_path: @configuration.config_path,
-          configuration: @configuration
+          configuration: @configuration,
+          environment: @environment,
         )
         result = checker.check_all
 

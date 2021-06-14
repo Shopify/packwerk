@@ -210,7 +210,8 @@ module Packwerk
     def validator
       @application_validator ||= Packwerk::ApplicationValidator.new(
         config_file_path: config.config_path,
-        configuration: config
+        configuration: config,
+        environment: "test"
       )
     end
   end
