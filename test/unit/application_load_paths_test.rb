@@ -44,7 +44,7 @@ module Packwerk
 
     test ".extract_relevant_paths calls out to filter the paths" do
       ApplicationLoadPaths.expects(:filter_relevant_paths).once.returns([Pathname.new("/fake_path")])
-      ApplicationLoadPaths.expects(:assert_application_booted).once.returns(true)
+      ApplicationLoadPaths.expects(:require_application).once.returns(true)
 
       ApplicationLoadPaths.extract_relevant_paths("/application")
     end
@@ -52,7 +52,7 @@ module Packwerk
     test ".extract_relevant_paths returns unique load paths" do
       path = Pathname.new("/application/app/models")
       ApplicationLoadPaths.expects(:filter_relevant_paths).once.returns([path, path])
-      ApplicationLoadPaths.expects(:assert_application_booted).once.returns(true)
+      ApplicationLoadPaths.expects(:require_application).once.returns(true)
 
       assert_equal 1, ApplicationLoadPaths.extract_relevant_paths("/application").count
     end

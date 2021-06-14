@@ -10,7 +10,7 @@ module Packwerk
 
       sig { params(root: String).returns(T::Array[String]) }
       def extract_relevant_paths(root)
-        assert_application_booted(root)
+        require_application(root)
         all_paths = extract_application_autoload_paths
         relevant_paths = filter_relevant_paths(all_paths)
         assert_load_paths_present(relevant_paths)
@@ -52,7 +52,7 @@ module Packwerk
       private
 
       sig { params(root: String).void }
-      def assert_application_booted(root)
+      def require_application(root)
         environment_file = "#{root}/config/environment"
 
         if File.file?("#{environment_file}.rb")
