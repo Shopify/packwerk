@@ -51,7 +51,7 @@ module BetterHtml::BetterErb::ConditionalImplementation
   def generate(template, source); end
 end
 
-class BetterHtml::BetterErb::ErubiImplementation < ::ActionView::Template::Handlers::ERB::Erubi
+class BetterHtml::BetterErb::ErubiImplementation < Erubi
   include(::BetterHtml::BetterErb::RuntimeChecks)
 
   def add_code(code); end

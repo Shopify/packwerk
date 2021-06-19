@@ -4,11 +4,10 @@
 
 # typed: true
 
-module WebSocket
-end
+module WebSocket; end
 
 class WebSocket::Driver
-  include(::WebSocket::Driver::EventEmitter)
+  include ::WebSocket::Driver::EventEmitter
 
   def initialize(socket, options = T.unsafe(nil)); end
 
@@ -26,8 +25,6 @@ class WebSocket::Driver
 
   private
 
-  def fail(type, message); end
-  def fail_handshake(error); end
   def open; end
   def queue(message); end
 
@@ -80,8 +77,7 @@ class WebSocket::Driver::CloseEvent < ::Struct
   end
 end
 
-class WebSocket::Driver::ConfigurationError < ::ArgumentError
-end
+class WebSocket::Driver::ConfigurationError < ::ArgumentError; end
 
 class WebSocket::Driver::ConnectEvent < ::Struct
   class << self
@@ -181,13 +177,9 @@ class WebSocket::Driver::Hybi < ::WebSocket::Driver
 end
 
 WebSocket::Driver::Hybi::BYTE = T.let(T.unsafe(nil), Integer)
-
 WebSocket::Driver::Hybi::DEFAULT_ERROR_CODE = T.let(T.unsafe(nil), Integer)
-
 WebSocket::Driver::Hybi::ERRORS = T.let(T.unsafe(nil), Hash)
-
 WebSocket::Driver::Hybi::ERROR_CODES = T.let(T.unsafe(nil), Array)
-
 WebSocket::Driver::Hybi::FIN = T.let(T.unsafe(nil), Integer)
 
 class WebSocket::Driver::Hybi::Frame
@@ -214,15 +206,10 @@ class WebSocket::Driver::Hybi::Frame
 end
 
 WebSocket::Driver::Hybi::GUID = T.let(T.unsafe(nil), String)
-
 WebSocket::Driver::Hybi::LENGTH = T.let(T.unsafe(nil), Integer)
-
 WebSocket::Driver::Hybi::MASK = T.let(T.unsafe(nil), Integer)
-
 WebSocket::Driver::Hybi::MAX_RESERVED_ERROR = T.let(T.unsafe(nil), Integer)
-
 WebSocket::Driver::Hybi::MESSAGE_OPCODES = T.let(T.unsafe(nil), Array)
-
 WebSocket::Driver::Hybi::MIN_RESERVED_ERROR = T.let(T.unsafe(nil), Integer)
 
 class WebSocket::Driver::Hybi::Message
@@ -242,23 +229,13 @@ class WebSocket::Driver::Hybi::Message
 end
 
 WebSocket::Driver::Hybi::OPCODE = T.let(T.unsafe(nil), Integer)
-
 WebSocket::Driver::Hybi::OPCODES = T.let(T.unsafe(nil), Hash)
-
 WebSocket::Driver::Hybi::OPCODE_CODES = T.let(T.unsafe(nil), Array)
-
 WebSocket::Driver::Hybi::OPENING_OPCODES = T.let(T.unsafe(nil), Array)
-
 WebSocket::Driver::Hybi::PACK_FORMATS = T.let(T.unsafe(nil), Hash)
-
 WebSocket::Driver::Hybi::RSV1 = T.let(T.unsafe(nil), Integer)
-
 WebSocket::Driver::Hybi::RSV2 = T.let(T.unsafe(nil), Integer)
-
 WebSocket::Driver::Hybi::RSV3 = T.let(T.unsafe(nil), Integer)
-
-WebSocket::Driver::Hybi::VERSION = T.let(T.unsafe(nil), String)
-
 WebSocket::Driver::MAX_LENGTH = T.let(T.unsafe(nil), Integer)
 
 class WebSocket::Driver::MessageEvent < ::Struct
@@ -282,35 +259,10 @@ class WebSocket::Driver::OpenEvent < ::Struct
   end
 end
 
-class WebSocket::Driver::PingEvent < ::Struct
-  def data; end
-  def data=(_); end
-
-  class << self
-    def [](*_arg0); end
-    def inspect; end
-    def members; end
-    def new(*_arg0); end
-  end
-end
-
-class WebSocket::Driver::PongEvent < ::Struct
-  def data; end
-  def data=(_); end
-
-  class << self
-    def [](*_arg0); end
-    def inspect; end
-    def members; end
-    def new(*_arg0); end
-  end
-end
-
-class WebSocket::Driver::ProtocolError < ::StandardError
-end
+class WebSocket::Driver::ProtocolError < ::StandardError; end
 
 class WebSocket::Driver::Proxy
-  include(::WebSocket::Driver::EventEmitter)
+  include ::WebSocket::Driver::EventEmitter
 
   def initialize(client, origin, options); end
 
@@ -322,7 +274,6 @@ class WebSocket::Driver::Proxy
 end
 
 WebSocket::Driver::Proxy::PORTS = T.let(T.unsafe(nil), Hash)
-
 WebSocket::Driver::STATES = T.let(T.unsafe(nil), Array)
 
 class WebSocket::Driver::Server < ::WebSocket::Driver
@@ -364,11 +315,8 @@ class WebSocket::Driver::StreamReader
 end
 
 WebSocket::Driver::StreamReader::MINIMUM_AUTOMATIC_PRUNE_OFFSET = T.let(T.unsafe(nil), Integer)
-
 WebSocket::Driver::UNICODE = T.let(T.unsafe(nil), String)
-
-class WebSocket::Driver::URIError < ::ArgumentError
-end
+class WebSocket::Driver::URIError < ::ArgumentError; end
 
 module WebSocket::HTTP
   class << self
@@ -393,15 +341,12 @@ module WebSocket::HTTP::Headers
 end
 
 WebSocket::HTTP::Headers::CR = T.let(T.unsafe(nil), Integer)
-
 WebSocket::HTTP::Headers::HEADER_LINE = T.let(T.unsafe(nil), Regexp)
-
 WebSocket::HTTP::Headers::LF = T.let(T.unsafe(nil), Integer)
-
 WebSocket::HTTP::Headers::MAX_LINE_LENGTH = T.let(T.unsafe(nil), Integer)
 
 class WebSocket::HTTP::Request
-  include(::WebSocket::HTTP::Headers)
+  include ::WebSocket::HTTP::Headers
 
   def env; end
 
@@ -412,13 +357,11 @@ class WebSocket::HTTP::Request
 end
 
 WebSocket::HTTP::Request::REQUEST_LINE = T.let(T.unsafe(nil), Regexp)
-
 WebSocket::HTTP::Request::REQUEST_TARGET = T.let(T.unsafe(nil), Regexp)
-
 WebSocket::HTTP::Request::RESERVED_HEADERS = T.let(T.unsafe(nil), Array)
 
 class WebSocket::HTTP::Response
-  include(::WebSocket::HTTP::Headers)
+  include ::WebSocket::HTTP::Headers
 
   def [](name); end
   def body; end

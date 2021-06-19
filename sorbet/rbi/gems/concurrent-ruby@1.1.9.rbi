@@ -5,12 +5,11 @@
 # typed: true
 
 module Concurrent
-  extend(::Concurrent::Utility::EngineDetector)
-  extend(::Concurrent::Utility::NativeExtensionLoader)
-  extend(::Logger::Severity)
-  extend(::Concurrent::Concern::Logging)
-  extend(::Concurrent::Concern::Deprecation)
-
+  extend ::Concurrent::Utility::EngineDetector
+  extend ::Concurrent::Utility::NativeExtensionLoader
+  extend ::Logger::Severity
+  extend ::Concurrent::Concern::Logging
+  extend ::Concurrent::Concern::Deprecation
 
   private
 
@@ -66,11 +65,13 @@ class Concurrent::AbstractExchanger < ::Concurrent::Synchronization::Object
   def do_exchange(value, timeout); end
 end
 
+Concurrent::AbstractExchanger::CANCEL = T.let(T.unsafe(nil), Object)
+
 class Concurrent::AbstractExecutorService < ::Concurrent::Synchronization::LockableObject
-  include(::Logger::Severity)
-  include(::Concurrent::Concern::Logging)
-  include(::Concurrent::ExecutorService)
-  include(::Concurrent::Concern::Deprecation)
+  include ::Logger::Severity
+  include ::Concurrent::Concern::Logging
+  include ::Concurrent::ExecutorService
+  include ::Concurrent::Concern::Deprecation
 
   def initialize(opts = T.unsafe(nil), &block); end
 
@@ -111,7 +112,7 @@ class Concurrent::AbstractThreadLocalVar
 end
 
 class Concurrent::Agent < ::Concurrent::Synchronization::LockableObject
-  include(::Concurrent::Concern::Observable)
+  include ::Concurrent::Concern::Observable
 
   def initialize(initial, opts = T.unsafe(nil)); end
 
@@ -155,18 +156,44 @@ class Concurrent::Agent < ::Concurrent::Synchronization::LockableObject
   end
 end
 
+Concurrent::Agent::AWAIT_ACTION = T.let(T.unsafe(nil), Proc)
+Concurrent::Agent::AWAIT_FLAG = T.let(T.unsafe(nil), Object)
+Concurrent::Agent::DEFAULT_ERROR_HANDLER = T.let(T.unsafe(nil), Proc)
+Concurrent::Agent::DEFAULT_VALIDATOR = T.let(T.unsafe(nil), Proc)
+Concurrent::Agent::ERROR_MODES = T.let(T.unsafe(nil), Array)
+
 class Concurrent::Agent::Error < ::StandardError
   def initialize(message = T.unsafe(nil)); end
+end
+
+class Concurrent::Agent::Job < ::Struct
+  def action; end
+  def action=(_); end
+  def args; end
+  def args=(_); end
+  def caller; end
+  def caller=(_); end
+  def executor; end
+  def executor=(_); end
+
+  class << self
+    def [](*_arg0); end
+    def inspect; end
+    def members; end
+    def new(*_arg0); end
+  end
 end
 
 class Concurrent::Agent::ValidationError < ::Concurrent::Agent::Error
   def initialize(message = T.unsafe(nil)); end
 end
 
-class Concurrent::Array < ::Array
-end
+class Concurrent::Array < ::Array; end
+Concurrent::ArrayImplementation = Array
 
 module Concurrent::Async
+  mixes_in_class_methods ::Concurrent::Async::ClassMethods
+
   def async; end
   def await; end
   def call; end
@@ -179,8 +206,34 @@ module Concurrent::Async
   end
 end
 
+class Concurrent::Async::AsyncDelegator < ::Concurrent::Synchronization::LockableObject
+  def initialize(delegate); end
+
+  def method_missing(method, *args, &block); end
+  def perform; end
+  def reset_if_forked; end
+
+  private
+
+  def respond_to_missing?(method, include_private = T.unsafe(nil)); end
+end
+
+class Concurrent::Async::AwaitDelegator
+  def initialize(delegate); end
+
+  def method_missing(method, *args, &block); end
+
+  private
+
+  def respond_to_missing?(method, include_private = T.unsafe(nil)); end
+end
+
+module Concurrent::Async::ClassMethods
+  def new(*args, &block); end
+end
+
 class Concurrent::Atom < ::Concurrent::Synchronization::Object
-  include(::Concurrent::Concern::Observable)
+  include ::Concurrent::Concern::Observable
 
   def initialize(value, opts = T.unsafe(nil)); end
 
@@ -209,6 +262,8 @@ class Concurrent::AtomicBoolean < ::Concurrent::MutexAtomicBoolean
   def to_s; end
 end
 
+Concurrent::AtomicBooleanImplementation = Concurrent::MutexAtomicBoolean
+
 module Concurrent::AtomicDirectUpdate
   def try_update; end
   def try_update!; end
@@ -219,6 +274,8 @@ class Concurrent::AtomicFixnum < ::Concurrent::MutexAtomicFixnum
   def inspect; end
   def to_s; end
 end
+
+Concurrent::AtomicFixnumImplementation = Concurrent::MutexAtomicFixnum
 
 class Concurrent::AtomicMarkableReference < ::Concurrent::Synchronization::Object
   def initialize(value = T.unsafe(nil), mark = T.unsafe(nil)); end
@@ -258,20 +315,86 @@ class Concurrent::AtomicReference < ::Concurrent::MutexAtomicReference
   def to_s; end
 end
 
+Concurrent::AtomicReferenceImplementation = Concurrent::MutexAtomicReference
+
+class Concurrent::CRubySet < ::Set
+  def initialize(*args, &block); end
+
+  def &(*args); end
+  def +(*args); end
+  def -(*args); end
+  def <(*args); end
+  def <<(*args); end
+  def <=(*args); end
+  def ==(*args); end
+  def ===(*args); end
+  def >(*args); end
+  def >=(*args); end
+  def ^(*args); end
+  def add(*args); end
+  def add?(*args); end
+  def classify(*args); end
+  def clear(*args); end
+  def collect!(*args); end
+  def compare_by_identity(*args); end
+  def compare_by_identity?(*args); end
+  def delete(*args); end
+  def delete?(*args); end
+  def delete_if(*args); end
+  def difference(*args); end
+  def disjoint?(*args); end
+  def divide(*args); end
+  def each(*args); end
+  def empty?(*args); end
+  def eql?(*args); end
+  def filter!(*args); end
+  def flatten(*args); end
+  def flatten!(*args); end
+  def flatten_merge(*args); end
+  def freeze(*args); end
+  def hash(*args); end
+  def include?(*args); end
+  def inspect(*args); end
+  def intersect?(*args); end
+  def intersection(*args); end
+  def keep_if(*args); end
+  def length(*args); end
+  def map!(*args); end
+  def member?(*args); end
+  def merge(*args); end
+  def pretty_print(*args); end
+  def pretty_print_cycle(*args); end
+  def proper_subset?(*args); end
+  def proper_superset?(*args); end
+  def reject!(*args); end
+  def replace(*args); end
+  def reset(*args); end
+  def select!(*args); end
+  def size(*args); end
+  def subset?(*args); end
+  def subtract(*args); end
+  def superset?(*args); end
+  def to_a(*args); end
+  def to_s(*args); end
+  def to_set(*args); end
+  def union(*args); end
+  def |(*args); end
+
+  private
+
+  def initialize_copy(other); end
+end
+
 class Concurrent::CachedThreadPool < ::Concurrent::ThreadPoolExecutor
   def initialize(opts = T.unsafe(nil)); end
-
 
   private
 
   def ns_initialize(opts); end
 end
 
-class Concurrent::CancelledOperationError < ::Concurrent::Error
-end
-
-module Concurrent::Collection
-end
+class Concurrent::CancelledOperationError < ::Concurrent::Error; end
+module Concurrent::Collection; end
 
 class Concurrent::Collection::CopyOnNotifyObserverSet < ::Concurrent::Synchronization::LockableObject
   def initialize; end
@@ -373,6 +496,8 @@ class Concurrent::Collection::NonConcurrentPriorityQueue < ::Concurrent::Collect
   def size; end
 end
 
+Concurrent::Collection::NonConcurrentPriorityQueueImplementation = Concurrent::Collection::RubyNonConcurrentPriorityQueue
+
 class Concurrent::Collection::RubyNonConcurrentPriorityQueue
   def initialize(opts = T.unsafe(nil)); end
 
@@ -403,15 +528,14 @@ class Concurrent::Collection::RubyNonConcurrentPriorityQueue
   end
 end
 
-module Concurrent::Concern
-end
+module Concurrent::Concern; end
 
 module Concurrent::Concern::Deprecation
-  include(::Logger::Severity)
-  include(::Concurrent::Concern::Logging)
-  extend(::Logger::Severity)
-  extend(::Concurrent::Concern::Logging)
-  extend(::Concurrent::Concern::Deprecation)
+  include ::Logger::Severity
+  include ::Concurrent::Concern::Logging
+  extend ::Logger::Severity
+  extend ::Concurrent::Concern::Logging
+  extend ::Concurrent::Concern::Deprecation
 
   def deprecated(message, strip = T.unsafe(nil)); end
   def deprecated_method(old_name, new_name); end
@@ -430,13 +554,13 @@ module Concurrent::Concern::Dereferenceable
 end
 
 module Concurrent::Concern::Logging
-  include(::Logger::Severity)
+  include ::Logger::Severity
 
   def log(level, progname, message = T.unsafe(nil), &block); end
 end
 
 module Concurrent::Concern::Obligation
-  include(::Concurrent::Concern::Dereferenceable)
+  include ::Concurrent::Concern::Dereferenceable
 
   def complete?; end
   def exception(*args); end
@@ -480,16 +604,11 @@ module Concurrent::Concern::Observable
   def observers=(_arg0); end
 end
 
-class Concurrent::ConcurrentUpdateError < ::ThreadError
-end
-
+class Concurrent::ConcurrentUpdateError < ::ThreadError; end
 Concurrent::ConcurrentUpdateError::CONC_UP_ERR_BACKTRACE = T.let(T.unsafe(nil), Array)
-
-class Concurrent::ConfigurationError < ::Concurrent::Error
-end
-
-class Concurrent::CountDownLatch < ::Concurrent::MutexCountDownLatch
-end
+class Concurrent::ConfigurationError < ::Concurrent::Error; end
+class Concurrent::CountDownLatch < ::Concurrent::MutexCountDownLatch; end
+Concurrent::CountDownLatchImplementation = Concurrent::MutexCountDownLatch
 
 class Concurrent::CyclicBarrier < ::Concurrent::Synchronization::LockableObject
   def initialize(parties, &block); end
@@ -507,9 +626,21 @@ class Concurrent::CyclicBarrier < ::Concurrent::Synchronization::LockableObject
   def ns_next_generation; end
 end
 
+class Concurrent::CyclicBarrier::Generation < ::Struct
+  def status; end
+  def status=(_); end
+
+  class << self
+    def [](*_arg0); end
+    def inspect; end
+    def members; end
+    def new(*_arg0); end
+  end
+end
+
 class Concurrent::Delay < ::Concurrent::Synchronization::LockableObject
-  include(::Concurrent::Concern::Dereferenceable)
-  include(::Concurrent::Concern::Obligation)
+  include ::Concurrent::Concern::Dereferenceable
+  include ::Concurrent::Concern::Obligation
 
   def initialize(opts = T.unsafe(nil), &block); end
 
@@ -533,8 +664,7 @@ class Concurrent::DependencyCounter
   def update(time, value, reason); end
 end
 
-class Concurrent::Error < ::StandardError
-end
+class Concurrent::Error < ::StandardError; end
 
 class Concurrent::Event < ::Concurrent::Synchronization::LockableObject
   def initialize; end
@@ -551,12 +681,12 @@ class Concurrent::Event < ::Concurrent::Synchronization::LockableObject
   def ns_set; end
 end
 
-class Concurrent::Exchanger < ::Concurrent::RubyExchanger
-end
+class Concurrent::Exchanger < ::Concurrent::RubyExchanger; end
+Concurrent::ExchangerImplementation = Concurrent::RubyExchanger
 
 module Concurrent::ExecutorService
-  include(::Logger::Severity)
-  include(::Concurrent::Concern::Logging)
+  include ::Logger::Severity
+  include ::Concurrent::Concern::Logging
 
   def <<(task); end
   def can_overflow?; end
@@ -586,13 +716,19 @@ class Concurrent::Future < ::Concurrent::IVar
   end
 end
 
-class Concurrent::Hash < ::Hash
-end
+Concurrent::GLOBAL_FAST_EXECUTOR = T.let(T.unsafe(nil), Concurrent::Delay)
+Concurrent::GLOBAL_IMMEDIATE_EXECUTOR = T.let(T.unsafe(nil), Concurrent::ImmediateExecutor)
+Concurrent::GLOBAL_IO_EXECUTOR = T.let(T.unsafe(nil), Concurrent::Delay)
+Concurrent::GLOBAL_LOGGER = T.let(T.unsafe(nil), Concurrent::AtomicReference)
+Concurrent::GLOBAL_MONOTONIC_CLOCK = T.let(T.unsafe(nil), T.untyped)
+Concurrent::GLOBAL_TIMER_SET = T.let(T.unsafe(nil), Concurrent::Delay)
+class Concurrent::Hash < ::Hash; end
+Concurrent::HashImplementation = Hash
 
 class Concurrent::IVar < ::Concurrent::Synchronization::LockableObject
-  include(::Concurrent::Concern::Dereferenceable)
-  include(::Concurrent::Concern::Obligation)
-  include(::Concurrent::Concern::Observable)
+  include ::Concurrent::Concern::Dereferenceable
+  include ::Concurrent::Concern::Obligation
+  include ::Concurrent::Concern::Observable
 
   def initialize(value = T.unsafe(nil), opts = T.unsafe(nil), &block); end
 
@@ -612,11 +748,10 @@ class Concurrent::IVar < ::Concurrent::Synchronization::LockableObject
   def safe_execute(task, args = T.unsafe(nil)); end
 end
 
-class Concurrent::IllegalOperationError < ::Concurrent::Error
-end
+class Concurrent::IllegalOperationError < ::Concurrent::Error; end
 
 class Concurrent::ImmediateExecutor < ::Concurrent::AbstractExecutorService
-  include(::Concurrent::SerialExecutorService)
+  include ::Concurrent::SerialExecutorService
 
   def initialize; end
 
@@ -630,11 +765,10 @@ class Concurrent::ImmediateExecutor < ::Concurrent::AbstractExecutorService
   def wait_for_termination(timeout = T.unsafe(nil)); end
 end
 
-class Concurrent::ImmutabilityError < ::Concurrent::Error
-end
+class Concurrent::ImmutabilityError < ::Concurrent::Error; end
 
 module Concurrent::ImmutableStruct
-  include(::Concurrent::Synchronization::AbstractStruct)
+  include ::Concurrent::Synchronization::AbstractStruct
 
   def ==(other); end
   def [](member); end
@@ -659,20 +793,19 @@ module Concurrent::ImmutableStruct
   end
 end
 
+Concurrent::ImmutableStruct::FACTORY = T.let(T.unsafe(nil), T.untyped)
+
 class Concurrent::IndirectImmediateExecutor < ::Concurrent::ImmediateExecutor
   def initialize; end
 
   def post(*args, &task); end
 end
 
-class Concurrent::InitializationError < ::Concurrent::Error
-end
-
-class Concurrent::LifecycleError < ::Concurrent::Error
-end
+class Concurrent::InitializationError < ::Concurrent::Error; end
+class Concurrent::LifecycleError < ::Concurrent::Error; end
 
 class Concurrent::LockFreeStack < ::Concurrent::Synchronization::Object
-  include(::Enumerable)
+  include ::Enumerable
 
   def initialize(head = T.unsafe(nil)); end
 
@@ -722,7 +855,7 @@ class Concurrent::LockFreeStack::Node
 end
 
 class Concurrent::MVar < ::Concurrent::Synchronization::Object
-  include(::Concurrent::Concern::Dereferenceable)
+  include ::Concurrent::Concern::Dereferenceable
 
   def initialize(value = T.unsafe(nil), opts = T.unsafe(nil)); end
 
@@ -755,13 +888,13 @@ class Concurrent::MVar < ::Concurrent::Synchronization::Object
 end
 
 Concurrent::MVar::EMPTY = T.let(T.unsafe(nil), Object)
-
 Concurrent::MVar::TIMEOUT = T.let(T.unsafe(nil), Object)
 
 class Concurrent::Map < ::Concurrent::Collection::MriMapBackend
   def initialize(options = T.unsafe(nil), &block); end
 
   def [](key); end
+  def []=(key, value); end
   def each; end
   def each_key; end
   def each_pair; end
@@ -788,11 +921,10 @@ class Concurrent::Map < ::Concurrent::Collection::MriMapBackend
   def validate_options_hash!(options); end
 end
 
-class Concurrent::MaxRestartFrequencyError < ::Concurrent::Error
-end
+class Concurrent::MaxRestartFrequencyError < ::Concurrent::Error; end
 
 class Concurrent::Maybe < ::Concurrent::Synchronization::Object
-  include(::Comparable)
+  include ::Comparable
 
   def initialize(just, nothing); end
 
@@ -834,7 +966,7 @@ class Concurrent::MultipleErrors < ::Concurrent::Error
 end
 
 module Concurrent::MutableStruct
-  include(::Concurrent::Synchronization::AbstractStruct)
+  include ::Concurrent::Synchronization::AbstractStruct
 
   def ==(other); end
   def [](member); end
@@ -858,6 +990,8 @@ module Concurrent::MutableStruct
     def new(*args, &block); end
   end
 end
+
+Concurrent::MutableStruct::FACTORY = T.let(T.unsafe(nil), T.untyped)
 
 class Concurrent::MutexAtomicBoolean < ::Concurrent::Synchronization::LockableObject
   def initialize(initial = T.unsafe(nil)); end
@@ -900,8 +1034,8 @@ class Concurrent::MutexAtomicFixnum < ::Concurrent::Synchronization::LockableObj
 end
 
 class Concurrent::MutexAtomicReference < ::Concurrent::Synchronization::LockableObject
-  include(::Concurrent::AtomicDirectUpdate)
-  include(::Concurrent::AtomicNumericCompareAndSetWrapper)
+  include ::Concurrent::AtomicDirectUpdate
+  include ::Concurrent::AtomicNumericCompareAndSetWrapper
 
   def initialize(value = T.unsafe(nil)); end
 
@@ -952,7 +1086,6 @@ class Concurrent::MutexSemaphore < ::Concurrent::Synchronization::LockableObject
 end
 
 Concurrent::NULL = T.let(T.unsafe(nil), Object)
-
 Concurrent::NULL_LOGGER = T.let(T.unsafe(nil), Proc)
 
 module Concurrent::Options
@@ -1000,15 +1133,18 @@ class Concurrent::Promise < ::Concurrent::IVar
   end
 end
 
-class Concurrent::PromiseExecutionError < ::StandardError
-end
+class Concurrent::PromiseExecutionError < ::StandardError; end
 
 module Concurrent::Promises
-  extend(::Concurrent::Promises::FactoryMethods::Configuration)
-  extend(::Concurrent::Promises::FactoryMethods)
+  extend ::Concurrent::Promises::FactoryMethods::Configuration
+  extend ::Concurrent::Promises::FactoryMethods
 end
 
+class Concurrent::Promises::AbstractAnyPromise < ::Concurrent::Promises::BlockedPromise; end
+
 class Concurrent::Promises::AbstractEventFuture < ::Concurrent::Synchronization::Object
+  include ::Concurrent::Promises::InternalStates
+
   def initialize(promise, default_executor); end
 
   def __initialize_atomic_fields__; end
@@ -1059,6 +1195,109 @@ class Concurrent::Promises::AbstractEventFuture < ::Concurrent::Synchronization:
   end
 end
 
+class Concurrent::Promises::AbstractFlatPromise < ::Concurrent::Promises::BlockedPromise
+  def initialize(delayed_because, blockers_count, event_or_future); end
+
+  def touch; end
+
+  private
+
+  def add_delayed_of(future); end
+  def on_resolvable(resolved_future, index); end
+  def resolvable?(countdown, future, index); end
+  def touched?; end
+end
+
+class Concurrent::Promises::AbstractPromise < ::Concurrent::Synchronization::Object
+  include ::Concurrent::Promises::InternalStates
+
+  def initialize(future); end
+
+  def default_executor; end
+  def delayed_because; end
+  def event; end
+  def future; end
+  def inspect; end
+  def state; end
+  def to_s; end
+  def touch; end
+
+  private
+
+  def evaluate_to(*args, block); end
+  def resolve_with(new_state, raise_on_reassign = T.unsafe(nil)); end
+
+  class << self
+    def new(*args, &block); end
+  end
+end
+
+class Concurrent::Promises::AnyFulfilledFuturePromise < ::Concurrent::Promises::AnyResolvedFuturePromise
+  private
+
+  def resolvable?(countdown, future, index); end
+end
+
+class Concurrent::Promises::AnyResolvedEventPromise < ::Concurrent::Promises::AbstractAnyPromise
+  def initialize(delayed, blockers_count, default_executor); end
+
+  private
+
+  def on_resolvable(resolved_future, index); end
+  def resolvable?(countdown, future, index); end
+end
+
+class Concurrent::Promises::AnyResolvedFuturePromise < ::Concurrent::Promises::AbstractAnyPromise
+  def initialize(delayed, blockers_count, default_executor); end
+
+  private
+
+  def on_resolvable(resolved_future, index); end
+  def resolvable?(countdown, future, index); end
+end
+
+class Concurrent::Promises::BlockedPromise < ::Concurrent::Promises::InnerPromise
+  def initialize(delayed, blockers_count, future); end
+
+  def blocked_by; end
+  def delayed_because; end
+  def on_blocker_resolution(future, index); end
+  def touch; end
+
+  private
+
+  def clear_and_propagate_touch(stack_or_element = T.unsafe(nil)); end
+  def on_resolvable(resolved_future, index); end
+  def process_on_blocker_resolution(future, index); end
+  def resolvable?(countdown, future, index); end
+
+  class << self
+    def add_delayed(delayed1, delayed2); end
+    def new_blocked_by(blockers, *args, &block); end
+    def new_blocked_by1(blocker, *args, &block); end
+    def new_blocked_by2(blocker1, blocker2, *args, &block); end
+  end
+end
+
+class Concurrent::Promises::BlockedTaskPromise < ::Concurrent::Promises::BlockedPromise
+  def initialize(delayed, blockers_count, default_executor, executor, args, &task); end
+
+  def executor; end
+end
+
+class Concurrent::Promises::ChainPromise < ::Concurrent::Promises::BlockedTaskPromise
+  private
+
+  def on_resolvable(resolved_future, index); end
+end
+
+class Concurrent::Promises::DelayPromise < ::Concurrent::Promises::InnerPromise
+  def initialize(default_executor); end
+
+  def delayed_because; end
+  def touch; end
+end
+
 class Concurrent::Promises::Event < ::Concurrent::Promises::AbstractEventFuture
   def &(other); end
   def any(event_or_future); end
@@ -1077,11 +1316,19 @@ class Concurrent::Promises::Event < ::Concurrent::Promises::AbstractEventFuture
   def rejected_resolution(raise_on_reassign, state); end
 end
 
+class Concurrent::Promises::EventWrapperPromise < ::Concurrent::Promises::BlockedPromise
+  def initialize(delayed, blockers_count, default_executor); end
+
+  private
+
+  def on_resolvable(resolved_future, index); end
+end
+
 module Concurrent::Promises::FactoryMethods
-  include(::Concurrent::Promises::FactoryMethods::Configuration)
-  extend(::Concurrent::ReInclude)
-  extend(::Concurrent::Promises::FactoryMethods::Configuration)
-  extend(::Concurrent::Promises::FactoryMethods)
+  include ::Concurrent::Promises::FactoryMethods::Configuration
+  extend ::Concurrent::ReInclude
+  extend ::Concurrent::Promises::FactoryMethods
+  extend ::Concurrent::Promises::FactoryMethods::Configuration
 
   def any(*futures_and_or_events); end
   def any_event(*futures_and_or_events); end
@@ -1114,6 +1361,22 @@ end
 
 module Concurrent::Promises::FactoryMethods::Configuration
   def default_executor; end
+end
+
+class Concurrent::Promises::FlatEventPromise < ::Concurrent::Promises::AbstractFlatPromise
+  def initialize(delayed, blockers_count, default_executor); end
+
+  private
+
+  def process_on_blocker_resolution(future, index); end
+end
+
+class Concurrent::Promises::FlatFuturePromise < ::Concurrent::Promises::AbstractFlatPromise
+  def initialize(delayed, blockers_count, levels, default_executor); end
+
+  private
+
+  def process_on_blocker_resolution(future, index); end
 end
 
 class Concurrent::Promises::Future < ::Concurrent::Promises::AbstractEventFuture
@@ -1164,19 +1427,112 @@ class Concurrent::Promises::Future < ::Concurrent::Promises::AbstractEventFuture
   def wait_until_resolved!(timeout = T.unsafe(nil)); end
 end
 
+class Concurrent::Promises::FutureWrapperPromise < ::Concurrent::Promises::BlockedPromise
+  def initialize(delayed, blockers_count, default_executor); end
+
+  private
+
+  def on_resolvable(resolved_future, index); end
+end
+
+class Concurrent::Promises::ImmediateEventPromise < ::Concurrent::Promises::InnerPromise
+  def initialize(default_executor); end
+end
+
+class Concurrent::Promises::ImmediateFuturePromise < ::Concurrent::Promises::InnerPromise
+  def initialize(default_executor, fulfilled, value, reason); end
+end
+
+class Concurrent::Promises::InnerPromise < ::Concurrent::Promises::AbstractPromise; end
+module Concurrent::Promises::InternalStates; end
+
+class Concurrent::Promises::InternalStates::Fulfilled < ::Concurrent::Promises::InternalStates::ResolvedWithResult
+  def initialize(value); end
+
+  def apply(args, block); end
+  def fulfilled?; end
+  def reason; end
+  def to_sym; end
+  def value; end
+end
+
+class Concurrent::Promises::InternalStates::FulfilledArray < ::Concurrent::Promises::InternalStates::Fulfilled
+  def apply(args, block); end
+end
+
+Concurrent::Promises::InternalStates::PENDING = T.let(T.unsafe(nil), Concurrent::Promises::InternalStates::Pending)
+
+class Concurrent::Promises::InternalStates::PartiallyRejected < ::Concurrent::Promises::InternalStates::ResolvedWithResult
+  def initialize(value, reason); end
+
+  def apply(args, block); end
+  def fulfilled?; end
+  def reason; end
+  def to_sym; end
+  def value; end
+end
+
+class Concurrent::Promises::InternalStates::Pending < ::Concurrent::Promises::InternalStates::State
+  def resolved?; end
+  def to_sym; end
+end
+
+Concurrent::Promises::InternalStates::RESERVED = T.let(T.unsafe(nil), Concurrent::Promises::InternalStates::Reserved)
+Concurrent::Promises::InternalStates::RESOLVED = T.let(T.unsafe(nil), Concurrent::Promises::InternalStates::Fulfilled)
+
+class Concurrent::Promises::InternalStates::Rejected < ::Concurrent::Promises::InternalStates::ResolvedWithResult
+  def initialize(reason); end
+
+  def apply(args, block); end
+  def fulfilled?; end
+  def reason; end
+  def to_sym; end
+  def value; end
+end
+
+class Concurrent::Promises::InternalStates::Reserved < ::Concurrent::Promises::InternalStates::Pending; end
+
+class Concurrent::Promises::InternalStates::ResolvedWithResult < ::Concurrent::Promises::InternalStates::State
+  def apply; end
+  def fulfilled?; end
+  def reason; end
+  def resolved?; end
+  def result; end
+  def to_sym; end
+  def value; end
+end
+
+class Concurrent::Promises::InternalStates::State
+  def resolved?; end
+  def to_sym; end
+end
+
+class Concurrent::Promises::RescuePromise < ::Concurrent::Promises::BlockedTaskPromise
+  def initialize(delayed, blockers_count, default_executor, executor, args, &task); end
+
+  private
+
+  def on_resolvable(resolved_future, index); end
+end
+
 module Concurrent::Promises::Resolvable
+  include ::Concurrent::Promises::InternalStates
 end
 
 class Concurrent::Promises::ResolvableEvent < ::Concurrent::Promises::Event
-  include(::Concurrent::Promises::Resolvable)
+  include ::Concurrent::Promises::Resolvable
 
   def resolve(raise_on_reassign = T.unsafe(nil), reserved = T.unsafe(nil)); end
   def wait(timeout = T.unsafe(nil), resolve_on_timeout = T.unsafe(nil)); end
   def with_hidden_resolvable; end
 end
 
+class Concurrent::Promises::ResolvableEventPromise < ::Concurrent::Promises::AbstractPromise
+  def initialize(default_executor); end
+end
+
 class Concurrent::Promises::ResolvableFuture < ::Concurrent::Promises::Future
-  include(::Concurrent::Promises::Resolvable)
+  include ::Concurrent::Promises::Resolvable
 
   def evaluate_to(*args, &block); end
   def evaluate_to!(*args, &block); end
@@ -1190,6 +1546,67 @@ class Concurrent::Promises::ResolvableFuture < ::Concurrent::Promises::Future
   def wait(timeout = T.unsafe(nil), resolve_on_timeout = T.unsafe(nil)); end
   def wait!(timeout = T.unsafe(nil), resolve_on_timeout = T.unsafe(nil)); end
   def with_hidden_resolvable; end
+end
+
+class Concurrent::Promises::ResolvableFuturePromise < ::Concurrent::Promises::AbstractPromise
+  def initialize(default_executor); end
+end
+
+class Concurrent::Promises::RunFuturePromise < ::Concurrent::Promises::AbstractFlatPromise
+  def initialize(delayed, blockers_count, default_executor, run_test); end
+
+  private
+
+  def process_on_blocker_resolution(future, index); end
+end
+
+class Concurrent::Promises::ScheduledPromise < ::Concurrent::Promises::InnerPromise
+  def initialize(default_executor, intended_time); end
+
+  def inspect; end
+  def intended_time; end
+end
+
+class Concurrent::Promises::ThenPromise < ::Concurrent::Promises::BlockedTaskPromise
+  def initialize(delayed, blockers_count, default_executor, executor, args, &task); end
+
+  private
+
+  def on_resolvable(resolved_future, index); end
+end
+
+class Concurrent::Promises::ZipEventEventPromise < ::Concurrent::Promises::BlockedPromise
+  def initialize(delayed, blockers_count, default_executor); end
+
+  private
+
+  def on_resolvable(resolved_future, index); end
+end
+
+class Concurrent::Promises::ZipEventsPromise < ::Concurrent::Promises::BlockedPromise
+  def initialize(delayed, blockers_count, default_executor); end
+
+  private
+
+  def on_resolvable(resolved_future, index); end
+end
+
+class Concurrent::Promises::ZipFutureEventPromise < ::Concurrent::Promises::BlockedPromise
+  def initialize(delayed, blockers_count, default_executor); end
+
+  private
+
+  def on_resolvable(resolved_future, index); end
+  def process_on_blocker_resolution(future, index); end
+end
+
+class Concurrent::Promises::ZipFuturesPromise < ::Concurrent::Promises::BlockedPromise
+  def initialize(delayed, blockers_count, default_executor); end
+
+  private
+
+  def on_resolvable(resolved_future, index); end
+  def process_on_blocker_resolution(future, index); end
 end
 
 module Concurrent::ReInclude
@@ -1226,11 +1643,8 @@ class Concurrent::ReadWriteLock < ::Concurrent::Synchronization::Object
 end
 
 Concurrent::ReadWriteLock::MAX_READERS = T.let(T.unsafe(nil), Integer)
-
 Concurrent::ReadWriteLock::MAX_WRITERS = T.let(T.unsafe(nil), Integer)
-
 Concurrent::ReadWriteLock::RUNNING_WRITER = T.let(T.unsafe(nil), Integer)
-
 Concurrent::ReadWriteLock::WAITING_WRITER = T.let(T.unsafe(nil), Integer)
 
 class Concurrent::ReentrantReadWriteLock < ::Concurrent::Synchronization::Object
@@ -1261,28 +1675,16 @@ class Concurrent::ReentrantReadWriteLock < ::Concurrent::Synchronization::Object
 end
 
 Concurrent::ReentrantReadWriteLock::MAX_READERS = T.let(T.unsafe(nil), Integer)
-
 Concurrent::ReentrantReadWriteLock::MAX_WRITERS = T.let(T.unsafe(nil), Integer)
-
 Concurrent::ReentrantReadWriteLock::READER_BITS = T.let(T.unsafe(nil), Integer)
-
 Concurrent::ReentrantReadWriteLock::READ_LOCK_MASK = T.let(T.unsafe(nil), Integer)
-
 Concurrent::ReentrantReadWriteLock::RUNNING_WRITER = T.let(T.unsafe(nil), Integer)
-
 Concurrent::ReentrantReadWriteLock::WAITING_WRITER = T.let(T.unsafe(nil), Integer)
-
 Concurrent::ReentrantReadWriteLock::WRITER_BITS = T.let(T.unsafe(nil), Integer)
-
 Concurrent::ReentrantReadWriteLock::WRITE_LOCK_HELD = T.let(T.unsafe(nil), Integer)
-
 Concurrent::ReentrantReadWriteLock::WRITE_LOCK_MASK = T.let(T.unsafe(nil), Integer)
-
-class Concurrent::RejectedExecutionError < ::Concurrent::Error
-end
-
-class Concurrent::ResourceLimitError < ::Concurrent::Error
-end
+class Concurrent::RejectedExecutionError < ::Concurrent::Error; end
+class Concurrent::ResourceLimitError < ::Concurrent::Error; end
 
 class Concurrent::RubyExchanger < ::Concurrent::AbstractExchanger
   def initialize; end
@@ -1297,6 +1699,23 @@ class Concurrent::RubyExchanger < ::Concurrent::AbstractExchanger
   private
 
   def do_exchange(value, timeout); end
+
+  class << self
+    def new(*args, &block); end
+  end
+end
+
+class Concurrent::RubyExchanger::Node < ::Concurrent::Synchronization::Object
+  def initialize(item); end
+
+  def __initialize_atomic_fields__; end
+  def compare_and_set_value(expected, value); end
+  def item; end
+  def latch; end
+  def swap_value(value); end
+  def update_value(&block); end
+  def value; end
+  def value=(value); end
 
   class << self
     def new(*args, &block); end
@@ -1348,6 +1767,10 @@ class Concurrent::RubyThreadLocalVar < ::Concurrent::AbstractThreadLocalVar
   end
 end
 
+Concurrent::RubyThreadLocalVar::FREE = T.let(T.unsafe(nil), Array)
+Concurrent::RubyThreadLocalVar::LOCK = T.let(T.unsafe(nil), Thread::Mutex)
+Concurrent::RubyThreadLocalVar::THREAD_LOCAL_ARRAYS = T.let(T.unsafe(nil), Hash)
+
 class Concurrent::RubyThreadPoolExecutor < ::Concurrent::RubyExecutorService
   def initialize(opts = T.unsafe(nil)); end
 
@@ -1388,12 +1811,25 @@ class Concurrent::RubyThreadPoolExecutor < ::Concurrent::RubyExecutorService
 end
 
 Concurrent::RubyThreadPoolExecutor::DEFAULT_MAX_POOL_SIZE = T.let(T.unsafe(nil), Integer)
-
 Concurrent::RubyThreadPoolExecutor::DEFAULT_MAX_QUEUE_SIZE = T.let(T.unsafe(nil), Integer)
-
 Concurrent::RubyThreadPoolExecutor::DEFAULT_MIN_POOL_SIZE = T.let(T.unsafe(nil), Integer)
-
 Concurrent::RubyThreadPoolExecutor::DEFAULT_THREAD_IDLETIMEOUT = T.let(T.unsafe(nil), Integer)
+
+class Concurrent::RubyThreadPoolExecutor::Worker
+  include ::Logger::Severity
+  include ::Concurrent::Concern::Logging
+
+  def initialize(pool, id); end
+
+  def <<(message); end
+  def kill; end
+  def stop; end
+
+  private
+
+  def create_worker(queue, pool, idletime); end
+  def run_task(pool, task, args); end
+end
 
 class Concurrent::SafeTaskExecutor < ::Concurrent::Synchronization::LockableObject
   def initialize(task, opts = T.unsafe(nil)); end
@@ -1402,7 +1838,7 @@ class Concurrent::SafeTaskExecutor < ::Concurrent::Synchronization::LockableObje
 end
 
 class Concurrent::ScheduledTask < ::Concurrent::IVar
-  include(::Comparable)
+  include ::Comparable
 
   def initialize(delay, opts = T.unsafe(nil), &task); end
 
@@ -1428,20 +1864,20 @@ class Concurrent::ScheduledTask < ::Concurrent::IVar
   end
 end
 
-class Concurrent::Semaphore < ::Concurrent::MutexSemaphore
-end
+class Concurrent::Semaphore < ::Concurrent::MutexSemaphore; end
+Concurrent::SemaphoreImplementation = Concurrent::MutexSemaphore
 
 module Concurrent::SerialExecutorService
-  include(::Logger::Severity)
-  include(::Concurrent::Concern::Logging)
-  include(::Concurrent::ExecutorService)
+  include ::Logger::Severity
+  include ::Concurrent::Concern::Logging
+  include ::Concurrent::ExecutorService
 
   def serialized?; end
 end
 
 class Concurrent::SerializedExecution < ::Concurrent::Synchronization::LockableObject
-  include(::Logger::Severity)
-  include(::Concurrent::Concern::Logging)
+  include ::Logger::Severity
+  include ::Concurrent::Concern::Logging
 
   def initialize; end
 
@@ -1473,21 +1909,21 @@ class Concurrent::SerializedExecution::Job < ::Struct
 end
 
 class Concurrent::SerializedExecutionDelegator < ::SimpleDelegator
-  include(::Logger::Severity)
-  include(::Concurrent::Concern::Logging)
-  include(::Concurrent::ExecutorService)
-  include(::Concurrent::SerialExecutorService)
+  include ::Logger::Severity
+  include ::Concurrent::Concern::Logging
+  include ::Concurrent::ExecutorService
+  include ::Concurrent::SerialExecutorService
 
   def initialize(executor); end
 
   def post(*args, &task); end
 end
 
-class Concurrent::Set < ::Set
-end
+class Concurrent::Set < ::Concurrent::CRubySet; end
+Concurrent::SetImplementation = Concurrent::CRubySet
 
 module Concurrent::SettableStruct
-  include(::Concurrent::Synchronization::AbstractStruct)
+  include ::Concurrent::Synchronization::AbstractStruct
 
   def ==(other); end
   def [](member); end
@@ -1512,6 +1948,8 @@ module Concurrent::SettableStruct
   end
 end
 
+Concurrent::SettableStruct::FACTORY = T.let(T.unsafe(nil), T.untyped)
+
 class Concurrent::SimpleExecutorService < ::Concurrent::RubyExecutorService
   def <<(task); end
   def kill; end
@@ -1532,14 +1970,11 @@ class Concurrent::SimpleExecutorService < ::Concurrent::RubyExecutorService
   end
 end
 
-class Concurrent::SingleThreadExecutor < ::Concurrent::RubySingleThreadExecutor
-end
-
-module Concurrent::Synchronization
-end
+class Concurrent::SingleThreadExecutor < ::Concurrent::RubySingleThreadExecutor; end
+Concurrent::SingleThreadExecutorImplementation = Concurrent::RubySingleThreadExecutor
+module Concurrent::Synchronization; end
 
 class Concurrent::Synchronization::AbstractLockableObject < ::Concurrent::Synchronization::Object
-
   protected
 
   def ns_broadcast; end
@@ -1604,7 +2039,6 @@ class Concurrent::Synchronization::Condition < ::Concurrent::Synchronization::Lo
 end
 
 module Concurrent::Synchronization::ConditionSignalling
-
   protected
 
   def ns_broadcast; end
@@ -1622,16 +2056,21 @@ class Concurrent::Synchronization::LockableObject < ::Concurrent::Synchronizatio
   def new_condition; end
 end
 
+Concurrent::Synchronization::LockableObjectImplementation = Concurrent::Synchronization::MutexLockableObject
+
 class Concurrent::Synchronization::MonitorLockableObject < ::Concurrent::Synchronization::AbstractLockableObject
-  include(::Concurrent::Synchronization::ConditionSignalling)
+  include ::Concurrent::Synchronization::ConditionSignalling
 
   def initialize(*defaults); end
-
 
   protected
 
   def ns_wait(timeout = T.unsafe(nil)); end
   def synchronize; end
+
+  private
+
+  def initialize_copy(other); end
 
   class << self
     def new(*args, &block); end
@@ -1639,7 +2078,7 @@ class Concurrent::Synchronization::MonitorLockableObject < ::Concurrent::Synchro
 end
 
 module Concurrent::Synchronization::MriAttrVolatile
-  mixes_in_class_methods(::Concurrent::Synchronization::MriAttrVolatile::ClassMethods)
+  mixes_in_class_methods ::Concurrent::Synchronization::MriAttrVolatile::ClassMethods
 
   def full_memory_barrier; end
 
@@ -1653,22 +2092,25 @@ module Concurrent::Synchronization::MriAttrVolatile::ClassMethods
 end
 
 class Concurrent::Synchronization::MriObject < ::Concurrent::Synchronization::AbstractObject
-  include(::Concurrent::Synchronization::MriAttrVolatile)
-  extend(::Concurrent::Synchronization::MriAttrVolatile::ClassMethods)
+  include ::Concurrent::Synchronization::MriAttrVolatile
+  extend ::Concurrent::Synchronization::MriAttrVolatile::ClassMethods
 
   def initialize; end
 end
 
 class Concurrent::Synchronization::MutexLockableObject < ::Concurrent::Synchronization::AbstractLockableObject
-  include(::Concurrent::Synchronization::ConditionSignalling)
+  include ::Concurrent::Synchronization::ConditionSignalling
 
   def initialize(*defaults); end
-
 
   protected
 
   def ns_wait(timeout = T.unsafe(nil)); end
   def synchronize; end
+
+  private
+
+  def initialize_copy(other); end
 
   class << self
     def new(*args, &block); end
@@ -1677,7 +2119,6 @@ end
 
 class Concurrent::Synchronization::Object < ::Concurrent::Synchronization::MriObject
   def initialize; end
-
 
   private
 
@@ -1697,8 +2138,10 @@ class Concurrent::Synchronization::Object < ::Concurrent::Synchronization::MriOb
   end
 end
 
+Concurrent::Synchronization::ObjectImplementation = Concurrent::Synchronization::MriObject
+
 module Concurrent::Synchronization::RbxAttrVolatile
-  mixes_in_class_methods(::Concurrent::Synchronization::RbxAttrVolatile::ClassMethods)
+  mixes_in_class_methods ::Concurrent::Synchronization::RbxAttrVolatile::ClassMethods
 
   def full_memory_barrier; end
 
@@ -1714,7 +2157,6 @@ end
 class Concurrent::Synchronization::RbxLockableObject < ::Concurrent::Synchronization::AbstractLockableObject
   def initialize(*defaults); end
 
-
   protected
 
   def ns_broadcast; end
@@ -1722,20 +2164,24 @@ class Concurrent::Synchronization::RbxLockableObject < ::Concurrent::Synchroniza
   def ns_wait(timeout = T.unsafe(nil)); end
   def synchronize(&block); end
 
+  private
+
+  def initialize_copy(other); end
+
   class << self
     def new(*args, &block); end
   end
 end
 
 class Concurrent::Synchronization::RbxObject < ::Concurrent::Synchronization::AbstractObject
-  include(::Concurrent::Synchronization::RbxAttrVolatile)
-  extend(::Concurrent::Synchronization::RbxAttrVolatile::ClassMethods)
+  include ::Concurrent::Synchronization::RbxAttrVolatile
+  extend ::Concurrent::Synchronization::RbxAttrVolatile::ClassMethods
 
   def initialize; end
 end
 
 module Concurrent::Synchronization::TruffleRubyAttrVolatile
-  mixes_in_class_methods(::Concurrent::Synchronization::TruffleRubyAttrVolatile::ClassMethods)
+  mixes_in_class_methods ::Concurrent::Synchronization::TruffleRubyAttrVolatile::ClassMethods
 
   def full_memory_barrier; end
 
@@ -1749,8 +2195,8 @@ module Concurrent::Synchronization::TruffleRubyAttrVolatile::ClassMethods
 end
 
 class Concurrent::Synchronization::TruffleRubyObject < ::Concurrent::Synchronization::AbstractObject
-  include(::Concurrent::Synchronization::TruffleRubyAttrVolatile)
-  extend(::Concurrent::Synchronization::TruffleRubyAttrVolatile::ClassMethods)
+  include ::Concurrent::Synchronization::TruffleRubyAttrVolatile
+  extend ::Concurrent::Synchronization::TruffleRubyAttrVolatile::ClassMethods
 
   def initialize; end
 end
@@ -1781,26 +2227,24 @@ class Concurrent::TVar < ::Concurrent::Synchronization::Object
   end
 end
 
-class Concurrent::ThreadLocalVar < ::Concurrent::RubyThreadLocalVar
-end
-
-class Concurrent::ThreadPoolExecutor < ::Concurrent::RubyThreadPoolExecutor
-end
-
-module Concurrent::ThreadSafe
-end
+class Concurrent::ThreadLocalVar < ::Concurrent::RubyThreadLocalVar; end
+Concurrent::ThreadLocalVarImplementation = Concurrent::RubyThreadLocalVar
+class Concurrent::ThreadPoolExecutor < ::Concurrent::RubyThreadPoolExecutor; end
+Concurrent::ThreadPoolExecutorImplementation = Concurrent::RubyThreadPoolExecutor
+module Concurrent::ThreadSafe; end
 
 module Concurrent::ThreadSafe::Util
+  class << self
+    def make_synchronized_on_cruby(klass); end
+    def make_synchronized_on_rbx(klass); end
+    def make_synchronized_on_truffleruby(klass); end
+  end
 end
 
 Concurrent::ThreadSafe::Util::CPU_COUNT = T.let(T.unsafe(nil), Integer)
-
 Concurrent::ThreadSafe::Util::FIXNUM_BIT_SIZE = T.let(T.unsafe(nil), Integer)
-
 Concurrent::ThreadSafe::Util::MAX_INT = T.let(T.unsafe(nil), Integer)
-
-class Concurrent::TimeoutError < ::Concurrent::Error
-end
+class Concurrent::TimeoutError < ::Concurrent::Error; end
 
 class Concurrent::TimerSet < ::Concurrent::RubyExecutorService
   def initialize(opts = T.unsafe(nil)); end
@@ -1820,8 +2264,8 @@ class Concurrent::TimerSet < ::Concurrent::RubyExecutorService
 end
 
 class Concurrent::TimerTask < ::Concurrent::RubyExecutorService
-  include(::Concurrent::Concern::Dereferenceable)
-  include(::Concurrent::Concern::Observable)
+  include ::Concurrent::Concern::Dereferenceable
+  include ::Concurrent::Concern::Observable
 
   def initialize(opts = T.unsafe(nil), &task); end
 
@@ -1847,7 +2291,6 @@ class Concurrent::TimerTask < ::Concurrent::RubyExecutorService
 end
 
 Concurrent::TimerTask::EXECUTION_INTERVAL = T.let(T.unsafe(nil), Integer)
-
 Concurrent::TimerTask::TIMEOUT_INTERVAL = T.let(T.unsafe(nil), Integer)
 
 class Concurrent::Transaction
@@ -1867,12 +2310,8 @@ class Concurrent::Transaction
 end
 
 Concurrent::Transaction::ABORTED = T.let(T.unsafe(nil), Object)
-
-class Concurrent::Transaction::AbortError < ::StandardError
-end
-
-class Concurrent::Transaction::LeaveError < ::StandardError
-end
+class Concurrent::Transaction::AbortError < ::StandardError; end
+class Concurrent::Transaction::LeaveError < ::StandardError; end
 
 class Concurrent::Transaction::ReadLogEntry < ::Struct
   def tvar; end
@@ -1889,7 +2328,7 @@ class Concurrent::Transaction::ReadLogEntry < ::Struct
 end
 
 class Concurrent::Tuple
-  include(::Enumerable)
+  include ::Enumerable
 
   def initialize(size); end
 
@@ -1903,8 +2342,8 @@ class Concurrent::Tuple
   def volatile_set(i, value); end
 end
 
-module Concurrent::Utility
-end
+Concurrent::Tuple::Tuple = Array
+module Concurrent::Utility; end
 
 module Concurrent::Utility::EngineDetector
   def on_cruby?; end
@@ -1934,7 +2373,7 @@ module Concurrent::Utility::NativeExtensionLoader
 end
 
 module Concurrent::Utility::NativeInteger
-  extend(::Concurrent::Utility::NativeInteger)
+  extend ::Concurrent::Utility::NativeInteger
 
   def ensure_integer(value); end
   def ensure_integer_and_bounds(value); end
@@ -1945,7 +2384,6 @@ module Concurrent::Utility::NativeInteger
 end
 
 Concurrent::Utility::NativeInteger::MAX_VALUE = T.let(T.unsafe(nil), Integer)
-
 Concurrent::Utility::NativeInteger::MIN_VALUE = T.let(T.unsafe(nil), Integer)
 
 class Concurrent::Utility::ProcessorCounter
@@ -1961,9 +2399,3 @@ class Concurrent::Utility::ProcessorCounter
 end
 
 Concurrent::VERSION = T.let(T.unsafe(nil), String)
-
-Concurrent::Promises::InternalStates::PENDING = T.let(T.unsafe(nil), T.untyped)
-
-Concurrent::Promises::InternalStates::RESERVED = T.let(T.unsafe(nil), T.untyped)
-
-Concurrent::Promises::InternalStates::RESOLVED = T.let(T.unsafe(nil), T.untyped)

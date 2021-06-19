@@ -119,13 +119,9 @@ class Nokogiri::CSS::Parser < ::Racc::Parser
 end
 
 Nokogiri::CSS::Parser::CACHE_SWITCH_NAME = T.let(T.unsafe(nil), Symbol)
-
 Nokogiri::CSS::Parser::Racc_arg = T.let(T.unsafe(nil), Array)
-
 Nokogiri::CSS::Parser::Racc_token_to_s_table = T.let(T.unsafe(nil), Array)
-
-class Nokogiri::CSS::SyntaxError < ::Nokogiri::SyntaxError
-end
+class Nokogiri::CSS::SyntaxError < ::Nokogiri::SyntaxError; end
 
 class Nokogiri::CSS::Tokenizer
   def _next_token; end
@@ -142,8 +138,7 @@ class Nokogiri::CSS::Tokenizer
   def state=(_arg0); end
 end
 
-class Nokogiri::CSS::Tokenizer::ScanError < ::StandardError
-end
+class Nokogiri::CSS::Tokenizer::ScanError < ::StandardError; end
 
 class Nokogiri::CSS::XPathVisitor
   def accept(node); end
@@ -172,21 +167,18 @@ class Nokogiri::CSS::XPathVisitor
 end
 
 class Nokogiri::CSS::XPathVisitorAlwaysUseBuiltins < ::Nokogiri::CSS::XPathVisitor
-
   private
 
   def css_class(hay, needle); end
 end
 
 class Nokogiri::CSS::XPathVisitorOptimallyUseBuiltins < ::Nokogiri::CSS::XPathVisitor
-
   private
 
   def css_class(hay, needle); end
 end
 
-module Nokogiri::Decorators
-end
+module Nokogiri::Decorators; end
 
 module Nokogiri::Decorators::Slop
   def method_missing(name, *args, &block); end
@@ -308,225 +300,115 @@ class Nokogiri::HTML::ElementDescription
 end
 
 Nokogiri::HTML::ElementDescription::ACTION_ATTR = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::ALIGN_ATTR = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::ALT_ATTR = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::APPLET_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::AREA_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::A_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::BASEFONT_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::BGCOLOR_ATTR = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::BLOCK = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::BLOCKLI_ELT = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::BODY_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::BODY_CONTENTS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::BODY_DEPR = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::BUTTON_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::CELLHALIGN = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::CELLVALIGN = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::CLEAR_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::COL_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::COL_ELT = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::COMPACT_ATTR = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::COMPACT_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::CONTENT_ATTR = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::COREATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::CORE_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::CORE_I18N_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::DIR_ATTR = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::DL_CONTENTS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::DefaultDescriptions = T.let(T.unsafe(nil), Hash)
-
 Nokogiri::HTML::ElementDescription::Desc = Struct
-
 Nokogiri::HTML::ElementDescription::EDIT_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::EMBED_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::EMPTY = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::EVENTS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::FIELDSET_CONTENTS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::FLOW = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::FLOW_PARAM = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::FONTSTYLE = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::FONT_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::FORMCTRL = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::FORM_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::FORM_CONTENTS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::FRAMESET_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::FRAMESET_CONTENTS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::FRAME_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::HEADING = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::HEAD_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::HEAD_CONTENTS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::HREF_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::HR_DEPR = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::HTML_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::HTML_CDATA = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::HTML_CONTENT = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::HTML_FLOW = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::HTML_INLINE = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::HTML_PCDATA = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::I18N = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::I18N_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::IFRAME_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::IMG_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::INLINE = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::INLINE_P = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::INPUT_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::LABEL_ATTR = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::LABEL_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::LANGUAGE_ATTR = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::LEGEND_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::LINK_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::LIST = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::LI_ELT = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::MAP_CONTENTS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::META_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::MODIFIER = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::NAME_ATTR = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::NOFRAMES_CONTENT = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::OBJECT_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::OBJECT_CONTENTS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::OBJECT_DEPR = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::OL_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::OPTGROUP_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::OPTION_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::OPTION_ELT = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::PARAM_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::PCDATA = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::PHRASE = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::PRE_CONTENT = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::PROMPT_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::QUOTE_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::ROWS_COLS_ATTR = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::SCRIPT_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::SELECT_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::SELECT_CONTENT = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::SPECIAL = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::SRC_ALT_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::STYLE_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::TABLE_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::TABLE_CONTENTS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::TABLE_DEPR = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::TALIGN_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::TARGET_ATTR = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::TEXTAREA_ATTRS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::TH_TD_ATTR = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::TH_TD_DEPR = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::TR_CONTENTS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::TR_ELT = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::TYPE_ATTR = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::UL_DEPR = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::VERSION_ATTR = T.let(T.unsafe(nil), Array)
-
 Nokogiri::HTML::ElementDescription::WIDTH_ATTR = T.let(T.unsafe(nil), Array)
-
-class Nokogiri::HTML::EntityDescription < ::Struct
-end
+class Nokogiri::HTML::EntityDescription < ::Struct; end
 
 class Nokogiri::HTML::EntityLookup
   def [](name); end
@@ -534,9 +416,7 @@ class Nokogiri::HTML::EntityLookup
 end
 
 Nokogiri::HTML::NamedCharacters = T.let(T.unsafe(nil), Nokogiri::HTML::EntityLookup)
-
-module Nokogiri::HTML::SAX
-end
+module Nokogiri::HTML::SAX; end
 
 class Nokogiri::HTML::SAX::Parser < ::Nokogiri::XML::SAX::Parser
   def parse_file(filename, encoding = T.unsafe(nil)); end
@@ -570,27 +450,17 @@ class Nokogiri::HTML::SAX::PushParser < ::Nokogiri::XML::SAX::PushParser
 end
 
 Nokogiri::LIBXML2_PATCHES = T.let(T.unsafe(nil), Array)
-
 Nokogiri::LIBXML_COMPILED_VERSION = T.let(T.unsafe(nil), String)
-
 Nokogiri::LIBXML_ICONV_ENABLED = T.let(T.unsafe(nil), TrueClass)
-
 Nokogiri::LIBXML_LOADED_VERSION = T.let(T.unsafe(nil), String)
-
+Nokogiri::LIBXML_MEMORY_MANAGEMENT = T.let(T.unsafe(nil), String)
 Nokogiri::LIBXSLT_COMPILED_VERSION = T.let(T.unsafe(nil), String)
-
 Nokogiri::LIBXSLT_LOADED_VERSION = T.let(T.unsafe(nil), String)
-
 Nokogiri::LIBXSLT_PATCHES = T.let(T.unsafe(nil), Array)
-
 Nokogiri::OTHER_LIBRARY_VERSIONS = T.let(T.unsafe(nil), String)
-
 Nokogiri::PACKAGED_LIBRARIES = T.let(T.unsafe(nil), TrueClass)
-
 Nokogiri::PRECOMPILED_LIBRARIES = T.let(T.unsafe(nil), TrueClass)
-
-class Nokogiri::SyntaxError < ::StandardError
-end
+class Nokogiri::SyntaxError < ::StandardError; end
 
 module Nokogiri::Test
   class << self
@@ -599,12 +469,11 @@ module Nokogiri::Test
 end
 
 Nokogiri::VERSION = T.let(T.unsafe(nil), String)
-
 Nokogiri::VERSION_INFO = T.let(T.unsafe(nil), Hash)
 
 class Nokogiri::VersionInfo
-  include(::Singleton)
-  extend(::Singleton::SingletonClassMethods)
+  include ::Singleton
+  extend ::Singleton::SingletonClassMethods
 
   def compiled_libxml_version; end
   def compiled_libxslt_version; end
@@ -701,7 +570,7 @@ class Nokogiri::XML::CDATA < ::Nokogiri::XML::Text
 end
 
 class Nokogiri::XML::CharacterData < ::Nokogiri::XML::Node
-  include(::Nokogiri::XML::PP::CharacterData)
+  include ::Nokogiri::XML::PP::CharacterData
 end
 
 class Nokogiri::XML::Comment < ::Nokogiri::XML::CharacterData
@@ -734,7 +603,7 @@ class Nokogiri::XML::Document < ::Nokogiri::XML::Node
   def collect_namespaces; end
   def create_cdata(string, &block); end
   def create_comment(string, &block); end
-  def create_element(name, *args, &block); end
+  def create_element(name, *contents_or_attrs, &block); end
   def create_entity(*_arg0); end
   def create_text_node(string, &block); end
   def decorate(node); end
@@ -771,11 +640,8 @@ class Nokogiri::XML::Document < ::Nokogiri::XML::Node
 end
 
 Nokogiri::XML::Document::IMPLIED_XPATH_CONTEXTS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::XML::Document::NCNAME_CHAR = T.let(T.unsafe(nil), String)
-
 Nokogiri::XML::Document::NCNAME_RE = T.let(T.unsafe(nil), Regexp)
-
 Nokogiri::XML::Document::NCNAME_START_CHAR = T.let(T.unsafe(nil), String)
 
 class Nokogiri::XML::DocumentFragment < ::Nokogiri::XML::Node
@@ -804,8 +670,7 @@ class Nokogiri::XML::DocumentFragment < ::Nokogiri::XML::Node
   end
 end
 
-class Nokogiri::XML::Element < ::Nokogiri::XML::Node
-end
+class Nokogiri::XML::Element < ::Nokogiri::XML::Node; end
 
 class Nokogiri::XML::ElementContent
   def children; end
@@ -822,19 +687,12 @@ class Nokogiri::XML::ElementContent
 end
 
 Nokogiri::XML::ElementContent::ELEMENT = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ElementContent::MULT = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ElementContent::ONCE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ElementContent::OPT = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ElementContent::OR = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ElementContent::PCDATA = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ElementContent::PLUS = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ElementContent::SEQ = T.let(T.unsafe(nil), Integer)
 
 class Nokogiri::XML::ElementDecl < ::Nokogiri::XML::Node
@@ -858,15 +716,10 @@ class Nokogiri::XML::EntityDecl < ::Nokogiri::XML::Node
 end
 
 Nokogiri::XML::EntityDecl::EXTERNAL_GENERAL_PARSED = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::EntityDecl::EXTERNAL_GENERAL_UNPARSED = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::EntityDecl::EXTERNAL_PARAMETER = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::EntityDecl::INTERNAL_GENERAL = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::EntityDecl::INTERNAL_PARAMETER = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::EntityDecl::INTERNAL_PREDEFINED = T.let(T.unsafe(nil), Integer)
 
 class Nokogiri::XML::EntityReference < ::Nokogiri::XML::Node
@@ -879,7 +732,7 @@ class Nokogiri::XML::EntityReference < ::Nokogiri::XML::Node
 end
 
 class Nokogiri::XML::Namespace
-  include(::Nokogiri::XML::PP::Node)
+  include ::Nokogiri::XML::PP::Node
 
   def document; end
   def href; end
@@ -891,9 +744,9 @@ class Nokogiri::XML::Namespace
 end
 
 class Nokogiri::XML::Node
-  include(::Nokogiri::XML::PP::Node)
-  include(::Nokogiri::XML::Searchable)
-  include(::Enumerable)
+  include ::Nokogiri::XML::PP::Node
+  include ::Nokogiri::XML::Searchable
+  include ::Enumerable
 
   def initialize(name, document); end
 
@@ -1055,41 +908,23 @@ class Nokogiri::XML::Node
 end
 
 Nokogiri::XML::Node::ATTRIBUTE_DECL = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::ATTRIBUTE_NODE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::CDATA_SECTION_NODE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::COMMENT_NODE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::DOCB_DOCUMENT_NODE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::DOCUMENT_FRAG_NODE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::DOCUMENT_NODE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::DOCUMENT_TYPE_NODE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::DTD_NODE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::ELEMENT_DECL = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::ELEMENT_NODE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::ENTITY_DECL = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::ENTITY_NODE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::ENTITY_REF_NODE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::HTML_DOCUMENT_NODE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::IMPLIED_XPATH_CONTEXTS = T.let(T.unsafe(nil), Array)
-
 Nokogiri::XML::Node::NAMESPACE_DECL = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::NOTATION_NODE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::PI_NODE = T.let(T.unsafe(nil), Integer)
 
 class Nokogiri::XML::Node::SaveOptions
@@ -1120,34 +955,22 @@ class Nokogiri::XML::Node::SaveOptions
 end
 
 Nokogiri::XML::Node::SaveOptions::AS_HTML = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::SaveOptions::AS_XHTML = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::SaveOptions::AS_XML = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::SaveOptions::DEFAULT_HTML = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::SaveOptions::DEFAULT_XHTML = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::SaveOptions::DEFAULT_XML = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::SaveOptions::FORMAT = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::SaveOptions::NO_DECLARATION = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::SaveOptions::NO_EMPTY_TAGS = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::SaveOptions::NO_XHTML = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::TEXT_NODE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::XINCLUDE_END = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Node::XINCLUDE_START = T.let(T.unsafe(nil), Integer)
 
 class Nokogiri::XML::NodeSet
-  include(::Nokogiri::XML::Searchable)
-  include(::Enumerable)
+  include ::Nokogiri::XML::Searchable
+  include ::Enumerable
 
   def initialize(document, list = T.unsafe(nil)); end
 
@@ -1209,12 +1032,8 @@ class Nokogiri::XML::NodeSet
 end
 
 Nokogiri::XML::NodeSet::IMPLIED_XPATH_CONTEXTS = T.let(T.unsafe(nil), Array)
-
-class Nokogiri::XML::Notation < ::Struct
-end
-
-module Nokogiri::XML::PP
-end
+class Nokogiri::XML::Notation < ::Struct; end
+module Nokogiri::XML::PP; end
 
 module Nokogiri::XML::PP::CharacterData
   def inspect; end
@@ -1308,51 +1127,28 @@ class Nokogiri::XML::ParseOptions
 end
 
 Nokogiri::XML::ParseOptions::COMPACT = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::DEFAULT_HTML = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::DEFAULT_SCHEMA = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::DEFAULT_XML = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::DTDATTR = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::DTDLOAD = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::DTDVALID = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::HUGE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::NOBASEFIX = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::NOBLANKS = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::NOCDATA = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::NODICT = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::NOENT = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::NOERROR = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::NONET = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::NOWARNING = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::NOXINCNODE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::NSCLEAN = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::OLD10 = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::PEDANTIC = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::RECOVER = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::SAX1 = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::STRICT = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::ParseOptions::XINCLUDE = T.let(T.unsafe(nil), Integer)
 
 class Nokogiri::XML::ProcessingInstruction < ::Nokogiri::XML::Node
@@ -1364,7 +1160,7 @@ class Nokogiri::XML::ProcessingInstruction < ::Nokogiri::XML::Node
 end
 
 class Nokogiri::XML::Reader
-  include(::Enumerable)
+  include ::Enumerable
 
   def initialize(source, url = T.unsafe(nil), encoding = T.unsafe(nil)); end
 
@@ -1406,43 +1202,25 @@ class Nokogiri::XML::Reader
 end
 
 Nokogiri::XML::Reader::TYPE_ATTRIBUTE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Reader::TYPE_CDATA = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Reader::TYPE_COMMENT = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Reader::TYPE_DOCUMENT = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Reader::TYPE_DOCUMENT_FRAGMENT = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Reader::TYPE_DOCUMENT_TYPE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Reader::TYPE_ELEMENT = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Reader::TYPE_END_ELEMENT = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Reader::TYPE_END_ENTITY = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Reader::TYPE_ENTITY = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Reader::TYPE_ENTITY_REFERENCE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Reader::TYPE_NONE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Reader::TYPE_NOTATION = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Reader::TYPE_PROCESSING_INSTRUCTION = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Reader::TYPE_SIGNIFICANT_WHITESPACE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Reader::TYPE_TEXT = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Reader::TYPE_WHITESPACE = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::Reader::TYPE_XML_DECLARATION = T.let(T.unsafe(nil), Integer)
 
 class Nokogiri::XML::RelaxNG < ::Nokogiri::XML::Schema
-
   private
 
   def validate_document(_arg0); end
@@ -1453,8 +1231,7 @@ class Nokogiri::XML::RelaxNG < ::Nokogiri::XML::Schema
   end
 end
 
-module Nokogiri::XML::SAX
-end
+module Nokogiri::XML::SAX; end
 
 class Nokogiri::XML::SAX::Document
   def cdata_block(string); end
@@ -1489,9 +1266,7 @@ class Nokogiri::XML::SAX::Parser
   def check_encoding(encoding); end
 end
 
-class Nokogiri::XML::SAX::Parser::Attribute < ::Struct
-end
-
+class Nokogiri::XML::SAX::Parser::Attribute < ::Struct; end
 Nokogiri::XML::SAX::Parser::ENCODINGS = T.let(T.unsafe(nil), Hash)
 
 class Nokogiri::XML::SAX::ParserContext
@@ -1605,13 +1380,9 @@ class Nokogiri::XML::Text < ::Nokogiri::XML::CharacterData
 end
 
 Nokogiri::XML::XML_C14N_1_0 = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::XML_C14N_1_1 = T.let(T.unsafe(nil), Integer)
-
 Nokogiri::XML::XML_C14N_EXCLUSIVE_1_0 = T.let(T.unsafe(nil), Integer)
-
-module Nokogiri::XML::XPath
-end
+module Nokogiri::XML::XPath; end
 
 class Nokogiri::XML::XPath::SyntaxError < ::Nokogiri::XML::SyntaxError
   def to_s; end

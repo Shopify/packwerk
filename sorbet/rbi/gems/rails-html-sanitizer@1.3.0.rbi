@@ -25,7 +25,7 @@ module ActionView::Helpers
   include(::ActionView::Helpers::SanitizeHelper)
   include(::ActionView::Helpers::CaptureHelper)
   include(::ActionView::Helpers::ControllerHelper)
-  include(::ActionView::Helpers::CspHelper)
+  include(ActionView::Helpers::CacheHelper)
   include(::ActionView::Helpers::CsrfHelper)
   include(::ActionView::Helpers::DateHelper)
   include(::ActionView::Helpers::OutputSafetyHelper)

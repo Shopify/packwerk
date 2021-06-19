@@ -11,14 +11,14 @@ module Spoom
   end
 end
 
-module Spoom::Cli
-end
+module Spoom::Cli; end
 
 class Spoom::Cli::Bump < ::Thor
-  include(::Spoom::Cli::Helper)
+  include ::Spoom::Cli::Helper
 
   sig { params(directory: String).void }
   def bump(directory = T.unsafe(nil)); end
+
   def config_files(path: T.unsafe(nil)); end
   def help(command = T.unsafe(nil), subcommand = T.unsafe(nil)); end
   def print_changes(files, command:, from: T.unsafe(nil), to: T.unsafe(nil), dry: T.unsafe(nil), path: T.unsafe(nil)); end
@@ -26,14 +26,14 @@ class Spoom::Cli::Bump < ::Thor
 end
 
 class Spoom::Cli::Config < ::Thor
-  include(::Spoom::Cli::Helper)
+  include ::Spoom::Cli::Helper
 
   def help(command = T.unsafe(nil), subcommand = T.unsafe(nil)); end
   def show; end
 end
 
 class Spoom::Cli::Coverage < ::Thor
-  include(::Spoom::Cli::Helper)
+  include ::Spoom::Cli::Helper
 
   def bundle_install(path, sha); end
   def help(command = T.unsafe(nil), subcommand = T.unsafe(nil)); end
@@ -48,36 +48,50 @@ end
 Spoom::Cli::Coverage::DATA_DIR = T.let(T.unsafe(nil), String)
 
 module Spoom::Cli::Helper
-  include(::Thor::Shell)
+  include ::Thor::Shell
 
   sig { params(string: String).returns(String) }
   def blue(string); end
+
   sig { returns(T::Boolean) }
   def color?; end
+
   sig { params(string: String, color: Symbol).returns(String) }
   def colorize(string, color); end
+
   sig { returns(String) }
   def exec_path; end
+
   sig { params(string: String).returns(String) }
   def gray(string); end
+
   sig { params(string: String).returns(String) }
   def green(string); end
+
   sig { params(string: String).returns(String) }
   def highlight(string); end
+
   sig { void }
   def in_sorbet_project!; end
+
   sig { returns(T::Boolean) }
   def in_sorbet_project?; end
+
   sig { params(string: String).returns(String) }
   def red(string); end
+
   sig { params(message: String).void }
   def say(message); end
+
   sig { params(message: String, status: T.nilable(String), nl: T::Boolean).void }
   def say_error(message, status: T.unsafe(nil), nl: T.unsafe(nil)); end
+
   sig { returns(Spoom::Sorbet::Config) }
   def sorbet_config; end
+
   sig { returns(String) }
   def sorbet_config_file; end
+
   sig { params(string: String).returns(String) }
   def yellow(string); end
 end
@@ -85,7 +99,7 @@ end
 Spoom::Cli::Helper::HIGHLIGHT_COLOR = T.let(T.unsafe(nil), Symbol)
 
 class Spoom::Cli::LSP < ::Thor
-  include(::Spoom::Cli::Helper)
+  include ::Spoom::Cli::Helper
 
   def defs(file, line, col); end
   def find(query); end
@@ -104,7 +118,7 @@ class Spoom::Cli::LSP < ::Thor
 end
 
 class Spoom::Cli::Main < ::Thor
-  include(::Spoom::Cli::Helper)
+  include ::Spoom::Cli::Helper
 
   def __print_version; end
   def bump(*args); end
@@ -120,7 +134,7 @@ class Spoom::Cli::Main < ::Thor
 end
 
 class Spoom::Cli::Run < ::Thor
-  include(::Spoom::Cli::Helper)
+  include ::Spoom::Cli::Helper
 
   def colorize_message(message); end
   def format_error(error, format); end
@@ -129,34 +143,34 @@ class Spoom::Cli::Run < ::Thor
 end
 
 Spoom::Cli::Run::DEFAULT_FORMAT = T.let(T.unsafe(nil), String)
-
 Spoom::Cli::Run::SORT_CODE = T.let(T.unsafe(nil), String)
-
 Spoom::Cli::Run::SORT_ENUM = T.let(T.unsafe(nil), Array)
-
 Spoom::Cli::Run::SORT_LOC = T.let(T.unsafe(nil), String)
 
 module Spoom::Coverage
   class << self
     sig { params(snapshots: T::Array[Spoom::Coverage::Snapshot], palette: Spoom::Coverage::D3::ColorPalette, path: String).returns(Spoom::Coverage::Report) }
     def report(snapshots, palette:, path: T.unsafe(nil)); end
+
     sig { params(path: String).returns(Spoom::FileTree) }
     def sigils_tree(path: T.unsafe(nil)); end
+
     sig { params(path: String, rbi: T::Boolean, sorbet_bin: T.nilable(String)).returns(Spoom::Coverage::Snapshot) }
     def snapshot(path: T.unsafe(nil), rbi: T.unsafe(nil), sorbet_bin: T.unsafe(nil)); end
+
     sig { params(path: String).returns(Spoom::Sorbet::Config) }
     def sorbet_config(path: T.unsafe(nil)); end
   end
 end
 
-module Spoom::Coverage::Cards
-end
+module Spoom::Coverage::Cards; end
 
 class Spoom::Coverage::Cards::Card < ::Spoom::Coverage::Template
   sig { params(template: String, title: T.nilable(String), body: T.nilable(String)).void }
   def initialize(template: T.unsafe(nil), title: T.unsafe(nil), body: T.unsafe(nil)); end
 
   def body; end
+
   sig { returns(T.nilable(String)) }
   def title; end
 end
@@ -171,6 +185,7 @@ class Spoom::Coverage::Cards::Erb < ::Spoom::Coverage::Cards::Card
 
   sig { abstract.returns(String) }
   def erb; end
+
   sig { override.returns(String) }
   def html; end
 end
@@ -186,10 +201,13 @@ class Spoom::Coverage::Cards::Snapshot < ::Spoom::Coverage::Cards::Card
 
   sig { returns(Spoom::Coverage::D3::Pie::Calls) }
   def pie_calls; end
+
   sig { returns(Spoom::Coverage::D3::Pie::Sigils) }
   def pie_sigils; end
+
   sig { returns(Spoom::Coverage::D3::Pie::Sigs) }
   def pie_sigs; end
+
   sig { returns(Spoom::Coverage::Snapshot) }
   def snapshot; end
 end
@@ -210,6 +228,11 @@ class Spoom::Coverage::Cards::Timeline < ::Spoom::Coverage::Cards::Card
 end
 
 class Spoom::Coverage::Cards::Timeline::Calls < ::Spoom::Coverage::Cards::Timeline
+  sig { params(snapshots: T::Array[Spoom::Coverage::Snapshot], title: String).void }
+  def initialize(snapshots:, title: T.unsafe(nil)); end
+end
+
+class Spoom::Coverage::Cards::Timeline::RBIs < ::Spoom::Coverage::Cards::Timeline
   sig { params(snapshots: T::Array[Spoom::Coverage::Snapshot], title: String).void }
   def initialize(snapshots:, title: T.unsafe(nil)); end
 end
@@ -238,6 +261,7 @@ module Spoom::Coverage::D3
   class << self
     sig { params(palette: Spoom::Coverage::D3::ColorPalette).returns(String) }
     def header_script(palette); end
+
     sig { returns(String) }
     def header_style; end
   end
@@ -251,29 +275,29 @@ class Spoom::Coverage::D3::Base
 
   sig { returns(String) }
   def html; end
+
   sig { returns(String) }
   def id; end
+
   sig { abstract.returns(String) }
   def script; end
+
   sig { returns(String) }
   def tooltip; end
 
   class << self
     sig { returns(String) }
     def header_script; end
+
     sig { returns(String) }
     def header_style; end
   end
 end
 
 Spoom::Coverage::D3::COLOR_FALSE = T.let(T.unsafe(nil), String)
-
 Spoom::Coverage::D3::COLOR_IGNORE = T.let(T.unsafe(nil), String)
-
 Spoom::Coverage::D3::COLOR_STRICT = T.let(T.unsafe(nil), String)
-
 Spoom::Coverage::D3::COLOR_STRONG = T.let(T.unsafe(nil), String)
-
 Spoom::Coverage::D3::COLOR_TRUE = T.let(T.unsafe(nil), String)
 
 class Spoom::Coverage::D3::CircleMap < ::Spoom::Coverage::D3::Base
@@ -283,6 +307,7 @@ class Spoom::Coverage::D3::CircleMap < ::Spoom::Coverage::D3::Base
   class << self
     sig { returns(String) }
     def header_script; end
+
     sig { returns(String) }
     def header_style; end
   end
@@ -294,18 +319,20 @@ class Spoom::Coverage::D3::CircleMap::Sigils < ::Spoom::Coverage::D3::CircleMap
 
   sig { params(node: Spoom::FileTree::Node).returns(Float) }
   def tree_node_score(node); end
+
   sig { params(node: Spoom::FileTree::Node).returns(T.nilable(String)) }
   def tree_node_strictness(node); end
+
   sig { params(node: Spoom::FileTree::Node).returns(T::Hash[Symbol, T.untyped]) }
   def tree_node_to_json(node); end
 end
 
 class Spoom::Coverage::D3::ColorPalette < ::T::Struct
-  prop :ignore, String
   prop :false, String
-  prop :true, String
+  prop :ignore, String
   prop :strict, String
   prop :strong, String
+  prop :true, String
 
   class << self
     def inherited(s); end
@@ -324,6 +351,7 @@ class Spoom::Coverage::D3::Pie < ::Spoom::Coverage::D3::Base
   class << self
     sig { returns(String) }
     def header_script; end
+
     sig { returns(String) }
     def header_style; end
   end
@@ -361,26 +389,35 @@ class Spoom::Coverage::D3::Timeline < ::Spoom::Coverage::D3::Base
 
   sig { params(y: String, color: String, curve: String).returns(String) }
   def area(y:, color: T.unsafe(nil), curve: T.unsafe(nil)); end
+
   sig { params(y: String, color: String, curve: String).returns(String) }
   def line(y:, color: T.unsafe(nil), curve: T.unsafe(nil)); end
+
   sig { abstract.returns(String) }
   def plot; end
+
   sig { params(y: String).returns(String) }
   def points(y:); end
+
   sig { override.returns(String) }
   def script; end
+
   sig { returns(String) }
   def x_scale; end
+
   sig { returns(String) }
   def x_ticks; end
+
   sig { params(min: String, max: String, ticks: String).returns(String) }
   def y_scale(min:, max:, ticks:); end
+
   sig { params(ticks: String, format: String, padding: Integer).returns(String) }
   def y_ticks(ticks:, format:, padding:); end
 
   class << self
     sig { returns(String) }
     def header_script; end
+
     sig { returns(String) }
     def header_style; end
   end
@@ -394,12 +431,30 @@ class Spoom::Coverage::D3::Timeline::Calls < ::Spoom::Coverage::D3::Timeline::St
   def tooltip; end
 end
 
+class Spoom::Coverage::D3::Timeline::RBIs < ::Spoom::Coverage::D3::Timeline::Stacked
+  sig { params(id: String, snapshots: T::Array[Spoom::Coverage::Snapshot]).void }
+  def initialize(id, snapshots); end
+
+  sig { override.params(y: String, color: String, curve: String).returns(String) }
+  def line(y:, color: T.unsafe(nil), curve: T.unsafe(nil)); end
+
+  sig { override.returns(String) }
+  def plot; end
+
+  sig { override.returns(String) }
+  def script; end
+
+  sig { override.returns(String) }
+  def tooltip; end
+end
+
 class Spoom::Coverage::D3::Timeline::Runtimes < ::Spoom::Coverage::D3::Timeline
   sig { params(id: String, snapshots: T::Array[Spoom::Coverage::Snapshot]).void }
   def initialize(id, snapshots); end
 
   sig { override.returns(String) }
   def plot; end
+
   sig { override.returns(String) }
   def tooltip; end
 end
@@ -427,8 +482,10 @@ class Spoom::Coverage::D3::Timeline::Stacked < ::Spoom::Coverage::D3::Timeline
 
   sig { override.params(y: String, color: String, curve: String).returns(String) }
   def line(y:, color: T.unsafe(nil), curve: T.unsafe(nil)); end
+
   sig { override.returns(String) }
   def plot; end
+
   sig { override.returns(String) }
   def script; end
 end
@@ -439,6 +496,7 @@ class Spoom::Coverage::D3::Timeline::Versions < ::Spoom::Coverage::D3::Timeline
 
   sig { override.returns(String) }
   def plot; end
+
   sig { override.returns(String) }
   def tooltip; end
 end
@@ -451,18 +509,25 @@ class Spoom::Coverage::Page < ::Spoom::Coverage::Template
 
   sig { returns(String) }
   def body_html; end
+
   sig { abstract.returns(T::Array[Spoom::Coverage::Cards::Card]) }
   def cards; end
+
   sig { returns(String) }
   def footer_html; end
+
   sig { returns(String) }
   def header_html; end
+
   sig { returns(String) }
   def header_script; end
+
   sig { returns(String) }
   def header_style; end
+
   sig { returns(Spoom::Coverage::D3::ColorPalette) }
   def palette; end
+
   sig { returns(String) }
   def title; end
 end
@@ -475,47 +540,57 @@ class Spoom::Coverage::Report < ::Spoom::Coverage::Page
 
   sig { override.returns(T::Array[Spoom::Coverage::Cards::Card]) }
   def cards; end
+
   sig { override.returns(String) }
   def header_html; end
+
   sig { returns(String) }
   def project_name; end
+
   sig { returns(Spoom::FileTree) }
   def sigils_tree; end
+
   sig { returns(T::Array[Spoom::Coverage::Snapshot]) }
   def snapshots; end
+
   sig { returns(T.nilable(String)) }
   def sorbet_intro_commit; end
+
   sig { returns(T.nilable(Time)) }
   def sorbet_intro_date; end
 end
 
 class Spoom::Coverage::Snapshot < ::T::Struct
-  prop :timestamp, Integer, default: T.unsafe(nil)
-  prop :version_static, T.nilable(String), default: T.unsafe(nil)
-  prop :version_runtime, T.nilable(String), default: T.unsafe(nil)
-  prop :duration, Integer, default: T.unsafe(nil)
+  prop :calls_typed, Integer, default: T.unsafe(nil)
+  prop :calls_untyped, Integer, default: T.unsafe(nil)
+  prop :classes, Integer, default: T.unsafe(nil)
   prop :commit_sha, T.nilable(String), default: T.unsafe(nil)
   prop :commit_timestamp, T.nilable(Integer), default: T.unsafe(nil)
+  prop :duration, Integer, default: T.unsafe(nil)
   prop :files, Integer, default: T.unsafe(nil)
-  prop :modules, Integer, default: T.unsafe(nil)
-  prop :classes, Integer, default: T.unsafe(nil)
-  prop :singleton_classes, Integer, default: T.unsafe(nil)
-  prop :methods_without_sig, Integer, default: T.unsafe(nil)
   prop :methods_with_sig, Integer, default: T.unsafe(nil)
-  prop :calls_untyped, Integer, default: T.unsafe(nil)
-  prop :calls_typed, Integer, default: T.unsafe(nil)
+  prop :methods_without_sig, Integer, default: T.unsafe(nil)
+  prop :modules, Integer, default: T.unsafe(nil)
+  prop :rbi_files, Integer, default: T.unsafe(nil)
   prop :sigils, T::Hash[String, Integer], default: T.unsafe(nil)
+  prop :singleton_classes, Integer, default: T.unsafe(nil)
+  prop :timestamp, Integer, default: T.unsafe(nil)
+  prop :version_runtime, T.nilable(String), default: T.unsafe(nil)
+  prop :version_static, T.nilable(String), default: T.unsafe(nil)
 
   sig { params(out: T.any(IO, StringIO), colors: T::Boolean, indent_level: Integer).void }
   def print(out: T.unsafe(nil), colors: T.unsafe(nil), indent_level: T.unsafe(nil)); end
+
   sig { params(arg: T.untyped).returns(String) }
   def to_json(*arg); end
 
   class << self
     sig { params(json: String).returns(Spoom::Coverage::Snapshot) }
     def from_json(json); end
+
     sig { params(obj: T::Hash[String, T.untyped]).returns(Spoom::Coverage::Snapshot) }
     def from_obj(obj); end
+
     def inherited(s); end
   end
 end
@@ -530,6 +605,7 @@ class Spoom::Coverage::SnapshotPrinter < ::Spoom::Printer
 
   sig { params(value: T.nilable(Integer), total: T.nilable(Integer)).returns(String) }
   def percent(value, total); end
+
   sig { params(hash: T::Hash[String, Integer], total: Integer).void }
   def print_map(hash, total); end
 end
@@ -542,14 +618,15 @@ class Spoom::Coverage::Template
 
   sig { returns(String) }
   def erb; end
+
   sig { returns(Binding) }
   def get_binding; end
+
   sig { returns(String) }
   def html; end
 end
 
-class Spoom::Error < ::StandardError
-end
+class Spoom::Error < ::StandardError; end
 
 class Spoom::FileTree
   sig { params(paths: T::Enumerable[String], strip_prefix: T.nilable(String)).void }
@@ -557,16 +634,22 @@ class Spoom::FileTree
 
   sig { params(path: String).returns(Spoom::FileTree::Node) }
   def add_path(path); end
+
   sig { params(paths: T::Enumerable[String]).void }
   def add_paths(paths); end
+
   sig { returns(T::Array[Spoom::FileTree::Node]) }
   def nodes; end
+
   sig { returns(T::Array[String]) }
   def paths; end
+
   sig { params(out: T.any(IO, StringIO), show_strictness: T::Boolean, colors: T::Boolean, indent_level: Integer).void }
   def print(out: T.unsafe(nil), show_strictness: T.unsafe(nil), colors: T.unsafe(nil), indent_level: T.unsafe(nil)); end
+
   sig { returns(T::Array[Spoom::FileTree::Node]) }
   def roots; end
+
   sig { returns(T.nilable(String)) }
   def strip_prefix; end
 
@@ -577,9 +660,9 @@ class Spoom::FileTree
 end
 
 class Spoom::FileTree::Node < ::T::Struct
-  const :parent, T.nilable(Spoom::FileTree::Node)
-  const :name, String
   const :children, T::Hash[String, Spoom::FileTree::Node], default: T.unsafe(nil)
+  const :name, String
+  const :parent, T.nilable(Spoom::FileTree::Node)
 
   sig { returns(String) }
   def path; end
@@ -595,10 +678,13 @@ class Spoom::FileTree::TreePrinter < ::Spoom::Printer
 
   sig { params(node: Spoom::FileTree::Node).void }
   def print_node(node); end
+
   sig { params(nodes: T::Array[Spoom::FileTree::Node]).void }
   def print_nodes(nodes); end
+
   sig { void }
   def print_tree; end
+
   sig { returns(Spoom::FileTree) }
   def tree; end
 
@@ -606,6 +692,7 @@ class Spoom::FileTree::TreePrinter < ::Spoom::Printer
 
   sig { params(node: Spoom::FileTree::Node).returns(T.nilable(String)) }
   def node_strictness(node); end
+
   sig { params(strictness: T.nilable(String)).returns(Symbol) }
   def strictness_color(strictness); end
 end
@@ -614,33 +701,43 @@ module Spoom::Git
   class << self
     sig { params(arg: String, path: String).returns([String, String, T::Boolean]) }
     def checkout(*arg, path: T.unsafe(nil)); end
+
     sig { params(sha: String, path: String).returns(T.nilable(Time)) }
     def commit_time(sha, path: T.unsafe(nil)); end
+
     sig { params(sha: String, path: String).returns(T.nilable(Integer)) }
     def commit_timestamp(sha, path: T.unsafe(nil)); end
+
     sig { params(arg: String, path: String).returns([String, String, T::Boolean]) }
     def diff(*arg, path: T.unsafe(nil)); end
+
     sig { params(timestamp: String).returns(Time) }
     def epoch_to_time(timestamp); end
+
     sig { params(command: String, arg: String, path: String).returns([String, String, T::Boolean]) }
     def exec(command, *arg, path: T.unsafe(nil)); end
+
     sig { params(path: String).returns(T.nilable(String)) }
     def last_commit(path: T.unsafe(nil)); end
+
     sig { params(arg: String, path: String).returns([String, String, T::Boolean]) }
     def log(*arg, path: T.unsafe(nil)); end
+
     sig { params(arg: String, path: String).returns([String, String, T::Boolean]) }
     def rev_parse(*arg, path: T.unsafe(nil)); end
+
     sig { params(arg: String, path: String).returns([String, String, T::Boolean]) }
     def show(*arg, path: T.unsafe(nil)); end
+
     sig { params(path: String).returns(T.nilable(String)) }
     def sorbet_intro_commit(path: T.unsafe(nil)); end
+
     sig { params(path: String).returns(T::Boolean) }
     def workdir_clean?(path: T.unsafe(nil)); end
   end
 end
 
-module Spoom::LSP
-end
+module Spoom::LSP; end
 
 class Spoom::LSP::Client
   def initialize(sorbet_bin, *sorbet_args, path: T.unsafe(nil)); end
@@ -662,15 +759,16 @@ class Spoom::LSP::Client
 end
 
 class Spoom::LSP::Diagnostic < ::T::Struct
-  include(::Spoom::LSP::PrintableSymbol)
+  include ::Spoom::LSP::PrintableSymbol
 
-  const :range, Spoom::LSP::Range
   const :code, Integer
-  const :message, String
   const :informations, Object
+  const :message, String
+  const :range, Spoom::LSP::Range
 
   sig { override.params(printer: Spoom::LSP::SymbolPrinter).void }
   def accept_printer(printer); end
+
   def to_s; end
 
   class << self
@@ -680,17 +778,18 @@ class Spoom::LSP::Diagnostic < ::T::Struct
 end
 
 class Spoom::LSP::DocumentSymbol < ::T::Struct
-  include(::Spoom::LSP::PrintableSymbol)
+  include ::Spoom::LSP::PrintableSymbol
 
-  const :name, String
+  const :children, T::Array[Spoom::LSP::DocumentSymbol]
   const :detail, T.nilable(String)
   const :kind, Integer
   const :location, T.nilable(Spoom::LSP::Location)
+  const :name, String
   const :range, T.nilable(Spoom::LSP::Range)
-  const :children, T::Array[Spoom::LSP::DocumentSymbol]
 
   sig { override.params(printer: Spoom::LSP::SymbolPrinter).void }
   def accept_printer(printer); end
+
   def kind_string; end
   def to_s; end
 
@@ -701,15 +800,9 @@ class Spoom::LSP::DocumentSymbol < ::T::Struct
 end
 
 Spoom::LSP::DocumentSymbol::SYMBOL_KINDS = T.let(T.unsafe(nil), Hash)
-
-class Spoom::LSP::Error < ::StandardError
-end
-
-class Spoom::LSP::Error::AlreadyOpen < ::Spoom::LSP::Error
-end
-
-class Spoom::LSP::Error::BadHeaders < ::Spoom::LSP::Error
-end
+class Spoom::LSP::Error < ::StandardError; end
+class Spoom::LSP::Error::AlreadyOpen < ::Spoom::LSP::Error; end
+class Spoom::LSP::Error::BadHeaders < ::Spoom::LSP::Error; end
 
 class Spoom::LSP::Error::Diagnostics < ::Spoom::LSP::Error
   def initialize(uri, diagnostics); end
@@ -723,13 +816,14 @@ class Spoom::LSP::Error::Diagnostics < ::Spoom::LSP::Error
 end
 
 class Spoom::LSP::Hover < ::T::Struct
-  include(::Spoom::LSP::PrintableSymbol)
+  include ::Spoom::LSP::PrintableSymbol
 
   const :contents, String
   const :range, T.nilable(T::Range[T.untyped])
 
   sig { override.params(printer: Spoom::LSP::SymbolPrinter).void }
   def accept_printer(printer); end
+
   def to_s; end
 
   class << self
@@ -739,13 +833,14 @@ class Spoom::LSP::Hover < ::T::Struct
 end
 
 class Spoom::LSP::Location < ::T::Struct
-  include(::Spoom::LSP::PrintableSymbol)
+  include ::Spoom::LSP::PrintableSymbol
 
-  const :uri, String
   const :range, Spoom::LSP::Range
+  const :uri, String
 
   sig { override.params(printer: Spoom::LSP::SymbolPrinter).void }
   def accept_printer(printer); end
+
   def to_s; end
 
   class << self
@@ -770,13 +865,14 @@ class Spoom::LSP::Notification < ::Spoom::LSP::Message
 end
 
 class Spoom::LSP::Position < ::T::Struct
-  include(::Spoom::LSP::PrintableSymbol)
+  include ::Spoom::LSP::PrintableSymbol
 
-  const :line, Integer
   const :char, Integer
+  const :line, Integer
 
   sig { override.params(printer: Spoom::LSP::SymbolPrinter).void }
   def accept_printer(printer); end
+
   def to_s; end
 
   class << self
@@ -793,13 +889,14 @@ module Spoom::LSP::PrintableSymbol
 end
 
 class Spoom::LSP::Range < ::T::Struct
-  include(::Spoom::LSP::PrintableSymbol)
+  include ::Spoom::LSP::PrintableSymbol
 
-  const :start, Spoom::LSP::Position
   const :end, Spoom::LSP::Position
+  const :start, Spoom::LSP::Position
 
   sig { override.params(printer: Spoom::LSP::SymbolPrinter).void }
   def accept_printer(printer); end
+
   def to_s; end
 
   class << self
@@ -829,14 +926,15 @@ class Spoom::LSP::ResponseError < ::Spoom::LSP::Error
 end
 
 class Spoom::LSP::SignatureHelp < ::T::Struct
-  include(::Spoom::LSP::PrintableSymbol)
+  include ::Spoom::LSP::PrintableSymbol
 
-  const :label, T.nilable(String)
   const :doc, Object
+  const :label, T.nilable(String)
   const :params, T::Array[T.untyped]
 
   sig { override.params(printer: Spoom::LSP::SymbolPrinter).void }
   def accept_printer(printer); end
+
   def to_s; end
 
   class << self
@@ -851,14 +949,19 @@ class Spoom::LSP::SymbolPrinter < ::Spoom::Printer
 
   sig { params(uri: String).returns(String) }
   def clean_uri(uri); end
+
   def prefix; end
   def prefix=(_arg0); end
+
   sig { params(objects: T::Array[Spoom::LSP::PrintableSymbol]).void }
   def print_list(objects); end
+
   sig { params(object: T.nilable(Spoom::LSP::PrintableSymbol)).void }
   def print_object(object); end
+
   sig { params(objects: T::Array[Spoom::LSP::PrintableSymbol]).void }
   def print_objects(objects); end
+
   def seen; end
   def seen=(_arg0); end
 end
@@ -871,21 +974,30 @@ class Spoom::Printer
 
   sig { params(string: String, color: Symbol).returns(String) }
   def colorize(string, color); end
+
   sig { void }
   def dedent; end
+
   sig { void }
   def indent; end
+
   sig { returns(T.any(IO, StringIO)) }
   def out; end
+
   def out=(_arg0); end
+
   sig { params(string: T.nilable(String)).void }
   def print(string); end
+
   sig { params(string: T.nilable(String), color: Symbol, colors: Symbol).void }
   def print_colored(string, color, *colors); end
+
   sig { params(string: T.nilable(String)).void }
   def printl(string); end
+
   sig { void }
   def printn; end
+
   sig { void }
   def printt; end
 end
@@ -896,21 +1008,25 @@ module Spoom::Sorbet
   class << self
     sig { params(arg: String, path: String, capture_err: T::Boolean, sorbet_bin: T.nilable(String)).returns([String, T::Boolean]) }
     def srb(*arg, path: T.unsafe(nil), capture_err: T.unsafe(nil), sorbet_bin: T.unsafe(nil)); end
+
     sig { params(config: Spoom::Sorbet::Config, path: String).returns(T::Array[String]) }
     def srb_files(config, path: T.unsafe(nil)); end
+
     sig { params(arg: String, path: String, capture_err: T::Boolean, sorbet_bin: T.nilable(String)).returns(T.nilable(T::Hash[String, Integer])) }
     def srb_metrics(*arg, path: T.unsafe(nil), capture_err: T.unsafe(nil), sorbet_bin: T.unsafe(nil)); end
+
     sig { params(arg: String, path: String, capture_err: T::Boolean, sorbet_bin: T.nilable(String)).returns([String, T::Boolean]) }
     def srb_tc(*arg, path: T.unsafe(nil), capture_err: T.unsafe(nil), sorbet_bin: T.unsafe(nil)); end
+
     sig { params(arg: String, path: String, capture_err: T::Boolean, sorbet_bin: T.nilable(String)).returns(T.nilable(String)) }
     def srb_version(*arg, path: T.unsafe(nil), capture_err: T.unsafe(nil), sorbet_bin: T.unsafe(nil)); end
+
     sig { params(gem: String, path: String).returns(T.nilable(String)) }
     def version_from_gemfile_lock(gem: T.unsafe(nil), path: T.unsafe(nil)); end
   end
 end
 
 Spoom::Sorbet::BIN_PATH = T.let(T.unsafe(nil), String)
-
 Spoom::Sorbet::CONFIG_PATH = T.let(T.unsafe(nil), String)
 
 class Spoom::Sorbet::Config
@@ -918,17 +1034,22 @@ class Spoom::Sorbet::Config
   def initialize; end
 
   def allowed_extensions; end
+
   sig { returns(Spoom::Sorbet::Config) }
   def copy; end
+
   def ignore; end
+
   sig { returns(String) }
   def options_string; end
+
   sig { returns(T::Array[String]) }
   def paths; end
 
   class << self
     sig { params(sorbet_config_path: String).returns(Spoom::Sorbet::Config) }
     def parse_file(sorbet_config_path); end
+
     sig { params(sorbet_config: String).returns(Spoom::Sorbet::Config) }
     def parse_string(sorbet_config); end
 
@@ -947,21 +1068,27 @@ module Spoom::Sorbet::Errors
 end
 
 class Spoom::Sorbet::Errors::Error
-  include(::Comparable)
+  include ::Comparable
 
   sig { params(file: T.nilable(String), line: T.nilable(Integer), message: T.nilable(String), code: T.nilable(Integer), more: T::Array[String]).void }
   def initialize(file, line, message, code, more = T.unsafe(nil)); end
 
   sig { params(other: T.untyped).returns(Integer) }
   def <=>(other); end
+
   def code; end
+
   sig { returns(T.nilable(String)) }
   def file; end
+
   sig { returns(T.nilable(Integer)) }
   def line; end
+
   def message; end
+
   sig { returns(T::Array[String]) }
   def more; end
+
   sig { returns(String) }
   def to_s; end
 end
@@ -977,10 +1104,13 @@ class Spoom::Sorbet::Errors::Parser
 
   sig { params(line: String).void }
   def append_error(line); end
+
   sig { void }
   def close_error; end
+
   sig { params(line: String).returns(T.nilable(Spoom::Sorbet::Errors::Error)) }
   def match_error_line(line); end
+
   sig { params(error: Spoom::Sorbet::Errors::Error).void }
   def open_error(error); end
 
@@ -991,17 +1121,17 @@ class Spoom::Sorbet::Errors::Parser
 end
 
 Spoom::Sorbet::Errors::Parser::ERROR_LINE_MATCH_REGEX = T.let(T.unsafe(nil), Regexp)
-
 Spoom::Sorbet::Errors::Parser::HEADER = T.let(T.unsafe(nil), Array)
-
 Spoom::Sorbet::GEM_PATH = T.let(T.unsafe(nil), String)
 
 module Spoom::Sorbet::MetricsParser
   class << self
     sig { params(path: String, prefix: String).returns(T::Hash[String, Integer]) }
     def parse_file(path, prefix = T.unsafe(nil)); end
+
     sig { params(obj: T::Hash[String, T.untyped], prefix: String).returns(T::Hash[String, Integer]) }
     def parse_hash(obj, prefix = T.unsafe(nil)); end
+
     sig { params(string: String, prefix: String).returns(T::Hash[String, Integer]) }
     def parse_string(string, prefix = T.unsafe(nil)); end
   end
@@ -1013,37 +1143,37 @@ module Spoom::Sorbet::Sigils
   class << self
     sig { params(path: T.any(Pathname, String), new_strictness: String).returns(T::Boolean) }
     def change_sigil_in_file(path, new_strictness); end
+
     sig { params(path_list: T::Array[String], new_strictness: String).returns(T::Array[String]) }
     def change_sigil_in_files(path_list, new_strictness); end
+
     sig { params(path: T.any(Pathname, String)).returns(T.nilable(String)) }
     def file_strictness(path); end
+
     sig { params(directory: T.any(Pathname, String), strictness: String, extension: String).returns(T::Array[String]) }
     def files_with_sigil_strictness(directory, strictness, extension: T.unsafe(nil)); end
+
     sig { params(strictness: String).returns(String) }
     def sigil_string(strictness); end
+
     sig { params(content: String).returns(T.nilable(String)) }
     def strictness_in_content(content); end
+
     sig { params(content: String, new_strictness: String).returns(String) }
     def update_sigil(content, new_strictness); end
+
     sig { params(strictness: String).returns(T::Boolean) }
     def valid_strictness?(strictness); end
   end
 end
 
 Spoom::Sorbet::Sigils::SIGIL_REGEXP = T.let(T.unsafe(nil), Regexp)
-
 Spoom::Sorbet::Sigils::STRICTNESS_FALSE = T.let(T.unsafe(nil), String)
-
 Spoom::Sorbet::Sigils::STRICTNESS_IGNORE = T.let(T.unsafe(nil), String)
-
 Spoom::Sorbet::Sigils::STRICTNESS_INTERNAL = T.let(T.unsafe(nil), String)
-
 Spoom::Sorbet::Sigils::STRICTNESS_STRICT = T.let(T.unsafe(nil), String)
-
 Spoom::Sorbet::Sigils::STRICTNESS_STRONG = T.let(T.unsafe(nil), String)
-
 Spoom::Sorbet::Sigils::STRICTNESS_TRUE = T.let(T.unsafe(nil), String)
-
 Spoom::Sorbet::Sigils::VALID_STRICTNESS = T.let(T.unsafe(nil), Array)
 
 class Spoom::Timeline
@@ -1052,8 +1182,10 @@ class Spoom::Timeline
 
   sig { params(dates: T::Array[Time]).returns(T::Array[String]) }
   def commits_for_dates(dates); end
+
   sig { returns(T::Array[Time]) }
   def months; end
+
   sig { returns(T::Array[String]) }
   def ticks; end
 end

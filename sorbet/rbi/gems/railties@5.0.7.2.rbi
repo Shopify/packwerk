@@ -5,15 +5,13 @@
 # typed: true
 
 module Rails
-  extend(::ActiveSupport::Autoload)
-  extend(::ActiveSupport::Benchmarkable)
+  extend ::ActiveSupport::Autoload
 
   class << self
     def app_class; end
     def app_class=(_arg0); end
     def application; end
     def application=(_arg0); end
-    def autoloaders; end
     def backtrace_cleaner; end
     def cache; end
     def cache=(_arg0); end
@@ -22,8 +20,8 @@ module Rails
     def env=(environment); end
     def gem_version; end
     def groups(*groups); end
-    def initialize!(*_arg0, &_arg1); end
-    def initialized?(*_arg0, &_arg1); end
+    def initialize!(*args, &block); end
+    def initialized?(*args, &block); end
     def logger; end
     def logger=(_arg0); end
     def public_path; end
@@ -42,15 +40,11 @@ class Rails::Application < ::Rails::Engine
   def assets_manifest=(_arg0); end
   def build_middleware_stack; end
   def config; end
-  def config=(_arg0); end
+  def config=(configuration); end
   def config_for(name, env: T.unsafe(nil)); end
   def console(&blk); end
-  def credentials; end
-  def credentials=(_arg0); end
-  def default_url_options(*_arg0, &_arg1); end
+  def default_url_options(*args, &block); end
   def default_url_options=(arg); end
-  def eager_load!; end
-  def encrypted(path, key_path: T.unsafe(nil), env_key: T.unsafe(nil)); end
   def env_config; end
   def executor; end
   def generators(&blk); end
@@ -75,10 +69,8 @@ class Rails::Application < ::Rails::Engine
   def sandbox; end
   def sandbox=(_arg0); end
   def sandbox?; end
-  def secret_key_base; end
   def secrets; end
-  def secrets=(_arg0); end
-  def server(&blk); end
+  def secrets=(secrets); end
   def to_app; end
   def watchable_args; end
 
@@ -90,16 +82,13 @@ class Rails::Application < ::Rails::Engine
   def run_console_blocks(app); end
   def run_generators_blocks(app); end
   def run_runner_blocks(app); end
-  def run_server_blocks(app); end
   def run_tasks_blocks(app); end
-  def validate_secret_key_base(secret_key_base); end
+  def validate_secret_key_config!; end
 
   private
 
   def build_middleware; end
   def build_request(env); end
-  def coerce_same_site_protection(protection); end
-  def generate_development_secret; end
 
   class << self
     def add_lib_to_load_path!(root); end
@@ -111,15 +100,13 @@ class Rails::Application < ::Rails::Engine
 end
 
 module Rails::Application::Bootstrap
-  include(::Rails::Initializable)
-  extend(::Rails::Initializable::ClassMethods)
+  include ::Rails::Initializable
+  extend ::Rails::Initializable::ClassMethods
 end
 
 class Rails::Application::Configuration < ::Rails::Engine::Configuration
   def initialize(*_arg0); end
 
-  def add_autoload_paths_to_load_path; end
-  def add_autoload_paths_to_load_path=(_arg0); end
   def allow_concurrency; end
   def allow_concurrency=(_arg0); end
   def annotations; end
@@ -141,21 +128,9 @@ class Rails::Application::Configuration < ::Rails::Engine::Configuration
   def consider_all_requests_local=(_arg0); end
   def console; end
   def console=(_arg0); end
-  def content_security_policy(&block); end
-  def content_security_policy_nonce_directives; end
-  def content_security_policy_nonce_directives=(_arg0); end
-  def content_security_policy_nonce_generator; end
-  def content_security_policy_nonce_generator=(_arg0); end
-  def content_security_policy_report_only; end
-  def content_security_policy_report_only=(_arg0); end
-  def credentials; end
-  def credentials=(_arg0); end
   def database_configuration; end
   def debug_exception_response_format; end
-  def debug_exception_response_format=(_arg0); end
-  def default_log_file; end
-  def disable_sandbox; end
-  def disable_sandbox=(_arg0); end
+  def debug_exception_response_format=(value); end
   def eager_load; end
   def eager_load=(_arg0); end
   def enable_dependency_loading; end
@@ -174,13 +149,6 @@ class Rails::Application::Configuration < ::Rails::Engine::Configuration
   def force_ssl=(_arg0); end
   def helpers_paths; end
   def helpers_paths=(_arg0); end
-  def host_authorization; end
-  def host_authorization=(_arg0); end
-  def hosts; end
-  def hosts=(_arg0); end
-  def load_database_yaml; end
-  def load_defaults(target_version); end
-  def loaded_config_version; end
   def log_formatter; end
   def log_formatter=(_arg0); end
   def log_level; end
@@ -190,39 +158,30 @@ class Rails::Application::Configuration < ::Rails::Engine::Configuration
   def logger; end
   def logger=(_arg0); end
   def paths; end
-  def permissions_policy(&block); end
   def public_file_server; end
   def public_file_server=(_arg0); end
   def railties_order; end
   def railties_order=(_arg0); end
-  def rake_eager_load; end
-  def rake_eager_load=(_arg0); end
-  def read_encrypted_secrets; end
-  def read_encrypted_secrets=(_arg0); end
   def relative_url_root; end
   def relative_url_root=(_arg0); end
   def reload_classes_only_on_change; end
   def reload_classes_only_on_change=(_arg0); end
-  def require_master_key; end
-  def require_master_key=(_arg0); end
   def secret_key_base; end
   def secret_key_base=(_arg0); end
+  def secret_token; end
+  def secret_token=(_arg0); end
+  def serve_static_files; end
+  def serve_static_files=(value); end
   def session_options; end
   def session_options=(_arg0); end
-  def session_store(new_session_store = T.unsafe(nil), **options); end
-  def session_store?; end
   def ssl_options; end
   def ssl_options=(_arg0); end
+  def static_cache_control; end
+  def static_cache_control=(value); end
   def time_zone; end
   def time_zone=(_arg0); end
   def x; end
   def x=(_arg0); end
-
-  private
-
-  def credentials_available_for_current_env?; end
-  def default_credentials_content_path; end
-  def default_credentials_key_path; end
 end
 
 class Rails::Application::Configuration::Custom
@@ -250,8 +209,8 @@ class Rails::Application::DefaultMiddlewareStack
 end
 
 module Rails::Application::Finisher
-  include(::Rails::Initializable)
-  extend(::Rails::Initializable::ClassMethods)
+  include ::Rails::Initializable
+  extend ::Rails::Initializable::ClassMethods
 end
 
 module Rails::Application::Finisher::InterlockHook
@@ -271,24 +230,14 @@ end
 Rails::Application::INITIAL_VARIABLES = T.let(T.unsafe(nil), Array)
 
 class Rails::Application::RoutesReloader
-  include(::ActiveSupport::Callbacks)
-  extend(::ActiveSupport::Callbacks::ClassMethods)
-  extend(::ActiveSupport::DescendantsTracker)
-
   def initialize; end
 
-  def __callbacks; end
-  def __callbacks?; end
-  def eager_load; end
-  def eager_load=(_arg0); end
-  def execute(*_arg0, &_arg1); end
-  def execute_if_updated(*_arg0, &_arg1); end
-  def external_routes; end
+  def execute(*args, &block); end
+  def execute_if_updated(*args, &block); end
   def paths; end
   def reload!; end
   def route_sets; end
-  def run_after_load_paths=(_arg0); end
-  def updated?(*_arg0, &_arg1); end
+  def updated?(*args, &block); end
 
   private
 
@@ -296,54 +245,33 @@ class Rails::Application::RoutesReloader
   def finalize!; end
   def load_paths; end
   def revert; end
-  def run_after_load_paths; end
   def updater; end
-
-  class << self
-    def __callbacks; end
-    def __callbacks=(value); end
-    def __callbacks?; end
-  end
 end
 
 class Rails::ApplicationController < ::ActionController::Base
+  protected
 
-  private
-
-  def _layout(lookup_context, formats); end
-  def disable_content_security_policy_nonce!; end
   def local_request?; end
   def require_local!; end
 
+  private
+
+  def _layout(formats); end
+
   class << self
-    def __callbacks; end
+    def _helpers; end
     def _layout; end
     def _layout_conditions; end
+    def _view_paths; end
     def middleware_stack; end
   end
 end
 
-module Rails::Autoloaders
-  extend(::Enumerable)
-
-  class << self
-    def each; end
-    def log!; end
-    def logger=(logger); end
-    def main; end
-    def once; end
-    def zeitwerk_enabled?; end
-  end
-end
-
-module Rails::Configuration
-end
+module Rails::Configuration; end
 
 class Rails::Configuration::Generators
   def initialize; end
 
-  def after_generate(&block); end
-  def after_generate_callbacks; end
   def aliases; end
   def aliases=(_arg0); end
   def api_only; end
@@ -369,17 +297,14 @@ class Rails::Configuration::MiddlewareStackProxy
   def initialize(operations = T.unsafe(nil), delete_operations = T.unsafe(nil)); end
 
   def +(other); end
-  def delete(*_arg0, &_arg1); end
-  def insert(*_arg0, &_arg1); end
-  def insert_after(*_arg0, &_arg1); end
-  def insert_before(*_arg0, &_arg1); end
+  def delete(*args, &block); end
+  def insert(*args, &block); end
+  def insert_after(*args, &block); end
+  def insert_before(*args, &block); end
   def merge_into(other); end
-  def move(*_arg0, &_arg1); end
-  def move_after(*_arg0, &_arg1); end
-  def move_before(*_arg0, &_arg1); end
-  def swap(*_arg0, &_arg1); end
-  def unshift(*_arg0, &_arg1); end
-  def use(*_arg0, &_arg1); end
+  def swap(*args, &block); end
+  def unshift(*args, &block); end
+  def use(*args, &block); end
 
   protected
 
@@ -388,62 +313,48 @@ class Rails::Configuration::MiddlewareStackProxy
 end
 
 class Rails::Engine < ::Rails::Railtie
-  include(::ActiveSupport::Callbacks)
-  extend(::ActiveSupport::Callbacks::ClassMethods)
-
   def initialize; end
 
-  def __callbacks; end
-  def __callbacks?; end
-  def _load_seed_callbacks; end
-  def _run_load_seed_callbacks(&block); end
   def app; end
   def call(env); end
   def config; end
   def eager_load!; end
   def endpoint; end
-  def engine_name(*_arg0, &_arg1); end
+  def engine_name(*args, &block); end
   def env_config; end
   def helpers; end
   def helpers_paths; end
-  def isolated?(*_arg0, &_arg1); end
+  def isolated?(*args, &block); end
   def load_console(app = T.unsafe(nil)); end
   def load_generators(app = T.unsafe(nil)); end
   def load_runner(app = T.unsafe(nil)); end
   def load_seed; end
-  def load_server(app = T.unsafe(nil)); end
   def load_tasks(app = T.unsafe(nil)); end
-  def middleware(*_arg0, &_arg1); end
-  def paths(*_arg0, &_arg1); end
+  def middleware(*args, &block); end
+  def paths(*args, &block); end
   def railties; end
-  def root(*_arg0, &_arg1); end
-  def routes(&block); end
+  def root(*args, &block); end
+  def routes; end
   def routes?; end
 
   protected
 
+  def _all_autoload_once_paths; end
+  def _all_autoload_paths; end
+  def default_middleware_stack; end
+  def has_migrations?; end
+  def load_config_initializer(initializer); end
   def run_tasks_blocks(*_arg0); end
 
   private
 
-  def _all_autoload_once_paths; end
-  def _all_autoload_paths; end
-  def _all_load_paths(add_autoload_paths_to_load_path); end
   def build_middleware; end
   def build_request(env); end
-  def default_middleware_stack; end
-  def has_migrations?; end
-  def load_config_initializer(initializer); end
 
   class << self
-    def __callbacks; end
-    def __callbacks=(value); end
-    def __callbacks?; end
-    def _load_seed_callbacks; end
-    def _load_seed_callbacks=(value); end
     def called_from; end
     def called_from=(_arg0); end
-    def eager_load!(*_arg0, &_arg1); end
+    def eager_load!(*args, &block); end
     def endpoint(endpoint = T.unsafe(nil)); end
     def engine_name(name = T.unsafe(nil)); end
     def find(path); end
@@ -467,8 +378,6 @@ class Rails::Engine::Configuration < ::Rails::Railtie::Configuration
   def eager_load_paths; end
   def eager_load_paths=(_arg0); end
   def generators; end
-  def javascript_path; end
-  def javascript_path=(_arg0); end
   def middleware; end
   def middleware=(_arg0); end
   def paths; end
@@ -477,7 +386,7 @@ class Rails::Engine::Configuration < ::Rails::Railtie::Configuration
 end
 
 class Rails::Engine::Railties
-  include(::Enumerable)
+  include ::Enumerable
 
   def initialize; end
 
@@ -488,12 +397,12 @@ end
 
 module Rails::Info
   def properties; end
-  def properties=(val); end
+  def properties=(obj); end
 
   class << self
     def inspect; end
     def properties; end
-    def properties=(val); end
+    def properties=(obj); end
     def property(name, value = T.unsafe(nil)); end
     def to_html; end
     def to_s; end
@@ -505,23 +414,28 @@ class Rails::InfoController < ::Rails::ApplicationController
   def properties; end
   def routes; end
 
+  protected
+
+  def _layout_from_proc; end
+
   private
 
-  def _layout(lookup_context, formats); end
-  def _layout_from_proc; end
+  def _layout(formats); end
   def match_route; end
   def with_leading_slash(path); end
 
   class << self
-    def __callbacks; end
+    def _helpers; end
     def _layout; end
     def _layout_conditions; end
+    def _process_action_callbacks; end
+    def _view_paths; end
     def middleware_stack; end
   end
 end
 
 module Rails::Initializable
-  mixes_in_class_methods(::Rails::Initializable::ClassMethods)
+  mixes_in_class_methods ::Rails::Initializable::ClassMethods
 
   def initializers; end
   def run_initializers(group = T.unsafe(nil), *args); end
@@ -539,7 +453,7 @@ module Rails::Initializable::ClassMethods
 end
 
 class Rails::Initializable::Collection < ::Array
-  include(::TSort)
+  include ::TSort
 
   def +(other); end
   def tsort_each_child(initializer, &block); end
@@ -554,7 +468,6 @@ class Rails::Initializable::Initializer
   def belongs_to?(group); end
   def bind(context); end
   def block; end
-  def context_class; end
   def name; end
   def run(*args); end
 end
@@ -567,36 +480,29 @@ class Rails::MailersController < ::Rails::ApplicationController
   def index; end
   def preview; end
 
-  private
+  protected
 
-  def _layout(lookup_context, formats); end
   def find_part(format); end
   def find_preferred_part(*formats); end
   def find_preview; end
-  def locale_query(locale); end
-  def part_query(mime_type); end
-  def set_locale; end
   def show_previews?; end
 
+  private
+
+  def _layout(formats); end
+
   class << self
-    def __callbacks; end
-    def _helper_methods; end
+    def _helpers; end
+    def _process_action_callbacks; end
+    def _view_paths; end
     def middleware_stack; end
   end
 end
 
-module Rails::MailersController::HelperMethods
-  include(::ActionController::Base::HelperMethods)
-
-  def locale_query(*args, &block); end
-  def part_query(*args, &block); end
-end
-
-module Rails::Paths
-end
+module Rails::Paths; end
 
 class Rails::Paths::Path
-  include(::Enumerable)
+  include ::Enumerable
 
   def initialize(root, current, paths, options = T.unsafe(nil)); end
 
@@ -621,7 +527,6 @@ class Rails::Paths::Path
   def last; end
   def load_path!; end
   def load_path?; end
-  def paths; end
   def push(path); end
   def skip_autoload!; end
   def skip_autoload_once!; end
@@ -630,10 +535,6 @@ class Rails::Paths::Path
   def to_a; end
   def to_ary; end
   def unshift(*paths); end
-
-  private
-
-  def files_in(path); end
 end
 
 class Rails::Paths::Root
@@ -658,33 +559,34 @@ class Rails::Paths::Root
   def filter_by(&block); end
 end
 
-module Rails::Rack
-end
+module Rails::Rack; end
 
 class Rails::Rack::Logger < ::ActiveSupport::LogSubscriber
   def initialize(app, taggers = T.unsafe(nil)); end
 
   def call(env); end
 
-  private
+  protected
 
   def call_app(request, env); end
   def compute_tags(request); end
+  def started_request_message(request); end
+
+  private
+
   def finish(request); end
   def logger; end
-  def started_request_message(request); end
 end
 
 class Rails::Railtie
-  include(::Rails::Initializable)
-  extend(::ActiveSupport::DescendantsTracker)
-  extend(::Rails::Initializable::ClassMethods)
+  include ::Rails::Initializable
+  extend ::Rails::Initializable::ClassMethods
 
   def initialize; end
 
   def config; end
   def configure(&block); end
-  def railtie_name(*_arg0, &_arg1); end
+  def railtie_name(*args, &block); end
   def railtie_namespace; end
 
   protected
@@ -692,7 +594,6 @@ class Rails::Railtie
   def run_console_blocks(app); end
   def run_generators_blocks(app); end
   def run_runner_blocks(app); end
-  def run_server_blocks(app); end
   def run_tasks_blocks(app); end
 
   private
@@ -701,23 +602,22 @@ class Rails::Railtie
 
   class << self
     def abstract_railtie?; end
-    def config(*_arg0, &_arg1); end
+    def config(*args, &block); end
     def configure(&block); end
     def console(&blk); end
     def generators(&blk); end
+    def inherited(base); end
     def instance; end
     def railtie_name(name = T.unsafe(nil)); end
     def rake_tasks(&blk); end
+    def respond_to_missing?(*args); end
     def runner(&blk); end
-    def server(&blk); end
     def subclasses; end
 
-    private
+    protected
 
     def generate_railtie_name(string); end
     def method_missing(name, *args, &block); end
-    def register_block_for(type, &blk); end
-    def respond_to_missing?(name, _); end
   end
 end
 
@@ -748,62 +648,7 @@ class Rails::Railtie::Configuration
   end
 end
 
-class Rails::Secrets
-  class << self
-    def decrypt(data); end
-    def encrypt(data); end
-    def key; end
-    def parse(paths, env:); end
-    def read; end
-    def read_for_editing(&block); end
-    def root=(_arg0); end
-    def write(contents); end
-
-    private
-
-    def encryptor; end
-    def handle_missing_key; end
-    def key_path; end
-    def path; end
-    def preprocess(path); end
-    def read_key_file; end
-    def writing(contents); end
-  end
-end
-
-class Rails::Secrets::MissingKeyError < ::RuntimeError
-  def initialize; end
-end
-
-class Rails::SourceAnnotationExtractor
-  def initialize(tag); end
-
-  def display(results, options = T.unsafe(nil)); end
-  def extract_annotations_from(file, pattern); end
-  def find(dirs); end
-  def find_in(dir); end
-  def tag; end
-
-  class << self
-    def enumerate(tag = T.unsafe(nil), options = T.unsafe(nil)); end
-  end
-end
-
-class Rails::SourceAnnotationExtractor::Annotation < ::Struct
-  def to_s(options = T.unsafe(nil)); end
-
-  class << self
-    def directories; end
-    def extensions; end
-    def register_directories(*dirs); end
-    def register_extensions(*exts, &block); end
-    def register_tags(*additional_tags); end
-    def tags; end
-  end
-end
-
-module Rails::TestUnit
-end
+module Rails::TestUnit; end
 
 class Rails::TestUnit::CompositeFilter
   def initialize(runnable, filter, patterns); end
@@ -831,38 +676,26 @@ class Rails::TestUnit::Runner
   def filters; end
 
   class << self
-    def attach_before_load_options(opts); end
     def compose_filter(runnable, filter); end
     def filters; end
     def load_tests(argv); end
+    def options(opts); end
     def parse_options(argv); end
     def rake_run(argv = T.unsafe(nil)); end
     def run(argv = T.unsafe(nil)); end
 
     private
 
-    def default_test_exclude_glob; end
-    def default_test_glob; end
     def extract_filters(argv); end
-    def path_argument?(arg); end
-    def regexp_filter?(arg); end
   end
 end
 
-class Rails::TestUnitRailtie < ::Rails::Railtie
-end
-
-module Rails::VERSION
-end
-
+class Rails::TestUnitRailtie < ::Rails::Railtie; end
+module Rails::VERSION; end
 Rails::VERSION::MAJOR = T.let(T.unsafe(nil), Integer)
-
 Rails::VERSION::MINOR = T.let(T.unsafe(nil), Integer)
-
 Rails::VERSION::PRE = T.let(T.unsafe(nil), String)
-
 Rails::VERSION::STRING = T.let(T.unsafe(nil), String)
-
 Rails::VERSION::TINY = T.let(T.unsafe(nil), Integer)
 
 class Rails::WelcomeController < ::Rails::ApplicationController
@@ -870,11 +703,36 @@ class Rails::WelcomeController < ::Rails::ApplicationController
 
   private
 
-  def _layout(lookup_context, formats); end
+  def _layout(formats); end
 
   class << self
+    def _helpers; end
     def _layout; end
     def _layout_conditions; end
     def middleware_stack; end
+  end
+end
+
+class SourceAnnotationExtractor
+  def initialize(tag); end
+
+  def display(results, options = T.unsafe(nil)); end
+  def extract_annotations_from(file, pattern); end
+  def find(dirs); end
+  def find_in(dir); end
+  def tag; end
+
+  class << self
+    def enumerate(tag, options = T.unsafe(nil)); end
+  end
+end
+
+class SourceAnnotationExtractor::Annotation < ::Struct
+  def to_s(options = T.unsafe(nil)); end
+
+  class << self
+    def directories; end
+    def extensions; end
+    def register_extensions(*exts, &block); end
   end
 end

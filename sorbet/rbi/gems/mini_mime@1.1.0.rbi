@@ -67,5 +67,4 @@ class MiniMime::Info
 end
 
 MiniMime::Info::BINARY_ENCODINGS = T.let(T.unsafe(nil), Array)
-
 MiniMime::VERSION = T.let(T.unsafe(nil), String)

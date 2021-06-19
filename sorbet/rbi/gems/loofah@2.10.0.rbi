@@ -26,102 +26,42 @@ module Loofah::DocumentDecorator
   def initialize(*args, &block); end
 end
 
-module Loofah::Elements
-end
-
+module Loofah::Elements; end
 Loofah::Elements::BLOCK_LEVEL = T.let(T.unsafe(nil), Set)
-
 Loofah::Elements::LOOSE_BLOCK_LEVEL = T.let(T.unsafe(nil), Set)
-
 Loofah::Elements::STRICT_BLOCK_LEVEL = T.let(T.unsafe(nil), Set)
-
 Loofah::Elements::STRICT_BLOCK_LEVEL_HTML4 = T.let(T.unsafe(nil), Set)
-
 Loofah::Elements::STRICT_BLOCK_LEVEL_HTML5 = T.let(T.unsafe(nil), Set)
-
-module Loofah::HTML
-end
-
-class Loofah::HTML::Document < ::Nokogiri::HTML::Document
-  include(::Loofah::ScrubBehavior::Node)
-  include(::Loofah::DocumentDecorator)
-  include(::Loofah::TextBehavior)
-
-  def serialize_root; end
-end
-
-class Loofah::HTML::DocumentFragment < ::Nokogiri::HTML::DocumentFragment
-  include(::Loofah::TextBehavior)
-
-  def serialize; end
-  def serialize_root; end
-  def to_s; end
-
-  class << self
-    def parse(tags, encoding = T.unsafe(nil)); end
-  end
-end
-
-module Loofah::HTML5
-end
-
-module Loofah::HTML5::SafeList
-end
-
+module Loofah::HTML; end
+module Loofah::HTML5; end
+module Loofah::HTML5::SafeList; end
 Loofah::HTML5::SafeList::ACCEPTABLE_ATTRIBUTES = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::ACCEPTABLE_CSS_FUNCTIONS = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::ACCEPTABLE_CSS_KEYWORDS = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::ACCEPTABLE_CSS_PROPERTIES = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::ACCEPTABLE_ELEMENTS = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::ACCEPTABLE_PROTOCOLS = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::ACCEPTABLE_SVG_PROPERTIES = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::ACCEPTABLE_URI_DATA_MEDIATYPES = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::ALLOWED_ATTRIBUTES = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::ALLOWED_CSS_FUNCTIONS = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::ALLOWED_CSS_KEYWORDS = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::ALLOWED_CSS_PROPERTIES = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::ALLOWED_ELEMENTS = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::ALLOWED_ELEMENTS_WITH_LIBXML2 = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::ALLOWED_PROTOCOLS = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::ALLOWED_SVG_PROPERTIES = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::ALLOWED_URI_DATA_MEDIATYPES = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::ATTR_VAL_IS_URI = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::MATHML_ATTRIBUTES = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::MATHML_ELEMENTS = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::PROTOCOL_SEPARATOR = T.let(T.unsafe(nil), Regexp)
-
 Loofah::HTML5::SafeList::SHORTHAND_CSS_PROPERTIES = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::SVG_ALLOW_LOCAL_HREF = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::SVG_ATTRIBUTES = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::SVG_ATTR_VAL_ALLOWS_REF = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::SVG_ELEMENTS = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::TAGS_SAFE_WITH_LIBXML2 = T.let(T.unsafe(nil), Set)
-
 Loofah::HTML5::SafeList::VOID_ELEMENTS = T.let(T.unsafe(nil), Set)
 
 module Loofah::HTML5::Scrub
@@ -135,20 +75,34 @@ module Loofah::HTML5::Scrub
 end
 
 Loofah::HTML5::Scrub::CONTROL_CHARACTERS = T.let(T.unsafe(nil), Regexp)
-
 Loofah::HTML5::Scrub::CRASS_SEMICOLON = T.let(T.unsafe(nil), Hash)
-
 Loofah::HTML5::Scrub::CSS_IMPORTANT = T.let(T.unsafe(nil), String)
-
 Loofah::HTML5::Scrub::CSS_KEYWORDISH = T.let(T.unsafe(nil), Regexp)
-
+Loofah::HTML5::Scrub::CSS_PROPERTY_STRING_WITHOUT_EMBEDDED_QUOTES = T.let(T.unsafe(nil), Regexp)
 Loofah::HTML5::WhiteList = Loofah::HTML5::SafeList
 
-module Loofah::LibxmlWorkarounds
+class Loofah::HTML::Document < ::Nokogiri::HTML::Document
+  include ::Loofah::ScrubBehavior::Node
+  include ::Loofah::DocumentDecorator
+  include ::Loofah::TextBehavior
+
+  def serialize_root; end
 end
 
-Loofah::LibxmlWorkarounds::BROKEN_ESCAPING_ATTRIBUTES = T.let(T.unsafe(nil), Set)
+class Loofah::HTML::DocumentFragment < ::Nokogiri::HTML::DocumentFragment
+  include ::Loofah::TextBehavior
 
+  def serialize; end
+  def serialize_root; end
+  def to_s; end
+
+  class << self
+    def parse(tags, encoding = T.unsafe(nil)); end
+  end
+end
+
+module Loofah::LibxmlWorkarounds; end
+Loofah::LibxmlWorkarounds::BROKEN_ESCAPING_ATTRIBUTES = T.let(T.unsafe(nil), Set)
 Loofah::LibxmlWorkarounds::BROKEN_ESCAPING_ATTRIBUTES_QUALIFYING_TAG = T.let(T.unsafe(nil), Hash)
 
 module Loofah::MetaHelpers
@@ -188,11 +142,8 @@ class Loofah::Scrubber
 end
 
 Loofah::Scrubber::CONTINUE = T.let(T.unsafe(nil), Object)
-
 Loofah::Scrubber::STOP = T.let(T.unsafe(nil), Object)
-
-class Loofah::ScrubberNotFound < ::RuntimeError
-end
+class Loofah::ScrubberNotFound < ::RuntimeError; end
 
 module Loofah::Scrubbers
   class << self
@@ -258,13 +209,11 @@ module Loofah::TextBehavior
 end
 
 Loofah::VERSION = T.let(T.unsafe(nil), String)
-
-module Loofah::XML
-end
+module Loofah::XML; end
 
 class Loofah::XML::Document < ::Nokogiri::XML::Document
-  include(::Loofah::ScrubBehavior::Node)
-  include(::Loofah::DocumentDecorator)
+  include ::Loofah::ScrubBehavior::Node
+  include ::Loofah::DocumentDecorator
 end
 
 class Loofah::XML::DocumentFragment < ::Nokogiri::XML::DocumentFragment
