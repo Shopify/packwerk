@@ -71,11 +71,5 @@ module Packwerk
     def root?
       @name == ROOT_PACKAGE_NAME
     end
-
-    private
-
-    def unprefixed_public_path
-      @unprefixed_public_path ||= user_defined_public_path || "app/public/"
-    end
   end
 end
