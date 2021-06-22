@@ -38,13 +38,13 @@ module Packwerk
 
     test "#public_path returns expected path when using the default public path in root package" do
       package = Package.new(name: ".", config: {})
-      assert_equal("./app/public/", package.public_path)
+      assert_equal("app/public/", package.public_path)
     end
 
     test "#public_path returns expected path when using a user defined public path" do
       package = Package.new(name: ".", config: { "public_path" => "my/path/" })
 
-      assert_equal("./my/path/", package.public_path)
+      assert_equal("my/path/", package.public_path)
     end
 
     test "#package_path? returns true for path under the package's public path" do
