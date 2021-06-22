@@ -37,11 +37,7 @@ module Packwerk
     end
 
     def public_path?(path)
-      if root?
-        path.start_with?(unprefixed_public_path)
-      else
-        path.start_with?(public_path)
-      end
+      path.start_with?(public_path)
     end
 
     def user_defined_public_path
