@@ -4,7 +4,7 @@
 require "ast/node"
 
 module Packwerk
-  class ExtractAutoloadableConstantDefinitions
+  class ExtractLoadableConstantDefinitions
     attr_reader :constant_definitions
 
     def initialize(root_node:, file:, inflector:)

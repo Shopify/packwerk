@@ -30,7 +30,7 @@ module Packwerk
 
       result = []
       if node
-        constant_definitions = ExtractAutoloadableConstantDefinitions.new(
+        constant_definitions = ExtractLoadableConstantDefinitions.new(
           root_node: node,
           file: file_path,
           inflector: @inflector

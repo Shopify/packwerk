@@ -20,7 +20,7 @@ module Packwerk
   autoload :ConstNodeInspector
   autoload :DependencyChecker
   autoload :DeprecatedReferences
-  autoload :ExtractAutoloadableConstantDefinitions
+  autoload :ExtractLoadableConstantDefinitions
   autoload :FileProcessor
   autoload :FilesForProcessing
   autoload :Graph
