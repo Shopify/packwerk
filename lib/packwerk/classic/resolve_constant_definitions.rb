@@ -31,7 +31,11 @@ module Packwerk
 
         result = []
         if node
-          constant_definitions = ExtractConstantDefinitions.new(root_node: node).constant_definitions
+          constant_definitions = ExtractAutoloadableConstantDefinitions.new(
+            root_node: node,
+            file: file_path,
+            inflector: @inflector
+          ).constant_definitions
           result += collect_resolution_offenses(constant_definitions, file: file_path)
         end
         result.compact
@@ -51,7 +55,7 @@ module Packwerk
         if context.nil?
           message = <<~EOS
             #{constant} is defined in #{actual_context_location} but cannot be resolved by Zeitwerk.
-            Please verify that the load path for #{constant} is correct.
+            Please verify that the load path for #{constant} is correct and doesn't contain a missing inflection.
           EOS
           Offense.new(file: file, message: message, location: location)
         elsif actual_context_location != context.location
