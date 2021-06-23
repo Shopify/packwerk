@@ -43,8 +43,14 @@ module Packwerk
 
     def check
       offense_collection = find_offenses(show_errors: true)
-      message = @offenses_formatter.show_offenses(offense_collection.outstanding_offenses)
-      Result.new(message: message, status: offense_collection.outstanding_offenses.empty?)
+
+      messages = [
+        @offenses_formatter.show_offenses(offense_collection.outstanding_offenses),
+        @offenses_formatter.show_stale_violations(offense_collection),
+      ]
+      result_status = offense_collection.outstanding_offenses.empty? && !offense_collection.stale_violations?
+
+      Result.new(message: messages.join("\n") + "\n", status: result_status)
     end
 
     private
