@@ -33,7 +33,15 @@ module Packwerk
     end
 
     def public_path
-      @public_path ||= File.join(@name, user_defined_public_path || "app/public/")
+      @public_path ||= begin
+        unprefixed_public_path = user_defined_public_path || "app/public/"
+
+        if root?
+          unprefixed_public_path
+        else
+          File.join(@name, unprefixed_public_path)
+        end
+      end
     end
 
     def public_path?(path)
