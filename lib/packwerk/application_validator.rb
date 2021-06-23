@@ -85,7 +85,7 @@ module Packwerk
         hash = YAML.load_file(f)
         next unless hash
 
-        known_keys = %w(enforce_privacy enforce_dependencies public_path dependencies metadata)
+        known_keys = ["enforce_privacy", "enforce_dependencies", "public_path", "dependencies", "metadata"]
         unknown_keys = hash.keys - known_keys
 
         unless unknown_keys.empty?
@@ -145,7 +145,7 @@ module Packwerk
       application_inflections = ActiveSupport::Inflector.inflections
       packwerk_inflections = Packwerk::Inflector.from_file(inflections_file).inflections
 
-      results = %i(plurals singulars uncountables humans acronyms).map do |type|
+      results = [:plurals, :singulars, :uncountables, :humans, :acronyms].map do |type|
         expected = application_inflections.public_send(type).to_set
         actual = packwerk_inflections.public_send(type).to_set
 

@@ -6,7 +6,7 @@ require "yaml"
 module Packwerk
   module Inflections
     class Custom
-      SUPPORTED_INFLECTION_METHODS = %w(acronym human irregular plural singular uncountable)
+      SUPPORTED_INFLECTION_METHODS = ["acronym", "human", "irregular", "plural", "singular", "uncountable"]
 
       attr_accessor :inflections
 
