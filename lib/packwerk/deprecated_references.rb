@@ -73,7 +73,7 @@ module Packwerk
           #
           # You can regenerate this file using the following command:
           #
-          # bundle exec packwerk update-deprecations #{@package.name}
+          # packwerk update-deprecations #{@package.name}
         MESSAGE
         File.open(@filepath, "w") do |f|
           f.write(message)
