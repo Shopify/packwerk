@@ -31,7 +31,11 @@ module Packwerk
 
         result = []
         if node
-          constant_definitions = ExtractConstantDefinitions.new(root_node: node).constant_definitions
+          constant_definitions = ExtractAutoloadableConstantDefinitions.new(
+            root_node: node,
+            file: file_path,
+            inflector: @inflector
+          ).constant_definitions
           result += collect_resolution_offenses(constant_definitions, file: file_path)
         end
         result.compact
