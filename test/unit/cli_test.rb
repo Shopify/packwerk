@@ -158,6 +158,10 @@ module Packwerk
         def show_offenses(offenses)
           ["hi i am a custom offense formatter", *offenses].join("\n")
         end
+
+        def show_stale_violations(_offense_collection)
+          "stale violations report"
+        end
       end
 
       file_path = "path/of/exile.rb"
@@ -181,6 +185,7 @@ module Packwerk
       success = cli.execute_command(["check", file_path])
 
       assert_includes string_io.string, "hi i am a custom offense formatter"
+      assert_includes string_io.string, "stale violations report"
       assert_includes string_io.string, violation_message
 
       refute success

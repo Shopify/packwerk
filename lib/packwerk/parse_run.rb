@@ -24,11 +24,7 @@ module Packwerk
       offense_collection = find_offenses
 
       result_status = !offense_collection.stale_violations?
-      message = if result_status
-        "No stale violations detected"
-      else
-        "There were stale violations found, please run `packwerk update-deprecations`"
-      end
+      message = @offenses_formatter.show_stale_violations(offense_collection)
 
       Result.new(message: message, status: result_status)
     end

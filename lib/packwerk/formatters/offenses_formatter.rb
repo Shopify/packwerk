@@ -23,6 +23,15 @@ module Packwerk
         EOS
       end
 
+      sig { override.params(offense_collection: Packwerk::OffenseCollection).returns(String) }
+      def show_stale_violations(offense_collection)
+        if offense_collection.stale_violations?
+          "There were stale violations found, please run `packwerk update-deprecations`"
+        else
+          "No stale violations detected"
+        end
+      end
+
       private
 
       sig { params(offenses: T::Array[T.nilable(Offense)]).returns(String) }
