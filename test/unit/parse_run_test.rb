@@ -24,7 +24,7 @@ module Packwerk
       result = parse_run.update_deprecations
 
       assert_equal result.message, <<~EOS
-        No offenses detected 🎉
+        No offenses detected
         ✅ `deprecated_references.yml` has been updated.
       EOS
       assert result.status
@@ -70,7 +70,7 @@ module Packwerk
       assert_match(/#{expected_output}/, out.string)
 
       assert result.status
-      assert_equal "No offenses detected 🎉", result.message
+      assert_equal "No offenses detected", result.message
     end
 
     test "runs in parallel" do

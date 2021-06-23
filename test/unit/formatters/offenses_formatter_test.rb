@@ -11,7 +11,7 @@ module Packwerk
       end
 
       test "#show_offenses prints No offenses detected when there are no offenses" do
-        assert_match "No offenses detected 🎉", @offenses_formatter.show_offenses([])
+        assert_match "No offenses detected", @offenses_formatter.show_offenses([])
       end
 
       test "#show_offenses prints the amount of files when there are offenses" do

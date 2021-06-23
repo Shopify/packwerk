@@ -15,7 +15,7 @@ module Packwerk
 
       sig { override.params(offenses: T::Array[T.nilable(Offense)]).returns(String) }
       def show_offenses(offenses)
-        return "No offenses detected 🎉" if offenses.empty?
+        return "No offenses detected" if offenses.empty?
 
         <<~EOS
           #{offenses_list(offenses)}
