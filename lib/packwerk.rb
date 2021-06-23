@@ -44,6 +44,7 @@ module Packwerk
   autoload :RunContext
   autoload :Version
   autoload :ViolationType
+  autoload :Classic
 
   module Inflections
     extend ActiveSupport::Autoload

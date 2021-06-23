@@ -24,6 +24,8 @@ module RailsApplicationFixtureHelper
       set_load_paths_for_minimal_template
     when :skeleton
       set_load_paths_for_skeleton_template
+    when :classic
+      set_load_paths_for_classic_template
     else
       raise "Unknown fixture template #{template}"
     end
@@ -49,6 +51,10 @@ module RailsApplicationFixtureHelper
         "vendor/cache/gems/example/models",
       )
     )
+  end
+
+  def set_load_paths_for_classic_template
+    set_load_paths_for_skeleton_template
   end
 
   def cache_rails_paths

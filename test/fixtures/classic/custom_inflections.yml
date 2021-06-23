@@ -1,0 +1,11 @@
+acronym:
+  - 'GraphQL'
+  - 'MRuby'
+  - 'TOS'
+irregular:
+  - ['analysis', 'analyses']
+  - ['reserve', 'reserves']
+uncountable:
+  - 'payment_details'
+singular:
+  - [!ruby/regexp /status$/, 'status']
