@@ -20,6 +20,7 @@ module Packwerk
   autoload :ConstNodeInspector
   autoload :DependencyChecker
   autoload :DeprecatedReferences
+  autoload :ExtractAutoloadableConstantDefinitions
   autoload :FileProcessor
   autoload :FilesForProcessing
   autoload :Graph
@@ -40,12 +41,13 @@ module Packwerk
   autoload :Reference
   autoload :ReferenceExtractor
   autoload :ReferenceOffense
+  autoload :ResolveConstantDefinitions
   autoload :Result
   autoload :RunContext
-  autoload :Version
   autoload :ViolationType
-  autoload :Classic
+  autoload :Version
   autoload :ZeitwerkOffense
+  autoload :ZeitwerkValidationRun
   autoload :ZeitwerkViolations
 
   module Inflections

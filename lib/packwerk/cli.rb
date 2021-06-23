@@ -196,12 +196,12 @@ module Packwerk
     end
 
     def validate_zeitwerk
-      run = Classic::ZeitwerkValidationRun.new(configuration: @configuration)
+      run = ZeitwerkValidationRun.new(configuration: @configuration)
       run.validate_zeitwerk
     end
 
     def update_zeitwerk_violations
-      run = Classic::ZeitwerkValidationRun.new(configuration: @configuration)
+      run = ZeitwerkValidationRun.new(configuration: @configuration)
       run.update_zeitwerk_violations
     end
   end
