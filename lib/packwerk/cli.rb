@@ -53,6 +53,8 @@ module Packwerk
         output_result(parse_run(args).update_deprecations)
       when "validate"
         validate(args)
+      when "detect-zeitwerk-violations"
+        output_result(detect_zeitwerk_violations)
       when nil, "help"
         @err_out.puts(<<~USAGE)
           Usage: #{$PROGRAM_NAME} <subcommand>
@@ -187,6 +189,11 @@ module Packwerk
         progress_formatter: @progress_formatter,
         offenses_formatter: @offenses_formatter
       )
+    end
+
+    def detect_zeitwerk_violations
+      run = Classic::ZeitwerkValidationRun.new(configuration: @configuration)
+      run.detect_zeitwerk_violations
     end
   end
 end

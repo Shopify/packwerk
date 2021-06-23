@@ -16,14 +16,9 @@ module Packwerk
 
       def collect_leaf_definitions_from_root(node, current_namespace_path = [])
         if Node.constant_assignment?(node)
-          add_definition(Node.constant_name(node), current_namespace_path, Node.name_location(node))
+          # skip constant assignment, we only care about classes and modules
         elsif Node.module_name_from_definition(node)
-          # handle compact constant nesting (e.g. "module Sales::Order")
-          tempnode = node
-          while (tempnode = Node.each_child(tempnode).find { |n| Node.constant?(n) })
-            add_definition(Node.constant_name(tempnode), current_namespace_path, Node.name_location(tempnode))
-          end
-
+          add_definition(Node.class_or_module_name(node), current_namespace_path, Node.name_location(node))
           current_namespace_path += Node.class_or_module_name(node).split("::")
         end
 
