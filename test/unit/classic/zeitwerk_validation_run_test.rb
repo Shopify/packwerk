@@ -24,7 +24,7 @@ module Packwerk
 
         result = validation_run.find_offenses
 
-        assert_empty result.errors
+        assert_empty result.new_violations
       end
 
       test "#call returns an offense when constant cannot be resolved" do
@@ -33,10 +33,10 @@ module Packwerk
 
         result = validation_run.find_offenses
 
-        refute_empty result.errors
-        assert_equal result.errors.first.message, <<~EOS
+        refute_empty result.new_violations
+        assert_equal result.new_violations.first.message, <<~EOS
           ::Entry is defined in components/sales/app/models/sales/entry.rb but cannot be resolved by Zeitwerk.
-          Please verify that the load path for ::Entry is correct.
+          Please verify that the load path for ::Entry is correct and doesn't contain a missing inflection.
         EOS
       end
 
@@ -46,8 +46,8 @@ module Packwerk
 
         result = validation_run.find_offenses
 
-        refute_empty result.errors
-        assert_equal result.errors.first.message, <<~EOS
+        refute_empty result.new_violations
+        assert_equal result.new_violations.first.message, <<~EOS
           Expected ::Users to be defined in components/platform/app/models/users.rb,
           but found a definition in components/platform/app/models/users/user.rb.
           Please verify that the load path for ::Users is correct.

@@ -45,6 +45,8 @@ module Packwerk
   autoload :Version
   autoload :ViolationType
   autoload :Classic
+  autoload :ZeitwerkOffense
+  autoload :ZeitwerkViolations
 
   module Inflections
     extend ActiveSupport::Autoload

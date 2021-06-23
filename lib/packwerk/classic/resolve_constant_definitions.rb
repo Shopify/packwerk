@@ -57,14 +57,14 @@ module Packwerk
             #{constant} is defined in #{actual_context_location} but cannot be resolved by Zeitwerk.
             Please verify that the load path for #{constant} is correct and doesn't contain a missing inflection.
           EOS
-          Offense.new(file: file, message: message, location: location)
+          ZeitwerkOffense.new(constant: constant, file: file, message: message, location: location)
         elsif actual_context_location != context.location
           message = <<~EOS
             Expected #{constant} to be defined in #{context.location},
             but found a definition in #{actual_context_location}.
             Please verify that the load path for #{constant} is correct.
           EOS
-          Offense.new(file: file, message: message, location: location)
+          ZeitwerkOffense.new(constant: constant, file: file, message: message, location: location)
         end
       end
     end

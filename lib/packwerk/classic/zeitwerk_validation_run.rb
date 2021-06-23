@@ -18,10 +18,22 @@ module Packwerk
         @files = autoloadable_file_paths
       end
 
-      def detect_zeitwerk_violations
+      def validate_zeitwerk
         offense_collection = find_offenses(show_errors: true)
         message = @offenses_formatter.show_offenses(offense_collection.outstanding_offenses)
         Result.new(message: message, status: offense_collection.outstanding_offenses.empty?)
+      end
+
+      def update_zeitwerk_violations
+        offense_collection = find_offenses
+        offense_collection.dump_zeitwerk_violations_file
+
+        message = <<~EOS
+          #{@offenses_formatter.show_offenses(offense_collection.errors)}
+          ✅ `zeitwerk_violations.yml` has been updated.
+        EOS
+
+        Result.new(message: message, status: offense_collection.errors.empty?)
       end
 
       def find_offenses(show_errors: false)

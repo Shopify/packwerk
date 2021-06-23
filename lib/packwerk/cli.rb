@@ -53,8 +53,10 @@ module Packwerk
         output_result(parse_run(args).update_deprecations)
       when "validate"
         validate(args)
-      when "detect-zeitwerk-violations"
-        output_result(detect_zeitwerk_violations)
+      when "validate-zeitwerk"
+        output_result(validate_zeitwerk)
+      when "update-zeitwerk-violations"
+        output_result(update_zeitwerk_violations)
       when nil, "help"
         @err_out.puts(<<~USAGE)
           Usage: #{$PROGRAM_NAME} <subcommand>
@@ -65,6 +67,8 @@ module Packwerk
             update - update deprecated references (deprecated, use update-deprecations instead)
             update-deprecations - update deprecated references
             validate - verify integrity of packwerk and package configuration
+            validate-zeitwerk - verify integrity of application autoloading
+            update-zeitwerk-violations - update list of known zeitwerk violations
             help  - display help information about packwerk
         USAGE
         true
@@ -191,9 +195,14 @@ module Packwerk
       )
     end
 
-    def detect_zeitwerk_violations
+    def validate_zeitwerk
       run = Classic::ZeitwerkValidationRun.new(configuration: @configuration)
-      run.detect_zeitwerk_violations
+      run.validate_zeitwerk
+    end
+
+    def update_zeitwerk_violations
+      run = Classic::ZeitwerkValidationRun.new(configuration: @configuration)
+      run.update_zeitwerk_violations
     end
   end
 end
