@@ -38,7 +38,7 @@ module Packwerk
 
       with_direct_match = @constant_definitions.select do |constant, _|
         constant_name = @inflector.underscore(constant.demodulize)
-        constant_name == file_base_name
+        constant_name.start_with?(file_base_name)
       end
 
       @constant_definitions = with_direct_match if with_direct_match.any?
