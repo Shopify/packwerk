@@ -229,7 +229,7 @@ After enforcing the boundary checks for a package, you may execute:
 
     packwerk check
 
-Packwerk will check the entire codebase for any violations.
+Packwerk will check the entire codebase for any new or stale violations.
 
 You can also specify folders or packages for a shorter run time:
 

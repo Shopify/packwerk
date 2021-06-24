@@ -24,7 +24,7 @@ module Packwerk
       result = parse_run.update_deprecations
 
       assert_equal result.message, <<~EOS
-        No offenses detected 🎉
+        No offenses detected
         ✅ `deprecated_references.yml` has been updated.
       EOS
       assert result.status
@@ -70,7 +70,40 @@ module Packwerk
       assert_match(/#{expected_output}/, out.string)
 
       assert result.status
-      assert_equal "No offenses detected 🎉", result.message
+      expected_message = <<~EOS
+        No offenses detected
+        No stale violations detected
+      EOS
+      assert_equal expected_message, result.message
+    end
+
+    test "#check result has failure status when stale violations exist" do
+      offense = ReferenceOffense.new(reference: build_reference, violation_type: ViolationType::Privacy)
+      DeprecatedReferences.any_instance.stubs(:listed?).returns(true)
+      OffenseCollection.any_instance.stubs(:stale_violations?).returns(true)
+      out = StringIO.new
+      parse_run = Packwerk::ParseRun.new(
+        files: ["some/path.rb"],
+        configuration: Configuration.new({ "parallel" => false }),
+        progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
+      )
+      RunContext.any_instance.stubs(:process_file).returns([offense])
+      result = parse_run.check
+
+      expected_output = <<~EOS
+        📦 Packwerk is inspecting 1 file
+        \\.
+        📦 Finished in \\d+\\.\\d+ seconds
+      EOS
+      assert_match(/#{expected_output}/, out.string)
+
+      expected_message = <<~EOS
+        No offenses detected
+        There were stale violations found, please run `packwerk update-deprecations`
+      EOS
+
+      refute result.status
+      assert_equal expected_message, result.message
     end
 
     test "runs in parallel" do
