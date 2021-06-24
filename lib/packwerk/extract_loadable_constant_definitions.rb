@@ -13,7 +13,6 @@ module Packwerk
       @inflector = inflector
 
       collect_leaf_definitions_from_root(root_node) if root_node
-      prune_definitions_for_autoloadable_constants
     end
 
     def collect_leaf_definitions_from_root(node, current_namespace_path = [])
@@ -28,21 +27,6 @@ module Packwerk
     end
 
     private
-
-    # We use a heuristic to determine which constants are probably supposed to
-    # be autoloaded based on both Zeitwerk and Rails Classic Mode conventions.
-    def prune_definitions_for_autoloadable_constants
-      return if @constant_definitions.length == 1
-
-      file_base_name = File.basename(@file, ".*")
-
-      with_direct_match = @constant_definitions.select do |constant, _|
-        constant_name = @inflector.underscore(constant.demodulize)
-        constant_name.start_with?(file_base_name)
-      end
-
-      @constant_definitions = with_direct_match if with_direct_match.any?
-    end
 
     def add_definition(constant_name, current_namespace_path, location)
       fully_qualified_constant = [""].concat(current_namespace_path).push(constant_name).join("::")
