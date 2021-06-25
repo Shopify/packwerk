@@ -36,7 +36,7 @@ module Packwerk
       message = <<~EOS
         #{@offenses_formatter.show_offenses(offense_collection.errors)}
         ✅ `zeitwerk_violations.yml` has been updated.
-        EOS
+      EOS
 
       Result.new(message: message, status: offense_collection.errors.empty?)
     end

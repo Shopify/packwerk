@@ -51,7 +51,7 @@ module Packwerk
       if @new_entries.empty?
         File.delete(@filepath) if File.exist?(@filepath)
       else
-        message = <<~MESSAGE
+        message = <<~EOS
           # This file contains a list of constants definitions which do not
           # conform to Zeitwerk conventions.
           #
@@ -65,7 +65,7 @@ module Packwerk
           # You can regenerate this file using the following command:
           #
           # bundle exec packwerk update-zeitwerk-violations
-        MESSAGE
+        EOS
         File.open(@filepath, "w") do |f|
           f.write(message)
           f.write(@new_entries.to_yaml)

@@ -63,10 +63,10 @@ module Packwerk
       OffenseCollection.any_instance.stubs(:stale_zeitwerk_violations?).returns(true)
       result = validation_run.validate_zeitwerk
 
-      message = <<~MSG
+      message = <<~EOS
         No offenses detected
         There were stale Zeitwerk violations found, please run `packwerk update-zeitwerk-violations`
-      MSG
+      EOS
 
       assert_equal message, result.message
       refute result.status
