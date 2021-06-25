@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "active_support/inflector/inflections"
@@ -8,11 +8,12 @@ require "yaml"
 
 module Packwerk
   class ApplicationValidator
-    def initialize(config_file_path:, configuration:)
+    def initialize(config_file_path:, configuration:, environment:)
       @config_file_path = config_file_path
       @configuration = configuration
+      @environment = environment
 
-      @application_load_paths = ApplicationLoadPaths.extract_relevant_paths
+      @application_load_paths = ApplicationLoadPaths.extract_relevant_paths(configuration.root_path, environment)
     end
 
     Result = Struct.new(:ok?, :error_value)
@@ -176,21 +177,9 @@ module Packwerk
       edges = package_set.flat_map do |package|
         package.dependencies.map { |dependency| [package, package_set.fetch(dependency)] }
       end
-      dependency_graph = Packwerk::Graph.new(*edges)
+      dependency_graph = Packwerk::Graph.new(*T.unsafe(edges))
 
-      # Convert the cycle
-      #
-      #   [a, b, c]
-      #
-      # to the string
-      #
-      #   a -> b -> c -> a
-      #
-      cycle_strings = dependency_graph.cycles.map do |cycle|
-        cycle_strings = cycle.map(&:to_s)
-        cycle_strings << cycle.first.to_s
-        "\t- #{cycle_strings.join(" → ")}"
-      end
+      cycle_strings = build_cycle_strings(dependency_graph.cycles)
 
       if dependency_graph.acyclic?
         Result.new(true)
@@ -278,6 +267,21 @@ module Packwerk
     end
 
     private
+
+    # Convert the cycles:
+    #
+    #   [[a, b, c], [b, c]]
+    #
+    # to the string:
+    #
+    #   ["a -> b -> c -> a", "b -> c -> b"]
+    def build_cycle_strings(cycles)
+      cycles.map do |cycle|
+        cycle_strings = cycle.map(&:to_s)
+        cycle_strings << cycle.first.to_s
+        "\t- #{cycle_strings.join(" → ")}"
+      end
+    end
 
     def package_manifests_settings_for(setting)
       package_manifests.map { |f| [f, (YAML.load_file(File.join(f)) || {})[setting]] }

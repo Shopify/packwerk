@@ -1,6 +1,7 @@
 # Packwerk usage
 
 ## Table of Contents
+
 * [What problem does Packwerk solve?](#what-problem-does-packwerk-solve)
 * [What is a package?](#what-is-a-package)
   * [Package principles](#package-principles)
@@ -19,11 +20,13 @@
   * [Understanding the list of deprecated references](#understanding-the-list-of-deprecated-references)
 
 ## What problem does Packwerk solve?
+
 Large applications need clear boundaries to avoid turning into a [ball of mud](https://en.wikipedia.org/wiki/Big_ball_of_mud). However, Ruby does not provide a good solution to enforcing boundaries between code.
 
 Packwerk is a gem that can be used to enforce boundaries between groups of code we call packages.
 
 ## What is a package?
+
 A package is a folder containing autoloaded code. To decide whether code belongs together in a package, these are some design best practices:
 
 - We should package things together that have high functional [cohesion](https://en.wikipedia.org/wiki/Cohesion_(computer_science)).
@@ -41,7 +44,7 @@ The [package principles](https://en.wikipedia.org/wiki/Package_principles) page 
 
 After including Packwerk in the Gemfile, you can generate the necessary files to get Packwerk running by executing:
 
-    bundle exec packwerk init
+    packwerk init
 
 Here is a list of files generated:
 
@@ -49,8 +52,6 @@ Here is a list of files generated:
 |-----------------------------|--------------|------------|
 | Packwerk configuration      | packwerk.yml | See [Setting up the configuration file](#Setting-up-the-configuration-file) |
 | Root package                | package.yml  | A package for the root folder |
-| Bin script                  | bin/packwerk | For Rails applications to run Packwerk validation on CI, see [Validating the package system](#Validating-the-package-system) |
-| Validation test             | test/packwerk_validator_test.rb | For Ruby projects to run Packwerk validation using tests, see [Validating the package system](#Validating-the-package-system) |
 | Custom inflections          | config/inflections.yml | A custom inflections file is only required if you have custom inflections in `inflections.rb`, see [Inflections](#Inflections) |
 
 After that, you may begin creating packages for your application. See [Defining packages](#Defining-packages)
@@ -133,17 +134,13 @@ Any new inflectors should be added to `config/inflections.yml`.
 
 There are some criteria that an application must meet in order to have a valid package system. These criteria include having a valid autoload path cache, package definition files, and application folder structure. The dependency graph within the package system also has to be acyclic.
 
-The package system can be validated through a series of built in validation checks. Currently, the validation checks require the application to be booted either through `spring` or as part of its test suite.
-
 We recommend setting up the package system validation for your Rails application in a CI step (or through a test suite for Ruby projects) separate from `packwerk check`.
 
-If running `packwerk init` generates a `bin/packwerk` script, proceed to run:
+Use the following command to validate the application:
 
-    bin/packwerk validate
+    packwerk validate
 
 ![](static/packwerk_validate.gif)
-
-If running `packwerk init` on your Ruby project generates `test/packwerk_validator_test.rb`, you can use this test as validation.
 
 ## Defining packages
 
@@ -152,6 +149,7 @@ You can create a `package.yml` in any folder to make it a package. The package n
 _Note: It is helpful to define a namespace that corresponds to the package name and contains at least all the public constants of the package. This makes it more obvious which package a constant is defined in._
 
 ### Package metadata
+
 Package metadata can be included in the `package.yml`. Metadata won't be validated, and can thus be anything. We recommend including information on ownership and stewardship of the package.
 
 Example:
@@ -169,6 +167,7 @@ Example:
 Packwerk can perform two types of boundary checks: privacy and dependency.
 
 #### Enforcing privacy boundary
+
 A package's privacy boundary is violated when there is a reference to the package's private constants from a source outside the package.
 
 There are two ways you can enforce privacy for your package:
@@ -228,13 +227,13 @@ It will be a dependency violation when `components/shop_identity` tries to refer
 
 After enforcing the boundary checks for a package, you may execute:
 
-    bundle exec packwerk check
+    packwerk check
 
-Packwerk will check the entire codebase for any violations.
+Packwerk will check the entire codebase for any new or stale violations.
 
 You can also specify folders or packages for a shorter run time:
 
-    bundle exec packwerk check components/your_package
+    packwerk check components/your_package
 
 ![](static/packwerk_check.gif)
 
@@ -248,11 +247,11 @@ For existing codebases, packages are likely to have existing boundary violations
 
 If so, you will want to stop the bleeding and prevent more violations from occuring. The existing violations in the codebase can be recorded in a [deprecated references list](#Understanding_the_list_of_deprecated_references) by executing:
 
-    bundle exec packwerk update-deprecations
+    packwerk update-deprecations
 
 Similar to `packwerk check`, you may also run `packwerk update-deprecations` on folders or packages:
 
-    bundle exec packwerk update-deprecations components/your_package
+    packwerk update-deprecations components/your_package
 
 ![](static/packwerk_update.gif)
 

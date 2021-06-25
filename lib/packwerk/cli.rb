@@ -10,6 +10,7 @@ module Packwerk
         configuration: T.nilable(Configuration),
         out: T.any(StringIO, IO),
         err_out: T.any(StringIO, IO),
+        environment: String,
         style: Packwerk::OutputStyle,
         offenses_formatter: T.nilable(Packwerk::OffensesFormatter)
       ).void
@@ -18,11 +19,13 @@ module Packwerk
       configuration: nil,
       out: $stdout,
       err_out: $stderr,
+      environment: "test",
       style: OutputStyles::Plain.new,
       offenses_formatter: nil
     )
       @out = out
       @err_out = err_out
+      @environment = environment
       @style = style
       @configuration = configuration || Configuration.from_path
       @progress_formatter = Formatters::ProgressFormatter.new(@out, style: style)
@@ -77,28 +80,12 @@ module Packwerk
     def init
       @out.puts("📦 Initializing Packwerk...")
 
-      application_validation = Packwerk::Generators::ApplicationValidation.generate(
-        for_rails_app: rails_app?,
-        root: @configuration.root_path,
-        out: @out
-      )
-
-      if application_validation
-        if rails_app?
-          # To run in the same space as the Rails process,
-          # in order to fetch load paths for the configuration generator
-          exec("bin/packwerk", "generate_configs")
-        else
-          generate_configurations = generate_configs
-        end
-      end
-
-      application_validation && generate_configurations
+      generate_configs
     end
 
     def generate_configs
       configuration_file = Packwerk::Generators::ConfigurationFile.generate(
-        load_paths: Packwerk::ApplicationLoadPaths.extract_relevant_paths,
+        load_paths: Packwerk::ApplicationLoadPaths.extract_relevant_paths(@configuration.root_path, @environment),
         root: @configuration.root_path,
         out: @out
       )
@@ -144,14 +131,11 @@ module Packwerk
     end
 
     def validate(_paths)
-      warn("`packwerk validate` should be run within the application. "\
-        "Generate the bin script using `packwerk init` and"\
-        " use `bin/packwerk validate` instead.") unless defined?(::Rails)
-
       @progress_formatter.started_validation do
         checker = Packwerk::ApplicationValidator.new(
           config_file_path: @configuration.config_path,
-          configuration: @configuration
+          configuration: @configuration,
+          environment: @environment,
         )
         result = checker.check_all
 
@@ -168,15 +152,6 @@ module Packwerk
       else
         @out.puts("Validation failed ❗")
         @out.puts(result.error_value)
-      end
-    end
-
-    sig { returns(T::Boolean) }
-    def rails_app?
-      if File.exist?("config/application.rb") && File.exist?("bin/rails")
-        File.foreach("Gemfile").any? { |line| line.match?(/['"]rails['"]/) }
-      else
-        false
       end
     end
 

@@ -12,21 +12,21 @@ commands:
       if [[ "$*" =~ ":"[0-9]+ ]];
       then
         # run test by its line number
-        bundle exec m "$@"
+        bin/m "$@"
       elif [[ "$#" -eq 1 && -f "$1" ]];
       then
         # run all tests in given file(s)
-        bundle exec rake test TEST="$@"
+        bin/rake test TEST="$@"
       else
         # run all tests
-        bundle exec rake test
+        bin/rake test
       fi
-  style: "bundle exec rubocop -D --auto-correct"
+  style: "bin/rubocop -D --auto-correct"
   typecheck:
     desc: "run Sorbet typechecking"
-    run: "bundle exec srb tc"
+    run: "bin/srb tc"
     aliases: ['tc']
     subcommands:
       update:
         desc: "update RBIs for gems"
-        run: "bundle exec tapioca sync -c 'dev typecheck update'"
+        run: "bin/tapioca sync -c 'dev typecheck update'"
