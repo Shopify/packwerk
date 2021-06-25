@@ -5,8 +5,6 @@ require "constant_resolver"
 
 module Packwerk
   class ResolveConstantDefinitions
-    extend T::Sig
-
     def initialize(configuration:)
       @configuration = configuration
       @inflector = ::Packwerk::Inflector.from_file(configuration.inflections_file)
@@ -30,11 +28,7 @@ module Packwerk
 
       result = []
       if node
-        constant_definitions = ExtractLoadableConstantDefinitions.new(
-          root_node: node,
-          file: file_path,
-          inflector: @inflector
-        ).constant_definitions
+        constant_definitions = ExtractLoadableConstantDefinitions.from(node)
         result += collect_resolution_offenses(constant_definitions, file: file_path)
       end
       result.compact
