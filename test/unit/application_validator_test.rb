@@ -6,9 +6,6 @@ require "test_helper"
 # make sure PrivateThing.constantize succeeds to pass the privacy validity check
 require "fixtures/skeleton/components/timeline/app/models/private_thing.rb"
 
-# make sure the application has a chance to load its inflections
-require "fixtures/skeleton/config/environment"
-
 module Packwerk
   class ApplicationValidatorTest < Minitest::Test
     include RailsApplicationFixtureHelper
@@ -213,7 +210,8 @@ module Packwerk
     def validator
       @application_validator ||= Packwerk::ApplicationValidator.new(
         config_file_path: config.config_path,
-        configuration: config
+        configuration: config,
+        environment: "test"
       )
     end
   end

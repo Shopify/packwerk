@@ -78,7 +78,6 @@ module Packwerk
   module Generators
     extend ActiveSupport::Autoload
 
-    autoload :ApplicationValidation
     autoload :ConfigurationFile
     autoload :InflectionsFile
     autoload :RootPackage

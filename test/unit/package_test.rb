@@ -36,12 +36,33 @@ module Packwerk
       assert_equal("components/timeline/my/path/", package.public_path)
     end
 
+    test "#public_path returns expected path when using the default public path in root package" do
+      package = Package.new(name: ".", config: {})
+      assert_equal("app/public/", package.public_path)
+    end
+
+    test "#public_path returns expected path when using a user defined public path" do
+      package = Package.new(name: ".", config: { "public_path" => "my/path/" })
+
+      assert_equal("my/path/", package.public_path)
+    end
+
     test "#package_path? returns true for path under the package's public path" do
       assert_equal(true, @package.public_path?("components/timeline/app/public/entrypoint.rb"))
     end
 
     test "#package_path? returns false for path not under the package's public path" do
       assert_equal(false, @package.public_path?("components/timeline/app/models/something.rb"))
+    end
+
+    test "#public_path? returns true for path under the root package's public path" do
+      package = Package.new(name: ".", config: {})
+      assert_equal(true, package.public_path?("app/public/entrypoint.rb"))
+    end
+
+    test "#public_path? returns false for path not under the root package's public path" do
+      package = Package.new(name: ".", config: {})
+      assert_equal(false, package.public_path?("app/models/something.rb"))
     end
 
     test "#<=> compares against name" do

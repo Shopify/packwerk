@@ -2,8 +2,8 @@
 
 ## NOTE: Packwerk is considered to be feature-complete for Shopify's uses. We are currently accepting bug fixes only, and it is not being actively developed. Please fork this project if you are interested in adding new features.
 
-> "I know who you are and because of that I know what you do."  
-> This knowledge is a dependency that raises the cost of change.  
+> "I know who you are and because of that I know what you do."
+> This knowledge is a dependency that raises the cost of change.
 
 -- _Sandi Metz, Practical Object-Oriented Design in Ruby_
 
@@ -47,7 +47,7 @@ Or install it yourself as:
 
     $ gem install packwerk
 
-3. Run `bundle exec packwerk init` to generate the configuration files
+3. Run `packwerk init` to generate the configuration files
 
 ## Usage
 
@@ -59,7 +59,7 @@ Read [USAGE.md](USAGE.md) for usage once Packwerk is installed on your project.
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `bundle exec rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 ## Limitations
 
