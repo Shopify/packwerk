@@ -6,7 +6,7 @@ require:
   - rubocop-sorbet
 
 AllCops:
-  NewCops: enable
+  NewCops: disable
   TargetRubyVersion: 2.7
   UseCache: true
   CacheRootDirectory: tmp
