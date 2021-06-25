@@ -54,9 +54,9 @@ module Packwerk
       when "validate"
         validate(args)
       when "validate-zeitwerk"
-        output_result(validate_zeitwerk)
+        output_result(zeitwerk_validation_run.validate_zeitwerk)
       when "update-zeitwerk-violations"
-        output_result(update_zeitwerk_violations)
+        output_result(zeitwerk_validation_run.update_zeitwerk_violations)
       when nil, "help"
         @err_out.puts(<<~USAGE)
           Usage: #{$PROGRAM_NAME} <subcommand>
@@ -195,14 +195,12 @@ module Packwerk
       )
     end
 
-    def validate_zeitwerk
-      run = ZeitwerkValidationRun.new(configuration: @configuration)
-      run.validate_zeitwerk
-    end
-
-    def update_zeitwerk_violations
-      run = ZeitwerkValidationRun.new(configuration: @configuration)
-      run.update_zeitwerk_violations
+    def zeitwerk_validation_run
+      ZeitwerkValidationRun.new(
+        configuration: @configuration,
+        progress_formatter: @progress_formatter,
+        offenses_formatter: @offenses_formatter
+      )
     end
   end
 end

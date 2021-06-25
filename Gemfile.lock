@@ -163,6 +163,7 @@ GEM
     sorbet (0.5.6360)
       sorbet-static (= 0.5.6360)
     sorbet-runtime (0.5.6360)
+    sorbet-static (0.5.6360-universal-darwin-19)
     sorbet-static (0.5.6360-universal-darwin-20)
     sorbet-static (0.5.6360-x86_64-linux)
     spoom (1.1.1)

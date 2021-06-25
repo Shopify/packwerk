@@ -186,9 +186,9 @@ module Packwerk
         definitions = ancestors
           .select { |n| [CLASS, MODULE, CONSTANT_ASSIGNMENT, BLOCK].include?(type_of(n)) }
 
-        names = definitions.map do |definition|
+        names = definitions.filter_map do |definition|
           name_part_from_definition(definition)
-        end.compact
+        end
 
         names.empty? ? "Object" : names.reverse.join("::")
       end

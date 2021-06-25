@@ -8,10 +8,10 @@ module Packwerk
 
     interface!
 
-    sig { returns(ViolationType).abstract }
+    sig { abstract.returns(ViolationType) }
     def violation_type; end
 
-    sig { params(reference: Reference).returns(T::Boolean).abstract }
+    sig { abstract.params(reference: Reference).returns(T::Boolean) }
     def invalid_reference?(reference); end
   end
 end
