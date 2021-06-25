@@ -27,7 +27,7 @@ module Packwerk
     sig { params(offense: ZeitwerkOffense).returns(T::Boolean) }
     def add_entries(offense)
       location = offense.relative_location_from(@root_path)
-      @new_entries[location] = { constant: offense.constant }
+      @new_entries[location] = { "constant" => offense.constant }
 
       listed?(offense)
     end
@@ -35,7 +35,15 @@ module Packwerk
     sig { params(offense: ZeitwerkOffense).returns(T::Boolean) }
     def listed?(offense)
       location = offense.relative_location_from(@root_path)
-      zeitwerk_violations[location] == { constant: offense.constant }
+      zeitwerk_violations.key?(location) && zeitwerk_violations[location]["constant"] == offense.constant
+    end
+
+    sig { returns(T::Boolean) }
+    def stale_violations?
+      zeitwerk_violations.map do |location, violation|
+        constant = violation["constant"]
+        !@new_entries.key?(location) || @new_entries[location]["constant"] != constant
+      end.any?
     end
 
     sig { void }

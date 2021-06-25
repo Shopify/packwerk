@@ -13,6 +13,7 @@ AllCops:
   SuggestExtensions: false
   Exclude:
     - "test/fixtures/**/*"
+    - "bin/*"
 
 Lint/UnusedMethodArgument:
   AllowUnusedKeywordArguments: true

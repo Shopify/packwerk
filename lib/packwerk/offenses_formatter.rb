@@ -15,5 +15,9 @@ module Packwerk
     sig { abstract.params(offense_collection: Packwerk::OffenseCollection).returns(String) }
     def show_stale_violations(offense_collection)
     end
+
+    sig { abstract.params(offense_collection: Packwerk::OffenseCollection).returns(String) }
+    def show_stale_zeitwerk_violations(offense_collection)
+    end
   end
 end
