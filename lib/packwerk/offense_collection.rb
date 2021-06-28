@@ -15,11 +15,11 @@ module Packwerk
     def initialize(root_path, deprecated_references = {})
       @root_path = root_path
       @deprecated_references = T.let(deprecated_references, T::Hash[Packwerk::Package, Packwerk::DeprecatedReferences])
-      @new_violations = T.let([], T::Array[Packwerk::ReferenceOffense])
+      @new_violations = T.let([], T::Array[T.any(Packwerk::ReferenceOffense, Packwerk::ZeitwerkOffense)])
       @errors = T.let([], T::Array[Packwerk::Offense])
     end
 
-    sig { returns(T::Array[Packwerk::ReferenceOffense]) }
+    sig { returns(T::Array[T.any(Packwerk::ReferenceOffense, Packwerk::ZeitwerkOffense)]) }
     attr_reader :new_violations
 
     sig { returns(T::Array[Packwerk::Offense]) }
@@ -39,13 +39,22 @@ module Packwerk
       params(offense: Packwerk::Offense).void
     end
     def add_offense(offense)
-      unless offense.is_a?(ReferenceOffense)
+      unless offense.is_a?(ReferenceOffense) || offense.is_a?(ZeitwerkOffense)
         @errors << offense
         return
       end
-      deprecated_references = deprecated_references_for(offense.reference.source_package)
-      unless deprecated_references.add_entries(offense.reference, offense.violation_type)
-        new_violations << offense
+
+      if offense.is_a?(ReferenceOffense)
+        deprecated_references = deprecated_references_for(offense.reference.source_package)
+        unless deprecated_references.add_entries(offense.reference, offense.violation_type)
+          new_violations << offense
+        end
+      end
+
+      if offense.is_a?(ZeitwerkOffense)
+        unless zeitwerk_violations.add_entries(offense)
+          new_violations << offense
+        end
       end
     end
 
@@ -54,11 +63,27 @@ module Packwerk
       @deprecated_references.values.any?(&:stale_violations?)
     end
 
+    sig { returns(T.nilable(T::Boolean)) }
+    def stale_zeitwerk_violations?
+      @zeitwerk_violations&.stale_violations?
+    end
+
     sig { void }
     def dump_deprecated_references_files
       @deprecated_references.each do |_, deprecated_references_file|
         deprecated_references_file.dump
       end
+    end
+
+    sig { returns(Packwerk::ZeitwerkViolations) }
+    def zeitwerk_violations
+      @zeitwerk_violations = T.let(@zeitwerk_violations, T.nilable(Packwerk::ZeitwerkViolations))
+      @zeitwerk_violations ||= Packwerk::ZeitwerkViolations.new(zeitwerk_violations_file, root_path: @root_path)
+    end
+
+    sig { void }
+    def dump_zeitwerk_violations_file
+      zeitwerk_violations.dump
     end
 
     sig { returns(T::Array[Packwerk::Offense]) }
@@ -79,6 +104,11 @@ module Packwerk
     sig { params(package: Packwerk::Package).returns(String) }
     def deprecated_references_file_for(package)
       File.join(@root_path, package.name, "deprecated_references.yml")
+    end
+
+    sig { returns(String) }
+    def zeitwerk_violations_file
+      File.join(@root_path, "zeitwerk_violations.yml")
     end
   end
 end

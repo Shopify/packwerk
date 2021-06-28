@@ -65,7 +65,8 @@ module Packwerk
           inflections_object.irregular("move", "moves")
           inflections_object.irregular("zombie", "zombies")
 
-          inflections_object.uncountable(%w(equipment information rice money species series fish sheep jeans police))
+          inflections_object.uncountable(["equipment", "information", "rice", "money", "species", "series", "fish",
+                                          "sheep", "jeans", "police"])
         end
       end
     end

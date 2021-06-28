@@ -32,6 +32,15 @@ module Packwerk
         end
       end
 
+      sig { override.params(offense_collection: Packwerk::OffenseCollection).returns(String) }
+      def show_stale_zeitwerk_violations(offense_collection)
+        if offense_collection.stale_zeitwerk_violations?
+          "There were stale Zeitwerk violations found, please run `packwerk update-zeitwerk-violations`"
+        else
+          "No stale violations detected"
+        end
+      end
+
       private
 
       sig { params(offenses: T::Array[T.nilable(Offense)]).returns(String) }

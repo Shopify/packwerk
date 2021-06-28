@@ -20,6 +20,7 @@ module Packwerk
   autoload :ConstNodeInspector
   autoload :DependencyChecker
   autoload :DeprecatedReferences
+  autoload :ExtractLoadableConstantDefinitions
   autoload :FileProcessor
   autoload :FilesForProcessing
   autoload :Graph
@@ -40,10 +41,14 @@ module Packwerk
   autoload :Reference
   autoload :ReferenceExtractor
   autoload :ReferenceOffense
+  autoload :ResolveConstantDefinitions
   autoload :Result
   autoload :RunContext
-  autoload :Version
   autoload :ViolationType
+  autoload :Version
+  autoload :ZeitwerkOffense
+  autoload :ZeitwerkValidationRun
+  autoload :ZeitwerkViolations
 
   module Inflections
     extend ActiveSupport::Autoload

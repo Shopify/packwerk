@@ -1,0 +1,11 @@
+include:
+  - "**/*.rb"
+  - "**/*.{blop,rb}" # To test for duplicated files
+exclude:
+  - "**/temp.rb"
+load_paths:
+  - components/timeline/app/models
+  - components/timeline/app/models/concerns
+  - vendor/cache/gems/example/models
+inflections_file: "custom_inflections.yml"
+parallel: false

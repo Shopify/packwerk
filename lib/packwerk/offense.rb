@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "pathname"
 require "parser/source/map"
 
 module Packwerk
@@ -18,6 +19,12 @@ module Packwerk
       @location = location
       @file = file
       @message = message
+    end
+
+    sig { params(path: String).returns(String) }
+    def relative_location_from(path)
+      relative_file_path = Pathname.new(file).relative_path_from(path)
+      "#{relative_file_path}:#{location.line}:#{location.column}"
     end
 
     sig { params(style: OutputStyle).returns(String) }

@@ -40,7 +40,7 @@ module Packwerk
         customs = Packwerk::Inflections::Custom.new
 
         customs.inflections = {
-          plural: [%w(analysis analyses)],
+          plural: [["analysis", "analyses"]],
           acronym: ["PKG"],
           singular: [[/status$/, "status"]],
         }
@@ -48,7 +48,7 @@ module Packwerk
         customs.apply_to(inflections)
 
         assert_equal(
-          [%w(analysis analyses)],
+          [["analysis", "analyses"]],
           inflections.plurals
         )
 

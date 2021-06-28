@@ -56,6 +56,10 @@ module Packwerk
         output_result(parse_run(args).update_deprecations)
       when "validate"
         validate(args)
+      when "validate-zeitwerk"
+        output_result(zeitwerk_validation_run.validate_zeitwerk)
+      when "update-zeitwerk-violations"
+        output_result(zeitwerk_validation_run.update_zeitwerk_violations)
       when nil, "help"
         @err_out.puts(<<~USAGE)
           Usage: #{$PROGRAM_NAME} <subcommand>
@@ -66,6 +70,8 @@ module Packwerk
             update - update deprecated references (deprecated, use update-deprecations instead)
             update-deprecations - update deprecated references
             validate - verify integrity of packwerk and package configuration
+            validate-zeitwerk - verify integrity of application autoloading
+            update-zeitwerk-violations - update list of known zeitwerk violations
             help  - display help information about packwerk
         USAGE
         true
@@ -158,6 +164,14 @@ module Packwerk
     def parse_run(paths)
       ParseRun.new(
         files: fetch_files_to_process(paths),
+        configuration: @configuration,
+        progress_formatter: @progress_formatter,
+        offenses_formatter: @offenses_formatter
+      )
+    end
+
+    def zeitwerk_validation_run
+      ZeitwerkValidationRun.new(
         configuration: @configuration,
         progress_formatter: @progress_formatter,
         offenses_formatter: @offenses_formatter

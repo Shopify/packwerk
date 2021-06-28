@@ -137,7 +137,7 @@ module Packwerk
 
     test "check_inflection_file returns error for mismatched inflections.yml file" do
       use_template(:skeleton)
-      merge_into_app_yaml_file("different_inflections.yml", { "acronym" => %w(TLA WTF LOL) })
+      merge_into_app_yaml_file("different_inflections.yml", { "acronym" => ["TLA", "WTF", "LOL"] })
       merge_into_app_yaml_file("packwerk.yml", { "inflections_file" => "different_inflections.yml" })
 
       result = validator.check_inflection_file
