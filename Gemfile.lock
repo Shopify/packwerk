@@ -87,7 +87,7 @@ GIT
 PATH
   remote: .
   specs:
-    packwerk (1.3.0)
+    packwerk (1.3.1)
       activesupport (>= 5.2)
       ast
       better_html
@@ -254,4 +254,4 @@ DEPENDENCIES
   tapioca
 
 BUNDLED WITH
-   2.2.14
+   2.2.15
