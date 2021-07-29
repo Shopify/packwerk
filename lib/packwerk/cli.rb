@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "optparse"
+
 module Packwerk
   # A command-line interface to Packwerk.
   class Cli
@@ -124,8 +126,12 @@ module Packwerk
       result.status
     end
 
-    def fetch_files_to_process(paths)
-      files = FilesForProcessing.fetch(paths: paths, configuration: @configuration)
+    def fetch_files_to_process(paths, ignore_nested_packages)
+      files = FilesForProcessing.fetch(
+        paths: paths,
+        ignore_nested_packages: ignore_nested_packages,
+        configuration: @configuration
+      )
       abort("No files found or given. "\
         "Specify files or check the include and exclude glob in the config file.") if files.empty?
       files
@@ -156,9 +162,24 @@ module Packwerk
       end
     end
 
-    def parse_run(paths)
+    def parse_run(params)
+      paths = T.let([], T::Array[String])
+      ignore_nested_packages = nil
+
+      if params.any? { |p| p.include?("--packages") }
+        OptionParser.new do |parser|
+          parser.on("--packages=PACKAGESLIST", Array, "package names, comma separated") do |p|
+            paths = p
+          end
+        end.parse!(params)
+        ignore_nested_packages = true
+      else
+        paths = params
+        ignore_nested_packages = false
+      end
+
       ParseRun.new(
-        files: fetch_files_to_process(paths),
+        files: fetch_files_to_process(paths, ignore_nested_packages),
         configuration: @configuration,
         progress_formatter: @progress_formatter,
         offenses_formatter: @offenses_formatter

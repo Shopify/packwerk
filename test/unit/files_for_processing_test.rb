@@ -43,6 +43,39 @@ module Packwerk
       assert_equal files, files.uniq
     end
 
+    test "fetch with custom paths without ignoring nested packages includes only include glob in custom paths including nested package files" do
+      files = ::Packwerk::FilesForProcessing.fetch(
+        paths: ["."],
+        configuration: @configuration,
+        ignore_nested_packages: false
+      )
+      included_file_patterns = @configuration.include.map { |pattern| File.join(@configuration.root_path, pattern) }
+
+      assert_all_match(files, included_file_patterns)
+    end
+
+    test "fetch with no custom paths ignoring nested packages includes only include glob across codebase" do
+      files = ::Packwerk::FilesForProcessing.fetch(
+        paths: [],
+        configuration: @configuration,
+        ignore_nested_packages: true
+      )
+      included_file_patterns = @configuration.include.map { |pattern| File.join(@configuration.root_path, pattern) }
+
+      assert_all_match(files, included_file_patterns)
+    end
+
+    test "fetch with custom paths ignoring nested packages includes only include glob in custom paths without nested package files" do
+      files = ::Packwerk::FilesForProcessing.fetch(
+        paths: ["."],
+        configuration: @configuration,
+        ignore_nested_packages: true
+      )
+
+      refute_any_match(files, [File.join(@configuration.root_path, "components/sales", "**/*.rb")])
+      refute_any_match(files, [File.join(@configuration.root_path, "components/timeline", "**/*.rb")])
+    end
+
     private
 
     def assert_all_match(files, patterns)
