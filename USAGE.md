@@ -231,7 +231,7 @@ After enforcing the boundary checks for a package, you may execute:
 
 Packwerk will check the entire codebase for any new or stale violations.
 
-You can also specify folders or packages for a shorter run time:
+You can also specify folders for a shorter run time:
 
     packwerk check components/your_package
 
