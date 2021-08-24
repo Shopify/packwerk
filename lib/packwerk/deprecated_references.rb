@@ -100,10 +100,17 @@ module Packwerk
     sig { returns(Hash) }
     def deprecated_references
       @deprecated_references ||= if File.exist?(@filepath)
-        YAML.load_file(@filepath) || {}
+        load_yaml(@filepath)
       else
         {}
       end
+    end
+
+    sig { params(filepath: String).returns(Hash) }
+    def load_yaml(filepath)
+      YAML.load_file(filepath) || {}
+    rescue Psych::Exception
+      {}
     end
   end
 end

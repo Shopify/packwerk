@@ -21,6 +21,20 @@ module Packwerk
       )
     end
 
+    test "#listed? returns false if the list cannot be read" do
+      violated_reference = build_reference(
+        destination_package: destination_package,
+        path: "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
+        constant_name: "::Buyers::Document"
+      )
+      deprecated_references = DeprecatedReferences.new(destination_package, "test/fixtures/deprecated_references_with_conflicts.yml")
+
+      refute deprecated_references.listed?(
+        violated_reference,
+        violation_type: ViolationType::Dependency
+      )
+    end
+
     test "#stale_violations? returns true if deprecated references exist but no violations can be found in code" do
       deprecated_references = DeprecatedReferences.new(destination_package, "test/fixtures/deprecated_references.yml")
       assert deprecated_references.stale_violations?

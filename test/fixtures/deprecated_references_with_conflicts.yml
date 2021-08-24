@@ -1,0 +1,11 @@
+---
+buyers:
+  "::Buyers::Document":
+    violations:
+    - dependency
+    files:
+<<<< HEAD
+    - orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb
+====
+>>>> Commit
+    - orders/app/models/orders/services/adjustment_engine.rb
