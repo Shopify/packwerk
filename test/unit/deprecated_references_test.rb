@@ -27,7 +27,10 @@ module Packwerk
         path: "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
         constant_name: "::Buyers::Document"
       )
-      deprecated_references = DeprecatedReferences.new(destination_package, "test/fixtures/deprecated_references_with_conflicts.yml")
+      deprecated_references = DeprecatedReferences.new(
+        destination_package,
+        "test/fixtures/deprecated_references_with_conflicts.yml"
+      )
 
       refute deprecated_references.listed?(
         violated_reference,
