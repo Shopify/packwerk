@@ -35,9 +35,9 @@ module Packwerk
     end
 
     def check_autoload_path_cache
-      expected = @application_load_paths
-      actual = @configuration.load_paths
-      if expected.sort == actual.sort
+      expected = Set.new(@application_load_paths)
+      actual = Set.new(@configuration.load_paths)
+      if expected == actual
         Result.new(true)
       else
         Result.new(
