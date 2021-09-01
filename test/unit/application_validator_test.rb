@@ -36,6 +36,16 @@ module Packwerk
       assert_match %r{Extraneous load paths in file:.*components/sales/app/models}m, result.error_value
     end
 
+    test "check_autoload_path_cache succeeds on duplicated, but correct config load paths" do
+      use_template(:minimal)
+      config.expects(:load_paths).returns(["components/timeline/app/models"] * 2)
+      ApplicationLoadPaths.expects(:extract_relevant_paths).returns(["components/timeline/app/models"])
+
+      result = validator.check_autoload_path_cache
+
+      assert result.ok?, result.error_value
+    end
+
     test "check_autoload_path_cache fails on missing config load paths" do
       use_template(:minimal)
       ApplicationLoadPaths
