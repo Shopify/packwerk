@@ -21,7 +21,8 @@ module Packwerk
     end
 
     def detect_stale_violations
-      offense_collection = find_offenses
+      run_context = Packwerk::RunContext.from_configuration(@configuration)
+      offense_collection = find_offenses(run_context)
 
       result_status = !offense_collection.stale_violations?
       message = @offenses_formatter.show_stale_violations(offense_collection)
@@ -30,7 +31,16 @@ module Packwerk
     end
 
     def update_deprecations
-      offense_collection = find_offenses
+      run_context = Packwerk::RunContext.from_configuration(@configuration)
+      offense_collection = find_offenses(run_context)
+
+      target_packages = @files.map do |file|
+        relative_path = Pathname.new(file).relative_path_from(@configuration.root_path).to_s
+        run_context.context_provider.package_from_path(relative_path)
+      end.uniq
+
+      target_packages.each { |package| offense_collection.register_reference_file_for_regeneration(package) }
+
       offense_collection.dump_deprecated_references_files
 
       message = <<~EOS
@@ -42,7 +52,8 @@ module Packwerk
     end
 
     def check
-      offense_collection = find_offenses(show_errors: true)
+      run_context = Packwerk::RunContext.from_configuration(@configuration)
+      offense_collection = find_offenses(run_context, show_errors: true)
 
       messages = [
         @offenses_formatter.show_offenses(offense_collection.outstanding_offenses),
@@ -55,11 +66,10 @@ module Packwerk
 
     private
 
-    def find_offenses(show_errors: false)
+    def find_offenses(run_context, show_errors: false)
       offense_collection = OffenseCollection.new(@configuration.root_path)
       @progress_formatter.started(@files)
 
-      run_context = Packwerk::RunContext.from_configuration(@configuration)
       all_offenses = T.let([], T.untyped)
 
       process_file = -> (path) do

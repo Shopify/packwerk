@@ -54,6 +54,11 @@ module Packwerk
       @deprecated_references.values.any?(&:stale_violations?)
     end
 
+    sig { params(package: Packwerk::Package).void }
+    def register_reference_file_for_regeneration(package)
+      deprecated_references_for(package)
+    end
+
     sig { void }
     def dump_deprecated_references_files
       @deprecated_references.each do |_, deprecated_references_file|

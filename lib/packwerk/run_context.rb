@@ -55,6 +55,14 @@ module Packwerk
       file_processor.call(file)
     end
 
+    sig { returns(ConstantDiscovery) }
+    def context_provider
+      @context_provider ||= ::Packwerk::ConstantDiscovery.new(
+        constant_resolver: resolver,
+        packages: package_set
+      )
+    end
+
     private
 
     sig { returns(FileProcessor) }
@@ -69,14 +77,6 @@ module Packwerk
         checkers: checkers,
         root_path: root_path,
         constant_name_inspectors: constant_name_inspectors
-      )
-    end
-
-    sig { returns(ConstantDiscovery) }
-    def context_provider
-      ::Packwerk::ConstantDiscovery.new(
-        constant_resolver: resolver,
-        packages: package_set
       )
     end
 
