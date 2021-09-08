@@ -37,9 +37,10 @@ module Packwerk
           message: "some message",
           violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
         )
+
         @offense_collection.add_offense(offense1)
         @offense_collection.add_offense(offense2)
-        @offense_collection.dump_package_todo_files
+        dump_package_todo_files
 
         expected = {
           "components/destination" => {
@@ -48,6 +49,12 @@ module Packwerk
           },
         }
         assert_equal expected, YAML.load_file("package_todo.yml")
+      end
+
+      private
+
+      def dump_package_todo_files
+        @offense_collection.persist_package_todo_files(PackageSet.new([]))
       end
     end
   end

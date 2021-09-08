@@ -73,6 +73,55 @@ module Packwerk
       refute result.status
     end
 
+    test "#update_todo cleans up old package_todo files" do
+      use_template(:minimal)
+
+      FileUtils.mkdir_p("app/models")
+      File.write("app/models/my_model.rb", <<~YML.strip)
+        class MyModel
+          def something
+            Order
+          end
+        end
+      YML
+
+      File.write("package_todo.yml", <<~YML.strip)
+        ---
+        "components/sales":
+          "::Order":
+            violations:
+            - privacy
+            files:
+            - app/models/my_model.rb
+      YML
+
+      File.write("components/sales/package_todo.yml", <<~YML.strip)
+        ---
+        "components/destination":
+          "::SomeName":
+            violations:
+            - privacy
+            files:
+            - a/b/c.rb
+      YML
+
+      parse_run = Packwerk::ParseRun.new(
+        relative_file_set: Set.new(["app/models/my_model.rb", "components/sales/app/models/order.rb"]),
+        configuration: Configuration.from_path
+      )
+      result = parse_run.update_todo
+
+      expected = <<~EOS
+        No offenses detected
+        ✅ `package_todo.yml` has been updated.
+      EOS
+      assert_equal expected, result.message
+      assert result.status
+
+      assert File.exist?("package_todo.yml")
+      refute File.exist?("components/sales/package_todo.yml")
+    end
+
     test "#check only reports error progress for unlisted violations" do
       use_template(:minimal)
       offense = ReferenceOffense.new(

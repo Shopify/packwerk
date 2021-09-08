@@ -59,11 +59,10 @@ module Packwerk
       end
     end
 
-    sig { void }
-    def dump_package_todo_files
-      @package_todo.each do |_, package_todo_file|
-        package_todo_file.dump
-      end
+    sig { params(package_set: Packwerk::PackageSet).void }
+    def persist_package_todo_files(package_set)
+      dump_package_todo_files
+      cleanup_extra_package_todo_files(package_set)
     end
 
     sig { returns(T::Array[Packwerk::Offense]) }
@@ -72,6 +71,23 @@ module Packwerk
     end
 
     private
+
+    sig { params(package_set: Packwerk::PackageSet).void }
+    def cleanup_extra_package_todo_files(package_set)
+      packages_without_todos = (package_set.packages.values - @package_todo.keys)
+
+      packages_without_todos.each do |package|
+        Packwerk::PackageTodo.new(
+          package,
+          package_todo_file_for(package),
+        ).delete_if_exists
+      end
+    end
+
+    sig { void }
+    def dump_package_todo_files
+      @package_todo.each_value(&:dump)
+    end
 
     sig { params(package: Packwerk::Package).returns(Packwerk::PackageTodo) }
     def package_todo_for(package)
