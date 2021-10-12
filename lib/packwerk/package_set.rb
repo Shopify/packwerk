@@ -4,6 +4,7 @@
 require "pathname"
 
 module Packwerk
+  # A set of {Packwerk::Package}s as well as methods to parse packages from the filesystem.
   class PackageSet
     include Enumerable
 

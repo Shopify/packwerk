@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 module Packwerk
+  # Checks whether a given reference references a private constant of another package.
   class PrivacyChecker
     extend T::Sig
     include Checker

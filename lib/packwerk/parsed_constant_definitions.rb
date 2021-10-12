@@ -4,6 +4,7 @@
 require "ast/node"
 
 module Packwerk
+  # A collection of constant definitions parsed from an Abstract Syntax Tree (AST).
   class ParsedConstantDefinitions
     def initialize(root_node:)
       @local_definitions = {}

@@ -4,7 +4,7 @@
 require "ast"
 
 module Packwerk
-  # An interface describing some object that can extract a constant name from an AST node
+  # An interface describing an object that can extract a constant name from an AST node.
   module ConstantNameInspector
     extend T::Sig
     extend T::Helpers

@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 module Packwerk
+  # Processes a single node in an abstract syntax tree (AST) using the provided checkers.
   class NodeProcessor
     extend T::Sig
 

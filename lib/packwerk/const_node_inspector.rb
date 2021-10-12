@@ -15,6 +15,9 @@ module Packwerk
     def constant_name_from_node(node, ancestors:)
       return nil unless Node.constant?(node)
       parent = ancestors.first
+
+      # Only process the root `const` node for namespaced constant references. For example, in the
+      # reference `Spam::Eggs::Thing`, we only process the const node associated with `Spam`.
       return nil unless root_constant?(parent)
 
       if parent && constant_in_module_or_class_definition?(node, parent: parent)
@@ -30,8 +33,6 @@ module Packwerk
 
     private
 
-    # Only process the root `const` node for namespaced constant references. For example, in the
-    # reference `Spam::Eggs::Thing`, we only process the const node associated with `Spam`.
     sig { params(parent: T.nilable(AST::Node)).returns(T::Boolean) }
     def root_constant?(parent)
       !(parent && Node.constant?(parent))
