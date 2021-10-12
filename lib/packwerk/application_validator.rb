@@ -7,6 +7,8 @@ require "pathname"
 require "yaml"
 
 module Packwerk
+  # Checks the structure of the application and its packwerk configuration to make sure we can run a check and deliver
+  # correct results.
   class ApplicationValidator
     def initialize(config_file_path:, configuration:, environment:)
       @config_file_path = config_file_path

@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 module Packwerk
-  # extracts a possible constant reference from a given AST node
+  # Extracts a possible constant reference from a given AST node.
   class ReferenceExtractor
     extend T::Sig
 

@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 module Packwerk
+  # Visits all nodes of an AST, processing them using a given node processor.
   class NodeVisitor
     def initialize(node_processor:)
       @node_processor = node_processor

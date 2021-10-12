@@ -4,6 +4,7 @@
 require "active_support/inflector"
 
 module Packwerk
+  # A custom inflector used, among other things, to map between constant names and file names.
   class Inflector
     class << self
       extend T::Sig

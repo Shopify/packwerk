@@ -4,6 +4,7 @@
 module Packwerk
   module ReferenceChecking
     module Checkers
+      # Checks whether a given reference conforms to the configured graph of dependencies.
       class DependencyChecker
         extend T::Sig
         include Checker

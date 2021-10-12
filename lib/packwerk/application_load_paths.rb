@@ -4,6 +4,7 @@
 require "bundler"
 
 module Packwerk
+  # Extracts the load paths from the analyzed application so that we can map constant names to paths.
   module ApplicationLoadPaths
     class << self
       extend T::Sig

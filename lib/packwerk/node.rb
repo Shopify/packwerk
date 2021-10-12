@@ -5,6 +5,7 @@ require "parser"
 require "parser/ast/node"
 
 module Packwerk
+  # Convenience methods for working with AST nodes.
   module Node
     class TypeError < ArgumentError; end
     Location = Struct.new(:line, :column)
