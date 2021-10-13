@@ -4,6 +4,7 @@
 require "ast/node"
 
 module Packwerk
+  # from file path to node
   class FileProcessor
     class UnknownFileTypeResult < Offense
       def initialize(file:)
