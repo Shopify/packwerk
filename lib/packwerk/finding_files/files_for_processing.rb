@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-module Packwerk::FindingFiles
+module Packwerk
   class FilesForProcessing
     class << self
       def fetch(paths:, configuration:)

@@ -4,7 +4,8 @@
 require "constant_resolver"
 
 module Packwerk
-  # used to depend as a part of Rubocop
+  # Packwerk used to run as a part of Rubocop.
+  # Now that Packwerk is a standalone script, this structure shouldn't be necessary.
   class RunContext
     extend T::Sig
 
