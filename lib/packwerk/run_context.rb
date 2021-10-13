@@ -54,7 +54,32 @@ module Packwerk
 
     sig { params(file: String).returns(T::Array[T.nilable(::Packwerk::Offense)]) }
     def process_file(file:)
-      file_processor.call(file)
+      # 1. file path to node
+      # It needs to return ancestors relative to node
+      node, ancestors = file_processor.call(file)
+
+      # Inside NodeProcessor - @reference_extractor.reference_from_node(node, ancestors: ancestors, file_path: @filename)
+      # 2. node to constant
+      # 3. constant to reference
+      @constant_name_inspectors.each do |inspector|
+        constant_name = inspector.constant_name_from_node(node, ancestors: ancestors)
+        break if constant_name
+      end
+
+      reference_from_constant(constant_name, node: node, ancestors: ancestors, file_path: file_path) if constant_name
+
+      # Inside NodeProcessor
+      # 4. reference to an offence
+      @checkers.each_with_object([]) do |checker, violations|
+        next unless checker.invalid_reference?(reference)
+        offense = Packwerk::ReferenceOffense.new(
+          location: Node.location(node),
+          reference: reference,
+          violation_type: checker.violation_type
+        )
+        violations << offense
+      end
+
     end
 
     private
