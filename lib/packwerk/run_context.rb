@@ -4,6 +4,7 @@
 require "constant_resolver"
 
 module Packwerk
+  # used to depend as a part of Rubocop
   class RunContext
     extend T::Sig
 
