@@ -47,6 +47,7 @@ module Packwerk
       when "generate_configs"
         generate_configs
       when "check"
+        # this args is turned into paths; where does `paths` originally come from?
         output_result(parse_run(args).check)
       when "detect-stale-violations"
         output_result(parse_run(args).detect_stale_violations)

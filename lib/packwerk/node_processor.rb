@@ -21,6 +21,7 @@ module Packwerk
     sig { params(node: Parser::AST::Node, ancestors: T::Array[Parser::AST::Node]).returns(T::Array[Offense]) }
     def call(node, ancestors)
       return [] unless Node.method_call?(node) || Node.constant?(node)
+      # I stopped following further
       reference = @reference_extractor.reference_from_node(node, ancestors: ancestors, file_path: @filename)
       check_reference(reference, node)
     end
