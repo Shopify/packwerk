@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Breaking Changes
+
+* `Packwerk::VERSION` now follows the `Gem::Version` syntax, which allows for more reliable version comparison. You need to use `Packwerk.gem_version` instead of `Packwerk::VERSION` to get the version string
+
 ## [1.3.2] - September 1st, 2021
 
 ### Bug fixes
