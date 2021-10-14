@@ -12,13 +12,11 @@ module Packwerk
   autoload :ApplicationValidator
   autoload :AssociationInspector
   autoload :OffenseCollection
-  autoload :Checker
   autoload :Cli
   autoload :Configuration
   autoload :ConstantDiscovery
   autoload :ConstantNameInspector
   autoload :ConstNodeInspector
-  autoload :DependencyChecker
   autoload :DeprecatedReferences
   autoload :FileProcessor
   autoload :FilesForProcessing
@@ -36,7 +34,6 @@ module Packwerk
   autoload :ParsedConstantDefinitions
   autoload :Parsers
   autoload :ParseRun
-  autoload :PrivacyChecker
   autoload :Reference
   autoload :ReferenceExtractor
   autoload :ReferenceOffense
@@ -76,5 +73,19 @@ module Packwerk
     autoload :ConfigurationFile
     autoload :InflectionsFile
     autoload :RootPackage
+  end
+
+  module ReferenceChecking
+    extend ActiveSupport::Autoload
+
+    autoload :ReferenceChecker
+
+    module Checkers
+      extend ActiveSupport::Autoload
+
+      autoload :Checker
+      autoload :DependencyChecker
+      autoload :PrivacyChecker
+    end
   end
 end

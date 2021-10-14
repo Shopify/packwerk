@@ -37,7 +37,7 @@ module Packwerk
     private
 
     def dependency_checker
-      DependencyChecker.new
+      ReferenceChecking::Checkers::DependencyChecker.new
     end
   end
 end

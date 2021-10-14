@@ -8,7 +8,8 @@ module Packwerk
     end
 
     def visit(node, ancestors:, result:)
-      result.concat(@node_processor.call(node, ancestors))
+      reference = @node_processor.call(node, ancestors)
+      result << reference if reference
 
       child_ancestors = [node] + ancestors
       Node.each_child(node) do |child|

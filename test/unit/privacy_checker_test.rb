@@ -76,7 +76,7 @@ module Packwerk
     private
 
     def privacy_checker
-      PrivacyChecker.new
+      ReferenceChecking::Checkers::PrivacyChecker.new
     end
   end
 end
