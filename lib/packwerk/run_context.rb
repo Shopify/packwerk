@@ -60,13 +60,29 @@ module Packwerk
 
       # Inside NodeProcessor - @reference_extractor.reference_from_node(node, ancestors: ancestors, file_path: @filename)
       # 2. node to constant
-      # 3. constant to reference
       @constant_name_inspectors.each do |inspector|
         constant_name = inspector.constant_name_from_node(node, ancestors: ancestors)
         break if constant_name
       end
 
-      reference_from_constant(constant_name, node: node, ancestors: ancestors, file_path: file_path) if constant_name
+      # Inside ReferenceExtractor - reference_from_constant(constant_name, node: node, ancestors: ancestors, file_path: file_path) if constant_name
+      # 3. constant to reference
+      namespace_path = Node.enclosing_namespace_path(node, ancestors: ancestors)
+      return if local_reference?(constant_name, Node.name_location(node), namespace_path)
+
+      constant =
+        @context_provider.context_for(
+          constant_name,
+          current_namespace_path: namespace_path
+        )
+      return if constant&.package.nil?
+
+      relative_path = Pathname.new(file_path).relative_path_from(@root_path).to_s
+
+      source_package = @context_provider.package_from_path(relative_path)
+      return if source_package == constant.package
+
+      Reference.new(source_package, relative_path, constant)
 
       # Inside NodeProcessor
       # 4. reference to an offence
