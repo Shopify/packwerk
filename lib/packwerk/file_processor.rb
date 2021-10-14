@@ -4,6 +4,7 @@
 require "ast/node"
 
 module Packwerk
+  # from file path to node
   class FileProcessor
     class UnknownFileTypeResult < Offense
       def initialize(file:)
@@ -20,6 +21,7 @@ module Packwerk
       parser = @parser_factory.for_path(file_path)
       return [UnknownFileTypeResult.new(file: file_path)] if parser.nil?
 
+      # path to node
       node = File.open(file_path, "r", external_encoding: Encoding::UTF_8) do |file|
         parser.call(io: file, file_path: file_path)
       rescue Parsers::ParseError => e
@@ -31,6 +33,7 @@ module Packwerk
         node_processor = @node_processor_factory.for(filename: file_path, node: node)
         node_visitor = Packwerk::NodeVisitor.new(node_processor: node_processor)
 
+        # node to offence
         node_visitor.visit(node, ancestors: [], result: result)
       end
       result

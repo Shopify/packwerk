@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 module Packwerk
+  # from node to reference to offence
   class NodeProcessor
     extend T::Sig
 
