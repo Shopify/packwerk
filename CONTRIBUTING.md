@@ -1,12 +1,14 @@
 # Contributing
 
 ## Issue reporting
+
 * Check to make sure the same issue has not already been reported or fixed
 * Open an issue with a descriptive title and summary
 * Be clear and concise and provide as many details as possible (e.g. Ruby version, Packwerk version, etc.)
 * Include relevant code, where necessary
 
 ## Pull requests
+
 * Read and understand our [Code of Conduct](https://github.com/Shopify/packwerk/blob/main/CODE_OF_CONDUCT.md)
 * Make sure tests are added for any changes to the code
 * [Squash related commits together](http://gitready.com/advanced/2009/02/10/squashing-commits-with-rebase.html)
@@ -15,3 +17,29 @@
 * Be descriptive about the problem and reason about the proposed solution
 * Include release notes describing the potential impact of the change in the pull request
 * Make sure there has been at least one approval from Shopify before merging
+
+## Release
+
+After your changes update [CHANGELOG.md](./CHANGELOG.md) with summary of all user facing changes.
+
+* Increment the version (`major`, `minor`, or `patch`) in [version.rb](./lib/packwerk/version.rb)
+* Commit a PR and merge to the default branch
+* Create a new gem
+
+  ```shell script
+  $ bundle exec rake build
+  > packwerk 1.3.2 built to pkg/packwerk-1.3.2.gem.
+  ```
+
+* Create github release and tag. You can do this via the [Web Interface](https://github.com/Shopify/packwerk/releases/new) or using `hub` or `gh`.
+  * Github CLI [gh_release_create](https://cli.github.com/manual/gh_release_create) :
+  
+    ```shell script
+    $ gh release create v<version> pkg/packwerk-<version>.gem
+    ```
+  
+  * Hub:
+  
+    ```shell script
+    $ hub release create -a pkg/packwerk-<version>.gem v<version>
+    ```
