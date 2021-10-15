@@ -4,7 +4,7 @@ require_relative "lib/packwerk/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "packwerk"
-  spec.version       = Packwerk.gem_version
+  spec.version       = Packwerk::VERSION
   spec.authors       = ["Shopify Inc."]
   spec.email         = ["gems@shopify.com"]
 
