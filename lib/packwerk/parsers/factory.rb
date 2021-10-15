@@ -22,7 +22,7 @@ module Packwerk
       def for_path(path)
         case path
         when RUBY_REGEX
-          @ruby_parser ||= Ruby.new
+          @ruby_parser ||= Ripper.new
         when ERB_REGEX
           @erb_parser ||= erb_parser_class.new
         end

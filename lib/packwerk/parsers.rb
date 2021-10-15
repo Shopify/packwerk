@@ -6,6 +6,7 @@ module Packwerk
     autoload :Erb, "packwerk/parsers/erb"
     autoload :Factory, "packwerk/parsers/factory"
     autoload :Ruby, "packwerk/parsers/ruby"
+    autoload :Ripper, "packwerk/parsers/ripper"
 
     class ParseResult < Offense; end
 
