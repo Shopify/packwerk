@@ -17,8 +17,8 @@ module Packwerk
     )
 
     DEFAULT_CHECKERS = [
-      ::Packwerk::DependencyChecker,
-      ::Packwerk::PrivacyChecker,
+      ::Packwerk::ReferenceChecking::Checkers::DependencyChecker,
+      ::Packwerk::ReferenceChecking::Checkers::PrivacyChecker,
     ]
 
     class << self
@@ -50,9 +50,12 @@ module Packwerk
       @checker_classes = checker_classes
     end
 
-    sig { params(file: String).returns(T::Array[T.nilable(::Packwerk::Offense)]) }
+    sig { params(file: String).returns(T::Array[Packwerk::Offense]) }
     def process_file(file:)
-      file_processor.call(file)
+      references = file_processor.call(file)
+
+      reference_checker = ReferenceChecking::ReferenceChecker.new(checkers)
+      references.flat_map { |reference| reference_checker.call(reference) }
     end
 
     private
@@ -66,7 +69,6 @@ module Packwerk
     def node_processor_factory
       NodeProcessorFactory.new(
         context_provider: context_provider,
-        checkers: checkers,
         root_path: root_path,
         constant_name_inspectors: constant_name_inspectors
       )
@@ -94,7 +96,7 @@ module Packwerk
       ::Packwerk::PackageSet.load_all_from(root_path, package_pathspec: package_paths)
     end
 
-    sig { returns(T::Array[Checker]) }
+    sig { returns(T::Array[ReferenceChecking::Checkers::Checker]) }
     def checkers
       checker_classes.map(&:new)
     end

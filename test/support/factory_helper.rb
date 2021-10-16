@@ -7,7 +7,8 @@ module FactoryHelper
     destination_package: Packwerk::Package.new(name: "components/destination", config: {}),
     path: "some/path.rb",
     constant_name: "::SomeName",
-    public_constant: false
+    public_constant: false,
+    source_location: Packwerk::Node::Location.new(2, 12)
   )
     constant = Packwerk::ConstantDiscovery::ConstantContext.new(
       constant_name,
@@ -15,6 +16,6 @@ module FactoryHelper
       destination_package,
       public_constant
     )
-    Packwerk::Reference.new(source_package, path, constant)
+    Packwerk::Reference.new(source_package, path, constant, source_location)
   end
 end

@@ -59,7 +59,7 @@ module Packwerk
 
       return if source_package == constant.package
 
-      Reference.new(source_package, relative_path, constant)
+      Reference.new(source_package, relative_path, constant, Node.location(node))
     end
 
     def local_reference?(constant_name, name_location, namespace_path)

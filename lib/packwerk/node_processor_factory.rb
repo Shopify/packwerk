@@ -8,14 +8,12 @@ module Packwerk
     const :root_path, String
     const :context_provider, Packwerk::ConstantDiscovery
     const :constant_name_inspectors, T::Array[ConstantNameInspector]
-    const :checkers, T::Array[Checker]
 
     sig { params(filename: String, node: AST::Node).returns(NodeProcessor) }
     def for(filename:, node:)
       ::Packwerk::NodeProcessor.new(
         reference_extractor: reference_extractor(node: node),
         filename: filename,
-        checkers: checkers,
       )
     end
 

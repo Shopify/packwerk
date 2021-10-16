@@ -5,52 +5,52 @@ require "test_helper"
 
 module Packwerk
   class FileProcessorTest < Minitest::Test
+    include FactoryHelper
+
     setup do
       @node_processor_factory = mock
       @node_processor = mock
       @file_processor = ::Packwerk::FileProcessor.new(node_processor_factory: @node_processor_factory)
     end
 
-    test "#call visits all nodes in a file path with no offenses" do
+    test "#call visits all nodes in a file path with no references" do
       @node_processor_factory.expects(:for).returns(@node_processor)
-      @node_processor.expects(:call).twice.returns([])
+      @node_processor.expects(:call).twice.returns(nil)
 
-      offenses = tempfile(name: "foo", content: "def food_bar; end") do |file_path|
+      references = tempfile(name: "foo", content: "def food_bar; end") do |file_path|
         @file_processor.call(file_path)
       end
 
-      assert_empty offenses
+      assert_empty references
     end
 
-    test "#call visits a node in file path with an offense" do
-      location = mock
-      location.stubs(line: 3, column: 22)
+    test "#call visits a node in file path with an reference" do
+      reference = build_reference(path: "tempfile", source_location: Packwerk::Node::Location.new(3, 22))
 
-      offense = stub(location: location, file: "tempfile", message: "Use of unassigned variable")
       @node_processor_factory.expects(:for).returns(@node_processor)
-      @node_processor.expects(:call).returns([offense])
+      @node_processor.expects(:call).returns(reference)
 
-      offenses = tempfile(name: "foo", content: "a_variable_name") do |file_path|
+      references = tempfile(name: "foo", content: "a_variable_name") do |file_path|
         @file_processor.call(file_path)
       end
 
-      assert_equal 1, offenses.length
+      assert_equal 1, references.length
 
-      offense = offenses.first
-      assert_equal "tempfile", offense.file
-      assert_equal 3, offense.location.line
-      assert_equal 22, offense.location.column
-      assert_equal "Use of unassigned variable", offense.message
+      reference = references.first
+
+      assert_equal "tempfile", reference.relative_path
+      assert_equal 3, reference.source_location.line
+      assert_equal 22, reference.source_location.column
     end
 
     test "#call provides node processor with the correct ancestors" do
-      offense = mock
+      reference = mock
       @node_processor_factory.expects(:for).returns(@node_processor)
       @node_processor.expects(:call).with do |node, ancestors|
         Node.class?(node) && # class Hello; world; end
           Node.class_or_module_name(node) == "Hello" &&
           ancestors.empty?
-      end.returns([])
+      end.returns(nil)
       @node_processor.expects(:call).with do |node, ancestors|
         parent = ancestors.first # class Hello; world; end
         Node.constant?(node) && # Hello
@@ -58,7 +58,7 @@ module Packwerk
           ancestors.length == 1 &&
           Node.class?(parent) &&
           Node.class_or_module_name(parent) == "Hello"
-      end.returns([])
+      end.returns(nil)
       @node_processor.expects(:call).with do |node, ancestors|
         parent = ancestors.first # class Hello; world; end
         Node.method_call?(node) && # world
@@ -66,21 +66,21 @@ module Packwerk
           ancestors.length == 1 &&
           Node.class?(parent) &&
           Node.class_or_module_name(parent) == "Hello"
-      end.returns([offense])
+      end.returns(reference)
 
-      offenses = tempfile(name: "hello_world", content: "class Hello; world; end") do |file_path|
+      references = tempfile(name: "hello_world", content: "class Hello; world; end") do |file_path|
         @file_processor.call(file_path)
       end
 
-      assert_equal [offense], offenses
+      assert_equal [reference], references
     end
 
-    test "#call reports no offenses for an empty file" do
-      offenses = tempfile(name: "foo", content: "# no fun") do |file_path|
+    test "#call reports no references for an empty file" do
+      references = tempfile(name: "foo", content: "# no fun") do |file_path|
         @file_processor.call(file_path)
       end
 
-      assert_empty offenses
+      assert_empty references
     end
 
     test "#call with an invalid syntax doesn't parse node" do
