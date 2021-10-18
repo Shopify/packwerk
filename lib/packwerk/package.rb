@@ -2,6 +2,9 @@
 # frozen_string_literal: true
 
 module Packwerk
+  # The basic unit of modularity for packwerk; a folder that has been declared to define a package.
+  # The package contains all constants defined in files in this folder and all subfolders that are not packages
+  # themselves.
   class Package
     include Comparable
 
