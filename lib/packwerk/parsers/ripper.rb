@@ -23,6 +23,12 @@ module Packwerk
       #   raise Parsers::ParseError, result
       end
 
+      class AST::Node
+        def location
+          nil
+        end
+      end
+
       class LocationNode < AST::Node
         attr_reader :location
 
@@ -30,7 +36,7 @@ module Packwerk
           @location = OpenStruct.new(name: OpenStruct.new(line: line, column: column))
           super(type, children)
         end
-    end
+      end
 
       class RipperToast < ::Ripper
         extend T::Sig
@@ -90,6 +96,7 @@ module Packwerk
           p __method__, receiver, operator, message
           s(:send, receiver, message)
         end
+        def on_command(message, args); s(:send, nil, message, *args); end
         def on_params(req, opts, rest, post, keys, keyrest, block)
           p __method__, req, opts, rest, post, keys, keyrest, block
           s(:args, *req.map { |p| s(:arg, p) } )
@@ -117,6 +124,15 @@ module Packwerk
         end
         def on_arg_paren(args); args; end
         def on_begin(stmts); s(:kwbegin, sequence(stmts)); end
+        def on_symbol(contents); contents; end
+        def on_symbol_literal(contents); s(:sym, contents.to_sym); end
+        def on_assoc_new(key, value)
+          s(:pair, key, value)
+        end
+        def on_assoclist_from_args(assocs)
+          s(:hash, *assocs)
+        end
+        def on_hash(assoclist); assoclist; end
 
         #
         # The ripper scanner event handlers
@@ -142,6 +158,8 @@ module Packwerk
         def on_rparen(*); nil; end
         def on_lbrace(*); nil; end
         def on_rbrace(*); nil; end
+        def on_symbeg(*); nil; end
+        def on_label(name); s(:sym, name[..-2].to_sym); end
 
         #
         # Helper methods

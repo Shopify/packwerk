@@ -39,6 +39,9 @@ module Packwerk
           "setup do self.a; b end",
           "begin 1 end",
           "setup do self.class::HEADERS end",
+          "{ apples: 13, oranges: 27 }",
+          "has_many :oranges",
+          "x * 2",
         ].each do |code|
           assert_equal(
             Ruby.new.call(io: StringIO.new(code)),
