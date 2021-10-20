@@ -54,6 +54,12 @@ module Packwerk
         end
       end
 
+      test "#call parses lambdas slightly differently" do
+        require 'pry'; binding.pry
+        Ask Ripper.sexp and others about this, I'm curious
+        assert_equal(s(:casgn, nil, :A, nil), parse("-> x { x }"))
+      end
+
       test "#call omits strings" do
         assert_equal(s(:casgn, nil, :A, nil), parse("A = \"Hello World\""))
       end

@@ -133,6 +133,9 @@ module Packwerk
           s(:hash, *assocs)
         end
         def on_hash(assoclist); assoclist; end
+        def on_lambda(params, stmts)
+          s(:block, s(:send, nil, :lambda), params, sequence(stmts))
+        end
 
         #
         # The ripper scanner event handlers
@@ -160,6 +163,8 @@ module Packwerk
         def on_rbrace(*); nil; end
         def on_symbeg(*); nil; end
         def on_label(name); s(:sym, name[..-2].to_sym); end
+        def on_tlambda(value); nil; end
+        def on_tlambeg(value); nil; end
 
         #
         # Helper methods
