@@ -2,59 +2,68 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "ast"
 
-# To Do remove
 require "ripper"
+require "ast"
 
 module Packwerk
   module Parsers
     class RipperTest < Minitest::Test
-      extend AST::Sexp
-      [
-        ["", [:program, [[:void_stmt]]], nil],
-        ["1", [:program, [[:@int, "1", [1, 0]]]], s(:int, 1)],
-        [
-          "a = 1",
-          [:program, [[:assign, [:var_field, [:@ident, "a", [1, 0]]], [:@int, "1", [1, 4]]]]],
-          s(:lvasgn, :a, s(:int, 1))
-        ],
-        [
-          "A = 1",
-          [:program, [[:assign, [:var_field, [:@const, "A", [1, 0]]], [:@int, "1", [1, 4]]]]],
-          s(:casgn, nil, :A, s(:int, 1))
-        ],
-        [
-          "1; 2",
-          [:program, [[:@int, "1", [1, 0]], [:@int, "2", [1, 3]]]],
-          s(:begin, s(:int, 1), s(:int, 2))
-        ],
-        [
-          "module Sales; end",
-          [:program, [[:module, [:const_ref, [:@const, "Sales", [1, 7]]], [:bodystmt, [[:void_stmt]], nil, nil, nil]]]],
-          s(:module, s(:const, nil, :Sales), nil)
-        ]
-      ].each_with_index do |(code, sexp, ast), index|
-        test "#transform transforms sexp node #{index} into ::AST::Node" do
-          assert_equal ast, Ripper.new.transform(sexp), "sexp parsed from:\n#{code}\n"
-        end
-      end
+      include AST::Sexp
 
-      test "#call returns parser-gem compatible AST" do
+      test "#call returns the same AST as the parser gem" do
         [
-          # "",
-          # "1",
-          # "a = 1",
-          # "A = 1",
-          # "1; 2",
-          # "module Sales; end",
+          "",
+          "1",
+          "a",
+          "a = 1",
+          "A",
+          "A = 1",
+          "1; 2",
+          "module Sales; end",
           "module Sales; 1; end",
+          "module Sales; class Order; end; end",
+          "module Sales::Order::Something; end",
+          "Sales::HELLO = 1",
+          "class Order < ActiveRecord::Base; end",
+          "::Sales::HELLO",
+          "# comment",
+          "1 + 2",
+          "a = 1 + 1",
+          "a.b",
+          "a do |b|; c; end",
+          "a do |b, c|; d; end",
+          "a(1)",
+          "a(1) { |b| c }",
+          "a do b end",
+          "setup do self.a; b end",
+          "begin 1 end",
+          "setup do self.class::HEADERS end",
         ].each do |code|
           assert_equal(
             Ruby.new.call(io: StringIO.new(code)),
-            ::Ripper.sexp(code)
+            begin
+              parse(code)
+            rescue NotImplementedError => e
+              "Not Implemented: #{e.message}"
+            end
           )
         end
+      end
+
+      test "#call omits strings" do
+        assert_equal(s(:casgn, nil, :A, nil), parse("A = \"Hello World\""))
+      end
+
+      test "#call sets location for constants" do
+        # location.name is Parser::AST::Node interface
+        location = parse("A").location.name
+        assert_equal 1, location.line
+        assert_equal 0, location.column
+
+        location = parse("A = 1").location.name
+        assert_equal 1, location.line
+        assert_equal 0, location.column
       end
 
       # test "#call returns node with valid file" do
@@ -115,7 +124,11 @@ module Packwerk
       #   assert_kind_of(::AST::Node, node)
       # end
 
-      # private
+      private
+
+      def parse(source)
+        Packwerk::Parsers::Ripper.new.call(io: StringIO.new(source))
+      end
 
       # def fixture_path(name)
       #   ROOT.join("test/fixtures/formats/ruby", name).to_s

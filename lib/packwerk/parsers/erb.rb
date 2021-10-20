@@ -9,7 +9,7 @@ require "parser/source/buffer"
 module Packwerk
   module Parsers
     class Erb
-      def initialize(parser_class: BetterHtml::Parser, ruby_parser: Ruby.new)
+      def initialize(parser_class: BetterHtml::Parser, ruby_parser: Ripper.new)
         @parser_class = parser_class
         @ruby_parser = ruby_parser
       end
