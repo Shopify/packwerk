@@ -91,6 +91,7 @@ PATH
       activesupport (>= 5.2)
       ast
       better_html
+      bundler
       constant_resolver
       parallel
       parser
@@ -237,7 +238,6 @@ PLATFORMS
   x86_64-darwin-20
 
 DEPENDENCIES
-  bundler
   byebug
   constant_resolver
   m
