@@ -6,11 +6,11 @@ require "test_helper"
 module Packwerk
   class PackageTest < Minitest::Test
     setup do
-      @package = Package.new(name: "components/timeline", config: { "enforce_privacy" => "::Test" })
+      @package = Package.new(name: "components/timeline", config: { "enforce_privacy" => ["::Test"] })
     end
 
     test "#enforce_privacy returns same value as from config" do
-      assert_equal("::Test", @package.enforce_privacy)
+      assert_equal(["::Test"], @package.enforce_privacy)
     end
 
     test "#package_path? returns true for path under the package" do
