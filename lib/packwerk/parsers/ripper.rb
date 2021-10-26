@@ -23,26 +23,23 @@ module Packwerk
       #   raise Parsers::ParseError, result
       end
 
-      class AST::Node
-        def location
-          nil
-        end
-      end
-
-      class LocationNode < AST::Node
+      class Node < AST::Node
         attr_reader :location
-
-        def initialize(type, line, column, *children)
-          @location = OpenStruct.new(name: OpenStruct.new(line: line, column: column))
-          super(type, children)
-        end
       end
 
       class RipperToast < ::Ripper
         extend T::Sig
 
+        def initialize(src, filename = '(ripper)', lineno = 1)
+          @filename = filename
+          super
+        end
+
         private
-        include AST::Sexp
+
+        def s(type, *children)
+          Node.new(type, children, { location: OpenStruct.new(name: OpenStruct.new(line: lineno, column: column))})
+        end
 
         #
         # The ripper parser event handlers
@@ -55,8 +52,7 @@ module Packwerk
         def on_assign(ident, value)
           if ident.is_a?(AST::Node) && ident.type == :const
             parent, name = ident.children[0..1]
-            location = ident.location.name
-            LocationNode.new(:casgn, location.line, location.column, parent, name, value)
+            ident.updated(:casgn, [parent, name, value])
           else
             s(:lvasgn, ident, value)
           end
@@ -81,12 +77,22 @@ module Packwerk
         def on_class(const, superclass, bodystmt)
           s(:class, const, superclass, sequence(bodystmt))
         end
-        def on_var_ref(const); const; end
+        def on_var_ref(content)
+          content.is_a?(Symbol) ? s(:lvar, content) : content
+        end
         def on_vcall(ident); s(:send, nil, ident); end
         def on_fcall(message); s(:send, nil, message); end
-        def on_string_content(*); nil; end
-        def on_string_add(*); nil; end
-        def on_string_literal(*); nil; end
+        def on_string_content; []; end
+        def on_string_add(left, more); left << more; end
+        def on_string_literal(content)
+          contents = Array(content)
+          if contents.is_a?(Array) && contents.length > 1 || contents.first.type == :begin
+            s(:dstr, *contents)
+          else
+            contents.first
+          end
+        end
+        def on_string_embexpr(stmts); stmts.is_a?(Array) ? s(:begin, *stmts) : stmts; end
         def on_const_path_ref(left, const); set_const_parent(const, left); end
         def on_const_path_field(left, const); set_const_parent(const, left); end
         sig { params(const: AST::Node).returns(AST::Node) }
@@ -99,7 +105,7 @@ module Packwerk
         def on_command(message, args); s(:send, nil, message, *args); end
         def on_params(req, opts, rest, post, keys, keyrest, block)
           p __method__, req, opts, rest, post, keys, keyrest, block
-          s(:args, *req.map { |p| s(:arg, p) } )
+          s(:args, *Array(req).map { |p| s(:arg, p) } )
         end
         def on_block_var(params, locals)
           raise if locals
@@ -122,20 +128,24 @@ module Packwerk
           raise if block
           args
         end
-        def on_arg_paren(args); args; end
+        def on_arg_paren(args); p __method__, args; args; end
         def on_begin(stmts); s(:kwbegin, sequence(stmts)); end
         def on_symbol(contents); contents; end
         def on_symbol_literal(contents); s(:sym, contents.to_sym); end
-        def on_assoc_new(key, value)
-          s(:pair, key, value)
-        end
-        def on_assoclist_from_args(assocs)
-          s(:hash, *assocs)
-        end
+        def on_assoc_new(key, value); s(:pair, key, value); end
+        def on_assoclist_from_args(assocs); s(:hash, *assocs); end
+        def on_bare_assoc_hash(assocs); s(:hash, *assocs); end
         def on_hash(assoclist); assoclist; end
         def on_lambda(params, stmts)
           s(:block, s(:send, nil, :lambda), params, sequence(stmts))
         end
+        def on_paren(contents)
+          return contents unless contents.is_a?(Array)
+          s(:begin, *contents.compact)
+        end
+        def on_def(ident, params, stmts); s(:def, ident, params, *stmts); end
+        def on_yield(args); s(:yield, sequence(args)); end
+        def on_yield0; s(:yield); end
 
         #
         # The ripper scanner event handlers
@@ -144,16 +154,17 @@ module Packwerk
         def on_sp(_); nil; end
         def on_op(_); nil; end
         def on_ident(name); name.to_sym; end
-        def on_const(name); LocationNode.new(:const, lineno, column, nil, name.to_sym); end
+        def on_ivar(name); s(:ivar, name.to_sym); end
+        def on_const(name); s(:const, nil, name.to_sym); end
         def on_semicolon(_); nil; end
         def on_kw(kw)
           if kw == "self"
             s(:self)
           end
         end
-        def on_tstring_beg(*); nil; end
-        def on_tstring_content(*); nil; end
-        def on_tstring_end(*); nil; end
+        def on_tstring_beg(*args); nil; end
+        def on_tstring_content(content); s(:str, content); end
+        def on_tstring_end(*args); nil; end
         def on_comment(*); nil; end
         def on_period(*); nil; end
         def on_comma(*); nil; end
@@ -165,6 +176,19 @@ module Packwerk
         def on_label(name); s(:sym, name[..-2].to_sym); end
         def on_tlambda(value); nil; end
         def on_tlambeg(value); nil; end
+        def on_magic_comment(key, value); nil; end
+        def on_ignored_nl(*); nil; end
+        def on_nl(*); nil; end
+        def on_embexpr_beg(*); nil; end
+        def on_embexpr_end(*); nil; end
+
+        #
+        # SPECIAL events
+        #
+        def on_parse_error(message)
+          result = ParseResult.new(file: @filename, message: message)
+        raise Parsers::ParseError, result
+        end
 
         #
         # Helper methods
@@ -180,11 +204,11 @@ module Packwerk
         def set_const_parent(const, parent)
           raise unless const.type == :const
 
-          old_parent, name = const.children[0..1]
+
+          old_parent, name = const.children
           raise if old_parent
 
-          location = const.location.name
-          LocationNode.new(:const, location.line, location.column, parent, name)
+          const.updated(nil, [parent, name])
         end
 
         #

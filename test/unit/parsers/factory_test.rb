@@ -10,13 +10,13 @@ module Packwerk
   module Parsers
     class FactoryTest < Minitest::Test
       test "#for_path gives ruby parser for common Ruby paths" do
-        assert_instance_of(Parsers::Ruby, factory.for_path("foo.rb"))
-        assert_instance_of(Parsers::Ruby, factory.for_path("relative/path/to/foo.ru"))
-        assert_instance_of(Parsers::Ruby, factory.for_path("foo.rake"))
-        assert_instance_of(Parsers::Ruby, factory.for_path("foo.builder"))
-        assert_instance_of(Parsers::Ruby, factory.for_path("in/repo/gem/foo.gemspec"))
-        assert_instance_of(Parsers::Ruby, factory.for_path("Gemfile"))
-        assert_instance_of(Parsers::Ruby, factory.for_path("some/path/Rakefile"))
+        assert_instance_of(Parsers::Ripper, factory.for_path("foo.rb"))
+        assert_instance_of(Parsers::Ripper, factory.for_path("relative/path/to/foo.ru"))
+        assert_instance_of(Parsers::Ripper, factory.for_path("foo.rake"))
+        assert_instance_of(Parsers::Ripper, factory.for_path("foo.builder"))
+        assert_instance_of(Parsers::Ripper, factory.for_path("in/repo/gem/foo.gemspec"))
+        assert_instance_of(Parsers::Ripper, factory.for_path("Gemfile"))
+        assert_instance_of(Parsers::Ripper, factory.for_path("some/path/Rakefile"))
       end
 
       test "#for_path gives ERB parser for common ERB paths" do

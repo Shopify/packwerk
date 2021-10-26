@@ -20,6 +20,21 @@ module Packwerk
           "A",
           "A = 1",
           "1; 2",
+          "# comment",
+          "1 + 2",
+          "(1 + 2)",
+          "()",
+          "a = 1 + 1",
+          "has_many :oranges",
+          "x * 2",
+          "@a",
+          "yield",
+          "yield 1",
+        ].each { |code| compare_to_parser(code) }
+      end
+
+      test "parsing nested constants" do
+        [
           "module Sales; end",
           "module Sales; 1; end",
           "module Sales; class Order; end; end",
@@ -27,9 +42,11 @@ module Packwerk
           "Sales::HELLO = 1",
           "class Order < ActiveRecord::Base; end",
           "::Sales::HELLO",
-          "# comment",
-          "1 + 2",
-          "a = 1 + 1",
+        ].each { |code| compare_to_parser(code) }
+      end
+
+      test "parsing method calls, blocks and lambdas" do
+        [
           "a.b",
           "a do |b|; c; end",
           "a do |b, c|; d; end",
@@ -39,29 +56,41 @@ module Packwerk
           "setup do self.a; b end",
           "begin 1 end",
           "setup do self.class::HEADERS end",
+          "-> x { x }",
+          "-> { 1 }",
+          "a\n.b",
+          "a\nb",
+        ].each { |code| compare_to_parser(code) }
+      end
+
+      test "parsing method definitions" do
+        [
+          "def hello; 1; end",
+          "def hello(world)\n'Hello ' + world\nend",
+        ].each { |code| compare_to_parser(code) }
+      end
+
+      test "parsing hashes" do
+        [
           "{ apples: 13, oranges: 27 }",
-          "has_many :oranges",
-          "x * 2",
-        ].each do |code|
-          assert_equal(
-            Ruby.new.call(io: StringIO.new(code)),
-            begin
-              parse(code)
-            rescue NotImplementedError => e
-              "Not Implemented: #{e.message}"
-            end
-          )
-        end
+          "a b: 1",
+        ].each { |code| compare_to_parser(code) }
       end
 
-      test "#call parses lambdas slightly differently" do
-        require 'pry'; binding.pry
-        Ask Ripper.sexp and others about this, I'm curious
-        assert_equal(s(:casgn, nil, :A, nil), parse("-> x { x }"))
+      test "parsing comments" do
+        [
+          "# comment",
+          "# typed: false",
+        ].each { |code| compare_to_parser(code) }
       end
 
-      test "#call omits strings" do
-        assert_equal(s(:casgn, nil, :A, nil), parse("A = \"Hello World\""))
+      test "parsing strings" do
+        [
+          "'Hello'",
+          '"#{1}"',
+          '"#{1; 2}"',
+          '"Hello #{1} World"',
+        ].each { |code| compare_to_parser(code) }
       end
 
       test "#call sets location for constants" do
@@ -75,13 +104,13 @@ module Packwerk
         assert_equal 0, location.column
       end
 
-      # test "#call returns node with valid file" do
-      #   node = File.open(fixture_path("valid.rb"), "r") do |fixture|
-      #     Ruby.new.call(io: fixture)
-      #   end
+      test "#call returns node with valid file" do
+        node = File.open(fixture_path("valid.rb"), "r") do |fixture|
+          Ripper.new.call(io: fixture)
+        end
 
-      #   assert_kind_of(::AST::Node, node)
-      # end
+        assert_kind_of(::AST::Node, node)
+      end
 
       # test "#call writes parse error to stdout" do
       #   error_message = "stub error"
@@ -91,7 +120,7 @@ module Packwerk
 
       #   parser_class_stub = stub(new: parser)
 
-      #   parser = Ruby.new(parser_class: parser_class_stub)
+      #   parser = Ripper.new(parser_class: parser_class_stub)
       #   file_path = fixture_path("invalid.rb")
 
       #   exc = assert_raises(Parsers::ParseError) do
@@ -112,7 +141,7 @@ module Packwerk
 
       #   parser_class_stub = stub(new: parser)
 
-      #   parser = Ruby.new(parser_class: parser_class_stub)
+      #   parser = Ripper.new(parser_class: parser_class_stub)
       #   file_path = fixture_path("invalid.rb")
 
       #   exc = assert_raises(Parsers::ParseError) do
@@ -125,23 +154,35 @@ module Packwerk
       #   assert_equal(file_path, exc.result.file)
       # end
 
-      # test "#call parses Ruby code containing invalid UTF-8 strings" do
-      #   node = File.open(fixture_path("invalid_utf8_string.rb"), "r") do |fixture|
-      #     Ruby.new.call(io: fixture)
-      #   end
+      test "#call parses Ruby code containing invalid UTF-8 strings" do
+        node = File.open(fixture_path("invalid_utf8_string.rb"), "r") do |fixture|
+          Ripper.new.call(io: fixture)
+        end
 
-      #   assert_kind_of(::AST::Node, node)
-      # end
+        assert_kind_of(::AST::Node, node)
+      end
 
       private
+
+      def compare_to_parser(code)
+        assert_equal(
+          Ruby.new.call(io: StringIO.new(code)),
+          begin
+            parse(code)
+          rescue RuntimeError, NotImplementedError => e
+            "#{e.class.name}: #{e.message}"
+          end,
+          ::Ripper.sexp_raw(code)
+        )
+      end
 
       def parse(source)
         Packwerk::Parsers::Ripper.new.call(io: StringIO.new(source))
       end
 
-      # def fixture_path(name)
-      #   ROOT.join("test/fixtures/formats/ruby", name).to_s
-      # end
+      def fixture_path(name)
+        ROOT.join("test/fixtures/formats/ruby", name).to_s
+      end
     end
   end
 end

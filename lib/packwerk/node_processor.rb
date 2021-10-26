@@ -19,8 +19,8 @@ module Packwerk
 
     sig do
       params(
-        node: Parser::AST::Node,
-        ancestors: T::Array[Parser::AST::Node]
+        node: AST::Node,
+        ancestors: T::Array[AST::Node]
       ).returns(T.nilable(Packwerk::Reference))
     end
     def call(node, ancestors)

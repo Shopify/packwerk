@@ -167,11 +167,6 @@ module Packwerk
       assert_kind_of Node::Location, Node.name_location(node)
     end
 
-    test ".name_location returns nil for a method call" do
-      node = parse("has_many :hellos")
-      assert_nil Node.name_location(node)
-    end
-
     test ".parent_class returns the constant referring to the parent class in a class being defined with the class keyword" do
       node = parse("class B < A; end")
       assert_equal parse("A"), Node.parent_class(node)
