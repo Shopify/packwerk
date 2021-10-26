@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "yaml"
@@ -7,11 +7,15 @@ module Packwerk
   class DeprecatedReferences
     extend T::Sig
 
+    ENTRIES_TYPE = T.type_alias do
+      T::Hash[String, T.untyped]
+    end
+
     sig { params(package: Packwerk::Package, filepath: String).void }
     def initialize(package, filepath)
       @package = package
       @filepath = filepath
-      @new_entries = {}
+      @new_entries = T.let({}, ENTRIES_TYPE)
     end
 
     sig do
@@ -84,7 +88,7 @@ module Packwerk
 
     private
 
-    sig { returns(Hash) }
+    sig { returns(ENTRIES_TYPE) }
     def prepare_entries_for_dump
       @new_entries.each do |package_name, package_violations|
         package_violations.each do |_, entries_for_file|
@@ -97,8 +101,9 @@ module Packwerk
       @new_entries = @new_entries.sort.to_h
     end
 
-    sig { returns(Hash) }
+    sig { returns(ENTRIES_TYPE) }
     def deprecated_references
+      @deprecated_references ||= T.let(@deprecated_references, T.nilable(ENTRIES_TYPE))
       @deprecated_references ||= if File.exist?(@filepath)
         load_yaml(@filepath)
       else
@@ -106,7 +111,7 @@ module Packwerk
       end
     end
 
-    sig { params(filepath: String).returns(Hash) }
+    sig { params(filepath: String).returns(ENTRIES_TYPE) }
     def load_yaml(filepath)
       YAML.load_file(filepath) || {}
     rescue Psych::Exception
