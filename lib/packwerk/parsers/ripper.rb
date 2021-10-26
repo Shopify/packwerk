@@ -173,7 +173,7 @@ module Packwerk
         def on_lbrace(*); nil; end
         def on_rbrace(*); nil; end
         def on_symbeg(*); nil; end
-        def on_label(name); s(:sym, name[..-2].to_sym); end
+        def on_label(name); s(:sym, name[0..-2].to_sym); end
         def on_tlambda(value); nil; end
         def on_tlambeg(value); nil; end
         def on_magic_comment(key, value); nil; end
