@@ -12,7 +12,7 @@ module Packwerk
       TIMELINE_PATH = File.join("components", "timeline")
 
       setup do
-        @out = StringIO.new
+        reset_output
         setup_application_fixture
         use_template(:skeleton)
       end
@@ -21,35 +21,56 @@ module Packwerk
         teardown_application_fixture
       end
 
-      test "'packwerk check' with no violations succeeds" do
+      test "'packwerk check' with no violations succeeds in all variants" do
         assert_successful_run("check")
+        assert_match(/No offenses detected/, captured_output)
 
+        reset_output
+        assert_successful_run(["check", "components/timeline"])
+        assert_match(/No offenses detected/, captured_output)
+
+        reset_output
+        assert_successful_run(["check", "--packages=components/timeline"])
         assert_match(/No offenses detected/, captured_output)
       end
 
-      test "'packwerk check' with violations fails and displays violations" do
-        open_app_file(TIMELINE_PATH, "app", "models", "timeline_comment.rb") do |file|
+      test "'packwerk check' with violations only in nested packages has different outcomes per variant" do
+        open_app_file(TIMELINE_PATH, "nested", "timeline_comment.rb") do |file|
           file.write("class TimelineComment; belongs_to :order, class_name: '::Order'; end")
           file.flush
-
-          refute_successful_run("check")
         end
 
+        refute_successful_run("check")
         assert_match(/Privacy violation: '::Order'/, captured_output)
         assert_match(/1 offense detected/, captured_output)
+
+        reset_output
+        refute_successful_run(["check", "components/timeline"])
+        assert_match(/Privacy violation: '::Order'/, captured_output)
+        assert_match(/1 offense detected/, captured_output)
+
+        reset_output
+        assert_successful_run(["check", "--packages=components/timeline"])
+        assert_match(/No offenses detected/, captured_output)
       end
 
-      test "'packwerk check' with violations accounts for custom inflections, fails and displays violations" do
-        open_app_file(TIMELINE_PATH, "app", "models", "timeline_comment.rb") do |file|
-          # payment_details is an uncountable inflection
-          file.write("class TimelineComment; has_one :payment_details; end")
+      test "'packwerk check' with failures in different parts of the app has different outcomes per variant" do
+        open_app_file(TIMELINE_PATH, "nested", "timeline_comment.rb") do |file|
+          file.write("class TimelineComment; belongs_to :order, class_name: '::Order'; end")
           file.flush
-
-          refute_successful_run("check")
         end
 
-        assert_match(/Privacy violation: '::PaymentDetails'/, captured_output)
+        refute_successful_run("check")
+        assert_match(/Privacy violation: '::Order'/, captured_output)
         assert_match(/1 offense detected/, captured_output)
+
+        reset_output
+        assert_successful_run(["check", "components/sales"])
+        assert_match(/No offenses detected/, captured_output)
+
+        reset_output
+        assert_successful_run(["check", "--packages=components/sales"])
+        assert_match(/No offenses detected/, captured_output)
       end
 
       test "'packwerk update-deprecations' with no violations succeeds and updates no files" do
@@ -116,15 +137,19 @@ module Packwerk
       private
 
       def assert_successful_run(command)
-        Packwerk::Cli.new(out: @out).run([command])
+        Packwerk::Cli.new(out: @out).run(Array(command))
       rescue SystemExit => e
         assert_equal(0, e.status)
       end
 
       def refute_successful_run(command)
-        Packwerk::Cli.new(out: @out).run([command])
+        Packwerk::Cli.new(out: @out).run(Array(command))
       rescue SystemExit => e
         refute_equal(0, e.status)
+      end
+
+      def reset_output
+        @out = StringIO.new
       end
 
       def captured_output
