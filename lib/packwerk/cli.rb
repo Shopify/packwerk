@@ -98,7 +98,7 @@ module Packwerk
       result = if success
         <<~EOS
 
-          🎉 Packwerk is ready to be used. You can start defining packages and run `packwerk check`.
+          🎉 Packwerk is ready to be used. You can start defining packages and run `bin/packwerk check`.
           For more information on how to use Packwerk, see: https://github.com/Shopify/packwerk/blob/main/USAGE.md
         EOS
       else

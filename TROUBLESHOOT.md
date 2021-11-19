@@ -14,11 +14,11 @@ Packwerk can give feedback via continuous integration (CI) if you have it set up
 
 You can specify folders or packages in Packwerk commands for a shorter run time:
 
-     packwerk check components/your_package
+     bin/packwerk check components/your_package
 
-     packwerk update-deprecations components/your_package
+     bin/packwerk update-deprecations components/your_package
 
-_Note: You cannot specify folders or packages for `packwerk validate` because the command runs for the entire application._
+_Note: You cannot specify folders or packages for `bin/packwerk validate` because the command runs for the entire application._
 
 ![](static/packwerk_check_violation.gif)
 

@@ -42,9 +42,12 @@ The [package principles](https://en.wikipedia.org/wiki/Package_principles) page 
 
 ## Getting started
 
-After including Packwerk in the Gemfile, you can generate the necessary files to get Packwerk running by executing:
+After including Packwerk in the Gemfile, you will first want to generate a binstub:
+You can do this by running `bundle binstub packwerk`, which will generate a [binstub](https://bundler.io/man/bundle-binstubs.1.html#DESCRIPTION) at `bin/packwerk`.
 
-    packwerk init
+Then, you can generate the necessary files to get Packwerk running by executing:
+
+    bin/packwerk init
 
 Here is a list of files generated:
 
@@ -68,6 +71,12 @@ Packwerk reads from the `packwerk.yml` configuration file in the root directory.
 | load_paths           | All application autoload paths            | list of load paths |
 | custom_associations  | N/A                                       | list of custom associations, if any |
 | parallel             | true                                      | when true, fork code parsing out to subprocesses |
+
+## Setting up Spring
+
+[Spring](https://github.com/rails/spring) is a preloader for Rails. Because `packwerk` loads `Rails`, it can be sped up dramatically by enabling spring.  Packwerk supports the usage of Spring.
+Firstly, spring needs to know about the packwerk spring command when spring is loading. To do that, add `require 'packwerk/spring_command'` to `config/spring.rb` in your application.
+Secondly, to enable Spring, first run `bin/spring binstub packwerk` which will "springify" the generated binstub. 
 
 ### Using a custom ERB parser
 
@@ -134,7 +143,7 @@ Any new inflectors should be added to `config/inflections.yml`.
 
 There are some criteria that an application must meet in order to have a valid package system. These criteria include having a valid autoload path cache, package definition files, and application folder structure. The dependency graph within the package system also has to be acyclic.
 
-We recommend setting up the package system validation for your Rails application in a CI step (or through a test suite for Ruby projects) separate from `packwerk check`.
+We recommend setting up the package system validation for your Rails application in a CI step (or through a test suite for Ruby projects) separate from `bin/packwerk check`.
 
 Use the following command to validate the application:
 
@@ -237,7 +246,7 @@ You can also specify folders for a shorter run time:
 
 ![](static/packwerk_check.gif)
 
-In order to keep the package system valid at each version of the application, we recommend running `packwerk check` in your CI pipeline.
+In order to keep the package system valid at each version of the application, we recommend running `bin/packwerk check` in your CI pipeline.
 
 See: [TROUBLESHOOT.md - Sample violations](TROUBLESHOOT.md#Sample-violations)
 
@@ -247,17 +256,17 @@ For existing codebases, packages are likely to have existing boundary violations
 
 If so, you will want to stop the bleeding and prevent more violations from occuring. The existing violations in the codebase can be recorded in a [deprecated references list](#Understanding_the_list_of_deprecated_references) by executing:
 
-    packwerk update-deprecations
+    bin/packwerk update-deprecations
 
-Similar to `packwerk check`, you may also run `packwerk update-deprecations` on folders or packages:
+Similar to `bin/packwerk check`, you may also run `bin/packwerk update-deprecations` on folders or packages:
 
-    packwerk update-deprecations components/your_package
+    bin/packwerk update-deprecations components/your_package
 
 ![](static/packwerk_update.gif)
 
 _Note: Changing dependencies or enabling dependencies will not require a full update of the codebase, only the package that changed. On the other hand, changing or enabling privacy will require a full update of the codebase._
 
-`packwerk update-deprecations` should only be run to record existing violations and to remove deprecated references that have been worked off. Running `packwerk update-deprecations` to resolve a violation should be the very last resort.
+`bin/packwerk update-deprecations` should only be run to record existing violations and to remove deprecated references that have been worked off. Running `bin/packwerk update-deprecations` to resolve a violation should be the very last resort.
 
 See: [TROUBLESHOOT.md - Troubleshooting violations](TROUBLESHOOT.md#Troubleshooting_violations)
 
