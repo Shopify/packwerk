@@ -47,7 +47,8 @@ Or install it yourself as:
 
     $ gem install packwerk
 
-3. Run `packwerk init` to generate the configuration files
+2. Run `bundle binstub packwerk` to generate the binstub
+3. Run `bin/packwerk init` to generate the configuration files
 
 ## Usage
 

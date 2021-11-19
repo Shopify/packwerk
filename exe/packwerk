@@ -3,4 +3,10 @@
 
 require "packwerk"
 
-Packwerk::Cli.new(style: Packwerk::OutputStyles::Coloured.new).run(ARGV.dup)
+# Needs to be run in test environment in order to have test helper paths available in the autoload paths
+ENV["RAILS_ENV"] = "test"
+
+# Command line arguments needs to be duplicated because spring modifies it
+packwerk_argv = ARGV.dup
+cli = Packwerk::Cli.new(style: Packwerk::OutputStyles::Coloured.new)
+cli.run(packwerk_argv)
