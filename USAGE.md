@@ -6,7 +6,9 @@
 * [What is a package?](#what-is-a-package)
   * [Package principles](#package-principles)
 * [Getting started](#getting-started)
-* [Setting up the configuration file](#setting-up-the-configuration-file)
+  * [Setting up Spring](#setting-up-spring)
+* [Configuring Packwerk](#configuring-packwerk)
+  * [Using a custom ERB parser](#using-a-custom-erb-parser)
   * [Inflections](#inflections)
 * [Validating the package system](#validating-the-package-system)
 * [Defining packages](#defining-packages)
@@ -59,7 +61,14 @@ Here is a list of files generated:
 
 After that, you may begin creating packages for your application. See [Defining packages](#Defining-packages)
 
-## Setting up the configuration file
+### Setting up Spring
+
+[Spring](https://github.com/rails/spring) is a preloader for Rails. Because `packwerk` loads `Rails`, it can be sped up dramatically by enabling spring.  Packwerk supports the usage of Spring.
+Firstly, spring needs to know about the packwerk spring command when spring is loading. To do that, add `require 'packwerk/spring_command'` to `config/spring.rb` in your application.
+Secondly, to enable Spring, first run `bin/spring binstub packwerk` which will "springify" the generated binstub.
+
+
+## Configuring Packwerk
 
 Packwerk reads from the `packwerk.yml` configuration file in the root directory. Packwerk will run with the default configuration if any of these settings are not specified.
 
@@ -71,12 +80,6 @@ Packwerk reads from the `packwerk.yml` configuration file in the root directory.
 | load_paths           | All application autoload paths            | list of load paths |
 | custom_associations  | N/A                                       | list of custom associations, if any |
 | parallel             | true                                      | when true, fork code parsing out to subprocesses |
-
-## Setting up Spring
-
-[Spring](https://github.com/rails/spring) is a preloader for Rails. Because `packwerk` loads `Rails`, it can be sped up dramatically by enabling spring.  Packwerk supports the usage of Spring.
-Firstly, spring needs to know about the packwerk spring command when spring is loading. To do that, add `require 'packwerk/spring_command'` to `config/spring.rb` in your application.
-Secondly, to enable Spring, first run `bin/spring binstub packwerk` which will "springify" the generated binstub. 
 
 ### Using a custom ERB parser
 
