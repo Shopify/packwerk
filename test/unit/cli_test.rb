@@ -24,6 +24,7 @@ module Packwerk
       offense = Offense.new(file: file_path, message: violation_message)
 
       configuration = Configuration.new({ "parallel" => false })
+      configuration.stubs(load_paths: [])
       RunContext.any_instance.stubs(:process_file).at_least_once.returns([offense])
 
       string_io = StringIO.new
@@ -48,6 +49,8 @@ module Packwerk
       offense = Offense.new(file: file_path, message: violation_message)
 
       configuration = Configuration.new({ "parallel" => false })
+      configuration.stubs(load_paths: [])
+
       RunContext.any_instance.stubs(:process_file)
         .at_least(2)
         .returns([offense])
@@ -101,25 +104,6 @@ module Packwerk
       refute success
     end
 
-    test "#execute_command with init subcommand fails application validation generator for non-Rails app" do
-      string_io = StringIO.new
-      configuration = Configuration.new
-      configuration.stubs(
-        root_path: @temp_dir,
-        load_paths: ["path"],
-        package_paths: "**/",
-        custom_associations: ["cached_belongs_to"],
-        inflections_file: "config/inflections.yml"
-      )
-      cli = ::Packwerk::Cli.new(configuration: configuration, out: string_io)
-
-      e = assert_raises(RuntimeError) do
-        cli.execute_command(["init"])
-      end
-
-      assert_includes e.message, "A Rails application could not be found in"
-    end
-
     test "#execute_command with empty subcommand lists all the valid subcommands" do
       @cli.execute_command([])
 
@@ -151,6 +135,7 @@ module Packwerk
       offense = Offense.new(file: file_path, message: violation_message)
 
       configuration = Configuration.new
+      configuration.stubs(load_paths: [])
       RunContext.any_instance.stubs(:process_file)
         .returns([offense])
 

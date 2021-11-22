@@ -32,7 +32,6 @@ module Packwerk
         "include" => ["xyz/*.rb"],
         "exclude" => ["{exclude_dir,bin,tmp}/**/*"],
         "package_paths" => "**/*/",
-        "load_paths" => ["app/models"],
         "custom_associations" => ["custom_association"],
         "inflections_file" => "custom_inflections.yml",
       }
@@ -43,7 +42,6 @@ module Packwerk
       assert_equal ["xyz/*.rb"], configuration.include
       assert_equal ["{exclude_dir,bin,tmp}/**/*"], configuration.exclude
       assert_equal app_dir, configuration.root_path
-      assert_equal ["app/models"], configuration.load_paths
       assert_equal "**/*/", configuration.package_paths
       assert_equal ["custom_association"], configuration.custom_associations
       assert_equal to_app_path("custom_inflections.yml"), configuration.inflections_file
@@ -58,7 +56,6 @@ module Packwerk
       assert_equal ["**/*.{rb,rake,erb}"], configuration.include
       assert_equal ["{bin,node_modules,script,tmp,vendor}/**/*"], configuration.exclude
       assert_equal app_dir, configuration.root_path
-      assert_empty configuration.load_paths
       assert_equal "**/", configuration.package_paths
       assert_empty configuration.custom_associations
       assert_equal to_app_path("config/inflections.yml"), configuration.inflections_file

@@ -46,7 +46,7 @@ module Packwerk
         discovery.context_for("Sales::RecordNewOrder")
       end
 
-      assert_equal(error.message, "initial error message\n Make sure autoload paths are added to the config file.")
+      assert_equal(error.message, "initial error message")
     end
   end
 end

@@ -34,22 +34,33 @@ module Packwerk
     DEFAULT_EXCLUDE_GLOBS = ["{bin,node_modules,script,tmp,vendor}/**/*"]
 
     attr_reader(
-      :include, :exclude, :root_path, :package_paths, :custom_associations, :load_paths, :inflections_file,
+      :include, :exclude, :root_path, :package_paths, :custom_associations, :inflections_file,
       :config_path,
     )
 
     def initialize(configs = {}, config_path: nil)
+      if configs["load_paths"]
+        warning = <<~WARNING
+          DEPRECATION WARNING: The 'load_paths' key in `packwerk.yml` is deprecated.
+          This value is no longer cached, and you can remove the key from `packwerk.yml`.
+        WARNING
+
+        warn(warning)
+      end
       @include = configs["include"] || DEFAULT_INCLUDE_GLOBS
       @exclude = configs["exclude"] || DEFAULT_EXCLUDE_GLOBS
       root = config_path ? File.dirname(config_path) : "."
       @root_path = File.expand_path(root)
       @package_paths = configs["package_paths"] || "**/"
       @custom_associations = configs["custom_associations"] || []
-      @load_paths = (configs["load_paths"] || []).uniq
       @inflections_file = File.expand_path(configs["inflections_file"] || "config/inflections.yml", @root_path)
       @parallel = configs.key?("parallel") ? configs["parallel"] : true
 
       @config_path = config_path
+    end
+
+    def load_paths
+      @load_paths ||= ApplicationLoadPaths.extract_relevant_paths(@root_path, "test")
     end
 
     def parallel?
