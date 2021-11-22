@@ -197,6 +197,22 @@ module Packwerk
       assert_match %r{manifests:\n\ncomponents/timeline/package.yml$}m, result.error_value
     end
 
+    test "check_package_manifest_paths returns no error when vendor/**/* is excluded" do
+      use_template(:skeleton)
+      merge_into_app_yaml_file("components/timeline/package.yml", {})
+      merge_into_app_yaml_file("packwerk.yml", { "package_paths" => ["components/**/*", "."] })
+      merge_into_app_yaml_file("packwerk.yml", { "exclude" => ["vendor/**/*"] })
+
+      package_paths = PackageSet.package_paths(".", "**")
+      vendor_package_path = Pathname.new("vendor/cache/gems/example/package.yml")
+      assert_includes(package_paths, vendor_package_path)
+
+      result = validator.check_package_manifest_paths
+
+      assert result.ok?
+      refute result.error_value
+    end
+
     test "check_valid_package_dependencies returns error when config contains invalid package dependency" do
       use_template(:minimal)
       merge_into_app_yaml_file("components/sales/package.yml", { "dependencies" => ["components/timeline"] })

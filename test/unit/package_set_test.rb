@@ -75,5 +75,35 @@ module Packwerk
       package_paths = PackageSet.package_paths(".", "**")
       refute_includes(package_paths, vendor_package_path)
     end
+
+    test ".package_paths excludes paths in exclude pathspec" do
+      vendor_package_path = Pathname.new("vendor/cache/gems/example/package.yml")
+
+      package_paths = PackageSet.package_paths(".", "**")
+      assert_includes(package_paths, vendor_package_path)
+
+      package_paths = PackageSet.package_paths(".", "**", "vendor/*")
+      refute_includes(package_paths, vendor_package_path)
+    end
+
+    test ".package_paths excludes paths in multiple exclude pathspecs" do
+      vendor_package_path = Pathname.new("vendor/cache/gems/example/package.yml")
+      sales_package_path = Pathname.new("components/sales/package.yml")
+
+      package_paths = PackageSet.package_paths(".", "**")
+      assert_includes(package_paths, vendor_package_path)
+      assert_includes(package_paths, sales_package_path)
+
+      package_paths = PackageSet.package_paths(".", "**", ["vendor/*", "components/sales/*"])
+      refute_includes(package_paths, vendor_package_path)
+      refute_includes(package_paths, sales_package_path)
+    end
+
+    test ".package_paths ignores empty excludes" do
+      assert_equal(
+        PackageSet.package_paths(".", "**"),
+        PackageSet.package_paths(".", "**", [])
+      )
+    end
   end
 end

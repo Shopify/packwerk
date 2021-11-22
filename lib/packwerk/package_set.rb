@@ -4,6 +4,8 @@
 require "pathname"
 
 module Packwerk
+  PathSpec = T.type_alias { T.any(String, T::Array[String]) }
+
   # A set of {Packwerk::Package}s as well as methods to parse packages from the filesystem.
   class PackageSet
     extend T::Sig
@@ -17,7 +19,7 @@ module Packwerk
     class << self
       extend T::Sig
 
-      sig { params(root_path: String, package_pathspec: T.nilable(String)).returns(PackageSet) }
+      sig { params(root_path: String, package_pathspec: T.nilable(PathSpec)).returns(PackageSet) }
       def load_all_from(root_path, package_pathspec: nil)
         package_paths = package_paths(root_path, package_pathspec || "**")
 
@@ -31,9 +33,17 @@ module Packwerk
         new(packages)
       end
 
-      sig { params(root_path: String, package_pathspec: T.any(String, T::Array[String])).returns(T::Array[Pathname]) }
-      def package_paths(root_path, package_pathspec)
-        bundle_path_match = Bundler.bundle_path.join("**").to_s
+      sig do
+        params(
+          root_path: String,
+          package_pathspec: PathSpec,
+          exclude_pathspec: T.nilable(PathSpec)
+        ).returns(T::Array[Pathname])
+      end
+      def package_paths(root_path, package_pathspec, exclude_pathspec = [])
+        exclude_pathspec = Array(exclude_pathspec).dup
+          .push(Bundler.bundle_path.join("**").to_s)
+          .map { |glob| File.expand_path(glob) }
 
         glob_patterns = Array(package_pathspec).map do |pathspec|
           File.join(root_path, pathspec, PACKAGE_CONFIG_FILENAME)
@@ -41,7 +51,7 @@ module Packwerk
 
         Dir.glob(glob_patterns)
           .map { |path| Pathname.new(path).cleanpath }
-          .reject { |path| path.realpath.fnmatch(bundle_path_match) }
+          .reject { |path| exclude_path?(exclude_pathspec, path) }
       end
 
       private
@@ -50,6 +60,13 @@ module Packwerk
       def create_root_package_if_none_in(packages)
         return if packages.any?(&:root?)
         packages << Package.new(name: Package::ROOT_PACKAGE_NAME, config: nil)
+      end
+
+      sig { params(globs: T::Array[String], path: Pathname).returns(T::Boolean) }
+      def exclude_path?(globs, path)
+        globs.any? do |glob|
+          path.realpath.fnmatch(glob, File::FNM_EXTGLOB)
+        end
       end
     end
 
