@@ -44,7 +44,7 @@ module Packwerk
 
       sig { params(offenses: T::Array[T.nilable(Offense)]).returns(String) }
       def offenses_summary(offenses)
-        offenses_string = Inflector.default.pluralize("offense", offenses.length)
+        offenses_string = "offense".pluralize(offenses.length)
         "#{offenses.length} #{offenses_string} detected"
       end
     end

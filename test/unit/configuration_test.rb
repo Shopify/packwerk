@@ -33,7 +33,6 @@ module Packwerk
         "exclude" => ["{exclude_dir,bin,tmp}/**/*"],
         "package_paths" => "**/*/",
         "custom_associations" => ["custom_association"],
-        "inflections_file" => "custom_inflections.yml",
       }
       merge_into_app_yaml_file("packwerk.yml", configuration_hash)
 
@@ -44,7 +43,6 @@ module Packwerk
       assert_equal app_dir, configuration.root_path
       assert_equal "**/*/", configuration.package_paths
       assert_equal ["custom_association"], configuration.custom_associations
-      assert_equal to_app_path("custom_inflections.yml"), configuration.inflections_file
     end
 
     test ".from_path falls back to some default config when no existing config exists" do
@@ -58,7 +56,6 @@ module Packwerk
       assert_equal app_dir, configuration.root_path
       assert_equal "**/", configuration.package_paths
       assert_empty configuration.custom_associations
-      assert_equal to_app_path("config/inflections.yml"), configuration.inflections_file
     end
 
     test ".from_path falls back to empty config when existing config is an empty document" do

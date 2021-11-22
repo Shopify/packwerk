@@ -24,7 +24,7 @@ module Packwerk
 
     class << self
       def from_configuration(configuration)
-        inflector = ::Packwerk::Inflector.from_file(configuration.inflections_file)
+        inflector = ActiveSupport::Inflector
         new(
           root_path: configuration.root_path,
           load_paths: configuration.load_paths,

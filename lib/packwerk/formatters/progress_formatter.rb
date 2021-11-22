@@ -16,7 +16,7 @@ module Packwerk
 
       def started(target_files)
         files_size = target_files.size
-        files_string = Inflector.default.pluralize("file", files_size)
+        files_string = "file".pluralize(files_size)
         @out.puts("📦 Packwerk is inspecting #{files_size} #{files_string}")
       end
 
