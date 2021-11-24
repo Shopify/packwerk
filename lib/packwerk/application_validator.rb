@@ -298,7 +298,7 @@ module Packwerk
     end
 
     def package_manifests(glob_pattern = package_glob)
-      PackageSet.package_paths(@configuration.root_path, glob_pattern)
+      PackageSet.package_paths(@configuration.root_path, glob_pattern, @configuration.exclude)
         .map { |f| File.realpath(f) }
     end
 
