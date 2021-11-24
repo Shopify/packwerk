@@ -87,7 +87,7 @@ GIT
 PATH
   remote: .
   specs:
-    packwerk (1.3.2)
+    packwerk (1.4.0)
       activesupport (>= 5.2)
       ast
       better_html
@@ -191,7 +191,7 @@ GEM
     rubocop-sorbet (0.6.1)
       rubocop
     ruby-progressbar (1.11.0)
-    smart_properties (1.15.0)
+    smart_properties (1.16.3)
     sorbet (0.5.6360)
       sorbet-static (= 0.5.6360)
     sorbet-runtime (0.5.6360)
