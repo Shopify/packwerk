@@ -88,10 +88,10 @@ module Packwerk
 
     def generate_configs
       configuration_file = Packwerk::Generators::ConfigurationFile.generate(
-        load_paths: Packwerk::ApplicationLoadPaths.extract_relevant_paths(@configuration.root_path, @environment),
         root: @configuration.root_path,
         out: @out
       )
+
       inflections_file = Packwerk::Generators::InflectionsFile.generate(root: @configuration.root_path, out: @out)
       root_package = Packwerk::Generators::RootPackage.generate(root: @configuration.root_path, out: @out)
 
@@ -139,17 +139,20 @@ module Packwerk
 
     def validate(_paths)
       @progress_formatter.started_validation do
-        checker = Packwerk::ApplicationValidator.new(
-          config_file_path: @configuration.config_path,
-          configuration: @configuration,
-          environment: @environment,
-        )
         result = checker.check_all
 
         list_validation_errors(result)
 
         return result.ok?
       end
+    end
+
+    def checker
+      Packwerk::ApplicationValidator.new(
+        config_file_path: @configuration.config_path,
+        configuration: @configuration,
+        environment: @environment,
+      )
     end
 
     def list_validation_errors(result)

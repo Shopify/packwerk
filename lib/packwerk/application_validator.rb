@@ -14,15 +14,12 @@ module Packwerk
       @config_file_path = config_file_path
       @configuration = configuration
       @environment = environment
-
-      @application_load_paths = ApplicationLoadPaths.extract_relevant_paths(configuration.root_path, environment)
     end
 
     Result = Struct.new(:ok?, :error_value)
 
     def check_all
       results = [
-        check_autoload_path_cache,
         check_package_manifests_for_privacy,
         check_package_manifest_syntax,
         check_application_structure,
@@ -34,21 +31,6 @@ module Packwerk
       ]
 
       merge_results(results)
-    end
-
-    def check_autoload_path_cache
-      expected = Set.new(@application_load_paths)
-      actual = Set.new(@configuration.load_paths)
-      if expected == actual
-        Result.new(true)
-      else
-        Result.new(
-          false,
-          "Load path cache in #{@config_file_path} incorrect!\n"\
-          "Paths missing from file:\n#{format_yaml_strings(expected - actual)}\n"\
-          "Extraneous load paths in file:\n#{format_yaml_strings(actual - expected)}"
-        )
-      end
     end
 
     def check_package_manifests_for_privacy

@@ -5,8 +5,18 @@ require "rails_test_helper"
 module Packwerk
   class ParseRunTest < Minitest::Test
     include FactoryHelper
+    include ApplicationFixtureHelper
+
+    setup do
+      setup_application_fixture
+    end
+
+    teardown do
+      teardown_application_fixture
+    end
 
     test "#detect_stale_violations returns expected Result when stale violations present" do
+      use_template(:minimal)
       OffenseCollection.any_instance.stubs(:stale_violations?).returns(true)
       RunContext.any_instance.stubs(:process_file).returns([])
 
@@ -17,6 +27,7 @@ module Packwerk
     end
 
     test "#update_deprecations returns success when there are no offenses" do
+      use_template(:minimal)
       RunContext.any_instance.stubs(:process_file).returns([])
       OffenseCollection.any_instance.expects(:dump_deprecated_references_files).once
 
@@ -31,6 +42,7 @@ module Packwerk
     end
 
     test "#update_deprecations returns exit code 1 when there are offenses" do
+      use_template(:minimal)
       offense = Offense.new(file: "path/of/exile.rb", message: "something")
       RunContext.any_instance.stubs(:process_file).returns([offense])
       OffenseCollection.any_instance.expects(:dump_deprecated_references_files).once
@@ -51,6 +63,7 @@ module Packwerk
     end
 
     test "#check only reports error progress for unlisted violations" do
+      use_template(:minimal)
       offense = ReferenceOffense.new(reference: build_reference, violation_type: ViolationType::Privacy)
       DeprecatedReferences.any_instance.stubs(:listed?).returns(true)
       out = StringIO.new
@@ -78,6 +91,7 @@ module Packwerk
     end
 
     test "#check result has failure status when stale violations exist" do
+      use_template(:minimal)
       offense = ReferenceOffense.new(reference: build_reference, violation_type: ViolationType::Privacy)
       DeprecatedReferences.any_instance.stubs(:listed?).returns(true)
       OffenseCollection.any_instance.stubs(:stale_violations?).returns(true)
@@ -107,6 +121,7 @@ module Packwerk
     end
 
     test "runs in parallel" do
+      use_template(:minimal)
       offense = ReferenceOffense.new(reference: build_reference, violation_type: ViolationType::Privacy)
       offense2 = ReferenceOffense.new(
         reference: build_reference(path: "some/other_path.rb"),

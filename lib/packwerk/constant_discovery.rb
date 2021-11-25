@@ -45,7 +45,7 @@ module Packwerk
       begin
         constant = @resolver.resolve(const_name, current_namespace_path: current_namespace_path)
       rescue ConstantResolver::Error => e
-        raise(ConstantResolver::Error, e.message + "\n Make sure autoload paths are added to the config file.")
+        raise(ConstantResolver::Error, e.message)
       end
 
       return unless constant

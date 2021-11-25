@@ -9,31 +9,15 @@ module Packwerk
       setup do
         @string_io = StringIO.new
         @temp_dir = Dir.mktmpdir
-        @test_path = "the/path/we/want"
       end
 
       teardown do
         FileUtils.remove_entry(@temp_dir)
       end
 
-      test ".generate creates a configuration file with load paths if available" do
-        load_paths = [@test_path]
-        generated_file_path = File.join(@temp_dir, Packwerk::Configuration::DEFAULT_CONFIG_PATH)
-
-        assert(Packwerk::Generators::ConfigurationFile.generate(
-          load_paths: load_paths,
-          root: @temp_dir,
-          out: @string_io
-        ))
-        assert(File.exist?(generated_file_path))
-
-        contents = YAML.load_file(generated_file_path)
-        assert_equal(load_paths, contents["load_paths"])
-      end
-
       test ".generate creates a default configuration file if there were empty load paths array" do
         generated_file_path = File.join(@temp_dir, Packwerk::Configuration::DEFAULT_CONFIG_PATH)
-        assert(Packwerk::Generators::ConfigurationFile.generate(load_paths: [], root: @temp_dir, out: @string_io))
+        assert(Packwerk::Generators::ConfigurationFile.generate(root: @temp_dir, out: @string_io))
         assert(File.exist?(generated_file_path))
       end
 
@@ -41,7 +25,6 @@ module Packwerk
         file_path = File.join(@temp_dir, Packwerk::Configuration::DEFAULT_CONFIG_PATH)
         File.open(file_path, "w") do |_f|
           assert(Packwerk::Generators::ConfigurationFile.generate(
-            load_paths: [@test_path],
             root: @temp_dir,
             out: @string_io
           ))

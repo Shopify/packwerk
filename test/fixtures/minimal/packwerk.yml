@@ -1,4 +1,2 @@
 include:
   - "**/*.rb"
-load_paths:
-  - components/sales/app/models

@@ -26,38 +26,6 @@ module Packwerk
       assert result.ok?, result.error_value
     end
 
-    test "check_autoload_path_cache fails on extraneous config load paths" do
-      use_template(:minimal)
-      ApplicationLoadPaths.expects(:extract_relevant_paths).returns([])
-
-      result = validator.check_autoload_path_cache
-
-      refute result.ok?, result.error_value
-      assert_match %r{Extraneous load paths in file:.*components/sales/app/models}m, result.error_value
-    end
-
-    test "check_autoload_path_cache succeeds on duplicated, but correct config load paths" do
-      use_template(:minimal)
-      config.expects(:load_paths).returns(["components/timeline/app/models"] * 2)
-      ApplicationLoadPaths.expects(:extract_relevant_paths).returns(["components/timeline/app/models"])
-
-      result = validator.check_autoload_path_cache
-
-      assert result.ok?, result.error_value
-    end
-
-    test "check_autoload_path_cache fails on missing config load paths" do
-      use_template(:minimal)
-      ApplicationLoadPaths
-        .expects(:extract_relevant_paths)
-        .returns(["components/sales/app/models", "components/timeline/app/models"])
-
-      result = validator.check_autoload_path_cache
-
-      refute result.ok?, result.error_value
-      assert_match %r{Paths missing from file:.*components/timeline/app/models}m, result.error_value
-    end
-
     test "check_package_manifest_syntax returns an error for unknown package keys" do
       use_template(:minimal)
       merge_into_app_yaml_file("package.yml", { "enforce_correctness" => false })
