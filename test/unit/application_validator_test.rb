@@ -3,8 +3,9 @@
 
 require "test_helper"
 
-# make sure PrivateThing.constantize succeeds to pass the privacy validity check
+# make sure PrivateThing.constantize and AnotherPrivateThing.constantize succeed to pass the privacy validity check
 require "fixtures/skeleton/components/timeline/app/models/private_thing.rb"
+require "fixtures/skeleton/components/timeline/app/models/another_private_thing.rb"
 
 module Packwerk
   class ApplicationValidatorTest < Minitest::Test
@@ -84,33 +85,37 @@ module Packwerk
       result = validator.check_package_manifests_for_privacy
 
       refute result.ok?, result.error_value
-      assert_match(
-        /'::PrivateThing', listed in #{to_app_path('components\/timeline\/package.yml')}, could not be resolved/,
-        result.error_value
-      )
-      assert_match(
-        /Add a private_thing.rb file/,
-        result.error_value
-      )
+      %w[PrivateThing AnotherPrivateThing].each do |classname|
+        assert_match(
+          /'::#{classname}', listed in #{to_app_path('components\/timeline\/package.yml')}, could not be resolved/,
+          result.error_value
+        )
+        assert_match(
+          /Add a #{classname.underscore}.rb file/,
+          result.error_value
+        )
+      end
     end
 
     test "check_package_manifests_for_privacy returns an error for privatized constants in other packages" do
       use_template(:skeleton)
-      context = ConstantResolver::ConstantContext.new("::PrivateThing", "private_thing.rb")
+      %w[PrivateThing AnotherPrivateThing].each do |classname|
+        context = ConstantResolver::ConstantContext.new("::#{classname}", "#{classname.underscore}.rb")
 
-      ConstantResolver.expects(:new).returns(stub("resolver", resolve: context))
+        ConstantResolver.expects(:new).returns(stub("resolver", resolve: context))
 
-      result = validator.check_package_manifests_for_privacy
+        result = validator.check_package_manifests_for_privacy
 
-      refute result.ok?, result.error_value
-      assert_match(
-        %r{'::PrivateThing' is declared as private in the 'components/timeline' package},
-        result.error_value
-      )
-      assert_match(
-        /but appears to be defined\sin the '.' package/,
-        result.error_value
-      )
+        refute result.ok?, result.error_value
+        assert_match(
+          %r{'::#{classname}' is declared as private in the 'components/timeline' package},
+          result.error_value
+        )
+        assert_match(
+          /but appears to be defined\sin the '.' package/,
+          result.error_value
+        )
+      end
     end
 
     test "check_inflection_file returns error for mismatched inflections.yml file" do

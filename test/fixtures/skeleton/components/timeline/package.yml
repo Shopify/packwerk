@@ -1,2 +1,3 @@
 enforce_privacy:
-  - "::PrivateThing"
+  - "::PrivateThing" # using the explicit top-level namespace resolution operator `::`
+  - "AnotherPrivateThing"  # implicit top-level namespace resolution

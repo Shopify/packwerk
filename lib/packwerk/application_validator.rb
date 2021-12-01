@@ -45,7 +45,7 @@ module Packwerk
 
       privacy_settings.each do |config_file_path, setting|
         next unless setting.is_a?(Array)
-        constants = setting
+        constants = setting.map { |name| top_level_constant(name) }
 
         assert_constants_can_be_loaded(constants)
 
@@ -61,6 +61,10 @@ module Packwerk
       end
 
       merge_results(results, separator: "\n---\n")
+    end
+
+    def top_level_constant(name)
+      name.start_with?('::') ? name : "::#{name}"
     end
 
     def check_package_manifest_syntax
