@@ -1,7 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "active_support/inflector/inflections"
 require "constant_resolver"
 require "pathname"
 require "yaml"
@@ -23,7 +22,6 @@ module Packwerk
         check_package_manifests_for_privacy,
         check_package_manifest_syntax,
         check_application_structure,
-        check_inflection_file,
         check_acyclic_graph,
         check_package_manifest_paths,
         check_valid_package_dependencies,
@@ -122,39 +120,6 @@ module Packwerk
       rescue => e
         Result.new(false, e.message)
       end
-    end
-
-    def check_inflection_file
-      inflections_file = @configuration.inflections_file
-
-      application_inflections = ActiveSupport::Inflector.inflections
-      packwerk_inflections = Packwerk::Inflector.from_file(inflections_file).inflections
-
-      results = %i(plurals singulars uncountables humans acronyms).map do |type|
-        expected = application_inflections.public_send(type).to_set
-        actual = packwerk_inflections.public_send(type).to_set
-
-        if expected == actual
-          Result.new(true)
-        else
-          missing_msg = unless (expected - actual).empty?
-            "Expected #{type} to be specified in file: #{expected - actual}"
-          end
-          extraneous_msg = unless (actual - expected).empty?
-            "Extraneous #{type} was specified in file: #{actual - expected}"
-          end
-          Result.new(
-            false,
-            [missing_msg, extraneous_msg].join("\n")
-          )
-        end
-      end
-
-      merge_results(
-        results,
-        separator: "\n",
-        errors_headline: "Inflections specified in #{inflections_file} don't line up with application!\n"
-      )
     end
 
     def check_acyclic_graph

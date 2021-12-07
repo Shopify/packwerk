@@ -34,8 +34,7 @@ module Packwerk
     DEFAULT_EXCLUDE_GLOBS = ["{bin,node_modules,script,tmp,vendor}/**/*"]
 
     attr_reader(
-      :include, :exclude, :root_path, :package_paths, :custom_associations, :inflections_file,
-      :config_path,
+      :include, :exclude, :root_path, :package_paths, :custom_associations, :config_path
     )
 
     def initialize(configs = {}, config_path: nil)
@@ -47,13 +46,33 @@ module Packwerk
 
         warn(warning)
       end
+
+      inflection_file = File.expand_path(configs["inflections_file"] || "config/inflections.yml", @root_path)
+      if configs["inflections_file"]
+        warning = <<~WARNING
+          DEPRECATION WARNING: The 'inflections_file' key in `packwerk.yml` is deprecated.
+          This value is no longer cached, and you can remove the key from `packwerk.yml`.
+          You can also delete #{configs["inflections_file"]}.
+        WARNING
+
+        warn(warning)
+      end
+
+      if Pathname.new(inflection_file).exist?
+        warning = <<~WARNING
+          DEPRECATION WARNING: Inflections YMLs in packwerk are now deprecated.
+          This value is no longer cached, and you can now delete #{inflection_file}
+        WARNING
+
+        warn(warning)
+      end
+
       @include = configs["include"] || DEFAULT_INCLUDE_GLOBS
       @exclude = configs["exclude"] || DEFAULT_EXCLUDE_GLOBS
       root = config_path ? File.dirname(config_path) : "."
       @root_path = File.expand_path(root)
       @package_paths = configs["package_paths"] || "**/"
       @custom_associations = configs["custom_associations"] || []
-      @inflections_file = File.expand_path(configs["inflections_file"] || "config/inflections.yml", @root_path)
       @parallel = configs.key?("parallel") ? configs["parallel"] : true
 
       @config_path = config_path

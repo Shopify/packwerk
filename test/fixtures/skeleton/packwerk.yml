@@ -3,5 +3,4 @@ include:
   - "**/*.{blop,rb}" # To test for duplicated files
 exclude:
   - "**/temp.rb"
-inflections_file: "custom_inflections.yml"
 parallel: false

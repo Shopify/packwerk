@@ -5,6 +5,9 @@ require "sorbet-runtime"
 require "active_support"
 require "fileutils"
 
+# Provides String#pluralize
+require "active_support/core_ext/string"
+
 module Packwerk
   extend ActiveSupport::Autoload
 
@@ -21,7 +24,6 @@ module Packwerk
   autoload :FileProcessor
   autoload :FilesForProcessing
   autoload :Graph
-  autoload :Inflector
   autoload :Node
   autoload :NodeProcessor
   autoload :NodeProcessorFactory
@@ -41,13 +43,6 @@ module Packwerk
   autoload :RunContext
   autoload :Version
   autoload :ViolationType
-
-  module Inflections
-    extend ActiveSupport::Autoload
-
-    autoload :Custom
-    autoload :Default
-  end
 
   module OutputStyles
     extend ActiveSupport::Autoload
@@ -71,7 +66,6 @@ module Packwerk
     extend ActiveSupport::Autoload
 
     autoload :ConfigurationFile
-    autoload :InflectionsFile
     autoload :RootPackage
   end
 

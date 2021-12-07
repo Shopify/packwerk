@@ -19,7 +19,7 @@ module Packwerk
       CustomAssociations
     )
 
-    sig { params(inflector: Inflector, custom_associations: CustomAssociations).void }
+    sig { params(inflector: T.class_of(ActiveSupport::Inflector), custom_associations: CustomAssociations).void }
     def initialize(inflector:, custom_associations: Set.new)
       @inflector = inflector
       @associations = T.let(RAILS_ASSOCIATIONS + custom_associations, CustomAssociations)

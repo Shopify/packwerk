@@ -92,10 +92,9 @@ module Packwerk
         out: @out
       )
 
-      inflections_file = Packwerk::Generators::InflectionsFile.generate(root: @configuration.root_path, out: @out)
       root_package = Packwerk::Generators::RootPackage.generate(root: @configuration.root_path, out: @out)
 
-      success = configuration_file && inflections_file && root_package
+      success = configuration_file && root_package
 
       result = if success
         <<~EOS

@@ -9,7 +9,6 @@
   * [Setting up Spring](#setting-up-spring)
 * [Configuring Packwerk](#configuring-packwerk)
   * [Using a custom ERB parser](#using-a-custom-erb-parser)
-  * [Inflections](#inflections)
 * [Validating the package system](#validating-the-package-system)
 * [Defining packages](#defining-packages)
   * [Package metadata](#package-metadata)
@@ -57,7 +56,6 @@ Here is a list of files generated:
 |-----------------------------|--------------|------------|
 | Packwerk configuration      | packwerk.yml | See [Setting up the configuration file](#Setting-up-the-configuration-file) |
 | Root package                | package.yml  | A package for the root folder |
-| Custom inflections          | config/inflections.yml | A custom inflections file is only required if you have custom inflections in `inflections.rb`, see [Inflections](#Inflections) |
 
 After that, you may begin creating packages for your application. See [Defining packages](#Defining-packages)
 
@@ -101,45 +99,6 @@ end
 
 Packwerk::Parsers::Factory.instance.erb_parser_class = CustomParser
 ```
-
-### Inflections
-
-Packwerk requires custom inflections to be defined in `inflections.yml` instead of the traditional `inflections.rb`. This is because Packwerk accounts for custom inflections, such as acronyms, when resolving constants. Additionally, Packwerk interprets Active Record associations as references to constants. For example, `has_many :birds` is a reference to the `Bird` constant.
-
-In order to make your custom inflections compatible with Active Support and Packwerk, you must create a `config/inflections.yml` file and point `ActiveSupport::Inflector` to that file.
-
-In `inflections.rb`, add:
-
-```rb
-require "packwerk/inflections/custom"
-
-ActiveSupport::Inflector.inflections do |inflect|
-  # please add all custom inflections in the file below.
-  Packwerk::Inflections::Custom.new(
-    Rails.root.join("config", "inflections.yml")
-  ).apply_to(inflect)
-end
-```
-
-_Note: Packwerk has to be grouped in production environment within the Gemfile if you have custom inflections._
-
-Next, move your existing custom inflections into `config/inflections.yml`:
-
-```yaml
-acronym:
-  - 'GraphQL'
-  - 'MRuby'
-  - 'TOS'
-irregular:
-  - ['analysis', 'analyses']
-  - ['reserve', 'reserves']
-uncountable:
-  - 'payment_details'
-singular:
-  - [!ruby/regexp /status$/, 'status']
-```
-
-Any new inflectors should be added to `config/inflections.yml`.
 
 ## Validating the package system
 
