@@ -64,7 +64,7 @@ module Packwerk
     end
 
     def top_level_constant(name)
-      name.start_with?('::') ? name : "::#{name}"
+      name.start_with?("::") ? name : "::#{name}"
     end
 
     def check_package_manifest_syntax
