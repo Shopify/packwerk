@@ -8,7 +8,6 @@
 /tmp/
 /.bundle/
 /tmp/
-/.idea/
 .rubocop-*
 .byebug_history
 sorbet/rbi/hidden-definitions/errors.txt
