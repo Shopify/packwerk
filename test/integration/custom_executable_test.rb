@@ -129,11 +129,6 @@ module Packwerk
         end
       end
 
-      test "'update' gives deprecation warning" do
-        _out, err = capture_io { assert_successful_run("update") }
-        assert_match(/`packwerk update` is deprecated/, err)
-      end
-
       private
 
       def assert_successful_run(command)

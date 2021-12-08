@@ -53,8 +53,6 @@ module Packwerk
         output_result(parse_run(args).check)
       when "detect-stale-violations"
         output_result(parse_run(args).detect_stale_violations)
-      when "update"
-        update(args)
       when "update-deprecations"
         output_result(parse_run(args).update_deprecations)
       when "validate"
@@ -112,11 +110,6 @@ module Packwerk
 
       @out.puts(result)
       success
-    end
-
-    def update(paths)
-      warn("`packwerk update` is deprecated in favor of `packwerk update-deprecations`.")
-      output_result(parse_run(paths).update_deprecations)
     end
 
     def output_result(result)

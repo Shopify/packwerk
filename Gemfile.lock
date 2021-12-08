@@ -87,7 +87,7 @@ GIT
 PATH
   remote: .
   specs:
-    packwerk (1.4.0)
+    packwerk (2.0.0)
       activesupport (>= 5.2)
       ast
       better_html
