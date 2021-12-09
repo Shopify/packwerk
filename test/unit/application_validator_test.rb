@@ -113,6 +113,23 @@ module Packwerk
       )
     end
 
+    test "check_package_manifests_for_privacy returns an error for constants without `::` prefix" do
+      use_template(:minimal)
+      merge_into_app_yaml_file("package.yml", { "enforce_privacy" => %w[::PrivateThing OtherThing] })
+
+      result = validator.check_package_manifests_for_privacy
+
+      refute result.ok?, result.error_value
+      assert_match(
+        /'OtherThing', listed in the 'enforce_privacy' option in .*package.yml, is invalid./,
+        result.error_value
+      )
+      assert_match(
+        /Private constants need to be prefixed with the top-level namespace operator `::`/,
+        result.error_value
+      )
+    end
+
     test "check_acyclic_graph returns error when package set contains circular dependencies" do
       use_template(:minimal)
       merge_into_app_yaml_file("components/sales/package.yml", { "dependencies" => ["components/timeline"] })
