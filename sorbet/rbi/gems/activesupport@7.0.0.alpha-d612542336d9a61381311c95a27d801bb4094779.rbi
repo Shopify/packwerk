@@ -1495,7 +1495,8 @@ module ActiveSupport::Inflector
   def demodulize(path); end
   def foreign_key(class_name, separate_class_name_and_id_with_underscore = T.unsafe(nil)); end
   def humanize(lower_case_and_underscored_word, capitalize: T.unsafe(nil), keep_id_suffix: T.unsafe(nil)); end
-  def inflections(locale = T.unsafe(nil)); end
+  sig { params(locale: T.untyped, block: T.proc.params(inflect: ActiveSupport::Inflector::Inflections).void ).void }
+  def inflections(locale = T.unsafe(nil), &block); end
   def ordinal(number); end
   def ordinalize(number); end
   def parameterize(string, separator: T.unsafe(nil), preserve_case: T.unsafe(nil), locale: T.unsafe(nil)); end

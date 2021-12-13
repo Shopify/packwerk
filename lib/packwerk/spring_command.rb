@@ -26,3 +26,11 @@ module Packwerk
 
   Spring.register_command("packwerk", SpringCommand.new)
 end
+
+warning = <<~WARNING
+  DEPRECATION WARNING: The spring command is deprecated, because packwerk now loads rails in a standard rake process
+  and does not need spring within its binstub. You can remove the require to `packwerk/spring_command.rb` within `spring.rb`.
+  To keep packwerk fast, make sure your rails application uses spring.
+WARNING
+
+warn(warning)

@@ -1,3 +1,20 @@
+# Upgrading from 2.0 to 2.0.1
+
+2.0.0 now loads Rails so you don't have to keep track of `inflections.yml` and `load_paths` within `packwerk.yml`. Since we now load Rails, 2.0.0 was having some memory issues since the file parsing step forks, creating many processes each with a copy of the Rails app.
+
+2.0.1 fixes this by having the main process create a new process that loads Rails, dumps the output, and the main process then parses that. This should bring the memory profile for `packwerk` back to normal levels.
+
+If you're upgrading from 2.0.0, we recommend removing the spring portion of your binstub `bin/packwerk`:
+```ruby
+begin
+  load File.expand_path('../spring', __FILE__)
+rescue LoadError => e
+  raise unless e.message.include?('spring')
+end
+```
+
+This should be removed. You can also remove `require 'packwerk/spring_command.rb` from `spring.rb`. As long as your main rails application has spring installed as normal, it should continue to be fast without the memory bloat issue.
+
 # Upgrading from 1.x to 2.0
 
 With Packwerk 2.0, we made a few changes to simplify the setup. Updating will require removing some previously necessary files and configuration.

@@ -6,6 +6,8 @@ require "yaml"
 
 module Packwerk
   class Configuration
+    extend T::Sig
+
     class << self
       def from_path(path = Dir.pwd)
         raise ArgumentError, "#{File.expand_path(path)} does not exist" unless File.exist?(path)
@@ -36,6 +38,12 @@ module Packwerk
     attr_reader(
       :include, :exclude, :root_path, :package_paths, :custom_associations, :config_path
     )
+
+    sig { returns(T::Array[String]) }
+    attr_reader :load_paths
+
+    sig { returns(Inflector) }
+    attr_reader :inflector
 
     def initialize(configs = {}, config_path: nil)
       if configs["load_paths"]
@@ -76,10 +84,10 @@ module Packwerk
       @parallel = configs.key?("parallel") ? configs["parallel"] : true
 
       @config_path = config_path
-    end
 
-    def load_paths
-      @load_paths ||= ApplicationLoadPaths.extract_relevant_paths(@root_path, "test")
+      result = RailsDependencies.fetch_load_paths_and_apply_inflections!
+      @load_paths ||= result.load_paths
+      @inflector ||= result.inflector
     end
 
     def parallel?

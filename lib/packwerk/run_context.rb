@@ -23,8 +23,11 @@ module Packwerk
     ]
 
     class << self
+      extend T::Sig
+
+      sig { params(configuration: Configuration).returns(RunContext) }
       def from_configuration(configuration)
-        inflector = ActiveSupport::Inflector
+        inflector = configuration.inflector
         new(
           root_path: configuration.root_path,
           load_paths: configuration.load_paths,

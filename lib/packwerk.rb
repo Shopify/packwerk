@@ -4,16 +4,21 @@
 require "sorbet-runtime"
 require "active_support"
 require "fileutils"
+require 'open3'
+require 'json'
 
 # Provides String#pluralize
 require "active_support/core_ext/string"
+require 'packwerk/diagnostics'
+Packwerk::Diagnostics.log('Requiring railtie if Rails is defined', __FILE__)
+require 'packwerk/railtie' if defined?(Rails)
 
 module Packwerk
   extend ActiveSupport::Autoload
 
-  autoload :ApplicationLoadPaths
   autoload :ApplicationValidator
   autoload :AssociationInspector
+  autoload :Inflector
   autoload :OffenseCollection
   autoload :Cli
   autoload :Configuration
@@ -36,6 +41,7 @@ module Packwerk
   autoload :ParsedConstantDefinitions
   autoload :Parsers
   autoload :ParseRun
+  autoload :RailsDependencies
   autoload :Reference
   autoload :ReferenceExtractor
   autoload :ReferenceOffense
@@ -49,6 +55,14 @@ module Packwerk
 
     autoload :Coloured
     autoload :Plain
+  end
+
+  module RailsDependencies
+    extend ActiveSupport::Autoload
+
+    autoload :Dump
+    autoload :ApplicationLoadPaths
+    autoload :Load
   end
 
   autoload_under "commands" do
