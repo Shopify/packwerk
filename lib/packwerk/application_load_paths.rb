@@ -11,7 +11,9 @@ module Packwerk
 
       sig { params(root: String, environment: String).returns(T::Array[String]) }
       def extract_relevant_paths(root, environment)
-        require_application(root, environment)
+        # I believe this can go away now that we are using `bin/rake` for this.
+        # Probably we should more explicitly separate out "this is code that Packwerk code should call, this is code that it shouldn't call"
+        # require_application(root, environment)
         all_paths = extract_application_autoload_paths
         relevant_paths = filter_relevant_paths(all_paths)
         assert_load_paths_present(relevant_paths)
@@ -54,6 +56,7 @@ module Packwerk
 
       sig { params(root: String, environment: String).void }
       def require_application(root, environment)
+        puts "The application is being required..."
         environment_file = "#{root}/config/environment"
 
         if File.file?("#{environment_file}.rb")

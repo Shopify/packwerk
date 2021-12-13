@@ -79,10 +79,10 @@ module Packwerk
     end
 
     def load_paths
-      T.unsafe(Process).fork do
-        `bin/rake packwerk:dump_rails_dependencies_to_json`
-      end
-      raise 'blah'
+      Packwerk::Diagnostics.log('About to execute "bin/rake packwerk:dump_rails_dependencies_to_json"', __FILE__)
+      puts `bin/rake packwerk:dump_rails_dependencies_to_json`
+      Packwerk::Diagnostics.log('Finished executing command.', __FILE__)
+      raise 'Diagnostic tests complete'
     end
 
     def parallel?

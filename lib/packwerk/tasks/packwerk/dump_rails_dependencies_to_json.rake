@@ -28,8 +28,12 @@ module Packwerk
         task(dump_rails_dependencies_to_json: :environment) do |_task, _args|
           # TODO: Pass this in as an argument to the rake task
           root_path = File.expand_path('.')
-          puts "HERE WE ARE!"
-          puts ApplicationLoadPaths.extract_relevant_paths(root_path, "test").join("\n")
+          Packwerk::Diagnostics.log('Extracting load paths and inflections', __FILE__)
+          load_paths = ApplicationLoadPaths.extract_relevant_paths(root_path, "test").count
+          inflections = ActiveSupport::Inflector.inflections.as_json
+          puts "Load path count: #{load_paths}"
+          puts "Inflections (acronyms for brevity): #{inflections['acronyms']}"
+          Packwerk::Diagnostics.log('Successfully extracted Rails data', __FILE__)
         end
       end
     end
