@@ -79,7 +79,10 @@ module Packwerk
     end
 
     def load_paths
-      @load_paths ||= ApplicationLoadPaths.extract_relevant_paths(@root_path, "test")
+      T.unsafe(Process).fork do
+        `bin/rake packwerk:dump_rails_dependencies_to_json`
+      end
+      raise 'blah'
     end
 
     def parallel?
