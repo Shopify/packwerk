@@ -35,6 +35,7 @@ module Packwerk
 
       stdout, stderr, status = Open3.capture3("WARNING='This is private API.' bin/rake packwerk:dump_rails_dependencies_to_json")
       if status.success?
+        puts stdout
         Packwerk::Diagnostics.log('Finished executing "bin/rake packwerk:dump_rails_dependencies_to_json"', __FILE__)
         Load.load!
       else

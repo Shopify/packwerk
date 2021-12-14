@@ -15,7 +15,7 @@ module Packwerk
       def self.dump!
         Packwerk::Diagnostics.log('Running Dump.dump!', __FILE__)
         load_paths = ApplicationLoadPaths.extract_relevant_paths("test")
-        inflections = ActiveSupport::Inflector.inflections.as_json
+        inflections = ActiveSupport::Inflector.inflections
 
         dependencies = {
           load_paths: load_paths,
@@ -23,7 +23,7 @@ module Packwerk
         }
 
         File.open(DUMP_FILE, 'w') do |file|
-          file.write dependencies.to_json
+          file.write YAML.dump(dependencies)
         end
 
         Packwerk::Diagnostics.log('Finished running Dump.dump!', __FILE__)
