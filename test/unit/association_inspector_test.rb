@@ -7,7 +7,7 @@ require "parser_test_helper"
 module Packwerk
   class AssociationInspectorTest < Minitest::Test
     setup do
-      @inflector = ActiveSupport::Inflector
+      @inflector = Packwerk::Inflector.new(ActiveSupport::Inflector.inflections)
     end
 
     test "#association? understands custom associations" do

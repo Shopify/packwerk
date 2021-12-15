@@ -33,6 +33,7 @@ module Packwerk
     def self.fetch_load_paths_and_apply_inflections!(root_path, environment)
       Packwerk::Diagnostics.log('About to execute "bin/rake packwerk:dump_rails_dependencies_to_json"', __FILE__)
 
+
       if !File.exist?('bin/rake')
         warning = <<~WARNING
           DEPRECATION WARNING: Packwerk uses the `bin/rake` command to pull what we need Rails performantly without causing memory issues.
@@ -44,9 +45,8 @@ module Packwerk
 
         return Load.load_from_rails_directly!(root_path, environment)
       end
-
-      puts "FILE EXISTS"
-
+      require 'pry'
+      binding.pry
       stdout, stderr, status = Open3.capture3("WARNING='This is private API.' bin/rake packwerk:dump_rails_dependencies_to_json")
       if status.success?
         puts stdout

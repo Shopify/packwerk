@@ -24,7 +24,9 @@ module Packwerk
       offense = Offense.new(file: file_path, message: violation_message)
 
       configuration = Configuration.new({ "parallel" => false })
-      configuration.stubs(load_paths: [])
+      inflector = Packwerk::Inflector.new(ActiveSupport::Inflector::Inflections.new)
+      configuration.stubs(load_paths: [], inflector: inflector)
+
       RunContext.any_instance.stubs(:process_file).at_least_once.returns([offense])
 
       string_io = StringIO.new
@@ -49,7 +51,9 @@ module Packwerk
       offense = Offense.new(file: file_path, message: violation_message)
 
       configuration = Configuration.new({ "parallel" => false })
-      configuration.stubs(load_paths: [])
+      inflector = Packwerk::Inflector.new(ActiveSupport::Inflector::Inflections.new)
+      configuration.stubs(load_paths: [], inflector: inflector)
+
 
       RunContext.any_instance.stubs(:process_file)
         .at_least(2)
@@ -135,7 +139,8 @@ module Packwerk
       offense = Offense.new(file: file_path, message: violation_message)
 
       configuration = Configuration.new
-      configuration.stubs(load_paths: [])
+      inflector = Packwerk::Inflector.new(ActiveSupport::Inflector::Inflections.new)
+      configuration.stubs(load_paths: [], inflector: inflector)
       RunContext.any_instance.stubs(:process_file)
         .returns([offense])
 

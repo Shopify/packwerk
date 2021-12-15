@@ -84,10 +84,21 @@ module Packwerk
       @parallel = configs.key?("parallel") ? configs["parallel"] : true
 
       @config_path = config_path
+    end
 
-      result = RailsDependencies.fetch_load_paths_and_apply_inflections!(@root_path, "test")
-      @load_paths ||= result.load_paths
-      @inflector ||= result.inflector
+    sig { returns(T::Array[String]) }
+    def load_paths
+      @load_paths ||= rails_dependencies.load_paths
+    end
+
+    sig { returns(Packwerk::Inflector) }
+    def inflector
+      @inflector ||= rails_dependencies.inflector
+    end
+
+    sig { returns(RailsDependencies::Result) }
+    def rails_dependencies
+      @rails_dependencies ||= RailsDependencies.fetch_load_paths_and_apply_inflections!(@root_path, "test")
     end
 
     def parallel?
