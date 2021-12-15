@@ -13,7 +13,6 @@ module Packwerk
 
       sig { void }
       def self.dump!
-        Packwerk::Diagnostics.log('Running Dump.dump!', __FILE__)
         load_paths = ApplicationLoadPaths.extract_relevant_paths("test")
         inflections = ActiveSupport::Inflector.inflections
 
@@ -25,8 +24,6 @@ module Packwerk
         File.open(DUMP_FILE, 'w') do |file|
           file.write YAML.dump(dependencies)
         end
-
-        Packwerk::Diagnostics.log('Finished running Dump.dump!', __FILE__)
       end
     end
   end

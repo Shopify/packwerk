@@ -9,8 +9,6 @@ require 'json'
 
 # Provides String#pluralize
 require "active_support/core_ext/string"
-require 'packwerk/diagnostics'
-Packwerk::Diagnostics.log('Requiring railtie if Rails is defined', __FILE__)
 require 'packwerk/railtie' if defined?(Rails)
 
 module Packwerk

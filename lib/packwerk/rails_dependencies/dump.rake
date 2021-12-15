@@ -18,9 +18,6 @@ module Packwerk
               raise "bin/rake packwerk:dump_rails_dependencies_to_json is private API and is subject to change."
             end
 
-            Packwerk::Diagnostics.log('Extracting load paths and inflections', __FILE__)
-            Packwerk::Diagnostics.log('Successfully extracted Rails data', __FILE__)
-
             Dump.dump!
           end
         end
