@@ -8,7 +8,6 @@ module Packwerk
 
       sig { returns(Result) }
       def self.load_from_file!
-        require "pry"
         dump_path = Pathname.new(DUMP_FILE)
         raw_file_contents = dump_path.read
         # Once we read the contents, we can clean this file up
@@ -22,13 +21,8 @@ module Packwerk
       sig { params(root_path: String, environment: String).returns(Result) }
       def self.load_from_rails_directly!(root_path, environment)
         require_application(root_path, environment)
-        load_paths = ApplicationLoadPaths.extract_relevant_paths
-        inflections = ActiveSupport::Inflector.inflections
-
-        Result.new(
-          load_paths: load_paths,
-          inflector: Inflector.new(inflections)
-        )
+        Dump.dump!
+        load_from_file!
       end
 
       sig { params(root: String, environment: String).void }

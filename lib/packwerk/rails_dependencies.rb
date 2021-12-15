@@ -30,7 +30,8 @@ module Packwerk
   module RailsDependencies
     extend T::Sig
 
-    DUMP_FILE = "tmp/packwerk_rails_dependencies.out"
+    DUMP_DIRECTORY = T.let(Pathname.new("tmp"), Pathname)
+    DUMP_FILE = T.let(DUMP_DIRECTORY.join("packwerk_rails_dependencies.out"), Pathname)
 
     class Result < T::Struct
       const :load_paths, T::Array[String]

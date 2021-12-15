@@ -22,6 +22,7 @@ module Packwerk
           inflections: inflections,
         }
 
+        FileUtils.mkdir_p(DUMP_DIRECTORY)
         File.open(DUMP_FILE, "w") do |file|
           file.write(YAML.dump(dependencies))
         end
