@@ -17,7 +17,7 @@ module Packwerk
         Result.new(load_paths: parsed_file_contents[:load_paths], inflector: inflector)
       end
 
-      # This is a fallback if someone does not have a `bin/rake` file.
+      # This is a fallback if the client application does not have a `bin/rake` file.
       sig { params(root_path: String, environment: String).returns(Result) }
       def self.load_from_rails_directly!(root_path, environment)
         require_application(root_path, environment)
