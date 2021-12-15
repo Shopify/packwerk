@@ -15,6 +15,8 @@ end
 
 This should be removed. You can also remove `require 'packwerk/spring_command.rb` from `spring.rb`. As long as your main rails application has spring installed as normal, it should continue to be fast without the memory bloat issue.
 
+We also recommend making sure your application has a `bin/rake` binstub. If it doesn't have it, we fall back to loading Rails within the same process (so we do not break behavior for users), but this does retain the memory issue.
+
 # Upgrading from 1.x to 2.0
 
 With Packwerk 2.0, we made a few changes to simplify the setup. Updating will require removing some previously necessary files and configuration.

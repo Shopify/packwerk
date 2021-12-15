@@ -7,13 +7,40 @@ module Packwerk
       extend T::Sig
 
       sig { returns(Result) }
-      def self.load!
+      def self.load_from_file!
         require 'pry'
         raw_file_contents = File.read(DUMP_FILE);
         parsed_file_contents = YAML.load(raw_file_contents);
         inflector = Inflector.new(parsed_file_contents[:inflections])
         Result.new(load_paths: parsed_file_contents[:load_paths], inflector: inflector)
       end
+
+      sig { params(root_path: String, environment: String).returns(Result) }
+      def self.load_from_rails_directly!(root_path, environment)
+        require_application(root_path, environment)
+        load_paths = ApplicationLoadPaths.extract_relevant_paths("test")
+        inflections = ActiveSupport::Inflector.inflections
+
+        Result.new(
+          load_paths: load_paths,
+          inflector: Inflector.new(inflections)
+        )
+      end
+
+      sig { params(root: String, environment: String).void }
+      def self.require_application(root, environment)
+        environment_file = "#{root}/config/environment"
+
+        if File.file?("#{environment_file}.rb")
+          ENV["RAILS_ENV"] ||= environment
+
+          require environment_file
+        else
+          raise "A Rails application could not be found in #{root}"
+        end
+      end
+
+      private_class_method :require_application
     end
   end
 end

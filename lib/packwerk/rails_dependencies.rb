@@ -29,15 +29,29 @@ module Packwerk
       const :inflector, Inflector
     end
 
-    sig { returns(Result) }
-    def self.fetch_load_paths_and_apply_inflections!
+    sig { params(root_path: String, environment: String).returns(Result) }
+    def self.fetch_load_paths_and_apply_inflections!(root_path, environment)
       Packwerk::Diagnostics.log('About to execute "bin/rake packwerk:dump_rails_dependencies_to_json"', __FILE__)
+
+      if !File.exist?('bin/rake')
+        warning = <<~WARNING
+          DEPRECATION WARNING: Packwerk uses the `bin/rake` command to pull what we need Rails performantly without causing memory issues.
+          If you do not have this file, we will fall back to loading Rails dependencies within the same process, which will greatly increase
+          the amount of memory your packwerk process will use.
+        WARNING
+
+        warn(warning)
+
+        return Load.load_from_rails_directly!(root_path, environment)
+      end
+
+      puts "FILE EXISTS"
 
       stdout, stderr, status = Open3.capture3("WARNING='This is private API.' bin/rake packwerk:dump_rails_dependencies_to_json")
       if status.success?
         puts stdout
         Packwerk::Diagnostics.log('Finished executing "bin/rake packwerk:dump_rails_dependencies_to_json"', __FILE__)
-        Load.load!
+        Load.load_from_file!
       else
         # We may want to do something more elegant with errors. For now, printing to console
         # will at least allow bug reports to be filed.

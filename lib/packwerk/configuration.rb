@@ -85,7 +85,7 @@ module Packwerk
 
       @config_path = config_path
 
-      result = RailsDependencies.fetch_load_paths_and_apply_inflections!
+      result = RailsDependencies.fetch_load_paths_and_apply_inflections!(@root_path, "test")
       @load_paths ||= result.load_paths
       @inflector ||= result.inflector
     end
