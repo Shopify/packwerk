@@ -9,20 +9,21 @@ module Packwerk
     class Dump
       extend T::Sig
 
-      SUPPORTED_INFLECTION_METHODS = T.let(%w(acronyms humans irregulars plurals singulars uncountables), T::Array[String])
+      SUPPORTED_INFLECTION_METHODS = T.let(%w(acronyms humans irregulars plurals singulars uncountables),
+        T::Array[String])
 
       sig { void }
       def self.dump!
-        load_paths = ApplicationLoadPaths.extract_relevant_paths("test")
+        load_paths = ApplicationLoadPaths.extract_relevant_paths
         inflections = ActiveSupport::Inflector.inflections
 
         dependencies = {
           load_paths: load_paths,
-          inflections: inflections
+          inflections: inflections,
         }
 
-        File.open(DUMP_FILE, 'w') do |file|
-          file.write YAML.dump(dependencies)
+        File.open(DUMP_FILE, "w") do |file|
+          file.write(YAML.dump(dependencies))
         end
       end
     end

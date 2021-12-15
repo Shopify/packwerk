@@ -54,7 +54,6 @@ module Packwerk
       inflector = Packwerk::Inflector.new(ActiveSupport::Inflector::Inflections.new)
       configuration.stubs(load_paths: [], inflector: inflector)
 
-
       RunContext.any_instance.stubs(:process_file)
         .at_least(2)
         .returns([offense])

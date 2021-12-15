@@ -10,8 +10,8 @@ module Packwerk
       class << self
         extend T::Sig
 
-        sig { params(environment: String).returns(T::Array[String]) }
-        def extract_relevant_paths(environment)
+        sig { returns(T::Array[String]) }
+        def extract_relevant_paths
           all_paths = extract_application_autoload_paths
           relevant_paths = filter_relevant_paths(all_paths)
           assert_load_paths_present(relevant_paths)
@@ -24,7 +24,7 @@ module Packwerk
             .select { |railtie| railtie.is_a?(Rails::Engine) }
             .push(Rails.application)
             .flat_map do |engine|
-              paths = (engine.config.autoload_paths + engine.config.eager_load_paths + engine.config.autoload_once_paths)
+              paths = (engine.config.autoload_paths + engine.config.eager_load_paths + engine.config.autoload_once_paths) # rubocop:disable Layout/LineLength
               paths.map(&:to_s).uniq
             end
         end

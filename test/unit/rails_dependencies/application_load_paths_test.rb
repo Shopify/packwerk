@@ -45,13 +45,13 @@ module Packwerk
 
       test ".extract_relevant_paths calls out to filter the paths" do
         ApplicationLoadPaths.expects(:filter_relevant_paths).once.returns([Pathname.new("/fake_path")])
-        ApplicationLoadPaths.extract_relevant_paths("test")
+        ApplicationLoadPaths.extract_relevant_paths
       end
 
       test ".extract_relevant_paths returns unique load paths" do
         path = Pathname.new("/application/app/models")
         ApplicationLoadPaths.expects(:filter_relevant_paths).once.returns([path, path])
-        assert_equal 1, ApplicationLoadPaths.extract_relevant_paths("test").count
+        assert_equal 1, ApplicationLoadPaths.extract_relevant_paths.count
       end
 
       test ".extract_application_autoload_paths returns unique autoload paths" do

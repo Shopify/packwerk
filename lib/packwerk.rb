@@ -4,12 +4,12 @@
 require "sorbet-runtime"
 require "active_support"
 require "fileutils"
-require 'open3'
-require 'json'
+require "open3"
+require "json"
 
 # Provides String#pluralize
 require "active_support/core_ext/string"
-require 'packwerk/railtie' if defined?(Rails)
+require "packwerk/railtie" if defined?(Rails)
 
 module Packwerk
   extend ActiveSupport::Autoload

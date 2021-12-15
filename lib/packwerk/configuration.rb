@@ -39,12 +39,6 @@ module Packwerk
       :include, :exclude, :root_path, :package_paths, :custom_associations, :config_path
     )
 
-    sig { returns(T::Array[String]) }
-    attr_reader :load_paths
-
-    sig { returns(Inflector) }
-    attr_reader :inflector
-
     def initialize(configs = {}, config_path: nil)
       if configs["load_paths"]
         warning = <<~WARNING

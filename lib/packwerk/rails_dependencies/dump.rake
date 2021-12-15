@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: strict
 
 module Packwerk
@@ -11,10 +12,10 @@ module Packwerk
       def create_tasks!
         namespace(:packwerk) do
           # The purpose of this task is to give a rake command to output our dependencies on Rails in JSON format.
-          desc('This prints out Rails dependencies to STDOUT.')
-          task(dump_rails_dependencies_to_json: :environment) do |_task, args|
-            warning = ENV['WARNING']&.strip
-            if warning != 'This is private API.'
+          desc("This prints out Rails dependencies to STDOUT.")
+          task(dump_rails_dependencies_to_json: :environment) do |_task, _args|
+            warning = ENV["WARNING"]&.strip
+            if warning != "This is private API."
               raise "bin/rake packwerk:dump_rails_dependencies_to_json is private API and is subject to change."
             end
 

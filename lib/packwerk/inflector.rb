@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # typed: strict
 
 module Packwerk
@@ -10,7 +11,7 @@ module Packwerk
       @inflections = inflections
     end
 
-    sig { params(_: T.untyped).returns(ActiveSupport::Inflector::Inflections)}
+    sig { params(_: T.untyped).returns(ActiveSupport::Inflector::Inflections) }
     def inflections(_ = nil)
       @inflections
     end
