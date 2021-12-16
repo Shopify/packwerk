@@ -23,7 +23,7 @@ module Packwerk
   #
   # Lastly - we do not expect clients to be using this task. It is only exposed so that the client-run
   # `bin/packwerk` command can fork and run this command to get the STDOUT. We reflect this by running this
-  # command with `WARNING='This is private API.' bin/rake packwerk:dump_rails_dependencies_to_json`.
+  # command with `WARNING='This is private API.' bin/rake packwerk:dump_rails_dependencies_to_file`.
   # Open to other suggestions for incorporating this in a more conventionally private way.
   # (Note we could also use `Process.fork`, but we wouldn't be able to take advantage of spring in this case.)
   #
@@ -52,7 +52,7 @@ module Packwerk
         return Load.load_from_rails_directly!(root_path, environment)
       end
 
-      command = "WARNING='This is private API.' bin/rake packwerk:dump_rails_dependencies_to_json"
+      command = "WARNING='This is private API.' bin/rake packwerk:dump_rails_dependencies_to_file"
       _stdout, stderr, status = Open3.capture3(command)
       if status.success?
         Load.load_from_file!
@@ -60,7 +60,7 @@ module Packwerk
         # We may want to do something more elegant with errors. For now, printing to console
         # will at least allow bug reports to be filed.
         error_message = <<~ERROR
-          Internal call to dump_rails_dependencies_to_json failed with errors:
+          Internal call to dump_rails_dependencies_to_file failed with errors:
 
           #{stderr}
 
