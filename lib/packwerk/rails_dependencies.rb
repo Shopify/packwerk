@@ -3,8 +3,7 @@
 
 module Packwerk
   #
-  # The purpose of this module is to provide an interface to dump rails dependencies to STDOUT and read them and parse
-  # them from STDOUT.
+  # The purpose of this module is to provide an interface to dump rails dependencies to a file and read that file.
   #
   # The reason we want this is because we don't want our `bin/packwerk` process to load Rails, since when we run
   # Parallel.flat_map (in `parse_run.rb`), we fork the process. `parallel`
@@ -14,18 +13,12 @@ module Packwerk
   #
   # See https://github.com/Shopify/packwerk/issues/164 for bug report associated with this.
   #
-  # With this module, we can create a new process which runs `dump.rake` and we can read the input in in
+  # With this module, we can create a new process which dumps rails dependencies and we can read the input in in
   # the main process.
   #
-  # Note that by default, `spring` will automatically springify all rake tasks run via `bin/rake`
-  # (https://github.com/rails/spring#rake)
+  # Note that by default, `spring` will automatically springify rails runner
+  # (https://github.com/rails/spring#rails-console-rails-generate-rails-runner)
   # So we should expect to see the fast execution of this task by the parent process.
-  #
-  # Lastly - we do not expect clients to be using this task. It is only exposed so that the client-run
-  # `bin/packwerk` command can fork and run this command to get the STDOUT. We reflect this by running this
-  # command with `WARNING='This is private API.' bin/rake packwerk:dump_rails_dependencies_to_file`.
-  # Open to other suggestions for incorporating this in a more conventionally private way.
-  # (Note we could also use `Process.fork`, but we wouldn't be able to take advantage of spring in this case.)
   #
   module RailsDependencies
     extend T::Sig
@@ -40,9 +33,9 @@ module Packwerk
 
     sig { params(root_path: String, environment: String).returns(Result) }
     def self.fetch_load_paths_and_apply_inflections!(root_path, environment)
-      unless File.exist?("bin/rake")
+      unless File.exist?("bin/rails")
         warning = <<~WARNING
-          DEPRECATION WARNING: Packwerk uses the `bin/rake` command to pull what we need Rails performantly without causing memory issues.
+          DEPRECATION WARNING: Packwerk uses the `bin/rails runner` command to pull what we need Rails performantly without causing memory issues.
           If you do not have this file, we will fall back to loading Rails dependencies within the same process, which will greatly increase
           the amount of memory your packwerk process will use.
         WARNING
@@ -52,15 +45,16 @@ module Packwerk
         return Load.load_from_rails_directly!(root_path, environment)
       end
 
-      command = "WARNING='This is private API.' bin/rake packwerk:dump_rails_dependencies_to_file"
-      _stdout, stderr, status = Open3.capture3(command)
+      command = ["bin/rails", "runner", "Packwerk::RailsDependencies::Dump.dump!"]
+      _stdout, stderr, status = Open3.capture3({"RAILS_ENV" => "test"}, *command)
+
       if status.success?
         Load.load_from_file!
       else
         # We may want to do something more elegant with errors. For now, printing to console
         # will at least allow bug reports to be filed.
         error_message = <<~ERROR
-          Internal call to dump_rails_dependencies_to_file failed with errors:
+          Internal call to Packwerk::RailsDependencies::Dump.dump! failed with errors:
 
           #{stderr}
 
@@ -70,6 +64,4 @@ module Packwerk
       end
     end
   end
-
-  private_constant :RailsDependencies
 end
