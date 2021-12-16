@@ -46,7 +46,7 @@ module Packwerk
       end
 
       command = ["bin/rails", "runner", "Packwerk::RailsDependencies::Dump.dump!"]
-      _stdout, stderr, status = Open3.capture3({"RAILS_ENV" => "test"}, *command)
+      _stdout, stderr, status = Open3.capture3({ "RAILS_ENV" => "test" }, *command)
 
       if status.success?
         Load.load_from_file!
