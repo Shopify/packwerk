@@ -59,17 +59,21 @@ module Packwerk
 
     sig { params(file: String).returns(ProcessedFileResult) }
     def process_file(file:)
-      references = file_processor.call(file)
+      cache_dir = Pathname.new('tmp/cache/packwerk')
+      FileUtils.mkdir_p(cache_dir)
 
-      reference_checker = ReferenceChecking::ReferenceChecker.new(checkers)
-      offenses = references.flat_map { |reference| reference_checker.call(reference) }
-      references = file_processor.call(file)
+      file_digest = Digest::SHA256.hexdigest(File.read(file))
+      file_cache = cache_dir.join(file_digest)
+      if file_cache.exist?
+        YAML.load(file_cache.read)
+      else
+        references = file_processor.call(file)
+        reference_checker = ReferenceChecking::ReferenceChecker.new(checkers)
+        offenses = references.flat_map { |reference| reference_checker.call(reference) }
 
-      ProcessedFileResult.new(
-        file: file,
-        offenses: offenses,
-        references: references.select{|r| r.is_a?(Reference)}
-      )
+        file_cache.open('w') { |file| file.write YAML.dump(offenses)}
+        offenses
+      end
     end
 
     private
