@@ -22,6 +22,12 @@ module Packwerk
       ::Packwerk::ReferenceChecking::Checkers::PrivacyChecker,
     ]
 
+    class ProcessedFileResult < T::Struct
+      const :file, String
+      const :references, T::Array[Reference]
+      const :offenses, T::Array[Offense]
+    end
+
     class << self
       def from_configuration(configuration)
         inflector = ActiveSupport::Inflector
@@ -51,12 +57,19 @@ module Packwerk
       @checker_classes = checker_classes
     end
 
-    sig { params(file: String).returns(T::Array[Packwerk::Offense]) }
+    sig { params(file: String).returns(ProcessedFileResult) }
     def process_file(file:)
       references = file_processor.call(file)
 
       reference_checker = ReferenceChecking::ReferenceChecker.new(checkers)
-      references.flat_map { |reference| reference_checker.call(reference) }
+      offenses = references.flat_map { |reference| reference_checker.call(reference) }
+      references = file_processor.call(file)
+
+      ProcessedFileResult.new(
+        file: file,
+        offenses: offenses,
+        references: references.select{|r| r.is_a?(Reference)}
+      )
     end
 
     private

@@ -44,7 +44,14 @@ module Packwerk
     test "#update_deprecations returns exit code 1 when there are offenses" do
       use_template(:minimal)
       offense = Offense.new(file: "path/of/exile.rb", message: "something")
-      RunContext.any_instance.stubs(:process_file).returns([offense])
+
+      result = RunContext::ProcessedFileResult.new(
+        file: build_reference.relative_path,
+        references: [build_reference],
+        offenses: [offense],
+      )
+
+      RunContext.any_instance.stubs(:process_file).returns(result)
       OffenseCollection.any_instance.expects(:dump_deprecated_references_files).once
 
       parse_run = Packwerk::ParseRun.new(files: ["path/of/exile.rb"], configuration: Configuration.from_path)
@@ -72,7 +79,14 @@ module Packwerk
         configuration: Configuration.new({ "parallel" => false }),
         progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
       )
-      RunContext.any_instance.stubs(:process_file).returns([offense])
+
+      result = RunContext::ProcessedFileResult.new(
+        file: build_reference.relative_path,
+        references: [build_reference],
+        offenses: [offense],
+      )
+
+      RunContext.any_instance.stubs(:process_file).returns(result)
       result = parse_run.check
 
       expected_output = <<~EOS
@@ -101,7 +115,14 @@ module Packwerk
         configuration: Configuration.new({ "parallel" => false }),
         progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
       )
-      RunContext.any_instance.stubs(:process_file).returns([offense])
+
+      result = RunContext::ProcessedFileResult.new(
+        file: offense.reference.relative_path,
+        references: [offense.reference],
+        offenses: [offense],
+      )
+
+      RunContext.any_instance.stubs(:process_file).returns(result)
       result = parse_run.check
 
       expected_output = <<~EOS
@@ -127,11 +148,22 @@ module Packwerk
         reference: build_reference(path: "some/other_path.rb"),
         violation_type: ViolationType::Privacy
       )
+      result = RunContext::ProcessedFileResult.new(
+        file: offense.reference.relative_path,
+        references: [offense.reference],
+        offenses: [offense],
+      )
+
+      result2 = RunContext::ProcessedFileResult.new(
+        file: offense2.reference.relative_path,
+        references: [offense2.reference],
+        offenses: [offense2],
+      )
       parse_run = Packwerk::ParseRun.new(
         files: ["some/path.rb", "some/other_path.rb"],
         configuration: Configuration.new
       )
-      RunContext.any_instance.stubs(:process_file).returns([offense]).returns([offense2])
+      RunContext.any_instance.stubs(:process_file).returns(result).returns(result2)
 
       result = parse_run.check
       refute result.status

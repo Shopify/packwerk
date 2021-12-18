@@ -60,39 +60,39 @@ module Packwerk
       @progress_formatter.started(@files)
 
       run_context = Packwerk::RunContext.from_configuration(@configuration)
-      all_offenses = T.let([], T.untyped)
+      all_results = T.let([], T::Array[RunContext::ProcessedFileResult])
 
       process_file = -> (path) do
-        run_context.process_file(file: path).tap do |offenses|
-          failed = show_errors && offenses.any? { |offense| !offense_collection.listed?(offense) }
+        run_context.process_file(file: path).tap do |results|
+          failed = show_errors && results.offenses.any? { |offense| !offense_collection.listed?(offense) }
           update_progress(failed: failed)
         end
       end
 
       execution_time = Benchmark.realtime do
-        all_offenses = if @configuration.parallel?
+        all_results = if @configuration.parallel?
           Parallel.flat_map(@files, &process_file)
         else
-          serial_find_offenses(&process_file)
+          serial_find_results(&process_file)
         end
       end
 
       @progress_formatter.finished(execution_time)
 
-      all_offenses.each { |offense| offense_collection.add_offense(offense) }
+      all_results.flat_map(&:offenses).each { |offense| offense_collection.add_offense(offense) }
       offense_collection
     end
 
-    def serial_find_offenses
-      all_offenses = T.let([], T.untyped)
+    def serial_find_results
+      all_results = T.let([], T::Array[RunContext::ProcessedFileResult])
       @files.each do |path|
-        offenses = yield path
-        all_offenses.concat(offenses)
+        result = yield path
+        all_results << result
       end
-      all_offenses
+      all_results
     rescue Interrupt
       @progress_formatter.interrupted
-      all_offenses
+      all_results
     end
 
     def update_progress(failed: false)

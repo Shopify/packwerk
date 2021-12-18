@@ -6,6 +6,8 @@ require "rails_test_helper"
 
 module Packwerk
   class CliTest < Minitest::Test
+    include FactoryHelper
+
     setup do
       @err_out = StringIO.new
       @cli = ::Packwerk::Cli.new(err_out: @err_out)
@@ -25,7 +27,14 @@ module Packwerk
 
       configuration = Configuration.new({ "parallel" => false })
       configuration.stubs(load_paths: [])
-      RunContext.any_instance.stubs(:process_file).at_least_once.returns([offense])
+
+      result = RunContext::ProcessedFileResult.new(
+        file: file_path,
+        references: [build_reference],
+        offenses: [offense],
+      )
+
+      RunContext.any_instance.stubs(:process_file).at_least_once.returns(result)
 
       string_io = StringIO.new
 
@@ -51,11 +60,17 @@ module Packwerk
       configuration = Configuration.new({ "parallel" => false })
       configuration.stubs(load_paths: [])
 
+      result = RunContext::ProcessedFileResult.new(
+        file: build_reference.relative_path,
+        references: [build_reference],
+        offenses: [offense],
+      )
+
       RunContext.any_instance.stubs(:process_file)
         .at_least(2)
-        .returns([offense])
+        .returns(result)
         .raises(Interrupt)
-        .returns([offense])
+        .returns(result)
 
       string_io = StringIO.new
 
@@ -136,8 +151,15 @@ module Packwerk
 
       configuration = Configuration.new
       configuration.stubs(load_paths: [])
+
+      result = RunContext::ProcessedFileResult.new(
+        file: build_reference.relative_path,
+        references: [build_reference],
+        offenses: [offense],
+      )
+
       RunContext.any_instance.stubs(:process_file)
-        .returns([offense])
+        .returns(result)
 
       string_io = StringIO.new
 
