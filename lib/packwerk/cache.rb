@@ -22,8 +22,8 @@ module Packwerk
     def self.with_cache(files, root_path:, &block)
       cache = Private.new(root_path: root_path)
       uncached_files = cache.files_without_cache_hits(files)
-      puts("Using cache - #{cache.cached_file_count} files are cached, #{uncached_files.count} are not")
-      puts("First 5 uncached files: #{uncached_files.first(5).inspect}")
+      Debug.out("Using cache - #{cache.cached_file_count} files are cached, #{uncached_files.count} are not")
+      Debug.out("First 5 uncached files: #{uncached_files.first(5).inspect}")
       uncached_results = block.call(uncached_files)
       cache.cache_results(uncached_files, uncached_results)
 
@@ -34,7 +34,6 @@ module Packwerk
       extend T::Sig
 
       CACHE_DIR = T.let(Pathname.new("tmp/cache/packwerk"), Pathname)
-      CACHE_FILE = T.let(CACHE_DIR.join("all.txt"), Pathname)
 
       class CacheContents < T::Struct
         const :cache_digest, String
@@ -52,8 +51,12 @@ module Packwerk
       def initialize(root_path:)
         FileUtils.mkdir_p(CACHE_DIR)
         @cache = T.let({}, CACHE_SHAPE)
-        if CACHE_FILE.exist?
-          @cache = T.let(YAML.load(CACHE_FILE.read), CACHE_SHAPE)
+        
+        # The cache associated with each file is named by the digest of the file name (not contents).
+        # Whether or not the cache is hit is based on the `cache_digest` key within each file (more below).
+        Pathname.glob(CACHE_DIR.join('**')).each do |filecache_path|
+          # We take the basename which is the file name digest
+          @cache[filecache_path.basename.to_s] = YAML.load(filecache_path.read)
         end
 
         @root_path = root_path
@@ -74,13 +77,13 @@ module Packwerk
       def files_without_cache_hits(files)
         files.select do |file|
           if File.exist?(file)
-            current_entry = @cache[file]
+            current_entry = @cache[digest_for_string(file)]
             if current_entry.nil?
               true
             else
-
               cached_digest = current_entry.cache_digest
               current_digest = digest_for_result(current_entry.result)
+              # TODO: If there is a cache miss here, we should delete the old cache
               current_digest != cached_digest
             end
           else
@@ -92,18 +95,17 @@ module Packwerk
       sig { params(uncached_files: T::Array[String], uncached_results: T::Array[RunContext::ProcessedFileResult]).void }
       def cache_results(uncached_files, uncached_results)
         uncached_results_by_file = uncached_results.group_by(&:file)
-        puts("Storing results in cache by digest...")
+        Debug.out("Storing results in cache by digest...")
         uncached_files.each do |file|
           result = T.must(uncached_results_by_file.fetch(file).first)
           cache_contents = CacheContents.new(
             cache_digest: digest_for_result(result),
             result: result
           )
-          @cache[file] = cache_contents
+
+          CACHE_DIR.join(digest_for_string(file)).write YAML.dump(cache_contents)
         end
-        puts("Dumping into cache...")
-        CACHE_FILE.write(YAML.dump(@cache))
-        puts("Finished dumping into cache...")
+        Debug.out("Finished dumping into cache...")
       end
 
       sig { params(result: RunContext::ProcessedFileResult).returns(String) }
@@ -148,17 +150,36 @@ module Packwerk
           end
         end
 
-        Digest::MD5.hexdigest(all_inputs_to_digest.inspect)
+        digest_for_string(all_inputs_to_digest.inspect)
       end
 
       sig { params(file: String).returns(String) }
       def digest_for_file(file)
+        # We cache this to avoid unnecessary File IO
+        @files_by_digest[file] ||= digest_for_string(File.read(file))
+      end
+
+      sig { params(str: String).returns(String) }
+      def digest_for_string(str)
         # MD5 appears to be the fastest
         # https://gist.github.com/morimori/1330095
-        @files_by_digest[file] ||= Digest::MD5.hexdigest(File.read(file))
+        Digest::MD5.hexdigest(str)
       end
     end
 
+    class Debug
+      extend T::Sig
+
+      sig { params(out: String).void }
+      def self.out(out)
+        if ENV['DEBUG_PACKWERK_CACHE']
+          puts out
+        end
+      end
+    end
+
+
+    private_constant :Debug
     private_constant :Private
   end
 end
