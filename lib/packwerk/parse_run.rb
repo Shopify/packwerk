@@ -74,7 +74,7 @@ module Packwerk
           if @configuration.parallel?
             Parallel.flat_map(uncached_files, &process_file)
           else
-            serial_find_offenses(uncached_files, &process_file)
+            serial_find_results(uncached_files, &process_file)
           end
         end
       end
@@ -85,9 +85,9 @@ module Packwerk
       offense_collection
     end
 
-    def serial_find_results
+    def serial_find_results(files)
       all_results = T.let([], T::Array[RunContext::ProcessedFileResult])
-      @files.each do |path|
+      files.each do |path|
         result = yield path
         all_results << result
       end

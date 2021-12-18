@@ -44,18 +44,26 @@ module Packwerk
       path.start_with?(@name)
     end
 
+    sig { returns(Pathname) }
+    def directory
+      @directory = T.let(@directory, T.nilable(Pathname))
+      @directory ||= if root?
+        Pathname.new(".")
+      else
+        Pathname.new(@name)
+      end
+    end
+
+    sig { returns(Pathname) }
+    def yml
+      @yml = T.let(@yml, T.nilable(Pathname))
+      @yml ||= directory.join(PackageSet::PACKAGE_CONFIG_FILENAME)
+    end
+
     sig { returns(String) }
     def public_path
       @public_path = T.let(@public_path, T.nilable(String))
-      @public_path ||= begin
-        unprefixed_public_path = user_defined_public_path || "app/public/"
-
-        if root?
-          unprefixed_public_path
-        else
-          File.join(@name, unprefixed_public_path)
-        end
-      end
+      @public_path ||= directory.join(user_defined_public_path || "app/public/").to_s
     end
 
     sig { params(path: String).returns(T::Boolean) }
