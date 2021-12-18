@@ -22,14 +22,18 @@ module Packwerk
       ).returns(T::Array[RunContext::ProcessedFileResult])
     end
     def self.with_cache(files, root_path:, &block)
-      cache = Private.new(files: files, root_path: root_path)
-      uncached_files = cache.uncached_files
-      Debug.out("Using cache - #{cache.cached_file_count} files are cached, #{uncached_files.count} are not")
-      Debug.out("First 5 uncached files: #{uncached_files.first(5).inspect}")
-      uncached_results = block.call(uncached_files)
-      cache.cache_results(uncached_files, uncached_results)
+      if ENV['EXPERIMENTAL_PACKWERK_CACHE']
+        cache = Private.new(files: files, root_path: root_path)
+        uncached_files = cache.uncached_files
+        Debug.out("Using cache - #{cache.cached_file_count} files are cached, #{uncached_files.count} are not")
+        Debug.out("First 5 uncached files: #{uncached_files.first(5).inspect}")
+        uncached_results = block.call(uncached_files)
+        cache.cache_results(uncached_files, uncached_results)
 
-      uncached_results + cache.cached_results
+        uncached_results + cache.cached_results
+      else
+        block.call(files)
+      end
     end
 
     sig { void }

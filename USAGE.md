@@ -100,6 +100,10 @@ end
 Packwerk::Parsers::Factory.instance.erb_parser_class = CustomParser
 ```
 
+## Using the experimental cache
+Packwerk ships with an experimental cache to help speed up file parsing. You can run packwerk with `EXPERIMENTAL_PACKWERK_CACHE=1 bin/packwerk ...` to turn this on.
+This will write to `tmp/cache/packwerk`.
+
 ## Validating the package system
 
 There are some criteria that an application must meet in order to have a valid package system. These criteria include having a valid autoload path cache, package definition files, and application folder structure. The dependency graph within the package system also has to be acyclic.
