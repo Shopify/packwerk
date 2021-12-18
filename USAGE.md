@@ -102,7 +102,7 @@ Packwerk::Parsers::Factory.instance.erb_parser_class = CustomParser
 
 ## Using the experimental cache
 Packwerk ships with an experimental cache to help speed up file parsing. You can run packwerk with `EXPERIMENTAL_PACKWERK_CACHE=1 bin/packwerk ...` to turn this on.
-This will write to `tmp/cache/packwerk`.
+This will write to `tmp/cache/packwerk`. It is not recommended to use the cache in your test suite, as this cache is experimental and its best to ensure CI is running with no cache.
 
 ## Validating the package system
 
