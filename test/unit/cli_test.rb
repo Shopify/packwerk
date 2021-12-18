@@ -62,7 +62,7 @@ module Packwerk
       configuration.stubs(load_paths: [])
 
       result = RunContext::ProcessedFileResult.new(
-        file: 'path/of/exile.rb',
+        file: "path/of/exile.rb",
         references: [build_reference],
         offenses: [offense],
       )

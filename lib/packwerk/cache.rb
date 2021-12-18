@@ -3,10 +3,12 @@
 
 #
 # There are some known bugs in this cache:
-# 1) The cache should be busted if the contents of `packwerk.yml` change, since custom associations can affect what is considered a violation
+# 1) The cache should be busted if the contents of `packwerk.yml` change, since custom associations
+# can affect what is considered a violation
 # 2) The cache should be busted if inflections change.
 #
-# In practice, we think these things change rarely enough that when they do change, a user can just run `rm -rf tmp/cache/packwerk` to reset the cache
+# In practice, we think these things change rarely enough that when they do change, a user can
+# just run `rm -rf tmp/cache/packwerk` to reset the cache
 #
 module Packwerk
   class Cache
@@ -22,13 +24,13 @@ module Packwerk
       ).returns(T::Array[RunContext::ProcessedFileResult])
     end
     def self.with_cache(files, root_path:, &block)
-      if ENV['EXPERIMENTAL_PACKWERK_CACHE']
+      if ENV["EXPERIMENTAL_PACKWERK_CACHE"]
         cache = Private.new(files: files, root_path: root_path)
         uncached_files = cache.uncached_files
         Debug.out("Using cache - #{cache.cached_file_count} files are cached, #{uncached_files.count} are not")
         Debug.out("First 5 uncached files: #{uncached_files.first(5).inspect}")
         uncached_results = block.call(uncached_files)
-        cache.cache_results(uncached_files, uncached_results)
+        cache.cache_results(uncached_results)
 
         uncached_results + cache.cached_results
       else
@@ -73,7 +75,7 @@ module Packwerk
           # We take the basename which is the file name digest
           if filecache_path.exist?
             cache_contents = T.let(YAML.load(filecache_path.read), CacheContents)
-            if cache_hit?(cache_contents, filename)
+            if existing_cache_is_still_valid?(cache_contents)
               @cache[filename] = cache_contents
               @cached_files << filename
             else
@@ -86,9 +88,7 @@ module Packwerk
       end
 
       sig { returns(T::Array[String]) }
-      def uncached_files
-        @uncached_files
-      end
+      attr_reader :uncached_files
 
       sig { returns(T::Array[RunContext::ProcessedFileResult]) }
       def cached_results
@@ -100,13 +100,13 @@ module Packwerk
         @cache.keys.count
       end
 
-      sig { params(cache_contents: CacheContents, file: String).returns(T::Boolean) }
-      def cache_hit?(cache_contents, file)
+      sig { params(cache_contents: CacheContents).returns(T::Boolean) }
+      def existing_cache_is_still_valid?(cache_contents)
         cache_contents.cache_digest == digest_for_result(cache_contents.result)
       end
 
-      sig { params(uncached_files: T::Array[String], uncached_results: T::Array[RunContext::ProcessedFileResult]).void }
-      def cache_results(uncached_files, uncached_results)
+      sig { params(uncached_results: T::Array[RunContext::ProcessedFileResult]).void }
+      def cache_results(uncached_results)
         Debug.out("Storing results in cache by digest...")
 
         uncached_results.each do |result|
@@ -115,7 +115,7 @@ module Packwerk
             result: result
           )
 
-          CACHE_DIR.join(digest_for_string(result.file)).write YAML.dump(cache_contents)
+          CACHE_DIR.join(digest_for_string(result.file)).write(YAML.dump(cache_contents))
         end
         Debug.out("Finished dumping into cache...")
       end
@@ -168,7 +168,7 @@ module Packwerk
       sig { params(file: String).returns(String) }
       def digest_for_file(file)
         # We cache this to avoid unnecessary File IO
-        @files_by_digest[file] ||= digest_for_string(File.exist?(file) ? File.read(file) : 'file does not exist')
+        @files_by_digest[file] ||= digest_for_string(File.exist?(file) ? File.read(file) : "file does not exist")
       end
 
       sig { params(str: String).returns(String) }
@@ -184,12 +184,11 @@ module Packwerk
 
       sig { params(out: String).void }
       def self.out(out)
-        if ENV['DEBUG_PACKWERK_CACHE']
-          puts out
+        if ENV["DEBUG_PACKWERK_CACHE"]
+          puts(out)
         end
       end
     end
-
 
     private_constant :Debug
     private_constant :Private

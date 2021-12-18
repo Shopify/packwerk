@@ -62,11 +62,12 @@ module Packwerk
       references_and_offenses = file_processor.call(file)
       reference_checker = ReferenceChecking::ReferenceChecker.new(checkers)
       offenses = references_and_offenses.flat_map { |reference| reference_checker.call(reference) }
+      references = references_and_offenses.select { |r| r.is_a?(Reference) }
 
       ProcessedFileResult.new(
         file: file,
         offenses: offenses,
-        references: references_and_offenses.select{|r| r.is_a?(Reference)}
+        references: T.cast(references, T::Array[Reference])
       )
     end
 

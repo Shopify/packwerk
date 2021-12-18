@@ -8,7 +8,7 @@ module Packwerk
     include ApplicationFixtureHelper
 
     setup do
-      ENV['EXPERIMENTAL_PACKWERK_CACHE'] = '1'
+      ENV["EXPERIMENTAL_PACKWERK_CACHE"] = "1"
       setup_application_fixture
     end
 
@@ -31,9 +31,9 @@ module Packwerk
       OffenseCollection.any_instance.expects(:dump_deprecated_references_files).once
 
       parse_run = Packwerk::ParseRun.new(files: ["path/of/exile.rb"], configuration: Configuration.from_path)
-      result = parse_run.update_deprecations
+      parse_run.update_deprecations
 
-      cache_files = Pathname.pwd.join(Cache::CACHE_DIR).glob('**')
+      cache_files = Pathname.pwd.join(Cache::CACHE_DIR).glob("**")
       assert_equal cache_files.count, 1
 
       cached_result = YAML.load(cache_files.first.read).result
@@ -60,8 +60,8 @@ module Packwerk
       configuration = Configuration.new({ "parallel" => false })
       parse_run = Packwerk::ParseRun.new(files: ["path/of/exile.rb"], configuration: configuration)
 
-      result = parse_run.update_deprecations
-      result = parse_run.update_deprecations
+      parse_run.update_deprecations
+      parse_run.update_deprecations
     end
 
     test "#update_deprecations does not read from the cache if the constant package YML has changed" do
@@ -81,11 +81,11 @@ module Packwerk
       configuration = Configuration.new({ "parallel" => false })
       parse_run = Packwerk::ParseRun.new(files: ["path/of/exile.rb"], configuration: configuration)
 
-      result = parse_run.update_deprecations
+      parse_run.update_deprecations
       FileUtils.mkdir_p(reference.constant.package.directory)
       reference.constant.package.yml.write("some change!")
 
-      result = parse_run.update_deprecations
+      parse_run.update_deprecations
     end
 
     test "#update_deprecations does not read from the cache if the constant file location has changed" do
@@ -105,12 +105,12 @@ module Packwerk
       configuration = Configuration.new({ "parallel" => false })
       parse_run = Packwerk::ParseRun.new(files: ["path/of/exile.rb"], configuration: configuration)
 
-      result = parse_run.update_deprecations
+      parse_run.update_deprecations
       constant_pathname = Pathname.new(reference.constant.location)
       FileUtils.mkdir_p(constant_pathname.dirname)
       constant_pathname.write("some change!")
 
-      result = parse_run.update_deprecations
+      parse_run.update_deprecations
     end
 
     test "#update_deprecations does not read from the cache if the file itself has changed" do
@@ -130,12 +130,12 @@ module Packwerk
       configuration = Configuration.new({ "parallel" => false })
       parse_run = Packwerk::ParseRun.new(files: ["path/of/exile.rb"], configuration: configuration)
 
-      result = parse_run.update_deprecations
-      file_path = Pathname.new('path/of/exile.rb')
+      parse_run.update_deprecations
+      file_path = Pathname.new("path/of/exile.rb")
       FileUtils.mkdir_p(file_path.dirname)
       file_path.write("some change!")
 
-      result = parse_run.update_deprecations
+      parse_run.update_deprecations
     end
 
     test "#update_deprecations will delete the old cache if it no longer is a hit for the file" do
@@ -155,21 +155,21 @@ module Packwerk
       configuration = Configuration.new({ "parallel" => false })
       parse_run = Packwerk::ParseRun.new(files: ["path/of/exile.rb"], configuration: configuration)
 
-      cache_files = Pathname.pwd.join(Cache::CACHE_DIR).glob('**')
+      cache_files = Pathname.pwd.join(Cache::CACHE_DIR).glob("**")
       assert_equal cache_files.count, 0
 
-      result = parse_run.update_deprecations
+      parse_run.update_deprecations
 
-      cache_files = Pathname.pwd.join(Cache::CACHE_DIR).glob('**')
+      cache_files = Pathname.pwd.join(Cache::CACHE_DIR).glob("**")
       assert_equal cache_files.count, 1
-      
-      file_path = Pathname.new('path/of/exile.rb')
+
+      file_path = Pathname.new("path/of/exile.rb")
       FileUtils.mkdir_p(file_path.dirname)
       file_path.write("some change!")
-      
-      result = parse_run.update_deprecations
 
-      new_cache_files = Pathname.pwd.join(Cache::CACHE_DIR).glob('**')
+      parse_run.update_deprecations
+
+      new_cache_files = Pathname.pwd.join(Cache::CACHE_DIR).glob("**")
       assert_equal cache_files.count, 1
       refute_equal YAML.load(new_cache_files.first.read), YAML.load(cache_files.first.read)
     end
