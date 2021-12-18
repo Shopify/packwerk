@@ -69,6 +69,7 @@ module Packwerk
         # Whether or not the cache is hit is based on the `cache_digest` key within each file (more below).
         files.each do |filename|
           filecache_path = CACHE_DIR.join(digest_for_string(filename))
+
           # We take the basename which is the file name digest
           if filecache_path.exist?
             cache_contents = T.let(YAML.load(filecache_path.read), CacheContents)
@@ -76,9 +77,7 @@ module Packwerk
               @cache[filename] = cache_contents
               @cached_files << filename
             else
-              # Bust the cache so our cache directory doesn't grow so much faster than our codebase
               @uncached_files << filename
-              filecache_path.delete
             end
           else
             @uncached_files << filename
@@ -109,6 +108,7 @@ module Packwerk
       sig { params(uncached_files: T::Array[String], uncached_results: T::Array[RunContext::ProcessedFileResult]).void }
       def cache_results(uncached_files, uncached_results)
         Debug.out("Storing results in cache by digest...")
+
         uncached_results.each do |result|
           cache_contents = CacheContents.new(
             cache_digest: digest_for_result(result),

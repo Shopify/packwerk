@@ -60,7 +60,6 @@ module Packwerk
     sig { params(file: String).returns(ProcessedFileResult) }
     def process_file(file:)
       references_and_offenses = file_processor.call(file)
-
       reference_checker = ReferenceChecking::ReferenceChecker.new(checkers)
       offenses = references_and_offenses.flat_map { |reference| reference_checker.call(reference) }
 
