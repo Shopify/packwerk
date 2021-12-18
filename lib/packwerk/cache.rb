@@ -1,6 +1,13 @@
 # frozen_string_literal: true
 # typed: strict
 
+#
+# There are some known bugs in this cache:
+# 1) The cache should be busted if the contents of `packwerk.yml` change, since custom associations can affect what is considered a violation
+# 2) The cache should be busted if inflections change.
+#
+# In practice, we think these things change rarely enough that when they do change, a user can just run `rm -rf tmp/cache/packwerk` to reset the cache
+#
 module Packwerk
   class Cache
     extend T::Sig
