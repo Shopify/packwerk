@@ -10,6 +10,8 @@
 #
 module Packwerk
   class Cache
+    CACHE_DIR = T.let(Pathname.new("tmp/cache/packwerk"), Pathname)
+
     extend T::Sig
 
     sig do
@@ -30,10 +32,13 @@ module Packwerk
       uncached_results + cache.cached_results
     end
 
+    sig { void }
+    def self.bust_cache!
+      FileUtils.rm_rf(CACHE_DIR)
+    end
+
     class Private
       extend T::Sig
-
-      CACHE_DIR = T.let(Pathname.new("tmp/cache/packwerk"), Pathname)
 
       class CacheContents < T::Struct
         const :cache_digest, String
@@ -97,19 +102,16 @@ module Packwerk
         cache_contents.cache_digest == digest_for_result(cache_contents.result)
       end
 
-      # sig { params(file: String).returns(T::Boolean) }e
       sig { params(uncached_files: T::Array[String], uncached_results: T::Array[RunContext::ProcessedFileResult]).void }
       def cache_results(uncached_files, uncached_results)
-        uncached_results_by_file = uncached_results.group_by(&:file)
         Debug.out("Storing results in cache by digest...")
-        uncached_files.each do |file|
-          result = T.must(uncached_results_by_file.fetch(file).first)
+        uncached_results.each do |result|
           cache_contents = CacheContents.new(
             cache_digest: digest_for_result(result),
             result: result
           )
 
-          CACHE_DIR.join(digest_for_string(file)).write YAML.dump(cache_contents)
+          CACHE_DIR.join(digest_for_string(result.file)).write YAML.dump(cache_contents)
         end
         Debug.out("Finished dumping into cache...")
       end
@@ -162,7 +164,7 @@ module Packwerk
       sig { params(file: String).returns(String) }
       def digest_for_file(file)
         # We cache this to avoid unnecessary File IO
-        @files_by_digest[file] ||= digest_for_string(File.read(file))
+        @files_by_digest[file] ||= digest_for_string(File.exist?(file) ? File.read(file) : 'file does not exist')
       end
 
       sig { params(str: String).returns(String) }

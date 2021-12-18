@@ -16,6 +16,7 @@ module Packwerk
 
     teardown do
       FileUtils.remove_entry(@temp_dir)
+      Cache.bust_cache!
     end
 
     FakeResult = Struct.new(:ok?, :error_value)
@@ -61,7 +62,7 @@ module Packwerk
       configuration.stubs(load_paths: [])
 
       result = RunContext::ProcessedFileResult.new(
-        file: build_reference.relative_path,
+        file: 'path/of/exile.rb',
         references: [build_reference],
         offenses: [offense],
       )
