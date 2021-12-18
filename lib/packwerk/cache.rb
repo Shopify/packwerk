@@ -20,8 +20,8 @@ module Packwerk
       ).returns(T::Array[RunContext::ProcessedFileResult])
     end
     def self.with_cache(files, root_path:, &block)
-      cache = Private.new(root_path: root_path)
-      uncached_files = cache.files_without_cache_hits(files)
+      cache = Private.new(files: files, root_path: root_path)
+      uncached_files = cache.uncached_files
       Debug.out("Using cache - #{cache.cached_file_count} files are cached, #{uncached_files.count} are not")
       Debug.out("First 5 uncached files: #{uncached_files.first(5).inspect}")
       uncached_results = block.call(uncached_files)
@@ -47,20 +47,39 @@ module Packwerk
         ]
       end
 
-      sig { params(root_path: String).void }
-      def initialize(root_path:)
+      sig { params(files: T::Array[String], root_path: String).void }
+      def initialize(files:, root_path:)
         FileUtils.mkdir_p(CACHE_DIR)
         @cache = T.let({}, CACHE_SHAPE)
-        
-        # The cache associated with each file is named by the digest of the file name (not contents).
-        # Whether or not the cache is hit is based on the `cache_digest` key within each file (more below).
-        Pathname.glob(CACHE_DIR.join('**')).each do |filecache_path|
-          # We take the basename which is the file name digest
-          @cache[filecache_path.basename.to_s] = YAML.load(filecache_path.read)
-        end
-
+        @cached_files = T.let([], T::Array[String])
+        @uncached_files = T.let([], T::Array[String])
         @root_path = root_path
         @files_by_digest = T.let({}, T::Hash[String, String])
+
+        # The cache associated with each file is named by the digest of the file name (not contents).
+        # Whether or not the cache is hit is based on the `cache_digest` key within each file (more below).
+        files.each do |filename|
+          filecache_path = CACHE_DIR.join(digest_for_string(filename))
+          # We take the basename which is the file name digest
+          if filecache_path.exist?
+            cache_contents = T.let(YAML.load(filecache_path.read), CacheContents)
+            if cache_hit?(cache_contents, filename)
+              @cache[filename] = cache_contents
+              @cached_files << filename
+            else
+              # Bust the cache so our cache directory doesn't grow so much faster than our codebase
+              @uncached_files << filename
+              filecache_path.delete
+            end
+          else
+            @uncached_files << filename
+          end
+        end
+      end
+
+      sig { returns(T::Array[String]) }
+      def uncached_files
+        @uncached_files
       end
 
       sig { returns(T::Array[RunContext::ProcessedFileResult]) }
@@ -73,25 +92,12 @@ module Packwerk
         @cache.keys.count
       end
 
-      sig { params(files: T::Array[String]).returns(T::Array[String]) }
-      def files_without_cache_hits(files)
-        files.select do |file|
-          if File.exist?(file)
-            current_entry = @cache[digest_for_string(file)]
-            if current_entry.nil?
-              true
-            else
-              cached_digest = current_entry.cache_digest
-              current_digest = digest_for_result(current_entry.result)
-              # TODO: If there is a cache miss here, we should delete the old cache
-              current_digest != cached_digest
-            end
-          else
-            true
-          end
-        end
+      sig { params(cache_contents: CacheContents, file: String).returns(T::Boolean) }
+      def cache_hit?(cache_contents, file)
+        cache_contents.cache_digest == digest_for_result(cache_contents.result)
       end
 
+      # sig { params(file: String).returns(T::Boolean) }e
       sig { params(uncached_files: T::Array[String], uncached_results: T::Array[RunContext::ProcessedFileResult]).void }
       def cache_results(uncached_files, uncached_results)
         uncached_results_by_file = uncached_results.group_by(&:file)
