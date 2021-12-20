@@ -19,13 +19,14 @@ module Packwerk
     sig do
       params(
         files: T::Array[String],
+        parallel: T::Boolean,
         root_path: String,
         block: T.proc.params(untracked_files: T::Array[String]).returns(T::Array[RunContext::ProcessedFileResult])
       ).returns(T::Array[RunContext::ProcessedFileResult])
     end
-    def self.with_cache(files, root_path:, &block)
+    def self.with_cache(files, parallel:, root_path:, &block)
       if ENV["EXPERIMENTAL_PACKWERK_CACHE"]
-        cache = Private.new(files: files, root_path: root_path)
+        cache = Private.new(files: files, parallel: parallel, root_path: root_path)
         uncached_files = cache.uncached_files
         Debug.out("Using cache - #{cache.cached_file_count} files are cached, #{uncached_files.count} are not")
         Debug.out("First 5 uncached files: #{uncached_files.first(5).inspect}")
@@ -58,8 +59,8 @@ module Packwerk
         ]
       end
 
-      sig { params(files: T::Array[String], root_path: String).void }
-      def initialize(files:, root_path:)
+      sig { params(files: T::Array[String], parallel: T::Boolean, root_path: String).void }
+      def initialize(files:, parallel:, root_path:)
         FileUtils.mkdir_p(CACHE_DIR)
         @cache = T.let({}, CACHE_SHAPE)
         @cached_files = T.let([], T::Array[String])
@@ -67,24 +68,29 @@ module Packwerk
         @root_path = root_path
         @files_by_digest = T.let({}, T::Hash[String, String])
 
-        # The cache associated with each file is named by the digest of the file name (not contents).
-        # Whether or not the cache is hit is based on the `cache_digest` key within each file (more below).
-        files.each do |filename|
+        get_cached_result = -> (filename) do
           filecache_path = CACHE_DIR.join(digest_for_string(filename))
 
           # We take the basename which is the file name digest
           if filecache_path.exist?
             cache_contents = T.let(YAML.load(filecache_path.read), CacheContents)
             if existing_cache_is_still_valid?(cache_contents)
-              @cache[filename] = cache_contents
-              @cached_files << filename
-            else
-              @uncached_files << filename
+              [filename, cache_contents]
             end
-          else
-            @uncached_files << filename
           end
         end
+
+        # The cache associated with each file is named by the digest of the file name (not contents).
+        # Whether or not the cache is hit is based on the `cache_digest` key within each file (more below).
+        # enumerator = parallel ? Parallel.map(files) : files.map
+        if parallel
+          @cache = Parallel.map(files, &get_cached_result).compact.to_h
+        else
+          @cache = files.map(&get_cached_result).compact.to_h
+        end
+
+        @cached_files = @cache.keys
+        @uncached_files = files - @cached_files
       end
 
       sig { returns(T::Array[String]) }

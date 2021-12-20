@@ -70,7 +70,7 @@ module Packwerk
       end
 
       execution_time = Benchmark.realtime do
-        all_results = Cache.with_cache(@files, root_path: @configuration.root_path) do |uncached_files|
+        all_results = Cache.with_cache(@files, parallel: @configuration.parallel?, root_path: @configuration.root_path) do |uncached_files|
           if @configuration.parallel?
             Parallel.flat_map(uncached_files, &process_file)
           else
