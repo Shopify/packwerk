@@ -83,10 +83,10 @@ module Packwerk
         # The cache associated with each file is named by the digest of the file name (not contents).
         # Whether or not the cache is hit is based on the `cache_digest` key within each file (more below).
         # enumerator = parallel ? Parallel.map(files) : files.map
-        if parallel
-          @cache = Parallel.map(files, &get_cached_result).compact.to_h
+        @cache = if parallel
+          Parallel.map(files, &get_cached_result).compact.to_h
         else
-          @cache = files.map(&get_cached_result).compact.to_h
+          files.map(&get_cached_result).compact.to_h
         end
 
         @cached_files = @cache.keys
