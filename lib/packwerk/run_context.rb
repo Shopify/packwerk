@@ -53,6 +53,7 @@ module Packwerk
 
     sig { params(file: String).returns(T::Array[Packwerk::Offense]) }
     def process_file(file:)
+
       partially_qualified_references_and_offenses = file_processor.call(file)
       references_and_offenses = get_fully_qualified_references_and_offenses_from(
         partially_qualified_references_and_offenses
@@ -103,7 +104,7 @@ module Packwerk
 
     sig { returns(FileProcessor) }
     def file_processor
-      @file_processor ||= FileProcessor.new(node_processor_factory: node_processor_factory)
+      @file_processor ||= FileProcessor.new(node_processor_factory: node_processor_factory, cache: cache)
     end
 
     sig { returns(NodeProcessorFactory) }
@@ -130,6 +131,11 @@ module Packwerk
         load_paths: load_paths,
         inflector: inflector,
       )
+    end
+
+    sig { returns(Cache) }
+    def cache
+      @cache ||= Cache.new
     end
 
     sig { returns(PackageSet) }
