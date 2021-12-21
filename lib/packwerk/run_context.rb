@@ -53,13 +53,53 @@ module Packwerk
 
     sig { params(file: String).returns(T::Array[Packwerk::Offense]) }
     def process_file(file:)
-      references = file_processor.call(file)
-
+      partially_qualified_references_and_offenses = file_processor.call(file)
+      references_and_offenses = get_fully_qualified_references_and_offenses_from(
+        partially_qualified_references_and_offenses
+      )
       reference_checker = ReferenceChecking::ReferenceChecker.new(checkers)
-      references.flat_map { |reference| reference_checker.call(reference) }
+      references_and_offenses.flat_map { |reference| reference_checker.call(reference) }
     end
 
     private
+
+    sig do
+      params(partially_qualified_references_and_offenses: T::Array[T.any(PartiallyQualifiedReference,
+        Offense)]).returns(T::Array[T.any(Reference, Offense)])
+    end
+    def get_fully_qualified_references_and_offenses_from(partially_qualified_references_and_offenses)
+      fully_qualified_references_and_offenses = T.let([], T::Array[T.any(Reference, Offense)])
+
+      partially_qualified_references_and_offenses.each do |partially_qualified_references_or_offense|
+        if partially_qualified_references_or_offense.is_a?(Offense)
+          fully_qualified_references_and_offenses << partially_qualified_references_or_offense
+          next
+        end
+
+        partially_qualified_reference = partially_qualified_references_or_offense
+
+        constant =
+          context_provider.context_for(
+            partially_qualified_reference.constant_name,
+            current_namespace_path: partially_qualified_reference.namespace_path
+          )
+
+        next if constant&.package.nil?
+
+        source_package = context_provider.package_from_path(partially_qualified_reference.relative_path)
+
+        next if source_package == constant.package
+
+        Reference.new(
+          source_package,
+          partially_qualified_reference.relative_path,
+          constant,
+          partially_qualified_reference.source_location
+        )
+      end
+
+      fully_qualified_references_and_offenses
+    end
 
     sig { returns(FileProcessor) }
     def file_processor
@@ -77,7 +117,7 @@ module Packwerk
 
     sig { returns(ConstantDiscovery) }
     def context_provider
-      ::Packwerk::ConstantDiscovery.new(
+      @context_provider ||= ::Packwerk::ConstantDiscovery.new(
         constant_resolver: resolver,
         packages: package_set
       )

@@ -3,7 +3,6 @@
 
 require "test_helper"
 require "parser_test_helper"
-require "constant_resolver"
 
 module Packwerk
   class ReferenceExtractorTest < Minitest::Test
@@ -12,18 +11,6 @@ module Packwerk
     def setup
       setup_application_fixture
       use_template(:skeleton)
-
-      load_paths =
-        Dir.glob(to_app_path("components/*/{app,test}/*{/concerns,}"))
-          .map { |p| Pathname.new(p).relative_path_from(app_dir).to_s }
-
-      resolver = ConstantResolver.new(root_path: app_dir, load_paths: load_paths)
-      packages = ::Packwerk::PackageSet.load_all_from(app_dir)
-
-      @context_provider = ::Packwerk::ConstantDiscovery.new(
-        constant_resolver: resolver,
-        packages: packages
-      )
     end
 
     def teardown
@@ -242,7 +229,6 @@ module Packwerk
       file_path = to_app_path(file_path)
 
       extractor = ::Packwerk::ReferenceExtractor.new(
-        context_provider: @context_provider,
         constant_name_inspectors: constant_name_inspectors,
         root_node: root_node,
         root_path: app_dir

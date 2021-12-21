@@ -36,6 +36,7 @@ module Packwerk
   autoload :ParsedConstantDefinitions
   autoload :Parsers
   autoload :ParseRun
+  autoload :PartiallyQualifiedReference
   autoload :Reference
   autoload :ReferenceExtractor
   autoload :ReferenceOffense
