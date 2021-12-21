@@ -22,7 +22,6 @@ module Packwerk
     sig { params(node: AST::Node).returns(::Packwerk::ReferenceExtractor) }
     def reference_extractor(node:)
       ::Packwerk::ReferenceExtractor.new(
-        context_provider: context_provider,
         constant_name_inspectors: constant_name_inspectors,
         root_node: node,
         root_path: root_path,

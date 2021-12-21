@@ -8,19 +8,16 @@ module Packwerk
 
     sig do
       params(
-        context_provider: Packwerk::ConstantDiscovery,
         constant_name_inspectors: T::Array[Packwerk::ConstantNameInspector],
         root_node: ::AST::Node,
         root_path: String,
       ).void
     end
     def initialize(
-      context_provider:,
       constant_name_inspectors:,
       root_node:,
       root_path:
     )
-      @context_provider = context_provider
       @constant_name_inspectors = constant_name_inspectors
       @root_path = root_path
       @local_constant_definitions = ParsedConstantDefinitions.new(root_node: root_node)
@@ -28,7 +25,7 @@ module Packwerk
 
     sig do
       params(node: Parser::AST::Node, ancestors: T::Array[Parser::AST::Node],
-file_path: String).returns(T.nilable(Reference))
+file_path: String).returns(T.nilable(PartiallyQualifiedReference))
     end
     def reference_from_node(node, ancestors:, file_path:)
       constant_name = T.let(nil, T.nilable(String))
@@ -41,6 +38,49 @@ file_path: String).returns(T.nilable(Reference))
       reference_from_constant(constant_name, node: node, ancestors: ancestors, file_path: file_path) if constant_name
     end
 
+    sig do
+      params(
+        partially_qualified_references_and_offenses: T::Array[T.any(PartiallyQualifiedReference, Offense)],
+        context_provider: ConstantDiscovery
+      ).returns(T::Array[T.any(Reference, Offense)])
+    end
+    def self.get_fully_qualified_references_and_offenses_from(
+      partially_qualified_references_and_offenses,
+      context_provider
+    )
+      fully_qualified_references_and_offenses = T.let([], T::Array[T.any(Reference, Offense)])
+
+      partially_qualified_references_and_offenses.each do |partially_qualified_references_or_offense|
+        if partially_qualified_references_or_offense.is_a?(Offense)
+          fully_qualified_references_and_offenses << partially_qualified_references_or_offense
+          next
+        end
+
+        partially_qualified_reference = partially_qualified_references_or_offense
+
+        constant =
+          context_provider.context_for(
+            partially_qualified_reference.constant_name,
+            current_namespace_path: partially_qualified_reference.namespace_path
+          )
+
+        next if constant&.package.nil?
+
+        source_package = context_provider.package_from_path(partially_qualified_reference.relative_path)
+
+        next if source_package == constant.package
+
+        fully_qualified_references_and_offenses << Reference.new(
+          source_package,
+          partially_qualified_reference.relative_path,
+          constant,
+          partially_qualified_reference.source_location
+        )
+      end
+
+      fully_qualified_references_and_offenses
+    end
+
     private
 
     sig do
@@ -49,29 +89,20 @@ file_path: String).returns(T.nilable(Reference))
         node: Parser::AST::Node,
         ancestors: T::Array[Parser::AST::Node],
         file_path: String
-      ).returns(T.nilable(Reference))
+      ).returns(T.nilable(PartiallyQualifiedReference))
     end
     def reference_from_constant(constant_name, node:, ancestors:, file_path:)
       namespace_path = Node.enclosing_namespace_path(node, ancestors: ancestors)
       return if local_reference?(constant_name, Node.name_location(node), namespace_path)
+      relative_path = Pathname.new(file_path).relative_path_from(@root_path).to_s
+      location = Node.location(node)
 
-      constant =
-        @context_provider.context_for(
-          constant_name,
-          current_namespace_path: namespace_path
-        )
-
-      return if constant&.package.nil?
-
-      relative_path =
-        Pathname.new(file_path)
-          .relative_path_from(@root_path).to_s
-
-      source_package = @context_provider.package_from_path(relative_path)
-
-      return if source_package == constant.package
-
-      Reference.new(source_package, relative_path, constant, Node.location(node))
+      PartiallyQualifiedReference.new(
+        constant_name,
+        namespace_path,
+        relative_path,
+        location
+      )
     end
 
     def local_reference?(constant_name, name_location, namespace_path)

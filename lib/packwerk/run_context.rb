@@ -53,10 +53,13 @@ module Packwerk
 
     sig { params(file: String).returns(T::Array[Packwerk::Offense]) }
     def process_file(file:)
-      references = file_processor.call(file)
-
+      partially_qualified_references_and_offenses = file_processor.call(file)
+      references_and_offenses = ReferenceExtractor.get_fully_qualified_references_and_offenses_from(
+        partially_qualified_references_and_offenses,
+        context_provider
+      )
       reference_checker = ReferenceChecking::ReferenceChecker.new(checkers)
-      references.flat_map { |reference| reference_checker.call(reference) }
+      references_and_offenses.flat_map { |reference| reference_checker.call(reference) }
     end
 
     private
@@ -77,7 +80,7 @@ module Packwerk
 
     sig { returns(ConstantDiscovery) }
     def context_provider
-      ::Packwerk::ConstantDiscovery.new(
+      @context_provider ||= ::Packwerk::ConstantDiscovery.new(
         constant_resolver: resolver,
         packages: package_set
       )
