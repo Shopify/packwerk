@@ -15,6 +15,7 @@ module Packwerk
   autoload :ApplicationValidator
   autoload :AssociationInspector
   autoload :OffenseCollection
+  autoload :Cache
   autoload :Cli
   autoload :Configuration
   autoload :ConstantDiscovery

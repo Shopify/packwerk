@@ -14,10 +14,12 @@ module Packwerk
     end
 
     sig do
-      params(node_processor_factory: NodeProcessorFactory, parser_factory: T.nilable(Parsers::Factory)).void
+      params(node_processor_factory: NodeProcessorFactory, cache: Cache,
+parser_factory: T.nilable(Parsers::Factory)).void
     end
-    def initialize(node_processor_factory:, parser_factory: nil)
+    def initialize(node_processor_factory:, cache:, parser_factory: nil)
       @node_processor_factory = node_processor_factory
+      @cache = cache
       @parser_factory = parser_factory || Packwerk::Parsers::Factory.instance
     end
 
@@ -34,10 +36,12 @@ module Packwerk
     def call(file_path)
       return [UnknownFileTypeResult.new(file: file_path)] if parser_for(file_path).nil?
 
-      node = parse_into_ast(file_path)
-      return [] unless node
+      @cache.with_cache(file_path) do
+        node = parse_into_ast(file_path)
+        return [] unless node
 
-      references_from_ast(node, file_path)
+        references_from_ast(node, file_path)
+      end
     rescue Parsers::ParseError => e
       [e.result]
     end
