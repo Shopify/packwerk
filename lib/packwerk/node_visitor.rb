@@ -4,6 +4,9 @@
 module Packwerk
   # Visits all nodes of an AST, processing them using a given node processor.
   class NodeVisitor
+    extend T::Sig
+
+    sig { params(node_processor: NodeProcessor).void }
     def initialize(node_processor:)
       @node_processor = node_processor
     end

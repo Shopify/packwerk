@@ -13,6 +13,9 @@ module Packwerk
       end
     end
 
+    sig do
+      params(node_processor_factory: NodeProcessorFactory, parser_factory: T.nilable(Parsers::Factory)).void
+    end
     def initialize(node_processor_factory:, parser_factory: nil)
       @node_processor_factory = node_processor_factory
       @parser_factory = parser_factory || Packwerk::Parsers::Factory.instance
@@ -41,6 +44,9 @@ module Packwerk
 
     private
 
+    sig do
+      params(node: Parser::AST::Node, file_path: String).returns(T::Array[Reference])
+    end
     def references_from_ast(node, file_path)
       references = []
 
