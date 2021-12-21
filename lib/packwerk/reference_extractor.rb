@@ -26,6 +26,10 @@ module Packwerk
       @local_constant_definitions = ParsedConstantDefinitions.new(root_node: root_node)
     end
 
+    sig do
+      params(node: Parser::AST::Node, ancestors: T::Array[Parser::AST::Node],
+file_path: String).returns(T.nilable(Reference))
+    end
     def reference_from_node(node, ancestors:, file_path:)
       constant_name = T.let(nil, T.nilable(String))
 
@@ -39,6 +43,14 @@ module Packwerk
 
     private
 
+    sig do
+      params(
+        constant_name: String,
+        node: Parser::AST::Node,
+        ancestors: T::Array[Parser::AST::Node],
+        file_path: String
+      ).returns(T.nilable(Reference))
+    end
     def reference_from_constant(constant_name, node:, ancestors:, file_path:)
       namespace_path = Node.enclosing_namespace_path(node, ancestors: ancestors)
       return if local_reference?(constant_name, Node.name_location(node), namespace_path)
