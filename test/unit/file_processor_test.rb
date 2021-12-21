@@ -6,10 +6,11 @@ require "test_helper"
 module Packwerk
   class FileProcessorTest < Minitest::Test
     include FactoryHelper
+    include TypedMock
 
     setup do
-      @node_processor_factory = mock
-      @node_processor = mock
+      @node_processor_factory = typed_mock
+      @node_processor = typed_mock
       @file_processor = ::Packwerk::FileProcessor.new(node_processor_factory: @node_processor_factory)
     end
 
