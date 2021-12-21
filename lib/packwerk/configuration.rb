@@ -74,6 +74,7 @@ module Packwerk
       @package_paths = configs["package_paths"] || "**/"
       @custom_associations = configs["custom_associations"] || []
       @parallel = configs.key?("parallel") ? configs["parallel"] : true
+      @experimental_cache = configs.key?("experimental_cache") ? configs["experimental_cache"] : false
 
       @config_path = config_path
     end
@@ -84,6 +85,12 @@ module Packwerk
 
     def parallel?
       @parallel
+    end
+
+    def experimental_cache?
+      # If a team wants, they can keep the global value off and turn it on per user.
+      # Note there is not an option to turn it OFF per user
+      !!(@experimental_cache || ENV["EXPERIMENTAL_PACKWERK_CACHE"])
     end
   end
 end

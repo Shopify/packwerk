@@ -30,7 +30,8 @@ module Packwerk
           load_paths: configuration.load_paths,
           package_paths: configuration.package_paths,
           inflector: inflector,
-          custom_associations: configuration.custom_associations
+          custom_associations: configuration.custom_associations,
+          experimental_cache: configuration.experimental_cache?
         )
       end
     end
@@ -41,7 +42,8 @@ module Packwerk
       package_paths: nil,
       inflector: nil,
       custom_associations: [],
-      checker_classes: DEFAULT_CHECKERS
+      checker_classes: DEFAULT_CHECKERS,
+      experimental_cache: false
     )
       @root_path = root_path
       @load_paths = load_paths
@@ -49,6 +51,7 @@ module Packwerk
       @inflector = inflector
       @custom_associations = custom_associations
       @checker_classes = checker_classes
+      @experimental_cache = experimental_cache
     end
 
     sig { params(file: String).returns(T::Array[Packwerk::Offense]) }
@@ -66,7 +69,7 @@ module Packwerk
 
     sig { returns(FileProcessor) }
     def file_processor
-      @file_processor ||= FileProcessor.new(node_processor_factory: node_processor_factory)
+      @file_processor ||= FileProcessor.new(node_processor_factory: node_processor_factory, cache: cache)
     end
 
     sig { returns(NodeProcessorFactory) }
@@ -93,6 +96,11 @@ module Packwerk
         load_paths: load_paths,
         inflector: inflector,
       )
+    end
+
+    sig { returns(Cache) }
+    def cache
+      @cache ||= Cache.new(enable_cache: @experimental_cache)
     end
 
     sig { returns(PackageSet) }

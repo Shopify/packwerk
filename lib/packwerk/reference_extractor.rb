@@ -94,6 +94,7 @@ file_path: String).returns(T.nilable(PartiallyQualifiedReference))
     def reference_from_constant(constant_name, node:, ancestors:, file_path:)
       namespace_path = Node.enclosing_namespace_path(node, ancestors: ancestors)
       return if local_reference?(constant_name, Node.name_location(node), namespace_path)
+
       relative_path = Pathname.new(file_path).relative_path_from(@root_path).to_s
       location = Node.location(node)
 
