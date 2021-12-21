@@ -25,7 +25,7 @@ module Packwerk
       params(file_path: String).returns(
         T::Array[
           T.any(
-            Packwerk::Reference,
+            Packwerk::PartiallyQualifiedReference,
             Packwerk::Offense,
           )
         ]
@@ -45,7 +45,7 @@ module Packwerk
     private
 
     sig do
-      params(node: Parser::AST::Node, file_path: String).returns(T::Array[Reference])
+      params(node: Parser::AST::Node, file_path: String).returns(T::Array[PartiallyQualifiedReference])
     end
     def references_from_ast(node, file_path)
       references = []
