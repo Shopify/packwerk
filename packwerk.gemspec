@@ -49,6 +49,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency("rake")
   spec.add_development_dependency("sorbet")
   spec.add_development_dependency("m")
+  spec.add_development_dependency("pry")
   # https://github.com/ruby/psych/pull/487
   spec.add_development_dependency("psych", "~> 3")
 
