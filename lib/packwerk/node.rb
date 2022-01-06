@@ -264,6 +264,7 @@ module Packwerk
         # "Class.new"
         # "Module.new"
         method_call?(node) &&
+          receiver(node) &&
           constant?(receiver(node)) &&
           ["Class", "Module"].include?(constant_name(receiver(node))) &&
           method_name(node) == :new
