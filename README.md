@@ -58,7 +58,7 @@ Read [USAGE.md](USAGE.md) for usage once Packwerk is installed on your project.
 
 ## Ecosystem
 
-These third party tools enhance your packwerk experience:
+You can use these third party tools to enhance your packwerk experience:
 
 - https://github.com/bellroy/graphwerk draws a graph of your package dependencies
 - https://github.com/Gusto/packwerk-vscode integrates packwerk into Visual Studio Code so you can see violations right in your editor
