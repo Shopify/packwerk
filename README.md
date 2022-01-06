@@ -56,6 +56,13 @@ Read [USAGE.md](USAGE.md) for usage once Packwerk is installed on your project.
 
 "Packwerk" is pronounced [[ˈpakvɛʁk]](https://cdn.shopify.com/s/files/1/0258/7469/files/packwerk.mp3).
 
+## Ecosystem
+
+These third party tools enhance your packwerk experience:
+
+- https://github.com/bellroy/graphwerk draws a graph of your package dependencies
+- https://github.com/Gusto/packwerk-vscode integrates packwerk into Visual Studio Code so you can see violations right in your editor
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
