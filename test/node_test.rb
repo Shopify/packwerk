@@ -151,6 +151,7 @@ module Packwerk
         "-> x { x * 2 }",
         "Class.new",
         "Class.new do end",
+        "MyConstant = -> {}",
       ].each do |module_definition|
         node = parse(module_definition)
         assert_nil Node.module_name_from_definition(node)
