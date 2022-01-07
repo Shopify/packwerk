@@ -39,13 +39,13 @@ module Packwerk
         load_paths: @configuration.load_paths
       )
 
-      results = []
+      results = T.let([], T::Array[Packwerk::Result])
 
       privacy_settings.each do |config_file_path, setting|
         next unless setting.is_a?(Array)
         constants = setting
 
-        assert_constants_can_be_loaded(constants)
+        results += assert_constants_can_be_loaded(constants, config_file_path)
 
         constant_locations = constants.map { |c| [c, resolver.resolve(c)&.location] }
 
@@ -265,9 +265,18 @@ module Packwerk
       !File.file?(package_path)
     end
 
-    def assert_constants_can_be_loaded(constants)
-      constants.each(&:constantize)
-      nil
+    def assert_constants_can_be_loaded(constants, config_file_path)
+      constants.map do |constant|
+        if !constant.start_with?("::")
+          Result.new(
+            false,
+            "'#{constant}', listed in the 'enforce_privacy' option in #{config_file_path}, is invalid.\n"\
+            "Private constants need to be prefixed with the top-level namespace operator `::`."
+          )
+        else
+          constant.try(&:constantize) && Result.new(true)
+        end
+      end
     end
 
     def private_constant_unresolvable(name, config_file_path)
