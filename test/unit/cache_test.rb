@@ -23,8 +23,8 @@ module Packwerk
       FileUtils.mkdir_p(filepath.dirname)
       filepath.write("class MyClass; end")
 
-      partially_qualified_references = [
-        PartiallyQualifiedReference.new(
+      unresolved_references = [
+        UnresolvedReference.new(
           "MyConstant",
           [],
           "path/of_exile.rb",
@@ -32,7 +32,7 @@ module Packwerk
         ),
       ]
 
-      FileProcessor.any_instance.stubs(:references_from_ast).returns(partially_qualified_references)
+      FileProcessor.any_instance.stubs(:references_from_ast).returns(unresolved_references)
       configuration = Configuration.from_path
       configuration.stubs(experimental_cache?: true)
 
@@ -44,7 +44,7 @@ module Packwerk
       assert_equal cache_files.count, 1
 
       cached_result = Cache::CacheContents.deserialize(cache_files.first.read)
-      assert_equal cached_result.partially_qualified_references, partially_qualified_references
+      assert_equal cached_result.unresolved_references, unresolved_references
     end
   end
 end

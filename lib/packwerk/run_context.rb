@@ -56,9 +56,9 @@ module Packwerk
 
     sig { params(file: String).returns(T::Array[Packwerk::Offense]) }
     def process_file(file:)
-      partially_qualified_references_and_offenses = file_processor.call(file)
+      unresolved_references_and_offenses = file_processor.call(file)
       references_and_offenses = ReferenceExtractor.get_fully_qualified_references_and_offenses_from(
-        partially_qualified_references_and_offenses,
+        unresolved_references_and_offenses,
         context_provider
       )
       reference_checker = ReferenceChecking::ReferenceChecker.new(checkers)
