@@ -4,7 +4,7 @@
 require "constant_resolver"
 
 module Packwerk
-  # Get information about (partially qualified) constants without loading the application code.
+  # Get information about unresolved constants without loading the application code.
   # Information gathered: Fully qualified name, path to file containing the definition, package,
   # and visibility (public/private to the package).
   #
@@ -35,9 +35,9 @@ module Packwerk
     end
 
     # Analyze a constant via its name.
-    # If the name is partially qualified, we need the current namespace path to correctly infer its full name
+    # If the constant is unresolved, we need the current namespace path to correctly infer its full name
     #
-    # @param const_name [String] The constant's name, fully or partially qualified.
+    # @param const_name [String] The unresolved constant's name.
     # @param current_namespace_path [Array<String>] (optional) The namespace of the context in which the constant is
     #   used, e.g. ["Apps", "Models"] for `Apps::Models`. Defaults to [] which means top level.
     # @return [Packwerk::ConstantDiscovery::ConstantContext]

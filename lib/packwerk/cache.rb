@@ -22,7 +22,7 @@ module Packwerk
       extend T::Sig
 
       const :file_contents_digest, String
-      const :partially_qualified_references, T::Array[PartiallyQualifiedReference]
+      const :unresolved_references, T::Array[UnresolvedReference]
 
       # A previous implementation used YAML.dump and YAML.load.
       # Although these are much cleaner, the YAML loading code can handle arbitrary object
@@ -36,8 +36,8 @@ module Packwerk
       sig { params(serialized_cache_contents: String).returns(CacheContents) }
       def self.deserialize(serialized_cache_contents)
         cache_contents_json = JSON.parse(serialized_cache_contents)
-        partially_qualified_references = cache_contents_json["partially_qualified_references"].map do |json|
-          PartiallyQualifiedReference.new(
+        unresolved_references = cache_contents_json["unresolved_references"].map do |json|
+          UnresolvedReference.new(
             json["constant_name"],
             json["namespace_path"],
             json["relative_path"],
@@ -47,7 +47,7 @@ module Packwerk
 
         CacheContents.new(
           file_contents_digest: cache_contents_json["file_contents_digest"],
-          partially_qualified_references: partially_qualified_references,
+          unresolved_references: unresolved_references,
         )
       end
     end
@@ -75,8 +75,8 @@ module Packwerk
     sig do
       params(
         file_path: String,
-        block: T.proc.returns(T::Array[PartiallyQualifiedReference])
-      ).returns(T::Array[PartiallyQualifiedReference])
+        block: T.proc.returns(T::Array[UnresolvedReference])
+      ).returns(T::Array[UnresolvedReference])
     end
     def with_cache(file_path, &block)
       return block.call unless @enable_cache
@@ -90,16 +90,16 @@ module Packwerk
 
       if !cache_contents.nil? && cache_contents.file_contents_digest == file_contents_digest
         Debug.out("Cache hit for #{file_path}")
-        cache_contents.partially_qualified_references
+        cache_contents.unresolved_references
       else
         Debug.out("Cache miss for #{file_path}")
-        partially_qualified_references = block.call
+        unresolved_references = block.call
         cache_contents = CacheContents.new(
           file_contents_digest: file_contents_digest,
-          partially_qualified_references: partially_qualified_references,
+          unresolved_references: unresolved_references,
         )
         cache_location.write(cache_contents.serialize)
-        partially_qualified_references
+        unresolved_references
       end
     end
 

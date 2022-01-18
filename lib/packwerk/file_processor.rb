@@ -27,7 +27,7 @@ parser_factory: T.nilable(Parsers::Factory)).void
       params(file_path: String).returns(
         T::Array[
           T.any(
-            Packwerk::PartiallyQualifiedReference,
+            Packwerk::UnresolvedReference,
             Packwerk::Offense,
           )
         ]
@@ -49,7 +49,7 @@ parser_factory: T.nilable(Parsers::Factory)).void
     private
 
     sig do
-      params(node: Parser::AST::Node, file_path: String).returns(T::Array[PartiallyQualifiedReference])
+      params(node: Parser::AST::Node, file_path: String).returns(T::Array[UnresolvedReference])
     end
     def references_from_ast(node, file_path)
       references = []

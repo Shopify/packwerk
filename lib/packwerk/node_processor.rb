@@ -21,7 +21,7 @@ module Packwerk
       params(
         node: Parser::AST::Node,
         ancestors: T::Array[Parser::AST::Node]
-      ).returns(T.nilable(PartiallyQualifiedReference))
+      ).returns(T.nilable(UnresolvedReference))
     end
     def call(node, ancestors)
       return unless Node.method_call?(node) || Node.constant?(node)
