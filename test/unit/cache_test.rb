@@ -41,9 +41,10 @@ module Packwerk
       parse_run.update_deprecations
 
       cache_files = Pathname.pwd.join(Cache::CACHE_DIR).glob("**")
-      assert_equal cache_files.count, 1
+      assert_equal cache_files.count, 3
 
-      cached_result = Cache::CacheContents.deserialize(cache_files.first.read)
+      digest_file = Cache::CACHE_DIR.join(Digest::MD5.hexdigest(filepath.to_s))
+      cached_result = Cache::CacheContents.deserialize(digest_file.read)
       assert_equal cached_result.unresolved_references, unresolved_references
     end
   end

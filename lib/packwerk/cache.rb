@@ -1,17 +1,6 @@
 # frozen_string_literal: true
 # typed: strict
 
-#
-# There are some known bugs in this cache:
-# 1) The cache should be busted if the contents of `packwerk.yml` change, since custom associations
-# can affect what is considered a violation
-# 2) The cache should be busted if inflections change.
-#
-# In practice, we think these things change rarely enough that when they do change, a user can
-# just run `rm -rf tmp/cache/packwerk` to reset the cache, but we may want a `bin/packwerk bust_cache`.
-# If we want to be fancier, we could even automatically bust the cache when we detect a change to these files
-# (by taking the digest of inflections and packwerk.yml).
-#
 module Packwerk
   class Cache
     CACHE_DIR = T.let(Pathname.new("tmp/cache/packwerk"), Pathname)
@@ -64,12 +53,18 @@ module Packwerk
       FileUtils.rm_rf(CACHE_DIR)
     end
 
-    sig { params(enable_cache: T::Boolean).void }
-    def initialize(enable_cache:)
+    sig { params(enable_cache: T::Boolean, config_path: String).void }
+    def initialize(enable_cache:, config_path:)
       @enable_cache = enable_cache
-      FileUtils.mkdir_p(CACHE_DIR)
       @cache = T.let({}, CACHE_SHAPE)
       @files_by_digest = T.let({}, T::Hash[String, String])
+      @config_path = config_path
+
+      if @enable_cache
+        create_cache_directory!
+        bust_cache_if_packwerk_yml_has_changed!
+        bust_cache_if_inflections_have_changed!
+      end
     end
 
     sig do
@@ -113,6 +108,41 @@ module Packwerk
       # MD5 appears to be the fastest
       # https://gist.github.com/morimori/1330095
       Digest::MD5.hexdigest(str)
+    end
+
+    sig { void }
+    def bust_cache_if_packwerk_yml_has_changed!
+      bust_cache_if_contents_have_changed(File.read(@config_path), :packwerk_yml)
+    end
+
+    sig { void }
+    def bust_cache_if_inflections_have_changed!
+      bust_cache_if_contents_have_changed(YAML.dump(ActiveSupport::Inflector.inflections), :inflections)
+    end
+
+    sig { params(contents: String, contents_key: Symbol).void }
+    def bust_cache_if_contents_have_changed(contents, contents_key)
+      current_digest = digest_for_string(contents)
+      cached_digest_path = CACHE_DIR.join(contents_key.to_s)
+      if !cached_digest_path.exist?
+        # In this case, we have nothing cached
+        # We save the current digest. This way the next time we compare current digest to cached digest,
+        # we can accurately determine if we should bust the cache
+        cached_digest_path.write(current_digest)
+        nil
+      elsif cached_digest_path.read == current_digest
+        Debug.out("#{contents_key} contents have NOT changed, preserving cache")
+      else
+        Debug.out("#{contents_key} contents have changed, busting cache")
+        self.class.bust_cache!
+        create_cache_directory!
+        cached_digest_path.write(current_digest)
+      end
+    end
+
+    sig { void }
+    def create_cache_directory!
+      FileUtils.mkdir_p(CACHE_DIR)
     end
   end
 
