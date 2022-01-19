@@ -20,9 +20,10 @@ module Packwerk
             .returns(T::Boolean)
         end
         def invalid_reference?(reference)
-          return false unless reference.source_package
-          return false unless reference.source_package.enforce_dependencies?
-          return false if reference.source_package.dependency?(reference.constant.package)
+          source_package = reference.source_package
+          return false unless source_package
+          return false unless source_package.enforce_dependencies?
+          return false if source_package.dependency?(reference.constant.package)
           true
         end
       end

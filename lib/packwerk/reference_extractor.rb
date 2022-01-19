@@ -71,10 +71,10 @@ file_path: String).returns(T.nilable(UnresolvedReference))
         next if source_package == constant.package
 
         fully_qualified_references_and_offenses << Reference.new(
-          source_package,
-          unresolved_reference.relative_path,
-          constant,
-          unresolved_reference.source_location
+          source_package: source_package,
+          relative_path: unresolved_reference.relative_path,
+          constant: constant,
+          source_location: unresolved_reference.source_location
         )
       end
 
