@@ -25,8 +25,10 @@ module Packwerk
           privacy_option = reference.constant.package.enforce_privacy
           return false if enforcement_disabled?(privacy_option)
 
+          # Note that we use `T.cast` here to signify that we've ruled out `T::Boolean` as a possible type for this.
           return false unless privacy_option == true ||
-            explicitly_private_constant?(reference.constant, explicitly_private_constants: privacy_option)
+            explicitly_private_constant?(reference.constant,
+              explicitly_private_constants: T.cast(privacy_option, T::Array[String]))
 
           true
         end

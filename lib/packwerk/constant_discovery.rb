@@ -15,7 +15,18 @@ module Packwerk
   #   have no way of inferring the file it is defined in. You could argue though that inheritance means that another
   #   constant with the same name exists in the inheriting class, and this view is sufficient for all our use cases.
   class ConstantDiscovery
-    ConstantContext = Struct.new(:name, :location, :package, :public?)
+    class ConstantContext < T::Struct
+      extend T::Sig
+      const :name, String
+      const :location, String
+      const :package, Package
+      const :public, T::Boolean
+
+      sig { returns(T::Boolean) }
+      def public?
+        public
+      end
+    end
 
     # @param constant_resolver [ConstantResolver]
     # @param packages [Packwerk::PackageSet]
@@ -52,10 +63,10 @@ module Packwerk
 
       package = @packages.package_from_path(constant.location)
       ConstantContext.new(
-        constant.name,
-        constant.location,
-        package,
-        package&.public_path?(constant.location),
+        name: constant.name,
+        location: constant.location,
+        package: package,
+        public: package&.public_path?(constant.location),
       )
     end
   end
