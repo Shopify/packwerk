@@ -37,7 +37,7 @@ module Packwerk
       :include, :exclude, :root_path, :package_paths, :custom_associations, :config_path
     )
 
-    def initialize(configs = {}, config_path: nil)
+    def initialize(configs = {}, config_path: DEFAULT_CONFIG_PATH)
       if configs["load_paths"]
         warning = <<~WARNING
           DEPRECATION WARNING: The 'load_paths' key in `packwerk.yml` is deprecated.

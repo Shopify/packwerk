@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "constant_resolver"
@@ -8,21 +8,17 @@ module Packwerk
   class RunContext
     extend T::Sig
 
-    attr_reader(
-      :root_path,
-      :load_paths,
-      :package_paths,
-      :inflector,
-      :custom_associations,
-      :checker_classes,
-    )
-
-    DEFAULT_CHECKERS = [
-      ::Packwerk::ReferenceChecking::Checkers::DependencyChecker,
-      ::Packwerk::ReferenceChecking::Checkers::PrivacyChecker,
-    ]
+    DEFAULT_CHECKERS = T.let([
+      ::Packwerk::ReferenceChecking::Checkers::DependencyChecker.new,
+      ::Packwerk::ReferenceChecking::Checkers::PrivacyChecker.new,
+    ], T::Array[ReferenceChecking::Checkers::Checker])
 
     class << self
+      extend T::Sig
+
+      sig do
+        params(configuration: Configuration).returns(RunContext)
+      end
       def from_configuration(configuration)
         inflector = ActiveSupport::Inflector
         new(
@@ -37,24 +33,40 @@ module Packwerk
       end
     end
 
+    sig do
+      params(
+        root_path: String,
+        load_paths: T::Array[String],
+        config_path: String,
+        inflector: T.class_of(ActiveSupport::Inflector),
+        package_paths: T.nilable(T.any(T::Array[String], String)),
+        custom_associations: AssociationInspector::CustomAssociations,
+        checkers: T::Array[ReferenceChecking::Checkers::Checker],
+        experimental_cache: T::Boolean,
+      ).void
+    end
     def initialize(
       root_path:,
       load_paths:,
+      config_path:,
+      inflector:,
       package_paths: nil,
-      inflector: nil,
       custom_associations: [],
-      checker_classes: DEFAULT_CHECKERS,
-      experimental_cache: false,
-      config_path: nil
+      checkers: DEFAULT_CHECKERS,
+      experimental_cache: false
     )
       @root_path = root_path
       @load_paths = load_paths
       @package_paths = package_paths
       @inflector = inflector
       @custom_associations = custom_associations
-      @checker_classes = checker_classes
+      @checkers = checkers
       @experimental_cache = experimental_cache
       @config_path = config_path
+
+      @file_processor = T.let(nil, T.nilable(FileProcessor))
+      @context_provider = T.let(nil, T.nilable(ConstantDiscovery))
+      @cache = T.let(nil, T.nilable(Cache))
     end
 
     sig { params(file: String).returns(T::Array[Packwerk::Offense]) }
@@ -64,7 +76,7 @@ module Packwerk
         unresolved_references_and_offenses,
         context_provider
       )
-      reference_checker = ReferenceChecking::ReferenceChecker.new(checkers)
+      reference_checker = ReferenceChecking::ReferenceChecker.new(@checkers)
       references_and_offenses.flat_map { |reference| reference_checker.call(reference) }
     end
 
@@ -79,7 +91,7 @@ module Packwerk
     def node_processor_factory
       NodeProcessorFactory.new(
         context_provider: context_provider,
-        root_path: root_path,
+        root_path: @root_path,
         constant_name_inspectors: constant_name_inspectors
       )
     end
@@ -95,9 +107,9 @@ module Packwerk
     sig { returns(ConstantResolver) }
     def resolver
       ConstantResolver.new(
-        root_path: root_path,
-        load_paths: load_paths,
-        inflector: inflector,
+        root_path: @root_path,
+        load_paths: @load_paths,
+        inflector: @inflector,
       )
     end
 
@@ -108,19 +120,14 @@ module Packwerk
 
     sig { returns(PackageSet) }
     def package_set
-      ::Packwerk::PackageSet.load_all_from(root_path, package_pathspec: package_paths)
-    end
-
-    sig { returns(T::Array[ReferenceChecking::Checkers::Checker]) }
-    def checkers
-      checker_classes.map(&:new)
+      ::Packwerk::PackageSet.load_all_from(@root_path, package_pathspec: @package_paths)
     end
 
     sig { returns(T::Array[ConstantNameInspector]) }
     def constant_name_inspectors
       [
         ::Packwerk::ConstNodeInspector.new,
-        ::Packwerk::AssociationInspector.new(inflector: inflector, custom_associations: custom_associations),
+        ::Packwerk::AssociationInspector.new(inflector: @inflector, custom_associations: @custom_associations),
       ]
     end
   end
