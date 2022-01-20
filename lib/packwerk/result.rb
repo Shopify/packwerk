@@ -3,7 +3,7 @@
 
 module Packwerk
   class Result < T::Struct
-    prop :message, String
-    prop :status, T::Boolean
+    const :message, String
+    const :status, T::Boolean
   end
 end
