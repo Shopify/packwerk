@@ -1,7 +1,10 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 module ApplicationFixtureHelper
+  # So sorbet knows self.raise exists
+  include Kernel
+
   TEMP_FIXTURE_DIR = ROOT.join("tmp", "fixtures").to_s
   DEFAULT_TEMPLATE = :minimal
 
@@ -49,8 +52,8 @@ module ApplicationFixtureHelper
     FileUtils.remove_entry(to_app_path(relative_path))
   end
 
-  def open_app_file(*path, mode: "w+")
-    expanded_path = to_app_path(File.join(*path))
+  def open_app_file(path, mode: "w+")
+    expanded_path = to_app_path(File.join(path))
     File.open(expanded_path, mode) { |file| yield file }
   end
 
@@ -62,11 +65,12 @@ module ApplicationFixtureHelper
 
   def copy_dir(path)
     root = FileUtils.mkdir_p(fixture_path).last
-    FileUtils.cp_r("#{path}/.", root)
+    FileUtils.cp_r("#{path}/.", T.must(root))
     @app_dir = root
   end
 
   def fixture_path
+    T.bind(self, Minitest::Runnable)
     File.join(TEMP_FIXTURE_DIR, "#{name}-#{Time.now.strftime("%Y_%m_%d_%H_%M_%S")}")
   end
 end
