@@ -15,7 +15,17 @@ module Packwerk
       @environment = environment
     end
 
-    Result = Struct.new(:ok?, :error_value)
+    class Result < T::Struct
+      extend T::Sig
+
+      const :ok, T::Boolean
+      const :error_value, T.nilable(String)
+
+      sig { returns(T::Boolean) }
+      def ok?
+        ok
+      end
+    end
 
     def check_all
       results = [
@@ -102,9 +112,9 @@ module Packwerk
       end
 
       if errors.empty?
-        Result.new(true)
+        Result.new(ok: true)
       else
-        Result.new(false, errors.join("\n---\n"))
+        Result.new(ok: false, error_value: errors.join("\n---\n"))
       end
     end
 
@@ -116,9 +126,9 @@ module Packwerk
 
       begin
         resolver.file_map
-        Result.new(true)
+        Result.new(ok: true)
       rescue => e
-        Result.new(false, e.message)
+        Result.new(ok: false, error_value: e.message)
       end
     end
 
@@ -131,11 +141,11 @@ module Packwerk
       cycle_strings = build_cycle_strings(dependency_graph.cycles)
 
       if dependency_graph.acyclic?
-        Result.new(true)
+        Result.new(ok: true)
       else
         Result.new(
-          false,
-          <<~EOS
+          ok: false,
+          error_value: <<~EOS
             Expected the package dependency graph to be acyclic, but it contains the following cycles:
 
             #{cycle_strings.join("\n")}
@@ -151,11 +161,11 @@ module Packwerk
       difference = all_package_manifests - package_paths_package_manifests
 
       if difference.empty?
-        Result.new(true)
+        Result.new(ok: true)
       else
         Result.new(
-          false,
-          <<~EOS
+          ok: false,
+          error_value: <<~EOS
             Expected package paths for all package.ymls to be specified, but paths were missing for the following manifests:
 
             #{relative_paths(difference).join("\n")}
@@ -175,7 +185,7 @@ module Packwerk
         end
 
       if packages_with_invalid_dependencies.empty?
-        Result.new(true)
+        Result.new(ok: true)
       else
         error_locations = packages_with_invalid_dependencies.map do |package, invalid_dependencies|
           package ||= @configuration.root_path
@@ -189,8 +199,8 @@ module Packwerk
         end
 
         Result.new(
-          false,
-          <<~EOS
+          ok: false,
+          error_value: <<~EOS
             These dependencies do not point to valid packages:
 
             #{error_locations.join("\n")}
@@ -204,11 +214,11 @@ module Packwerk
       all_packages_manifests = package_manifests(package_glob)
 
       if all_packages_manifests.include?(root_package_path)
-        Result.new(true)
+        Result.new(ok: true)
       else
         Result.new(
-          false,
-          <<~EOS
+          ok: false,
+          error_value: <<~EOS
             A root package does not exist. Create an empty `package.yml` at the root directory.
           EOS
         )
@@ -274,8 +284,8 @@ module Packwerk
       explicit_filepath = (name.start_with?("::") ? name[2..-1] : name).underscore + ".rb"
 
       Result.new(
-        false,
-        "'#{name}', listed in #{config_file_path}, could not be resolved.\n"\
+        ok: false,
+        error_value: "'#{name}', listed in #{config_file_path}, could not be resolved.\n"\
         "This is probably because it is an autovivified namespace - a namespace module that doesn't have a\n"\
         "file explicitly defining it. Packwerk currently doesn't support declaring autovivified namespaces as\n"\
         "private. Add a #{explicit_filepath} file to explicitly define the constant."
@@ -287,11 +297,11 @@ module Packwerk
       constant_package = package_set.package_from_path(location)
 
       if constant_package == declared_package
-        Result.new(true)
+        Result.new(ok: true)
       else
         Result.new(
-          false,
-          "'#{name}' is declared as private in the '#{declared_package}' package but appears to be "\
+          ok: false,
+          error_value: "'#{name}' is declared as private in the '#{declared_package}' package but appears to be "\
           "defined\nin the '#{constant_package}' package. Packwerk resolved it to #{location}."
         )
       end
@@ -305,11 +315,11 @@ module Packwerk
       results.reject!(&:ok?)
 
       if results.empty?
-        Result.new(true)
+        Result.new(ok: true)
       else
         Result.new(
-          false,
-          errors_headline + results.map(&:error_value).join(separator)
+          ok: false,
+          error_value: errors_headline + results.map(&:error_value).join(separator)
         )
       end
     end
