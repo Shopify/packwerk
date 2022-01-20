@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "test_helper"
@@ -9,7 +9,7 @@ module Packwerk
     class CustomExecutableTest < Minitest::Test
       include ApplicationFixtureHelper
 
-      TIMELINE_PATH = File.join("components", "timeline")
+      TIMELINE_PATH = Pathname.new("components/timeline")
 
       setup do
         reset_output
@@ -35,7 +35,7 @@ module Packwerk
       end
 
       test "'packwerk check' with violations only in nested packages has different outcomes per variant" do
-        open_app_file(TIMELINE_PATH, "nested", "timeline_comment.rb") do |file|
+        open_app_file(TIMELINE_PATH.join("nested", "timeline_comment.rb")) do |file|
           file.write("class TimelineComment; belongs_to :order, class_name: '::Order'; end")
           file.flush
         end
@@ -55,7 +55,7 @@ module Packwerk
       end
 
       test "'packwerk check' with failures in different parts of the app has different outcomes per variant" do
-        open_app_file(TIMELINE_PATH, "nested", "timeline_comment.rb") do |file|
+        open_app_file(TIMELINE_PATH.join("nested", "timeline_comment.rb")) do |file|
           file.write("class TimelineComment; belongs_to :order, class_name: '::Order'; end")
           file.flush
         end
@@ -97,7 +97,7 @@ module Packwerk
         deprecated_reference_content = read_deprecated_references
         timeline_deprecated_reference_path = to_app_path(File.join(TIMELINE_PATH, "deprecated_references.yml"))
 
-        open_app_file(TIMELINE_PATH, "app", "models", "timeline_comment.rb") do |file|
+        open_app_file(TIMELINE_PATH.join("app", "models", "timeline_comment.rb")) do |file|
           file.write("class TimelineComment; belongs_to :order; end")
           file.flush
 
