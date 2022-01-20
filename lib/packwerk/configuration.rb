@@ -37,7 +37,7 @@ module Packwerk
       :include, :exclude, :root_path, :package_paths, :custom_associations, :config_path, :cache_directory
     )
 
-    def initialize(configs = {}, config_path: nil)
+    def initialize(configs = {}, config_path: DEFAULT_CONFIG_PATH)
       @include = configs["include"] || DEFAULT_INCLUDE_GLOBS
       @exclude = configs["exclude"] || DEFAULT_EXCLUDE_GLOBS
       root = config_path ? File.dirname(config_path) : "."

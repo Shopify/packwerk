@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "benchmark"
@@ -8,6 +8,18 @@ module Packwerk
   class ParseRun
     extend T::Sig
 
+    ProcessFileProc = T.type_alias do
+      T.proc.params(path: String).returns(T::Array[Offense])
+    end
+
+    sig do
+      params(
+        files: T::Array[String],
+        configuration: Configuration,
+        progress_formatter: Formatters::ProgressFormatter,
+        offenses_formatter: OffensesFormatter,
+      ).void
+    end
     def initialize(
       files:,
       configuration:,
@@ -20,6 +32,7 @@ module Packwerk
       @files = files
     end
 
+    sig { returns(Result) }
     def detect_stale_violations
       offense_collection = find_offenses
 
@@ -29,6 +42,7 @@ module Packwerk
       Result.new(message: message, status: result_status)
     end
 
+    sig { returns(Result) }
     def update_deprecations
       offense_collection = find_offenses
       offense_collection.dump_deprecated_references_files
@@ -41,6 +55,7 @@ module Packwerk
       Result.new(message: message, status: offense_collection.errors.empty?)
     end
 
+    sig { returns(Result) }
     def check
       offense_collection = find_offenses(show_errors: true)
 
@@ -55,19 +70,20 @@ module Packwerk
 
     private
 
+    sig { params(show_errors: T::Boolean).returns(OffenseCollection) }
     def find_offenses(show_errors: false)
       offense_collection = OffenseCollection.new(@configuration.root_path)
       @progress_formatter.started(@files)
 
       run_context = Packwerk::RunContext.from_configuration(@configuration)
-      all_offenses = T.let([], T.untyped)
+      all_offenses = T.let([], T::Array[Offense])
 
-      process_file = -> (path) do
+      process_file = T.let(-> (path) do
         run_context.process_file(file: path).tap do |offenses|
           failed = show_errors && offenses.any? { |offense| !offense_collection.listed?(offense) }
           update_progress(failed: failed)
         end
-      end
+      end, ProcessFileProc)
 
       execution_time = Benchmark.realtime do
         all_offenses = if @configuration.parallel?
@@ -83,18 +99,22 @@ module Packwerk
       offense_collection
     end
 
-    def serial_find_offenses
-      all_offenses = T.let([], T.untyped)
-      @files.each do |path|
-        offenses = yield path
-        all_offenses.concat(offenses)
+    sig { params(block: ProcessFileProc).returns(T::Array[Offense]) }
+    def serial_find_offenses(&block)
+      all_offenses = T.let([], T::Array[Offense])
+      begin
+        @files.each do |path|
+          offenses = block.call(path)
+          all_offenses.concat(offenses)
+        end
+      rescue Interrupt
+        @progress_formatter.interrupted
+        all_offenses
       end
-      all_offenses
-    rescue Interrupt
-      @progress_formatter.interrupted
       all_offenses
     end
 
+    sig { params(failed: T::Boolean).void }
     def update_progress(failed: false)
       if failed
         @progress_formatter.mark_as_failed
