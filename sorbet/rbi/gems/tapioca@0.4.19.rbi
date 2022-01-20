@@ -562,7 +562,7 @@ module Tapioca::GenericTypeRegistry
     def name_of(constant); end
     sig { params(object: BasicObject).returns(Integer) }
     def object_id_of(object); end
-    sig { params(constant: T.untyped, type_variable_type: T.enum([:type_member, :type_template]), type_variable: T::Types::TypeVariable, fixed: T.untyped, lower: T.untyped, upper: T.untyped).void }
+    sig { params(constant: T.untyped, type_variable_type: T.deprecated_enum([:type_member, :type_template]), type_variable: T::Types::TypeVariable, fixed: T.untyped, lower: T.untyped, upper: T.untyped).void }
     def register_type_variable(constant, type_variable_type, type_variable, fixed, lower, upper); end
     sig { params(type_variable_type: Symbol, variance: Symbol, fixed: T.untyped, lower: T.untyped, upper: T.untyped).returns(String) }
     def serialize_type_variable(type_variable_type, variance, fixed, lower, upper); end
