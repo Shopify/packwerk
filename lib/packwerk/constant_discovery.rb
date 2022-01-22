@@ -17,16 +17,36 @@ module Packwerk
   class ConstantDiscovery
     extend T::Sig
 
-    class ConstantContext < T::Struct
+    class ConstantContext
       extend T::Sig
-      const :name, String
-      const :location, String
-      const :package, Package
-      const :public, T::Boolean
+
+      sig do
+        params(
+          name: String,
+          location: String,
+          package: Package,
+          is_public: T::Boolean
+        ).void
+      end
+      def initialize(name:, location:, package:, is_public:)
+        @name = name
+        @location = location
+        @package = package
+        @is_public = is_public
+      end
+
+      sig { returns(String) }
+      attr_reader :name
+
+      sig { returns(String) }
+      attr_reader :location
+
+      sig { returns(Package) }
+      attr_reader :package
 
       sig { returns(T::Boolean) }
       def public?
-        public
+        @is_public
       end
     end
 
@@ -73,7 +93,7 @@ module Packwerk
         name: constant.name,
         location: constant.location,
         package: package,
-        public: package.public_path?(constant.location),
+        is_public: package.public_path?(constant.location),
       )
     end
   end

@@ -14,7 +14,7 @@ module FactoryHelper
       name: constant_name,
       location: "some/location.rb",
       package: destination_package,
-      public: public_constant
+      is_public: public_constant
     )
     Packwerk::Reference.new(source_package: source_package, relative_path: path, constant: constant,
 source_location: source_location)
