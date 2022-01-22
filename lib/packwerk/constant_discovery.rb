@@ -62,7 +62,7 @@ module Packwerk
         constant.name,
         constant.location,
         package,
-        package&.public_path?(constant.location),
+        package.public_path?(constant.location),
       )
     end
   end
