@@ -33,7 +33,7 @@ module Packwerk
     def build_message(reference, violation_type)
       violation_message = case violation_type
       when ViolationType::Privacy
-        source_desc = reference.source_package ? "'#{reference.source_package}'" : "here"
+        source_desc = "'#{reference.source_package}'"
         "Privacy violation: '#{reference.constant.name}' is private to '#{reference.constant.package}' but " \
         "referenced from #{source_desc}.\n" \
         "Is there a public entrypoint in '#{reference.constant.package.public_path}' that you can use instead?"
