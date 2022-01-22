@@ -5,6 +5,8 @@ require "test_helper"
 
 module Packwerk
   class ConstantDiscoveryTest < Minitest::Test
+    include TypedMock
+
     def setup
       @root_path = "test/fixtures/skeleton/"
       load_paths =
@@ -35,7 +37,7 @@ module Packwerk
     end
 
     test "raises with helpful message if there is a constant resolver error" do
-      constant_resolver = stub
+      constant_resolver = typed_mock
       constant_resolver.stubs(:resolve).raises(ConstantResolver::Error, "initial error message")
       discovery = ConstantDiscovery.new(
         constant_resolver: constant_resolver,

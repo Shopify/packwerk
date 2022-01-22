@@ -184,7 +184,7 @@ module Packwerk
       packages[name]
     end
 
-    sig { params(file_path: T.any(Pathname, String)).returns(T.nilable(Package)) }
+    sig { params(file_path: T.any(Pathname, String)).returns(Package) }
     def package_from_path(file_path)
       filepath_string = file_path.to_s
       @package_from_path[filepath_string] ||= T.must(

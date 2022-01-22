@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "constant_resolver"
@@ -15,6 +15,8 @@ module Packwerk
   #   have no way of inferring the file it is defined in. You could argue though that inheritance means that another
   #   constant with the same name exists in the inheriting class, and this view is sufficient for all our use cases.
   class ConstantDiscovery
+    extend T::Sig
+
     class ConstantContext < T::Struct
       extend T::Sig
       const :name, String
@@ -28,30 +30,35 @@ module Packwerk
       end
     end
 
-    # @param constant_resolver [ConstantResolver]
-    # @param packages [Packwerk::PackageSet]
+    sig do
+      params(constant_resolver: ConstantResolver, packages: Packwerk::PackageSet).void
+    end
     def initialize(constant_resolver:, packages:)
       @packages = packages
       @resolver = constant_resolver
     end
 
-    # Get the package that owns a given file path.
-    #
-    # @param path [String] the file path
-    #
-    # @return [Packwerk::Package] the package that contains the given file,
-    #   or nil if the path is not owned by any component
+    # Get the package that owns a given file path, or the root package if the path is not owned by any component
+    sig do
+      params(
+        path: String,
+      ).returns(Packwerk::Package)
+    end
     def package_from_path(path)
       @packages.package_from_path(path)
     end
 
     # Analyze a constant via its name.
     # If the constant is unresolved, we need the current namespace path to correctly infer its full name
-    #
-    # @param const_name [String] The unresolved constant's name.
-    # @param current_namespace_path [Array<String>] (optional) The namespace of the context in which the constant is
-    #   used, e.g. ["Apps", "Models"] for `Apps::Models`. Defaults to [] which means top level.
-    # @return [Packwerk::ConstantDiscovery::ConstantContext]
+    sig do
+      params(
+        # The unresolved constant's name.
+        const_name: String,
+        # The namespace of the context in which the constant is
+        # used, e.g. ["Apps", "Models"] for `Apps::Models`. Defaults to [] which means top level.
+        current_namespace_path: T.nilable(T::Array[String]),
+      ).returns(T.nilable(ConstantDiscovery::ConstantContext))
+    end
     def context_for(const_name, current_namespace_path: [])
       begin
         constant = @resolver.resolve(const_name, current_namespace_path: current_namespace_path)
@@ -66,7 +73,7 @@ module Packwerk
         name: constant.name,
         location: constant.location,
         package: package,
-        public: package&.public_path?(constant.location),
+        public: package.public_path?(constant.location),
       )
     end
   end
