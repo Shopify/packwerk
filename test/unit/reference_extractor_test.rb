@@ -254,7 +254,7 @@ module Packwerk
         file_path: file_path
       )
 
-      ::Packwerk::ReferenceExtractor.get_fully_qualified_references_and_offenses_from(
+      ::Packwerk::ReferenceExtractor.get_fully_qualified_references_from(
         unresolved_references,
         @context_provider
       )

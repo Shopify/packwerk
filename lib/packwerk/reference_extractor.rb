@@ -51,20 +51,14 @@ module Packwerk
 
     sig do
       params(
-        unresolved_references_and_offenses: T::Array[T.any(UnresolvedReference, Offense)],
+        unresolved_references: T::Array[UnresolvedReference],
         context_provider: ConstantDiscovery
-      ).returns(T::Array[T.any(Reference, Offense)])
+      ).returns(T::Array[Reference])
     end
-    def self.get_fully_qualified_references_and_offenses_from(unresolved_references_and_offenses, context_provider)
-      fully_qualified_references_and_offenses = T.let([], T::Array[T.any(Reference, Offense)])
+    def self.get_fully_qualified_references_from(unresolved_references, context_provider)
+      fully_qualified_references = T.let([], T::Array[Reference])
 
-      unresolved_references_and_offenses.each do |unresolved_references_or_offense|
-        if unresolved_references_or_offense.is_a?(Offense)
-          fully_qualified_references_and_offenses << unresolved_references_or_offense
-
-          next
-        end
-
+      unresolved_references.each do |unresolved_references_or_offense|
         unresolved_reference = unresolved_references_or_offense
 
         constant =
@@ -83,7 +77,7 @@ module Packwerk
 
         next if source_package == package_for_constant
 
-        fully_qualified_references_and_offenses << Reference.new(
+        fully_qualified_references << Reference.new(
           source_package,
           unresolved_reference.relative_path,
           constant,
@@ -91,7 +85,7 @@ module Packwerk
         )
       end
 
-      fully_qualified_references_and_offenses
+      fully_qualified_references
     end
 
     private

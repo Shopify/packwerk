@@ -13,12 +13,10 @@ module Packwerk
 
       sig do
         params(
-          reference: T.any(Packwerk::Reference, Packwerk::Offense)
+          reference: Reference
         ).returns(T::Array[Packwerk::Offense])
       end
       def call(reference)
-        return [reference] if reference.is_a?(Packwerk::Offense)
-
         @checkers.each_with_object([]) do |checker, violations|
           next unless checker.invalid_reference?(reference)
           offense = Packwerk::ReferenceOffense.new(
