@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "optparse"
@@ -30,9 +30,10 @@ module Packwerk
       @err_out = err_out
       @environment = environment
       @style = style
-      @configuration = configuration || Configuration.from_path
-      @progress_formatter = Formatters::ProgressFormatter.new(@out, style: style)
-      @offenses_formatter = offenses_formatter || Formatters::OffensesFormatter.new(style: @style)
+      @configuration = T.let(configuration || Configuration.from_path, Configuration)
+      @progress_formatter = T.let(Formatters::ProgressFormatter.new(@out, style: style), Formatters::ProgressFormatter)
+      @offenses_formatter = T.let(offenses_formatter || Formatters::OffensesFormatter.new(style: @style),
+        OffensesFormatter)
     end
 
     sig { params(args: T::Array[String]).returns(T.noreturn) }
@@ -78,12 +79,14 @@ module Packwerk
 
     private
 
+    sig { returns(T::Boolean) }
     def init
       @out.puts("📦 Initializing Packwerk...")
 
       generate_configs
     end
 
+    sig { returns(T::Boolean) }
     def generate_configs
       configuration_file = Packwerk::Generators::ConfigurationFile.generate(
         root: @configuration.root_path,
@@ -112,12 +115,14 @@ module Packwerk
       success
     end
 
+    sig { params(result: Result).returns(T::Boolean) }
     def output_result(result)
       @out.puts
       @out.puts(result.message)
       result.status
     end
 
+    sig { params(paths: T::Array[String], ignore_nested_packages: T::Boolean).returns(T::Array[String]) }
     def fetch_files_to_process(paths, ignore_nested_packages)
       files = FilesForProcessing.fetch(
         paths: paths,
@@ -129,6 +134,7 @@ module Packwerk
       files
     end
 
+    sig { params(_paths: T::Array[String]).returns(T::Boolean) }
     def validate(_paths)
       @progress_formatter.started_validation do
         result = checker.check_all
@@ -139,6 +145,7 @@ module Packwerk
       end
     end
 
+    sig { returns(ApplicationValidator) }
     def checker
       Packwerk::ApplicationValidator.new(
         config_file_path: @configuration.config_path,
@@ -147,6 +154,7 @@ module Packwerk
       )
     end
 
+    sig { params(result: ApplicationValidator::Result).void }
     def list_validation_errors(result)
       @out.puts
       if result.ok?
@@ -157,6 +165,7 @@ module Packwerk
       end
     end
 
+    sig { params(params: T.untyped).returns(ParseRun) }
     def parse_run(params)
       paths = T.let([], T::Array[String])
       ignore_nested_packages = nil
