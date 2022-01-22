@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 module Packwerk
@@ -6,6 +6,7 @@ module Packwerk
     class ReferenceChecker
       extend T::Sig
 
+      sig { params(checkers: T::Array[Checkers::Checker]).void }
       def initialize(checkers)
         @checkers = checkers
       end
