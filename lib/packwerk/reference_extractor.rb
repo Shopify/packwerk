@@ -66,11 +66,13 @@ module Packwerk
             current_namespace_path: unresolved_reference.namespace_path
           )
 
-        next if constant&.package.nil?
+        next if constant.nil?
+        package_for_constant = constant.package
+        next if package_for_constant.nil?
 
         source_package = context_provider.package_from_path(unresolved_reference.relative_path)
 
-        next if source_package == constant.package
+        next if source_package == package_for_constant
 
         fully_qualified_references_and_offenses << Reference.new(
           source_package,

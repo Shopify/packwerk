@@ -92,10 +92,10 @@ module Packwerk
       packages[name]
     end
 
-    sig { params(file_path: T.any(Pathname, String)).returns(T.nilable(Package)) }
+    sig { params(file_path: T.any(Pathname, String)).returns(Package) }
     def package_from_path(file_path)
       path_string = file_path.to_s
-      @package_from_path[path_string] ||= packages.values.find { |package| package.package_path?(path_string) }
+      @package_from_path[path_string] ||= T.must(packages.values.find { |package| package.package_path?(path_string) })
     end
   end
 end
