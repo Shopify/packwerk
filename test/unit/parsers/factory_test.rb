@@ -24,7 +24,10 @@ module Packwerk
         assert_instance_of(Parsers::Erb, factory.for_path("foo.md.erb"))
         assert_instance_of(Parsers::Erb, factory.for_path("/sub/directory/foo.erb"))
 
-        fake_class = Class.new
+        fake_class = Class.new do
+          T.unsafe(self).include(ParserInterface)
+        end
+
         with_erb_parser_class(fake_class) do
           assert_instance_of(fake_class, factory.for_path("foo.html.erb"))
         end
