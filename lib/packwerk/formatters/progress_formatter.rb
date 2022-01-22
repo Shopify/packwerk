@@ -30,11 +30,11 @@ module Packwerk
       end
 
       def mark_as_inspected
-        @out.print(".")
+        # @out.print(".")
       end
 
       def mark_as_failed
-        @out.print("#{@style.error}E#{@style.reset}")
+        # @out.print("#{@style.error}E#{@style.reset}")
       end
 
       def finished(execution_time)

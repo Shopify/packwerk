@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "constant_resolver"
+require "get_process_mem"
 
 module Packwerk
   # Holds the context of a Packwerk run across multiple files.
@@ -71,6 +72,9 @@ module Packwerk
 
     sig { params(file: String).returns(T::Array[Packwerk::Offense]) }
     def process_file(file:)
+      mem = GetProcessMem.new
+      puts(mem.mb.to_s)
+
       unresolved_references_and_offenses = file_processor.call(file)
       references_and_offenses = ReferenceExtractor.get_fully_qualified_references_and_offenses_from(
         unresolved_references_and_offenses,
