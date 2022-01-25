@@ -29,9 +29,17 @@ module Packwerk
 
       def call(io:, file_path: "<unknown>")
         buffer = Parser::Source::Buffer.new(file_path)
-        buffer.source = io.read
+        file_contents = io.read
+        x = Benchmark.measure { SyntaxTree.parse(file_contents) }
+        puts "Syntax tree: #{x.real}"
+        buffer.source = file_contents
         parser = @parser_class.new(@builder)
-        parser.parse(buffer)
+        y = nil
+        x = Benchmark.measure do
+          y = parser.parse(buffer)
+        end
+        puts "Parser: #{x.real}"
+        y
       rescue EncodingError => e
         result = ParseResult.new(file: file_path, message: e.message)
         raise Parsers::ParseError, result
