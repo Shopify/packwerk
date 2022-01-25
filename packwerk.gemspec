@@ -49,6 +49,7 @@ Gem::Specification.new do |spec|
   # For Ruby parsing
   spec.add_dependency("ast")
   spec.add_dependency("parser")
+  spec.add_dependency("syntax_tree")
 
   # For ERB parsing
   spec.add_dependency("better_html")
