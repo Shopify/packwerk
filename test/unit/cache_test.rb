@@ -10,20 +10,20 @@ module Packwerk
 
     setup do
       setup_application_fixture
+      use_template(:minimal)
+      open_app_file("packwerk.yml") { |file| file.write("") }
     end
 
     teardown do
-      teardown_application_fixture
-      Pathname.pwd.join("packwerk.yml").write("")
       Cache.new(
         enable_cache: true,
         config_path: "packwerk.yml",
         cache_directory: Pathname.new("tmp/cache/packwerk")
       ).bust_cache!
+      teardown_application_fixture
     end
 
     test "#update_deprecations writes to the cache" do
-      use_template(:minimal)
       filepath = Pathname.pwd.join("path/of/exile.rb")
       FileUtils.mkdir_p(filepath.dirname)
       filepath.write("class MyClass; end")
