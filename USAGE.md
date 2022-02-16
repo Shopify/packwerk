@@ -78,6 +78,7 @@ Packwerk reads from the `packwerk.yml` configuration file in the root directory.
 | custom_associations  | N/A                                       | list of custom associations, if any |
 | parallel             | true                                      | when true, fork code parsing out to subprocesses |
 | cache                | false                                     | when true, caches the results of parsing files |
+| cache_directory      | tmp/cache/packwerk                        | the directory that will hold the packwerk cache |
 
 ### Using a custom ERB parser
 
