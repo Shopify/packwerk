@@ -15,6 +15,7 @@ module Packwerk
   autoload :ApplicationValidator
   autoload :AssociationInspector
   autoload :OffenseCollection
+  autoload :Cache
   autoload :Cli
   autoload :Configuration
   autoload :ConstantDiscovery
@@ -36,6 +37,7 @@ module Packwerk
   autoload :ParsedConstantDefinitions
   autoload :Parsers
   autoload :ParseRun
+  autoload :UnresolvedReference
   autoload :Reference
   autoload :ReferenceExtractor
   autoload :ReferenceOffense

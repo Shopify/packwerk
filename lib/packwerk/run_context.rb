@@ -30,7 +30,10 @@ module Packwerk
           load_paths: configuration.load_paths,
           package_paths: configuration.package_paths,
           inflector: inflector,
-          custom_associations: configuration.custom_associations
+          custom_associations: configuration.custom_associations,
+          cache_enabled: configuration.cache_enabled?,
+          cache_directory: configuration.cache_directory,
+          config_path: configuration.config_path,
         )
       end
     end
@@ -41,7 +44,10 @@ module Packwerk
       package_paths: nil,
       inflector: nil,
       custom_associations: [],
-      checker_classes: DEFAULT_CHECKERS
+      checker_classes: DEFAULT_CHECKERS,
+      cache_enabled: false,
+      cache_directory: nil,
+      config_path: nil
     )
       @root_path = root_path
       @load_paths = load_paths
@@ -49,21 +55,27 @@ module Packwerk
       @inflector = inflector
       @custom_associations = custom_associations
       @checker_classes = checker_classes
+      @cache_enabled = cache_enabled
+      @cache_directory = cache_directory
+      @config_path = config_path
     end
 
     sig { params(file: String).returns(T::Array[Packwerk::Offense]) }
     def process_file(file:)
-      references = file_processor.call(file)
-
+      unresolved_references_and_offenses = file_processor.call(file)
+      references_and_offenses = ReferenceExtractor.get_fully_qualified_references_and_offenses_from(
+        unresolved_references_and_offenses,
+        context_provider
+      )
       reference_checker = ReferenceChecking::ReferenceChecker.new(checkers)
-      references.flat_map { |reference| reference_checker.call(reference) }
+      references_and_offenses.flat_map { |reference| reference_checker.call(reference) }
     end
 
     private
 
     sig { returns(FileProcessor) }
     def file_processor
-      @file_processor ||= FileProcessor.new(node_processor_factory: node_processor_factory)
+      @file_processor ||= FileProcessor.new(node_processor_factory: node_processor_factory, cache: cache)
     end
 
     sig { returns(NodeProcessorFactory) }
@@ -77,7 +89,7 @@ module Packwerk
 
     sig { returns(ConstantDiscovery) }
     def context_provider
-      ::Packwerk::ConstantDiscovery.new(
+      @context_provider ||= ::Packwerk::ConstantDiscovery.new(
         constant_resolver: resolver,
         packages: package_set
       )
@@ -90,6 +102,11 @@ module Packwerk
         load_paths: load_paths,
         inflector: inflector,
       )
+    end
+
+    sig { returns(Cache) }
+    def cache
+      @cache ||= Cache.new(enable_cache: @cache_enabled, cache_directory: @cache_directory, config_path: @config_path)
     end
 
     sig { returns(PackageSet) }

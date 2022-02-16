@@ -25,13 +25,13 @@ module Packwerk
     def self.reference_qualifications(constant_name, namespace_path:)
       return [constant_name] if constant_name.start_with?("::")
 
-      fully_qualified_constant_name = "::#{constant_name}"
+      resolved_constant_name = "::#{constant_name}"
 
       possible_namespaces = namespace_path.each_with_object([""]) do |current, acc|
         acc << "#{acc.last}::#{current}" if acc.last && current
       end
 
-      possible_namespaces.map { |namespace| namespace + fully_qualified_constant_name }
+      possible_namespaces.map { |namespace| namespace + resolved_constant_name }
     end
 
     private
@@ -53,9 +53,9 @@ module Packwerk
     end
 
     def add_definition(constant_name, current_namespace_path, location)
-      fully_qualified_constant = [""].concat(current_namespace_path).push(constant_name).join("::")
+      resolved_constant = [""].concat(current_namespace_path).push(constant_name).join("::")
 
-      @local_definitions[fully_qualified_constant] = location
+      @local_definitions[resolved_constant] = location
     end
   end
 end

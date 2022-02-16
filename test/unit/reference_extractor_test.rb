@@ -242,13 +242,22 @@ module Packwerk
       file_path = to_app_path(file_path)
 
       extractor = ::Packwerk::ReferenceExtractor.new(
-        context_provider: @context_provider,
         constant_name_inspectors: constant_name_inspectors,
         root_node: root_node,
         root_path: app_dir
       )
 
-      find_references_in_ast(root_node, ancestors: [], extractor: extractor, file_path: file_path)
+      unresolved_references = find_references_in_ast(
+        root_node,
+        ancestors: [],
+        extractor: extractor,
+        file_path: file_path
+      )
+
+      ::Packwerk::ReferenceExtractor.get_fully_qualified_references_and_offenses_from(
+        unresolved_references,
+        @context_provider
+      )
     end
 
     def find_references_in_ast(root_node, ancestors:, extractor:, file_path:)

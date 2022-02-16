@@ -34,7 +34,7 @@ module Packwerk
     DEFAULT_EXCLUDE_GLOBS = ["{bin,node_modules,script,tmp,vendor}/**/*"]
 
     attr_reader(
-      :include, :exclude, :root_path, :package_paths, :custom_associations, :config_path
+      :include, :exclude, :root_path, :package_paths, :custom_associations, :config_path, :cache_directory
     )
 
     def initialize(configs = {}, config_path: nil)
@@ -74,7 +74,8 @@ module Packwerk
       @package_paths = configs["package_paths"] || "**/"
       @custom_associations = configs["custom_associations"] || []
       @parallel = configs.key?("parallel") ? configs["parallel"] : true
-
+      @cache_enabled = configs.key?("cache") ? configs["cache"] : false
+      @cache_directory = Pathname.new(configs["cache_directory"] || "tmp/cache/packwerk")
       @config_path = config_path
     end
 
@@ -84,6 +85,10 @@ module Packwerk
 
     def parallel?
       @parallel
+    end
+
+    def cache_enabled?
+      !!@cache_enabled
     end
   end
 end

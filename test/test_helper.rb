@@ -18,6 +18,7 @@ require "support/rails_paths"
 require "support/test_macro"
 require "support/test_assertions"
 require "support/yaml_file"
+require "support/typed_mock"
 
 Minitest::Test.extend(TestMacro)
 Minitest::Test.include(TestAssertions)

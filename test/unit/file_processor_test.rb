@@ -6,11 +6,17 @@ require "test_helper"
 module Packwerk
   class FileProcessorTest < Minitest::Test
     include FactoryHelper
+    include TypedMock
 
     setup do
-      @node_processor_factory = mock
-      @node_processor = mock
-      @file_processor = ::Packwerk::FileProcessor.new(node_processor_factory: @node_processor_factory)
+      @node_processor_factory = typed_mock
+      @node_processor = typed_mock
+      @cache = Cache.new(
+        enable_cache: false,
+        cache_directory: Pathname.new("tmp/cache/packwerk"),
+        config_path: "packwerk.yml"
+      )
+      @file_processor = ::Packwerk::FileProcessor.new(node_processor_factory: @node_processor_factory, cache: @cache)
     end
 
     test "#call visits all nodes in a file path with no references" do
@@ -85,7 +91,14 @@ module Packwerk
 
     test "#call with an invalid syntax doesn't parse node" do
       @node_processor_factory.expects(:for).never
-      file_processor = ::Packwerk::FileProcessor.new(node_processor_factory: @node_processor_factory)
+      file_processor = ::Packwerk::FileProcessor.new(
+        node_processor_factory: @node_processor_factory,
+        cache: Cache.new(
+          enable_cache: false,
+          cache_directory: Pathname.new("tmp/cache/packwerk"),
+          config_path: "packwerk.yml"
+        )
+      )
 
       tempfile(name: "foo", content: "def error") do |file_path|
         file_processor.call(file_path)
