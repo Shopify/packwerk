@@ -245,7 +245,6 @@ DEPENDENCIES
   minitest-focus
   mocha
   packwerk!
-  pry
   psych (~> 3)
   rails!
   rake
