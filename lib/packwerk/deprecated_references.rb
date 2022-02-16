@@ -16,6 +16,7 @@ module Packwerk
       @package = package
       @filepath = filepath
       @new_entries = T.let({}, ENTRIES_TYPE)
+      @deprecated_references = T.let(nil, T.nilable(ENTRIES_TYPE))
     end
 
     sig do
@@ -103,7 +104,6 @@ module Packwerk
 
     sig { returns(ENTRIES_TYPE) }
     def deprecated_references
-      @deprecated_references ||= T.let(@deprecated_references, T.nilable(ENTRIES_TYPE))
       @deprecated_references ||= if File.exist?(@filepath)
         load_yaml(@filepath)
       else

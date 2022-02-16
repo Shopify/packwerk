@@ -21,6 +21,7 @@ module Packwerk
       @name = name
       @config = T.let(config || {}, T::Hash[T.untyped, T.untyped])
       @dependencies = T.let(Array(@config["dependencies"]).freeze, T::Array[String])
+      @public_path = T.let(nil, T.nilable(String))
     end
 
     sig { returns(T.nilable(T.any(T::Boolean, T::Array[String]))) }
@@ -46,7 +47,6 @@ module Packwerk
 
     sig { returns(String) }
     def public_path
-      @public_path = T.let(@public_path, T.nilable(String))
       @public_path ||= begin
         unprefixed_public_path = user_defined_public_path || "app/public/"
 
