@@ -6,8 +6,32 @@ require "pathname"
 module Packwerk
   PathSpec = T.type_alias { T.any(String, T::Array[String]) }
 
-  # Copied from https://leetcode.com/problems/implement-trie-prefix-tree/discuss/327234/ruby-solution-for-trie
-  # This helps us performantly find the package for a given path
+  # This trie performantly allows us to identify what file a package is in.
+  # It stores packages in a Trie data structure. A Trie places each "entry" in a package path
+  # into one node, with pointers to child nodes that contain the subsequent entries.
+  # For example, if our packs are:
+  # `app/services/my_pack`, `app/services/my_other_pack`, `packs/my_pack`, `packs/my_other_pack`, and `packs/my_pack/nested/my_nested_pack`,
+  # then our trie looks like this (created using https://asciiflow.com)
+  #
+  #                      ┌────┐
+  #             ┌────────┤root├───────────┐
+  #             │        └────┘           │
+  #             │                         │
+  #           ┌─▼─┐                  ┌────▼───┐
+  #           │app│                  │packages├──┐
+  #           └─┬─┘                  └┬───────┘  │
+  #             │                     │          │
+  #      ┌──────▼──┐     ┌────────────▼───┐  ┌───▼──┐
+  #      │services │     │my_other_package│  │nested├───┐
+  #      └─┬───────┘     └────────────────┘  └──────┘   │
+  #        │                                            │
+  # ┌──────▼───┐                                 ┌──────▼──────────┐
+  # │my_package│                                 │my_nested_package│
+  # └──────────┘                                 └─────────────────┘
+  #
+  # When we need to identify what pack a file belongs to, we split it up into its entries, and the most jumps through the tree we will have to make is proportional
+  # to the height of the tree, won't be greater than the length of the longest package.
+  #
   class PackageNameTrie
     extend T::Sig
 
