@@ -13,10 +13,6 @@ module Packwerk
       const :file_contents_digest, String
       const :unresolved_references, T::Array[UnresolvedReference]
 
-      # A previous implementation used YAML.dump and YAML.load.
-      # Although these are much cleaner, the YAML loading code can handle arbitrary object
-      # shapes and therefore is a lot more complex (thus, slower)
-      # By having a simple serialization and deserialization, we save some time here.
       sig { returns(String) }
       def serialize
         to_json
