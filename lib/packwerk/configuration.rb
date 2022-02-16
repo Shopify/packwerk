@@ -88,7 +88,7 @@ module Packwerk
     end
 
     def cache_enabled?
-      !!@cache_enabled
+      @cache_enabled
     end
   end
 end
