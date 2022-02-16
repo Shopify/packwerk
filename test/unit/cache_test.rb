@@ -34,7 +34,7 @@ module Packwerk
 
       FileProcessor.any_instance.stubs(:references_from_ast).returns(unresolved_references)
       configuration = Configuration.from_path
-      configuration.stubs(experimental_cache?: true)
+      configuration.stubs(cache_enabled?: true)
 
       parse_run = Packwerk::ParseRun.new(files: [filepath.to_s], configuration: configuration)
       parse_run.update_deprecations
