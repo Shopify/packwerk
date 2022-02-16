@@ -38,35 +38,6 @@ module Packwerk
     )
 
     def initialize(configs = {}, config_path: nil)
-      if configs["load_paths"]
-        warning = <<~WARNING
-          DEPRECATION WARNING: The 'load_paths' key in `packwerk.yml` is deprecated.
-          This value is no longer cached, and you can remove the key from `packwerk.yml`.
-        WARNING
-
-        warn(warning)
-      end
-
-      inflection_file = File.expand_path(configs["inflections_file"] || "config/inflections.yml", @root_path)
-      if configs["inflections_file"]
-        warning = <<~WARNING
-          DEPRECATION WARNING: The 'inflections_file' key in `packwerk.yml` is deprecated.
-          This value is no longer cached, and you can remove the key from `packwerk.yml`.
-          You can also delete #{configs["inflections_file"]}.
-        WARNING
-
-        warn(warning)
-      end
-
-      if Pathname.new(inflection_file).exist?
-        warning = <<~WARNING
-          DEPRECATION WARNING: Inflections YMLs in packwerk are now deprecated.
-          This value is no longer cached, and you can now delete #{inflection_file}
-        WARNING
-
-        warn(warning)
-      end
-
       @include = configs["include"] || DEFAULT_INCLUDE_GLOBS
       @exclude = configs["exclude"] || DEFAULT_EXCLUDE_GLOBS
       root = config_path ? File.dirname(config_path) : "."
@@ -77,6 +48,35 @@ module Packwerk
       @cache_enabled = configs.key?("cache") ? configs["cache"] : false
       @cache_directory = Pathname.new(configs["cache_directory"] || "tmp/cache/packwerk")
       @config_path = config_path
+
+      if configs["load_paths"]
+        warning = <<~WARNING
+          DEPRECATION WARNING: The 'load_paths' key in `packwerk.yml` is deprecated.
+          This value is no longer cached, and you can remove the key from `packwerk.yml`.
+        WARNING
+
+        warn(warning)
+      end
+
+      if configs["inflections_file"]
+        warning = <<~WARNING
+          DEPRECATION WARNING: The 'inflections_file' key in `packwerk.yml` is deprecated.
+          This value is no longer cached, and you can remove the key from `packwerk.yml`.
+          You can also delete #{configs["inflections_file"]}.
+        WARNING
+
+        warn(warning)
+      end
+
+      inflection_file = File.expand_path(configs["inflections_file"] || "config/inflections.yml", @root_path)
+      if Pathname.new(inflection_file).exist?
+        warning = <<~WARNING
+          DEPRECATION WARNING: Inflections YMLs in packwerk are now deprecated.
+          This value is no longer cached, and you can now delete #{inflection_file}
+        WARNING
+
+        warn(warning)
+      end
     end
 
     def load_paths
