@@ -24,8 +24,11 @@ module Packwerk
     end
 
     sig do
-      params(node: Parser::AST::Node, ancestors: T::Array[Parser::AST::Node],
-file_path: String).returns(T.nilable(UnresolvedReference))
+      params(
+        node: Parser::AST::Node,
+        ancestors: T::Array[Parser::AST::Node],
+        file_path: String
+      ).returns(T.nilable(UnresolvedReference))
     end
     def reference_from_node(node, ancestors:, file_path:)
       constant_name = T.let(nil, T.nilable(String))

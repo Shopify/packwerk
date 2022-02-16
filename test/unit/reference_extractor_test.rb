@@ -247,8 +247,13 @@ module Packwerk
         root_path: app_dir
       )
 
-      unresolved_references = find_references_in_ast(root_node, ancestors: [], extractor: extractor,
-file_path: file_path)
+      unresolved_references = find_references_in_ast(
+        root_node,
+        ancestors: [],
+        extractor: extractor,
+        file_path: file_path
+      )
+
       ::Packwerk::ReferenceExtractor.get_fully_qualified_references_and_offenses_from(
         unresolved_references,
         @context_provider

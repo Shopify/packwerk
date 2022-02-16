@@ -14,8 +14,11 @@ module Packwerk
     end
 
     sig do
-      params(node_processor_factory: NodeProcessorFactory, cache: Cache,
-parser_factory: T.nilable(Parsers::Factory)).void
+      params(
+        node_processor_factory: NodeProcessorFactory,
+        cache: Cache,
+        parser_factory: T.nilable(Parsers::Factory)
+      ).void
     end
     def initialize(node_processor_factory:, cache:, parser_factory: nil)
       @node_processor_factory = node_processor_factory
