@@ -94,6 +94,7 @@ PATH
       bundler
       constant_resolver (>= 0.2.0)
       digest
+      get_process_mem
       parallel
       parser
       sorbet-runtime
@@ -121,6 +122,9 @@ GEM
     crass (1.0.6)
     digest (3.1.0)
     erubi (1.10.0)
+    ffi (1.15.4)
+    get_process_mem (0.2.7)
+      ffi (~> 1.0)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
     highline (2.0.3)
@@ -248,6 +252,7 @@ DEPENDENCIES
   minitest-focus
   mocha
   packwerk!
+  pry
   psych (~> 3)
   rails!
   rake

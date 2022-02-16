@@ -38,7 +38,7 @@ module Packwerk
       )
     end
 
-    sig { params(args: T::Array[String]).returns(T.noreturn) }
+    sig { params(args: T::Array[String]).returns(T.untyped) }
     def run(args)
       success = execute_command(args)
       exit(success)
@@ -54,6 +54,25 @@ module Packwerk
         generate_configs
       when "check"
         output_result(parse_run(args).check)
+      when "profile"
+        FileUtils.mkdir_p(PROFILING_DIRECTORY)
+        profiling_path = PROFILING_DIRECTORY.join("performance.txt")
+        puts("We are now running packwerk 10 times to profile it")
+
+        10.times do |i|
+          # We only keep the last run of memory logs
+          MEMORY_LOGS.delete if MEMORY_LOGS.exist?
+
+          puts("# Running iteration #{i}")
+          bm = Benchmark.measure do
+            output_result(parse_run(args).check)
+          end
+
+          puts("Iteration #{i} took #{bm.real} seconds")
+          profiling_path.open("a") { |f| f << "#{bm.real}\n" }
+        end
+
+        true
       when "detect-stale-violations"
         output_result(parse_run(args).detect_stale_violations)
       when "update-deprecations"

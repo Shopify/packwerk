@@ -9,6 +9,9 @@ require "fileutils"
 require "active_support/core_ext/string"
 
 module Packwerk
+  PROFILING_DIRECTORY = T.let(Pathname.new("tmp/packwerk"), Pathname)
+  MEMORY_LOGS = T.let(PROFILING_DIRECTORY.join("memory.txt"), Pathname)
+
   extend ActiveSupport::Autoload
 
   autoload :ApplicationLoadPaths

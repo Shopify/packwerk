@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "constant_resolver"
+require "get_process_mem"
 
 module Packwerk
   # Holds the context of a Packwerk run across multiple files.
@@ -79,8 +80,9 @@ module Packwerk
 
     sig { params(absolute_file: String).returns(T::Array[Packwerk::Offense]) }
     def process_file(absolute_file:)
-      processed_file = file_processor.call(absolute_file)
+      MEMORY_LOGS.open("a") { |f| f << "#{GetProcessMem.new.mb}\n" } if MEMORY_LOGS.exist?
 
+      processed_file = file_processor.call(absolute_file)
       references = ReferenceExtractor.get_fully_qualified_references_from(
         processed_file.unresolved_references,
         context_provider
