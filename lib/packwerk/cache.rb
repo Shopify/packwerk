@@ -3,8 +3,6 @@
 
 module Packwerk
   class Cache
-    CACHE_DIR = T.let(Pathname.new("tmp/cache/packwerk"), Pathname)
-
     extend T::Sig
 
     class CacheContents < T::Struct
@@ -44,23 +42,24 @@ module Packwerk
       ]
     end
 
-    sig { void }
-    def self.bust_cache!
-      FileUtils.rm_rf(CACHE_DIR)
-    end
-
-    sig { params(enable_cache: T::Boolean, config_path: String).void }
-    def initialize(enable_cache:, config_path:)
+    sig { params(enable_cache: T::Boolean, cache_directory: Pathname, config_path: String).void }
+    def initialize(enable_cache:, cache_directory:, config_path:)
       @enable_cache = enable_cache
       @cache = T.let({}, CACHE_SHAPE)
       @files_by_digest = T.let({}, T::Hash[String, String])
       @config_path = config_path
+      @cache_directory = cache_directory
 
       if @enable_cache
         create_cache_directory!
         bust_cache_if_packwerk_yml_has_changed!
         bust_cache_if_inflections_have_changed!
       end
+    end
+
+    sig { void }
+    def bust_cache!
+      FileUtils.rm_rf(@cache_directory)
     end
 
     sig do
@@ -72,7 +71,7 @@ module Packwerk
     def with_cache(file_path, &block)
       return block.call unless @enable_cache
 
-      cache_location = CACHE_DIR.join(digest_for_string(file_path))
+      cache_location = @cache_directory.join(digest_for_string(file_path))
       cache_contents = if cache_location.exist?
         T.let(CacheContents.deserialize(cache_location.read),
           CacheContents)
@@ -119,7 +118,7 @@ module Packwerk
     sig { params(contents: String, contents_key: Symbol).void }
     def bust_cache_if_contents_have_changed(contents, contents_key)
       current_digest = digest_for_string(contents)
-      cached_digest_path = CACHE_DIR.join(contents_key.to_s)
+      cached_digest_path = @cache_directory.join(contents_key.to_s)
       if !cached_digest_path.exist?
         # In this case, we have nothing cached
         # We save the current digest. This way the next time we compare current digest to cached digest,
@@ -130,7 +129,7 @@ module Packwerk
         Debug.out("#{contents_key} contents have NOT changed, preserving cache")
       else
         Debug.out("#{contents_key} contents have changed, busting cache")
-        self.class.bust_cache!
+        bust_cache!
         create_cache_directory!
         cached_digest_path.write(current_digest)
       end
@@ -138,7 +137,7 @@ module Packwerk
 
     sig { void }
     def create_cache_directory!
-      FileUtils.mkdir_p(CACHE_DIR)
+      FileUtils.mkdir_p(@cache_directory)
     end
   end
 

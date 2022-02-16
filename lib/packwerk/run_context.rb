@@ -32,6 +32,7 @@ module Packwerk
           inflector: inflector,
           custom_associations: configuration.custom_associations,
           cache_enabled: configuration.cache_enabled?,
+          cache_directory: configuration.cache_directory,
           config_path: configuration.config_path,
         )
       end
@@ -45,6 +46,7 @@ module Packwerk
       custom_associations: [],
       checker_classes: DEFAULT_CHECKERS,
       cache_enabled: false,
+      cache_directory: nil,
       config_path: nil
     )
       @root_path = root_path
@@ -54,6 +56,7 @@ module Packwerk
       @custom_associations = custom_associations
       @checker_classes = checker_classes
       @cache_enabled = cache_enabled
+      @cache_directory = cache_directory
       @config_path = config_path
     end
 
@@ -103,7 +106,7 @@ module Packwerk
 
     sig { returns(Cache) }
     def cache
-      @cache ||= Cache.new(enable_cache: @cache_enabled, config_path: @config_path)
+      @cache ||= Cache.new(enable_cache: @cache_enabled, cache_directory: @cache_directory, config_path: @config_path)
     end
 
     sig { returns(PackageSet) }

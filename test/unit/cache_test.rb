@@ -14,7 +14,12 @@ module Packwerk
 
     teardown do
       teardown_application_fixture
-      Cache.bust_cache!
+      Pathname.pwd.join("packwerk.yml").write("")
+      Cache.new(
+        enable_cache: true,
+        config_path: "packwerk.yml",
+        cache_directory: Pathname.new("tmp/cache/packwerk")
+      ).bust_cache!
     end
 
     test "#update_deprecations writes to the cache" do
@@ -40,10 +45,10 @@ module Packwerk
       parse_run.update_deprecations
       parse_run.update_deprecations
 
-      cache_files = Pathname.pwd.join(Cache::CACHE_DIR).glob("**")
+      cache_files = Pathname.pwd.join(Pathname.new("tmp/cache/packwerk")).glob("**")
       assert_equal cache_files.count, 3
 
-      digest_file = Cache::CACHE_DIR.join(Digest::MD5.hexdigest(filepath.to_s))
+      digest_file = Pathname.new("tmp/cache/packwerk").join(Digest::MD5.hexdigest(filepath.to_s))
       cached_result = Cache::CacheContents.deserialize(digest_file.read)
       assert_equal cached_result.unresolved_references, unresolved_references
     end
