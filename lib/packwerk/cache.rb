@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 # typed: strict
 
+require "digest"
+
 module Packwerk
   class Cache
     extend T::Sig
