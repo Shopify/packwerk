@@ -6,6 +6,97 @@ require "pathname"
 module Packwerk
   PathSpec = T.type_alias { T.any(String, T::Array[String]) }
 
+  # Copied from https://leetcode.com/problems/implement-trie-prefix-tree/discuss/327234/ruby-solution-for-trie
+  # This helps us performantly find the package for a given path
+  class PackageNameTrie
+    extend T::Sig
+
+    Letter = T.type_alias { String }
+
+    class TrieNode
+      extend T::Sig
+
+      sig do
+        params(
+          children: T::Hash[Letter, TrieNode],
+          end_of_package_name: T::Boolean
+        ).void
+      end
+      def initialize(children, end_of_package_name)
+        @children = children
+        @end_of_package_name = end_of_package_name
+      end
+
+      sig { returns(T::Boolean) }
+      attr_accessor :end_of_package_name
+
+      sig { returns(T::Hash[Letter, TrieNode]) }
+      attr_accessor :children
+
+      sig { params(package_name: String).void }
+      def insert(package_name)
+        current_tree_node = T.let(self, TrieNode)
+        filepath_entries = package_name.split("/")
+        filepath_entries.each_with_index do |filepath_entry, index|
+          current_tree_node.children[filepath_entry] ||= TrieNode.new({}, false)
+          current_tree_node = T.must(current_tree_node.children[filepath_entry])
+          if filepath_entries.length - 1 == index
+            current_tree_node.end_of_package_name = true
+          end
+        end
+      end
+    end
+
+    sig do
+      params(
+        root_node: TrieNode
+      ).void
+    end
+    def initialize(root_node)
+      @root_node = root_node
+    end
+
+    sig { params(packages: T::Array[Package]).returns(PackageNameTrie) }
+    def self.from_packages(packages)
+      root_node = TrieNode.new({}, false)
+      packages.each do |package|
+        unless package.root?
+          root_node.insert(package.name)
+        end
+      end
+
+      PackageNameTrie.new(root_node)
+    end
+
+    sig { params(file_path: String).returns(String) }
+    def longest_package_name_that_is_superset_of(file_path)
+      current_node = @root_node
+      possible_packs = T.let([], T::Array[String])
+      traversed = []
+      filepath_entries = file_path.split("/")
+      filepath_entries.each do |filepath_entry|
+        if current_node.end_of_package_name
+          possible_packs << traversed.join("/")
+        end
+
+        traversed << filepath_entry
+        new_node = current_node.children[filepath_entry]
+
+        # Once there are no more nodes, stop iterating
+        break if new_node.nil?
+
+        current_node = new_node
+      end
+
+      # This way we match the longest pack name that is a prefix of the filepath
+      # We fall back to the root if no pack matches
+      longest_pack_name = possible_packs.last
+      longest_pack_name || Package::ROOT_PACKAGE_NAME
+    end
+  end
+
+  private_constant :PackageNameTrie
+
   # A set of {Packwerk::Package}s as well as methods to parse packages from the filesystem.
   class PackageSet
     extend T::Sig
@@ -77,8 +168,10 @@ module Packwerk
     def initialize(packages)
       # We want to match more specific paths first
       sorted_packages = packages.sort_by { |package| -package.name.length }
+      @package_trie = T.let(PackageNameTrie.from_packages(packages), PackageNameTrie)
       packages = sorted_packages.each_with_object({}) { |package, hash| hash[package.name] = package }
       @packages = T.let(packages, T::Hash[String, Package])
+      @package_from_path = T.let({}, T::Hash[String, Package])
     end
 
     sig { override.params(blk: T.proc.params(arg0: Package).returns(T.untyped)).returns(T.untyped) }
@@ -93,8 +186,10 @@ module Packwerk
 
     sig { params(file_path: T.any(Pathname, String)).returns(T.nilable(Package)) }
     def package_from_path(file_path)
-      path_string = file_path.to_s
-      packages.values.find { |package| package.package_path?(path_string) }
+      filepath_string = file_path.to_s
+      @package_from_path[filepath_string] ||= T.must(
+        packages[@package_trie.longest_package_name_that_is_superset_of(filepath_string)]
+      )
     end
   end
 end
