@@ -41,6 +41,7 @@ module Packwerk
 
       @cache.with_cache(file_path) do
         node = parse_into_ast(file_path)
+
         return [] unless node
 
         references_from_ast(node, file_path)

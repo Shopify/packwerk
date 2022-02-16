@@ -74,23 +74,29 @@ module Packwerk
       return block.call unless @enable_cache
 
       cache_location = @cache_directory.join(digest_for_string(file_path))
+
       cache_contents = if cache_location.exist?
         T.let(CacheContents.deserialize(cache_location.read),
           CacheContents)
       end
+
       file_contents_digest = digest_for_file(file_path)
 
       if !cache_contents.nil? && cache_contents.file_contents_digest == file_contents_digest
         Debug.out("Cache hit for #{file_path}")
+
         cache_contents.unresolved_references
       else
         Debug.out("Cache miss for #{file_path}")
+
         unresolved_references = block.call
+
         cache_contents = CacheContents.new(
           file_contents_digest: file_contents_digest,
           unresolved_references: unresolved_references,
         )
         cache_location.write(cache_contents.serialize)
+
         unresolved_references
       end
     end
@@ -121,18 +127,22 @@ module Packwerk
     def bust_cache_if_contents_have_changed(contents, contents_key)
       current_digest = digest_for_string(contents)
       cached_digest_path = @cache_directory.join(contents_key.to_s)
+
       if !cached_digest_path.exist?
         # In this case, we have nothing cached
         # We save the current digest. This way the next time we compare current digest to cached digest,
         # we can accurately determine if we should bust the cache
         cached_digest_path.write(current_digest)
+
         nil
       elsif cached_digest_path.read == current_digest
         Debug.out("#{contents_key} contents have NOT changed, preserving cache")
       else
         Debug.out("#{contents_key} contents have changed, busting cache")
+
         bust_cache!
         create_cache_directory!
+
         cached_digest_path.write(current_digest)
       end
     end

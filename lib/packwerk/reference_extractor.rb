@@ -35,6 +35,7 @@ module Packwerk
 
       @constant_name_inspectors.each do |inspector|
         constant_name = inspector.constant_name_from_node(node, ancestors: ancestors)
+
         break if constant_name
       end
 
@@ -47,15 +48,13 @@ module Packwerk
         context_provider: ConstantDiscovery
       ).returns(T::Array[T.any(Reference, Offense)])
     end
-    def self.get_fully_qualified_references_and_offenses_from(
-      unresolved_references_and_offenses,
-      context_provider
-    )
+    def self.get_fully_qualified_references_and_offenses_from(unresolved_references_and_offenses, context_provider)
       fully_qualified_references_and_offenses = T.let([], T::Array[T.any(Reference, Offense)])
 
       unresolved_references_and_offenses.each do |unresolved_references_or_offense|
         if unresolved_references_or_offense.is_a?(Offense)
           fully_qualified_references_and_offenses << unresolved_references_or_offense
+
           next
         end
 
@@ -96,6 +95,7 @@ module Packwerk
     end
     def reference_from_constant(constant_name, node:, ancestors:, file_path:)
       namespace_path = Node.enclosing_namespace_path(node, ancestors: ancestors)
+
       return if local_reference?(constant_name, Node.name_location(node), namespace_path)
 
       relative_path = Pathname.new(file_path).relative_path_from(@root_path).to_s
