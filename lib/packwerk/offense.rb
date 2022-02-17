@@ -29,11 +29,10 @@ module Packwerk
 
     sig { params(style: OutputStyle).returns(String) }
     def to_s(style = OutputStyles::Plain.new)
-      # So sorbet knows it's non-nil after the if check
-      flow_sensitive_location = location
-      if flow_sensitive_location
+      location = self.location
+      if location
         <<~EOS
-          #{style.filename}#{file}#{style.reset}:#{flow_sensitive_location.line}:#{flow_sensitive_location.column}
+          #{style.filename}#{file}#{style.reset}:#{location.line}:#{location.column}
           #{@message}
         EOS
       else

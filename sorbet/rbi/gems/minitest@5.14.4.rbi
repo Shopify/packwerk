@@ -452,14 +452,6 @@ class Minitest::Test < ::Minitest::Runnable
   include(::Mocha::Integration::MiniTest::Adapter)
   extend(::Minitest::Guard)
 
-  sig { params(block: T.proc.params(args: T.untyped).void).void }
-  def self.setup(&block)
-  end
-
-  sig { params(block: T.untyped).void }
-  def self.teardown(&block)
-  end
-
   def capture_exceptions; end
   def class_name; end
   def run; end

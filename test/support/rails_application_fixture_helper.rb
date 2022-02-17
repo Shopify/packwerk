@@ -25,7 +25,7 @@ module RailsApplicationFixtureHelper
     when :skeleton
       set_load_paths_for_skeleton_template
     else
-      raise "Unknown fixture template #{template}"
+      T.unsafe(self).raise "Unknown fixture template #{template}"
     end
 
     RailsPaths.root(app_dir)
@@ -52,7 +52,7 @@ module RailsApplicationFixtureHelper
   end
 
   def cache_rails_paths
-    raise "cache_rails_paths may only be called once per test" if defined? @rails_paths
+    T.unsafe(self).raise "cache_rails_paths may only be called once per test" if defined? @rails_paths
     @rails_paths = RailsPaths.new
     @rails_paths.cache
   end

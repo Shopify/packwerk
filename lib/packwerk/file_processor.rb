@@ -41,10 +41,10 @@ module Packwerk
     end
     def call(file_path)
       parser = parser_for(file_path)
-      return [UnknownFileTypeResult.new(file: file_path)] if parser.nil?
+      return [UnknownFileTypeResult.new(file: file_path)] if T.unsafe(parser).nil?
 
       @cache.with_cache(file_path) do
-        node = parse_into_ast(file_path, parser)
+        node = parse_into_ast(file_path, T.must(parser))
         return [] unless node
 
         references_from_ast(node, file_path)

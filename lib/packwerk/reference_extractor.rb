@@ -67,7 +67,9 @@ module Packwerk
           )
 
         next if constant.nil?
+
         package_for_constant = constant.package
+
         next if package_for_constant.nil?
 
         source_package = context_provider.package_from_path(unresolved_reference.relative_path)

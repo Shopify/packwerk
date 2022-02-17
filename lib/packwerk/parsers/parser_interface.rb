@@ -7,9 +7,6 @@ module Packwerk
       extend T::Helpers
       extend T::Sig
 
-      # So Sorbet knows `nil?` exists
-      include Kernel
-
       interface!
 
       sig { abstract.params(io: File, file_path: String).returns(T.untyped) }
