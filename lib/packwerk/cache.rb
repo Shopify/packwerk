@@ -44,7 +44,7 @@ module Packwerk
       ]
     end
 
-    sig { params(enable_cache: T::Boolean, cache_directory: Pathname, config_path: String).void }
+    sig { params(enable_cache: T::Boolean, cache_directory: Pathname, config_path: T.nilable(String)).void }
     def initialize(enable_cache:, cache_directory:, config_path:)
       @enable_cache = enable_cache
       @cache = T.let({}, CACHE_SHAPE)
@@ -115,6 +115,7 @@ module Packwerk
 
     sig { void }
     def bust_cache_if_packwerk_yml_has_changed!
+      return nil if @config_path.nil?
       bust_cache_if_contents_have_changed(File.read(@config_path), :packwerk_yml)
     end
 
