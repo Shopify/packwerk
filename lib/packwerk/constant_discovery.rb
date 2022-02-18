@@ -19,6 +19,8 @@ module Packwerk
 
     ConstantContext = Struct.new(:name, :location, :package, :public?)
 
+    # @param constant_resolver [ConstantResolver]
+    # @param packages [Packwerk::PackageSet]
     sig do
       params(constant_resolver: ConstantResolver, packages: Packwerk::PackageSet).void
     end
@@ -27,7 +29,12 @@ module Packwerk
       @resolver = constant_resolver
     end
 
-    # Get the package that owns a given file path, or the root package if the path is not owned by any component
+    # Get the package that owns a given file path.
+    #
+    # @param path [String] the file path
+    #
+    # @return [Packwerk::Package] the package that contains the given file,
+    #   or nil if the path is not owned by any component
     sig do
       params(
         path: String,
@@ -39,12 +46,14 @@ module Packwerk
 
     # Analyze a constant via its name.
     # If the constant is unresolved, we need the current namespace path to correctly infer its full name
+    #
+    # @param const_name [String] The unresolved constant's name.
+    # @param current_namespace_path [Array<String>] (optional) The namespace of the context in which the constant is
+    #   used, e.g. ["Apps", "Models"] for `Apps::Models`. Defaults to [] which means top level.
+    # @return [Packwerk::ConstantDiscovery::ConstantContext]
     sig do
       params(
-        # The unresolved constant's name.
         const_name: String,
-        # The namespace of the context in which the constant is
-        # used, e.g. ["Apps", "Models"] for `Apps::Models`. Defaults to [] which means top level.
         current_namespace_path: T.nilable(T::Array[String]),
       ).returns(T.nilable(ConstantDiscovery::ConstantContext))
     end
