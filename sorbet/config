@@ -1,2 +1,3 @@
 --dir
 .
+--enable-experimental-requires-ancestor

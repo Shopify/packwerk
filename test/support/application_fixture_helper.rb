@@ -5,6 +5,10 @@ module ApplicationFixtureHelper
   TEMP_FIXTURE_DIR = ROOT.join("tmp", "fixtures").to_s
   DEFAULT_TEMPLATE = :minimal
 
+  extend T::Helpers
+
+  requires_ancestor { Kernel }
+
   def setup_application_fixture
     @old_working_dir = Dir.pwd
   end
@@ -15,14 +19,14 @@ module ApplicationFixtureHelper
   end
 
   def use_template(template)
-    T.unsafe(self).raise "use_template may only be called once per test" if using_template?
+    raise "use_template may only be called once per test" if using_template?
     copy_dir("test/fixtures/#{template}")
     Dir.chdir(app_dir)
   end
 
   def app_dir
     unless using_template?
-      T.unsafe(self).raise "You need to set up an application fixture by calling `use_template(:the_template)`."
+      raise "You need to set up an application fixture by calling `use_template(:the_template)`."
     end
 
     @app_dir
