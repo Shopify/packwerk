@@ -1,20 +1,40 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 module Packwerk
   class FilesForProcessing
+    extend T::Sig
+
     class << self
+      extend T::Sig
+
+      sig do
+        params(
+          paths: T::Array[String],
+          configuration: Configuration,
+          ignore_nested_packages: T::Boolean
+        ).returns(T::Array[String])
+      end
       def fetch(paths:, configuration:, ignore_nested_packages: false)
         new(paths, configuration, ignore_nested_packages).files
       end
     end
 
+    sig do
+      params(
+        paths: T::Array[String],
+        configuration: Configuration,
+        ignore_nested_packages: T::Boolean
+      ).void
+    end
     def initialize(paths, configuration, ignore_nested_packages)
       @paths = paths
       @configuration = configuration
       @ignore_nested_packages = ignore_nested_packages
+      @custom_files = T.let(nil, T.nilable(T::Array[String]))
     end
 
+    sig { returns(T::Array[String]) }
     def files
       include_files = if custom_files.empty?
         configured_included_files
@@ -27,6 +47,7 @@ module Packwerk
 
     private
 
+    sig { returns(T::Array[String]) }
     def custom_files
       @custom_files ||= @paths.flat_map do |path|
         path = File.expand_path(path, @configuration.root_path)
@@ -38,6 +59,7 @@ module Packwerk
       end
     end
 
+    sig { params(path: String).returns(T::Array[String]) }
     def custom_included_files(path)
       # Note, assuming include globs are always relative paths
       absolute_includes = @configuration.include.map do |glob|
@@ -61,14 +83,17 @@ module Packwerk
       files
     end
 
+    sig { returns(T::Array[String]) }
     def configured_included_files
       files_for_globs(@configuration.include)
     end
 
+    sig { returns(T::Array[String]) }
     def configured_excluded_files
       files_for_globs(@configuration.exclude)
     end
 
+    sig { params(globs: T::Array[String]).returns(T::Array[String]) }
     def files_for_globs(globs)
       globs
         .flat_map { |glob| Dir[File.expand_path(glob, @configuration.root_path)] }
