@@ -74,9 +74,9 @@ module Packwerk
       @cache = T.let(nil, T.nilable(Cache))
     end
 
-    sig { params(file: String).returns(T::Array[Packwerk::Offense]) }
-    def process_file(file:)
-      unresolved_references_and_offenses = file_processor.call(file)
+    sig { params(absolute_file_path: String).returns(T::Array[Packwerk::Offense]) }
+    def process_file(absolute_file_path:)
+      unresolved_references_and_offenses = file_processor.call(absolute_file_path)
       references_and_offenses = ReferenceExtractor.get_fully_qualified_references_and_offenses_from(
         unresolved_references_and_offenses,
         context_provider

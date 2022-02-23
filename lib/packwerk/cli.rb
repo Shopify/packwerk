@@ -122,16 +122,16 @@ module Packwerk
       result.status
     end
 
-    sig { params(paths: T::Array[String], ignore_nested_packages: T::Boolean).returns(T::Array[String]) }
-    def fetch_files_to_process(paths, ignore_nested_packages)
-      files = FilesForProcessing.fetch(
-        paths: paths,
+    sig { params(relative_file_paths: T::Array[String], ignore_nested_packages: T::Boolean).returns(T::Array[String]) }
+    def fetch_files_to_process(relative_file_paths, ignore_nested_packages)
+      absolute_file_paths = FilesForProcessing.fetch(
+        relative_file_paths: relative_file_paths,
         ignore_nested_packages: ignore_nested_packages,
         configuration: @configuration
       )
       abort("No files found or given. "\
-        "Specify files or check the include and exclude glob in the config file.") if files.empty?
-      files
+        "Specify files or check the include and exclude glob in the config file.") if absolute_file_paths.empty?
+      absolute_file_paths
     end
 
     sig { params(_paths: T::Array[String]).returns(T::Boolean) }
@@ -167,23 +167,23 @@ module Packwerk
 
     sig { params(params: T.untyped).returns(ParseRun) }
     def parse_run(params)
-      paths = T.let([], T::Array[String])
+      relative_file_paths = T.let([], T::Array[String])
       ignore_nested_packages = nil
 
       if params.any? { |p| p.include?("--packages") }
         OptionParser.new do |parser|
           parser.on("--packages=PACKAGESLIST", Array, "package names, comma separated") do |p|
-            paths = p
+            relative_file_paths = p
           end
         end.parse!(params)
         ignore_nested_packages = true
       else
-        paths = params
+        relative_file_paths = params
         ignore_nested_packages = false
       end
 
       ParseRun.new(
-        files: fetch_files_to_process(paths, ignore_nested_packages),
+        absolute_file_paths: fetch_files_to_process(relative_file_paths, ignore_nested_packages),
         configuration: @configuration,
         progress_formatter: @progress_formatter,
         offenses_formatter: @offenses_formatter

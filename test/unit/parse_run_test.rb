@@ -20,7 +20,10 @@ module Packwerk
       OffenseCollection.any_instance.stubs(:stale_violations?).returns(true)
       RunContext.any_instance.stubs(:process_file).returns([])
 
-      parse_run = Packwerk::ParseRun.new(files: ["path/of/exile.rb"], configuration: Configuration.from_path)
+      parse_run = Packwerk::ParseRun.new(
+        absolute_file_paths: ["path/of/exile.rb"],
+        configuration: Configuration.from_path
+      )
       result = parse_run.detect_stale_violations
       assert_equal "There were stale violations found, please run `packwerk update-deprecations`", result.message
       refute result.status
@@ -31,7 +34,10 @@ module Packwerk
       RunContext.any_instance.stubs(:process_file).returns([])
       OffenseCollection.any_instance.expects(:dump_deprecated_references_files).once
 
-      parse_run = Packwerk::ParseRun.new(files: ["path/of/exile.rb"], configuration: Configuration.from_path)
+      parse_run = Packwerk::ParseRun.new(
+        absolute_file_paths: ["path/of/exile.rb"],
+        configuration: Configuration.from_path
+      )
       result = parse_run.update_deprecations
 
       assert_equal result.message, <<~EOS
@@ -47,7 +53,10 @@ module Packwerk
       RunContext.any_instance.stubs(:process_file).returns([offense])
       OffenseCollection.any_instance.expects(:dump_deprecated_references_files).once
 
-      parse_run = Packwerk::ParseRun.new(files: ["path/of/exile.rb"], configuration: Configuration.from_path)
+      parse_run = Packwerk::ParseRun.new(
+        absolute_file_paths: ["path/of/exile.rb"],
+        configuration: Configuration.from_path
+      )
       result = parse_run.update_deprecations
 
       expected = <<~EOS
@@ -68,7 +77,7 @@ module Packwerk
       DeprecatedReferences.any_instance.stubs(:listed?).returns(true)
       out = StringIO.new
       parse_run = Packwerk::ParseRun.new(
-        files: ["some/path.rb"],
+        absolute_file_paths: ["some/path.rb"],
         configuration: Configuration.new({ "parallel" => false }),
         progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
       )
@@ -97,7 +106,7 @@ module Packwerk
       OffenseCollection.any_instance.stubs(:stale_violations?).returns(true)
       out = StringIO.new
       parse_run = Packwerk::ParseRun.new(
-        files: ["some/path.rb"],
+        absolute_file_paths: ["some/path.rb"],
         configuration: Configuration.new({ "parallel" => false }),
         progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
       )
@@ -128,7 +137,7 @@ module Packwerk
         violation_type: ViolationType::Privacy
       )
       parse_run = Packwerk::ParseRun.new(
-        files: ["some/path.rb", "some/other_path.rb"],
+        absolute_file_paths: ["some/path.rb", "some/other_path.rb"],
         configuration: Configuration.new
       )
       RunContext.any_instance.stubs(:process_file).returns([offense]).returns([offense2])
