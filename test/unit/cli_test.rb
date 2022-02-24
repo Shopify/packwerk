@@ -32,7 +32,7 @@ module Packwerk
       cli = ::Packwerk::Cli.new(out: string_io, configuration: configuration)
 
       # TODO: Dependency injection for a "target finder" (https://github.com/Shopify/packwerk/issues/164)
-      ::Packwerk::FilesForProcessing.stubs(fetch: [file_path])
+      ::Packwerk::FilesForProcessing.stubs(fetch: Set.new([file_path]))
 
       success = cli.execute_command(["check", file_path])
 
@@ -61,7 +61,7 @@ module Packwerk
 
       cli = ::Packwerk::Cli.new(out: string_io, configuration: configuration)
 
-      ::Packwerk::FilesForProcessing.stubs(fetch: [file_path, "test.rb", "foo.rb"])
+      ::Packwerk::FilesForProcessing.stubs(fetch: Set.new([file_path, "test.rb", "foo.rb"]))
 
       success = cli.execute_command(["check", file_path])
 
@@ -149,7 +149,7 @@ module Packwerk
         offenses_formatter: offenses_formatter.new
       )
 
-      ::Packwerk::FilesForProcessing.stubs(fetch: [file_path])
+      ::Packwerk::FilesForProcessing.stubs(fetch: Set.new([file_path]))
 
       success = cli.execute_command(["check", file_path])
 

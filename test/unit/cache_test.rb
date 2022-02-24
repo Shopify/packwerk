@@ -41,7 +41,7 @@ module Packwerk
       configuration = Configuration.from_path
       configuration.stubs(cache_enabled?: true)
 
-      parse_run = Packwerk::ParseRun.new(absolute_files: [filepath.to_s], configuration: configuration)
+      parse_run = Packwerk::ParseRun.new(absolute_file_set: Set.new([filepath.to_s]), configuration: configuration)
       parse_run.update_deprecations
       parse_run.update_deprecations
 

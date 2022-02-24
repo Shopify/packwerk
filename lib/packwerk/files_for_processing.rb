@@ -5,6 +5,8 @@ module Packwerk
   class FilesForProcessing
     extend T::Sig
 
+    AbsoluteFileSet = T.type_alias { T::Set[String] }
+
     class << self
       extend T::Sig
 
@@ -13,7 +15,7 @@ module Packwerk
           relative_file_paths: T::Array[String],
           configuration: Configuration,
           ignore_nested_packages: T::Boolean
-        ).returns(T::Array[String])
+        ).returns(AbsoluteFileSet)
       end
       def fetch(relative_file_paths:, configuration:, ignore_nested_packages: false)
         new(relative_file_paths, configuration, ignore_nested_packages).files
@@ -31,10 +33,10 @@ module Packwerk
       @relative_file_paths = relative_file_paths
       @configuration = configuration
       @ignore_nested_packages = ignore_nested_packages
-      @custom_files = T.let(nil, T.nilable(T::Array[String]))
+      @custom_files = T.let(nil, T.nilable(AbsoluteFileSet))
     end
 
-    sig { returns(T::Array[String]) }
+    sig { returns(AbsoluteFileSet) }
     def files
       include_files = if custom_files.empty?
         configured_included_files
@@ -47,19 +49,21 @@ module Packwerk
 
     private
 
-    sig { returns(T::Array[String]) }
+    sig { returns(AbsoluteFileSet) }
     def custom_files
-      @custom_files ||= @relative_file_paths.flat_map do |relative_file_path|
-        absolute_file_path = File.expand_path(relative_file_path, @configuration.root_path)
-        if File.file?(absolute_file_path)
-          absolute_file_path
-        else
-          custom_included_files(absolute_file_path)
+      @custom_files ||= Set.new(
+        @relative_file_paths.map do |relative_file_path|
+          absolute_file_path = File.expand_path(relative_file_path, @configuration.root_path)
+          if File.file?(absolute_file_path)
+            absolute_file_path
+          else
+            custom_included_files(absolute_file_path)
+          end
         end
-      end
+      ).flatten
     end
 
-    sig { params(absolute_file_path: String).returns(T::Array[String]) }
+    sig { params(absolute_file_path: String).returns(AbsoluteFileSet) }
     def custom_included_files(absolute_file_path)
       # Note, assuming include globs are always relative paths
       absolute_includes = @configuration.include.map do |glob|
@@ -82,24 +86,22 @@ module Packwerk
         end
       end
 
-      absolute_files
+      Set.new(absolute_files)
     end
 
-    sig { returns(T::Array[String]) }
+    sig { returns(AbsoluteFileSet) }
     def configured_included_files
       absolute_files_for_globs(@configuration.include)
     end
 
-    sig { returns(T::Array[String]) }
+    sig { returns(AbsoluteFileSet) }
     def configured_excluded_files
       absolute_files_for_globs(@configuration.exclude)
     end
 
-    sig { params(relative_globs: T::Array[String]).returns(T::Array[String]) }
+    sig { params(relative_globs: T::Array[String]).returns(AbsoluteFileSet) }
     def absolute_files_for_globs(relative_globs)
-      relative_globs
-        .flat_map { |glob| Dir[File.expand_path(glob, @configuration.root_path)] }
-        .uniq
+      Set.new(relative_globs.flat_map { |glob| Dir[File.expand_path(glob, @configuration.root_path)] })
     end
   end
 end
