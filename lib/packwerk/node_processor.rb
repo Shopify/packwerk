@@ -9,12 +9,12 @@ module Packwerk
     sig do
       params(
         reference_extractor: ReferenceExtractor,
-        absolute_file_path: String,
+        absolute_file: String,
       ).void
     end
-    def initialize(reference_extractor:, absolute_file_path:)
+    def initialize(reference_extractor:, absolute_file:)
       @reference_extractor = reference_extractor
-      @absolute_file_path = absolute_file_path
+      @absolute_file = absolute_file
     end
 
     sig do
@@ -25,7 +25,7 @@ module Packwerk
     end
     def call(node, ancestors)
       return unless Node.method_call?(node) || Node.constant?(node)
-      @reference_extractor.reference_from_node(node, ancestors: ancestors, absolute_file_path: @absolute_file_path)
+      @reference_extractor.reference_from_node(node, ancestors: ancestors, absolute_file: @absolute_file)
     end
   end
 end

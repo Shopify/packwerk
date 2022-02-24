@@ -66,7 +66,7 @@ module Packwerk
         File.expand_path(glob, @configuration.root_path)
       end
 
-      absolute_file_paths = Dir.glob([File.join(absolute_file_path, "**", "*")]).select do |absolute_path|
+      absolute_files = Dir.glob([File.join(absolute_file_path, "**", "*")]).select do |absolute_path|
         absolute_includes.any? do |pattern|
           File.fnmatch?(pattern, absolute_path, File::FNM_EXTGLOB)
         end
@@ -78,25 +78,25 @@ module Packwerk
           npp.gsub("package.yml", "**/*")
         end
         nested_packages_absolute_globs.each do |absolute_glob|
-          absolute_file_paths -= Dir.glob(absolute_glob)
+          absolute_files -= Dir.glob(absolute_glob)
         end
       end
 
-      absolute_file_paths
+      absolute_files
     end
 
     sig { returns(T::Array[String]) }
     def configured_included_files
-      absolute_file_paths_for_globs(@configuration.include)
+      absolute_files_for_globs(@configuration.include)
     end
 
     sig { returns(T::Array[String]) }
     def configured_excluded_files
-      absolute_file_paths_for_globs(@configuration.exclude)
+      absolute_files_for_globs(@configuration.exclude)
     end
 
     sig { params(relative_globs: T::Array[String]).returns(T::Array[String]) }
-    def absolute_file_paths_for_globs(relative_globs)
+    def absolute_files_for_globs(relative_globs)
       relative_globs
         .flat_map { |glob| Dir[File.expand_path(glob, @configuration.root_path)] }
         .uniq

@@ -9,11 +9,11 @@ module Packwerk
     const :context_provider, Packwerk::ConstantDiscovery
     const :constant_name_inspectors, T::Array[ConstantNameInspector]
 
-    sig { params(absolute_file_path: String, node: AST::Node).returns(NodeProcessor) }
-    def for(absolute_file_path:, node:)
+    sig { params(absolute_file: String, node: AST::Node).returns(NodeProcessor) }
+    def for(absolute_file:, node:)
       ::Packwerk::NodeProcessor.new(
         reference_extractor: reference_extractor(node: node),
-        absolute_file_path: absolute_file_path,
+        absolute_file: absolute_file,
       )
     end
 
