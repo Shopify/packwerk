@@ -27,10 +27,10 @@ module Packwerk
       params(
         node: Parser::AST::Node,
         ancestors: T::Array[Parser::AST::Node],
-        file_path: String
+        absolute_file: String
       ).returns(T.nilable(UnresolvedReference))
     end
-    def reference_from_node(node, ancestors:, file_path:)
+    def reference_from_node(node, ancestors:, absolute_file:)
       constant_name = T.let(nil, T.nilable(String))
 
       @constant_name_inspectors.each do |inspector|
@@ -39,7 +39,14 @@ module Packwerk
         break if constant_name
       end
 
-      reference_from_constant(constant_name, node: node, ancestors: ancestors, file_path: file_path) if constant_name
+      if constant_name
+        reference_from_constant(
+          constant_name,
+          node: node,
+          ancestors: ancestors,
+          absolute_file: absolute_file
+        )
+      end
     end
 
     sig do
@@ -94,21 +101,21 @@ module Packwerk
         constant_name: String,
         node: Parser::AST::Node,
         ancestors: T::Array[Parser::AST::Node],
-        file_path: String
+        absolute_file: String
       ).returns(T.nilable(UnresolvedReference))
     end
-    def reference_from_constant(constant_name, node:, ancestors:, file_path:)
+    def reference_from_constant(constant_name, node:, ancestors:, absolute_file:)
       namespace_path = Node.enclosing_namespace_path(node, ancestors: ancestors)
 
       return if local_reference?(constant_name, Node.name_location(node), namespace_path)
 
-      relative_path = Pathname.new(file_path).relative_path_from(@root_path).to_s
+      relative_file = Pathname.new(absolute_file).relative_path_from(@root_path).to_s
       location = Node.location(node)
 
       UnresolvedReference.new(
         constant_name,
         namespace_path,
-        relative_path,
+        relative_file,
         location
       )
     end
