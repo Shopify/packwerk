@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 module Packwerk
@@ -7,7 +7,11 @@ module Packwerk
     extend T::Sig
     extend T::Helpers
 
-    attr_reader :reference, :violation_type
+    sig { returns(Reference) }
+    attr_reader :reference
+
+    sig { returns(ViolationType) }
+    attr_reader :violation_type
 
     sig do
       params(
@@ -25,10 +29,11 @@ module Packwerk
 
     private
 
+    sig { params(reference: Reference, violation_type: ViolationType).returns(String) }
     def build_message(reference, violation_type)
       violation_message = case violation_type
       when ViolationType::Privacy
-        source_desc = reference.source_package ? "'#{reference.source_package}'" : "here"
+        source_desc = "'#{reference.source_package}'"
         "Privacy violation: '#{reference.constant.name}' is private to '#{reference.constant.package}' but " \
         "referenced from #{source_desc}.\n" \
         "Is there a public entrypoint in '#{reference.constant.package.public_path}' that you can use instead?"

@@ -7,6 +7,8 @@ require "parser/current"
 module Packwerk
   module Parsers
     class Ruby
+      include ParserInterface
+
       class RaiseExceptionsParser < Parser::CurrentRuby
         def initialize(builder)
           super(builder)

@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "parser/source/map"
@@ -8,7 +8,14 @@ module Packwerk
     extend T::Sig
     extend T::Helpers
 
-    attr_reader :location, :file, :message
+    sig { returns(T.nilable(Node::Location)) }
+    attr_reader :location
+
+    sig { returns(String) }
+    attr_reader :file
+
+    sig { returns(String) }
+    attr_reader :message
 
     sig do
       params(file: String, message: String, location: T.nilable(Node::Location))
@@ -22,6 +29,7 @@ module Packwerk
 
     sig { params(style: OutputStyle).returns(String) }
     def to_s(style = OutputStyles::Plain.new)
+      location = self.location
       if location
         <<~EOS
           #{style.filename}#{file}#{style.reset}:#{location.line}:#{location.column}

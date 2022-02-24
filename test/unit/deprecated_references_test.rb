@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "test_helper"
@@ -139,7 +139,7 @@ module Packwerk
           },
         }
 
-        assert_equal expected_output, YAML.load_file(file)
+        assert_equal expected_output, YAML.load_file(file.path)
       end
     end
 
@@ -192,13 +192,13 @@ module Packwerk
 
         deprecated_references.dump
 
-        assert_equal expected_output.to_a, YAML.load_file(file).to_a
+        assert_equal expected_output.to_a, YAML.load_file(file.path).to_a
       end
     end
 
     test "#dump deletes the deprecated references if there are no entries" do
       file = Tempfile.new("empty_deprecated_references.yml")
-      deprecated_references = DeprecatedReferences.new(destination_package, file.path)
+      deprecated_references = DeprecatedReferences.new(destination_package, T.must(file.path))
       deprecated_references.dump
 
       refute File.exist?(file.path)

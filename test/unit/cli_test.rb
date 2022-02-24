@@ -6,6 +6,8 @@ require "rails_test_helper"
 
 module Packwerk
   class CliTest < Minitest::Test
+    include TypedMock
+
     setup do
       @err_out = StringIO.new
       @cli = ::Packwerk::Cli.new(err_out: @err_out)
@@ -15,8 +17,6 @@ module Packwerk
     teardown do
       FileUtils.remove_entry(@temp_dir)
     end
-
-    FakeResult = Struct.new(:ok?, :error_value)
 
     test "#execute_command with the subcommand check starts processing files" do
       file_path = "path/of/exile.rb"
@@ -83,7 +83,8 @@ module Packwerk
       string_io = StringIO.new
       cli = ::Packwerk::Cli.new(out: string_io)
 
-      Packwerk::ApplicationValidator.expects(:new).returns(stub(check_all: FakeResult.new(true)))
+      validator = typed_mock(check_all: ApplicationValidator::Result.new(ok: true))
+      Packwerk::ApplicationValidator.expects(:new).returns(validator)
 
       success = cli.execute_command(["validate"])
 
@@ -95,7 +96,8 @@ module Packwerk
       string_io = StringIO.new
       cli = ::Packwerk::Cli.new(out: string_io)
 
-      Packwerk::ApplicationValidator.expects(:new).returns(stub(check_all: FakeResult.new(false, "I'm an error")))
+      validator = typed_mock(check_all: ApplicationValidator::Result.new(ok: false, error_value: "I'm an error"))
+      Packwerk::ApplicationValidator.expects(:new).returns(validator)
 
       success = cli.execute_command(["validate"])
 

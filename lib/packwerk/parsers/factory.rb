@@ -6,6 +6,7 @@ require "singleton"
 module Packwerk
   module Parsers
     class Factory
+      extend T::Sig
       include Singleton
 
       RUBY_REGEX = %r{
@@ -19,6 +20,7 @@ module Packwerk
       ERB_REGEX = /\.erb\Z/
       private_constant :ERB_REGEX
 
+      sig { params(path: String).returns(T.nilable(ParserInterface)) }
       def for_path(path)
         case path
         when RUBY_REGEX

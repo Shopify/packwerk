@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "constant_resolver"
@@ -9,14 +9,36 @@ module Packwerk
   # Checks the structure of the application and its packwerk configuration to make sure we can run a check and deliver
   # correct results.
   class ApplicationValidator
+    extend T::Sig
+
+    sig do
+      params(
+        config_file_path: String,
+        configuration: Configuration,
+        environment: String
+      ).void
+    end
     def initialize(config_file_path:, configuration:, environment:)
       @config_file_path = config_file_path
       @configuration = configuration
       @environment = environment
+      @package_set = T.let(PackageSet.load_all_from(@configuration.root_path, package_pathspec: package_glob),
+        PackageSet)
     end
 
-    Result = Struct.new(:ok?, :error_value)
+    class Result < T::Struct
+      extend T::Sig
 
+      const :ok, T::Boolean
+      const :error_value, T.nilable(String)
+
+      sig { returns(T::Boolean) }
+      def ok?
+        ok
+      end
+    end
+
+    sig { returns(Result) }
     def check_all
       results = [
         check_package_manifests_for_privacy,
@@ -31,6 +53,7 @@ module Packwerk
       merge_results(results)
     end
 
+    sig { returns(Result) }
     def check_package_manifests_for_privacy
       privacy_settings = package_manifests_settings_for("enforce_privacy")
 
@@ -39,7 +62,7 @@ module Packwerk
         load_paths: @configuration.load_paths
       )
 
-      results = T.let([], T::Array[Packwerk::Result])
+      results = T.let([], T::Array[Result])
 
       privacy_settings.each do |config_file_path, setting|
         next unless setting.is_a?(Array)
@@ -61,6 +84,7 @@ module Packwerk
       merge_results(results, separator: "\n---\n")
     end
 
+    sig { returns(Result) }
     def check_package_manifest_syntax
       errors = []
 
@@ -102,12 +126,13 @@ module Packwerk
       end
 
       if errors.empty?
-        Result.new(true)
+        Result.new(ok: true)
       else
-        Result.new(false, errors.join("\n---\n"))
+        Result.new(ok: false, error_value: errors.join("\n---\n"))
       end
     end
 
+    sig { returns(Result) }
     def check_application_structure
       resolver = ConstantResolver.new(
         root_path: @configuration.root_path.to_s,
@@ -116,26 +141,27 @@ module Packwerk
 
       begin
         resolver.file_map
-        Result.new(true)
+        Result.new(ok: true)
       rescue => e
-        Result.new(false, e.message)
+        Result.new(ok: false, error_value: e.message)
       end
     end
 
+    sig { returns(Result) }
     def check_acyclic_graph
-      edges = package_set.flat_map do |package|
-        package.dependencies.map { |dependency| [package, package_set.fetch(dependency)] }
+      edges = @package_set.flat_map do |package|
+        package.dependencies.map { |dependency| [package, @package_set.fetch(dependency)] }
       end
-      dependency_graph = Packwerk::Graph.new(*T.unsafe(edges))
+      dependency_graph = Graph.new(*T.unsafe(edges))
 
       cycle_strings = build_cycle_strings(dependency_graph.cycles)
 
       if dependency_graph.acyclic?
-        Result.new(true)
+        Result.new(ok: true)
       else
         Result.new(
-          false,
-          <<~EOS
+          ok: false,
+          error_value: <<~EOS
             Expected the package dependency graph to be acyclic, but it contains the following cycles:
 
             #{cycle_strings.join("\n")}
@@ -144,6 +170,7 @@ module Packwerk
       end
     end
 
+    sig { returns(Result) }
     def check_package_manifest_paths
       all_package_manifests = package_manifests("**/")
       package_paths_package_manifests = package_manifests(package_glob)
@@ -151,11 +178,11 @@ module Packwerk
       difference = all_package_manifests - package_paths_package_manifests
 
       if difference.empty?
-        Result.new(true)
+        Result.new(ok: true)
       else
         Result.new(
-          false,
-          <<~EOS
+          ok: false,
+          error_value: <<~EOS
             Expected package paths for all package.ymls to be specified, but paths were missing for the following manifests:
 
             #{relative_paths(difference).join("\n")}
@@ -164,6 +191,7 @@ module Packwerk
       end
     end
 
+    sig { returns(Result) }
     def check_valid_package_dependencies
       packages_dependencies = package_manifests_settings_for("dependencies")
         .delete_if { |_, deps| deps.nil? }
@@ -175,7 +203,7 @@ module Packwerk
         end
 
       if packages_with_invalid_dependencies.empty?
-        Result.new(true)
+        Result.new(ok: true)
       else
         error_locations = packages_with_invalid_dependencies.map do |package, invalid_dependencies|
           package ||= @configuration.root_path
@@ -189,8 +217,8 @@ module Packwerk
         end
 
         Result.new(
-          false,
-          <<~EOS
+          ok: false,
+          error_value: <<~EOS
             These dependencies do not point to valid packages:
 
             #{error_locations.join("\n")}
@@ -199,16 +227,17 @@ module Packwerk
       end
     end
 
+    sig { returns(Result) }
     def check_root_package_exists
       root_package_path = File.join(@configuration.root_path, "package.yml")
       all_packages_manifests = package_manifests(package_glob)
 
       if all_packages_manifests.include?(root_package_path)
-        Result.new(true)
+        Result.new(ok: true)
       else
         Result.new(
-          false,
-          <<~EOS
+          ok: false,
+          error_value: <<~EOS
             A root package does not exist. Create an empty `package.yml` at the root directory.
           EOS
         )
@@ -224,6 +253,7 @@ module Packwerk
     # to the string:
     #
     #   ["a -> b -> c -> a", "b -> c -> b"]
+    sig { params(cycles: T.untyped).returns(T::Array[String]) }
     def build_cycle_strings(cycles)
       cycles.map do |cycle|
         cycle_strings = cycle.map(&:to_s)
@@ -232,93 +262,102 @@ module Packwerk
       end
     end
 
+    sig { params(setting: T.untyped).returns(T.untyped) }
     def package_manifests_settings_for(setting)
       package_manifests.map { |f| [f, (YAML.load_file(File.join(f)) || {})[setting]] }
     end
 
+    sig { params(list: T.untyped).returns(T.untyped) }
     def format_yaml_strings(list)
       list.sort.map { |p| "- \"#{p}\"" }.join("\n")
     end
 
+    sig { returns(T.any(T::Array[String], String)) }
     def package_glob
       @configuration.package_paths || "**"
     end
 
+    sig { params(glob_pattern: T.any(T::Array[String], String)).returns(T::Array[String]) }
     def package_manifests(glob_pattern = package_glob)
       PackageSet.package_paths(@configuration.root_path, glob_pattern, @configuration.exclude)
         .map { |f| File.realpath(f) }
     end
 
+    sig { params(paths: T::Array[String]).returns(T::Array[Pathname]) }
     def relative_paths(paths)
       paths.map { |path| relative_path(path) }
     end
 
+    sig { params(path: String).returns(Pathname) }
     def relative_path(path)
       Pathname.new(path).relative_path_from(@configuration.root_path)
     end
 
+    sig { params(path: T.untyped).returns(T::Boolean) }
     def invalid_package_path?(path)
       # Packages at the root can be implicitly specified as "."
       return false if path == "."
 
-      package_path = File.join(@configuration.root_path, path, Packwerk::PackageSet::PACKAGE_CONFIG_FILENAME)
+      package_path = File.join(@configuration.root_path, path, PackageSet::PACKAGE_CONFIG_FILENAME)
       !File.file?(package_path)
     end
 
+    sig { params(constants: T.untyped, config_file_path: String).returns(T::Array[Result]) }
     def assert_constants_can_be_loaded(constants, config_file_path)
       constants.map do |constant|
         if !constant.start_with?("::")
           Result.new(
-            false,
-            "'#{constant}', listed in the 'enforce_privacy' option in #{config_file_path}, is invalid.\n"\
+            ok: false,
+            error_value: "'#{constant}', listed in the 'enforce_privacy' option in #{config_file_path}, is invalid.\n"\
             "Private constants need to be prefixed with the top-level namespace operator `::`."
           )
         else
-          constant.try(&:constantize) && Result.new(true)
+          constant.try(&:constantize) && Result.new(ok: true)
         end
       end
     end
 
+    sig { params(name: T.untyped, config_file_path: T.untyped).returns(Result) }
     def private_constant_unresolvable(name, config_file_path)
       explicit_filepath = (name.start_with?("::") ? name[2..-1] : name).underscore + ".rb"
 
       Result.new(
-        false,
-        "'#{name}', listed in #{config_file_path}, could not be resolved.\n"\
+        ok: false,
+        error_value: "'#{name}', listed in #{config_file_path}, could not be resolved.\n"\
         "This is probably because it is an autovivified namespace - a namespace module that doesn't have a\n"\
         "file explicitly defining it. Packwerk currently doesn't support declaring autovivified namespaces as\n"\
         "private. Add a #{explicit_filepath} file to explicitly define the constant."
       )
     end
 
+    sig { params(name: T.untyped, location: T.untyped, config_file_path: T.untyped).returns(Result) }
     def check_private_constant_location(name, location, config_file_path)
-      declared_package = package_set.package_from_path(relative_path(config_file_path))
-      constant_package = package_set.package_from_path(location)
+      declared_package = @package_set.package_from_path(relative_path(config_file_path))
+      constant_package = @package_set.package_from_path(location)
 
       if constant_package == declared_package
-        Result.new(true)
+        Result.new(ok: true)
       else
         Result.new(
-          false,
-          "'#{name}' is declared as private in the '#{declared_package}' package but appears to be "\
+          ok: false,
+          error_value: "'#{name}' is declared as private in the '#{declared_package}' package but appears to be "\
           "defined\nin the '#{constant_package}' package. Packwerk resolved it to #{location}."
         )
       end
     end
 
-    def package_set
-      @package_set ||= Packwerk::PackageSet.load_all_from(@configuration.root_path, package_pathspec: package_glob)
+    sig do
+      params(results: T::Array[Result], separator: String, errors_headline: String).returns(Result)
     end
-
     def merge_results(results, separator: "\n===\n", errors_headline: "")
       results.reject!(&:ok?)
 
       if results.empty?
-        Result.new(true)
+        Result.new(ok: true)
       else
         Result.new(
-          false,
-          errors_headline + results.map(&:error_value).join(separator)
+          ok: false,
+          error_value: errors_headline + results.map(&:error_value).join(separator)
         )
       end
     end
