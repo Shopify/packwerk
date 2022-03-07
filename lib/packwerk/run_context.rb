@@ -71,7 +71,10 @@ module Packwerk
 
       @file_processor = T.let(nil, T.nilable(FileProcessor))
       @context_provider = T.let(nil, T.nilable(ConstantDiscovery))
-      @cache = T.let(nil, T.nilable(Cache))
+      # We need to initialize this before we fork the process, see https://github.com/Shopify/packwerk/issues/182
+      @cache = T.let(
+        Cache.new(enable_cache: @cache_enabled, cache_directory: @cache_directory, config_path: @config_path), Cache
+      )
     end
 
     sig { params(absolute_file: String).returns(T::Array[Packwerk::Offense]) }
@@ -89,7 +92,7 @@ module Packwerk
 
     sig { returns(FileProcessor) }
     def file_processor
-      @file_processor ||= FileProcessor.new(node_processor_factory: node_processor_factory, cache: cache)
+      @file_processor ||= FileProcessor.new(node_processor_factory: node_processor_factory, cache: @cache)
     end
 
     sig { returns(NodeProcessorFactory) }
@@ -116,11 +119,6 @@ module Packwerk
         load_paths: @load_paths,
         inflector: @inflector,
       )
-    end
-
-    sig { returns(Cache) }
-    def cache
-      @cache ||= Cache.new(enable_cache: @cache_enabled, cache_directory: @cache_directory, config_path: @config_path)
     end
 
     sig { returns(PackageSet) }
