@@ -58,10 +58,11 @@ Read [USAGE.md](USAGE.md) for usage once Packwerk is installed on your project.
 
 ## Ecosystem
 
-You can use these third party tools to enhance your packwerk experience:
+Various third parties have built tooling on top of packwerk. Here's a selection of some that might prove useful:
 
 - https://github.com/bellroy/graphwerk draws a graph of your package dependencies
 - https://github.com/Gusto/packwerk-vscode integrates packwerk into Visual Studio Code so you can see violations right in your editor
+- https://github.com/Gusto/stimpack sets up Rails autoloading, as well as `rspec` and `FactoryBot` integration, for packages arranged in a flat list.
 
 ## Development
 
