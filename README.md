@@ -1,6 +1,9 @@
 # Packwerk [![Build Status](https://github.com/Shopify/packwerk/workflows/CI/badge.svg)](https://github.com/Shopify/packwerk/actions?query=workflow%3ACI)
 
-## NOTE: Packwerk is considered to be feature-complete for Shopify's uses. We are currently accepting bug fixes only, and it is not being actively developed. Please fork this project if you are interested in adding new features.
+### ⚠️ While Shopify is actively using `packwerk`, we consider it feature complete.
+We are keeping `packwerk` compatible with current versions of Ruby and Rails, but will accept feature requests only in rare cases. Please submit bug fixes though!
+
+---
 
 > "I know who you are and because of that I know what you do."
 > This knowledge is a dependency that raises the cost of change.
@@ -62,7 +65,7 @@ Various third parties have built tooling on top of packwerk. Here's a selection 
 
 - https://github.com/bellroy/graphwerk draws a graph of your package dependencies
 - https://github.com/Gusto/packwerk-vscode integrates packwerk into Visual Studio Code so you can see violations right in your editor
-- https://github.com/Gusto/stimpack sets up Rails autoloading, as well as `rspec` and `FactoryBot` integration, for packages arranged in a flat list.
+- https://github.com/Gusto/stimpack sets up Rails autoloading, as well as `rspec` and `FactoryBot` integration, for packages arranged in a flat list. Stimpack is quite convenient, but for autoloading we recommend to use `Rails::Engine`s instead.
 
 ## Development
 
