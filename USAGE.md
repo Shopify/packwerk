@@ -17,6 +17,8 @@
     * [Using public folders](#using-public-folders)
   * [Enforcing dependency boundary](#enforcing-dependency-boundary)
 * [Checking for violations](#checking-for-violations)
+* [Resolving new violations](#resolving-new-violations)
+  * [Understanding how to respond to new violations](#understanding-how-to-respond-to-new-violations)
 * [Recording existing violations](#recording-existing-violations)
   * [Understanding the list of deprecated references](#understanding-the-list-of-deprecated-references)
 
@@ -221,6 +223,10 @@ You can also specify packages for a shorter run time. When checking against pack
 In order to keep the package system valid at each version of the application, we recommend running `bin/packwerk check` in your CI pipeline.
 
 See: [TROUBLESHOOT.md - Sample violations](TROUBLESHOOT.md#Sample-violations)
+
+## Resolving new violations
+### Understanding how to respond to new violations
+[Check out this flow chart to help you think about and resolve new violations!](docs/new_violation_flow_chart.pdf)
 
 ## Recording existing violations
 
