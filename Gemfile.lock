@@ -92,7 +92,7 @@ PATH
       ast
       better_html
       bundler
-      constant_resolver
+      constant_resolver (>= 0.2.0)
       digest
       parallel
       parser
@@ -117,7 +117,7 @@ GEM
     commander (4.5.2)
       highline (~> 2.0.0)
     concurrent-ruby (1.1.8)
-    constant_resolver (0.1.5)
+    constant_resolver (0.2.0)
     crass (1.0.6)
     digest (3.1.0)
     erubi (1.10.0)
