@@ -35,12 +35,12 @@ module Packwerk
       files = ::Packwerk::FilesForProcessing.fetch(relative_file_paths: [], configuration: @configuration)
       excluded_file_patterns = @configuration.exclude.map { |pattern| File.join(@configuration.root_path, pattern) }
 
-      refute_any_match(files, excluded_file_patterns)
+      refute_any_match(files, Set.new(excluded_file_patterns))
     end
 
     test "fetch does not return duplicated file paths" do
       files = ::Packwerk::FilesForProcessing.fetch(relative_file_paths: [], configuration: @configuration)
-      assert_equal files, files.uniq
+      assert_equal files, Set.new(files)
     end
 
     test "fetch with custom paths without ignoring nested packages includes only include glob in custom paths including nested package files" do
@@ -51,7 +51,7 @@ module Packwerk
       )
       included_file_patterns = @configuration.include.map { |pattern| File.join(@configuration.root_path, pattern) }
 
-      assert_all_match(files, included_file_patterns)
+      assert_all_match(files, Set.new(included_file_patterns))
     end
 
     test "fetch with no custom paths ignoring nested packages includes only include glob across codebase" do
@@ -72,8 +72,8 @@ module Packwerk
         ignore_nested_packages: true
       )
 
-      refute_any_match(files, [File.join(@configuration.root_path, "components/sales", "**/*.rb")])
-      refute_any_match(files, [File.join(@configuration.root_path, "components/timeline", "**/*.rb")])
+      refute_any_match(files, Set.new([File.join(@configuration.root_path, "components/sales", "**/*.rb")]))
+      refute_any_match(files, Set.new([File.join(@configuration.root_path, "components/timeline", "**/*.rb")]))
     end
 
     private

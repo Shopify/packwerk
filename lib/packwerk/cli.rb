@@ -32,8 +32,10 @@ module Packwerk
       @style = style
       @configuration = T.let(configuration || Configuration.from_path, Configuration)
       @progress_formatter = T.let(Formatters::ProgressFormatter.new(@out, style: style), Formatters::ProgressFormatter)
-      @offenses_formatter = T.let(offenses_formatter || Formatters::OffensesFormatter.new(style: @style),
-        OffensesFormatter)
+      @offenses_formatter = T.let(
+        offenses_formatter || Formatters::OffensesFormatter.new(style: @style),
+        OffensesFormatter
+      )
     end
 
     sig { params(args: T::Array[String]).returns(T.noreturn) }
@@ -122,16 +124,21 @@ module Packwerk
       result.status
     end
 
-    sig { params(relative_file_paths: T::Array[String], ignore_nested_packages: T::Boolean).returns(T::Array[String]) }
+    sig do
+      params(
+        relative_file_paths: T::Array[String],
+        ignore_nested_packages: T::Boolean
+      ).returns(FilesForProcessing::AbsoluteFileSet)
+    end
     def fetch_files_to_process(relative_file_paths, ignore_nested_packages)
-      absolute_files = FilesForProcessing.fetch(
+      absolute_file_set = FilesForProcessing.fetch(
         relative_file_paths: relative_file_paths,
         ignore_nested_packages: ignore_nested_packages,
         configuration: @configuration
       )
       abort("No files found or given. "\
-        "Specify files or check the include and exclude glob in the config file.") if absolute_files.empty?
-      absolute_files
+        "Specify files or check the include and exclude glob in the config file.") if absolute_file_set.empty?
+      absolute_file_set
     end
 
     sig { params(_paths: T::Array[String]).returns(T::Boolean) }
@@ -183,7 +190,7 @@ module Packwerk
       end
 
       ParseRun.new(
-        absolute_files: fetch_files_to_process(relative_file_paths, ignore_nested_packages),
+        absolute_file_set: fetch_files_to_process(relative_file_paths, ignore_nested_packages),
         configuration: @configuration,
         progress_formatter: @progress_formatter,
         offenses_formatter: @offenses_formatter
