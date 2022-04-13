@@ -2,22 +2,35 @@
 # frozen_string_literal: true
 
 require "rails_test_helper"
+require "zeitwerk"
 
 module RailsApplicationFixtureHelper
   include ApplicationFixtureHelper
 
-  def setup_application_fixture
-    super()
-    cache_rails_paths
-  end
+  class Autoloaders
+    include Enumerable
 
-  def teardown_application_fixture
-    restore_rails_paths
-    super()
+    def initialize
+      @main = Zeitwerk::Loader.new
+      @once = Zeitwerk::Loader.new
+    end
+
+    attr_reader :main, :once
+
+    def each(&block)
+      block.call(main)
+      block.call(once)
+    end
+
+    def zeitwerk_enabled?
+      true
+    end
   end
 
   def use_template(template)
     super(template)
+
+    Rails.stubs(:autoloaders).returns(Autoloaders.new)
 
     case template
     when :minimal
@@ -28,36 +41,22 @@ module RailsApplicationFixtureHelper
       raise "Unknown fixture template #{template}"
     end
 
-    RailsPaths.root(app_dir)
+    root = Pathname.new(app_dir)
+    Rails.application.config.stubs(:root).returns(root)
   end
 
   private
 
   def set_load_paths_for_minimal_template
-    RailsPaths.autoload(to_app_paths("/components/sales/app/models"))
-    RailsPaths.eager_load([])
-    RailsPaths.autoload_once([])
+    Rails.autoloaders.main.push_dir(*to_app_paths("/components/sales/app/models"))
   end
 
   def set_load_paths_for_skeleton_template
-    RailsPaths.autoload(to_app_paths("/components/sales/app/models"))
-    RailsPaths.eager_load(to_app_paths("components/platform/app/models"))
-    RailsPaths.autoload_once(
-      to_app_paths(
-        "components/timeline/app/models",
-        "components/timeline/app/models/concerns",
-        "vendor/cache/gems/example/models",
-      )
-    )
-  end
+    Rails.autoloaders.main.push_dir(*to_app_paths("/components/sales/app/models"))
+    Rails.autoloaders.main.push_dir(*to_app_paths("components/platform/app/models"))
 
-  def cache_rails_paths
-    raise "cache_rails_paths may only be called once per test" if defined? @rails_paths
-    @rails_paths = RailsPaths.new
-    @rails_paths.cache
-  end
-
-  def restore_rails_paths
-    @rails_paths.restore
+    Rails.autoloaders.once.push_dir(*to_app_paths("components/timeline/app/models"))
+    Rails.autoloaders.once.push_dir(*to_app_paths("components/timeline/app/models/concerns"))
+    Rails.autoloaders.once.push_dir(*to_app_paths("vendor/cache/gems/example/models"))
   end
 end

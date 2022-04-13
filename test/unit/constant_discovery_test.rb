@@ -3,6 +3,8 @@
 
 require "test_helper"
 
+Object.const_set(:Business, Module.new)
+
 module Packwerk
   class ConstantDiscoveryTest < Minitest::Test
     include TypedMock
@@ -12,6 +14,9 @@ module Packwerk
       load_paths =
         Dir.glob(File.join(@root_path, "components/*/{app,test}/*{/concerns,}"))
           .map { |p| Pathname.new(p).relative_path_from(@root_path).to_s }
+          .each_with_object({}) { |p, h| h[p] = Object }
+
+      load_paths["components/sales/app/internal"] = Business
 
       @discovery = ConstantDiscovery.new(
         constant_resolver: ConstantResolver.new(root_path: @root_path, load_paths: load_paths),
@@ -24,6 +29,14 @@ module Packwerk
       constant = @discovery.context_for("Order")
       assert_equal("::Order", constant.name)
       assert_equal("components/sales/app/models/order.rb", constant.location)
+      assert_equal("components/sales", constant.package.name)
+      assert_equal(false, constant.public?)
+    end
+
+    test "discovers constant in root dir with non-default namespace" do
+      constant = @discovery.context_for("Business::Special")
+      assert_equal("::Business::Special", constant.name)
+      assert_equal("components/sales/app/internal/special.rb", constant.location)
       assert_equal("components/sales", constant.package.name)
       assert_equal(false, constant.public?)
     end

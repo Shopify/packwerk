@@ -11,66 +11,44 @@ module Packwerk
       relative_path = "app/models"
       absolute_path = rails_root.join(relative_path)
       relative_path_strings = ApplicationLoadPaths.relative_path_strings(
-        [absolute_path],
+        { absolute_path => Object },
         rails_root: rails_root
       )
 
-      assert_equal [relative_path], relative_path_strings
+      assert_equal({ relative_path => Object }, relative_path_strings)
     end
 
     test ".filter_relevant_paths excludes paths outside of the application root" do
       valid_paths = ["/application/app/models"]
       paths = valid_paths + ["/users/tobi/.gems/something/app/models", "/application/../something/"]
+      paths = paths.each_with_object({}) { |p, h| h[p.to_s] = Object }
       filtered_paths = ApplicationLoadPaths.filter_relevant_paths(
         paths,
         bundle_path: Pathname.new("/application/vendor/"),
         rails_root: Pathname.new("/application/")
       )
 
-      assert_equal valid_paths, filtered_paths.map(&:to_s)
+      assert_equal({ "/application/app/models" => Object }, filtered_paths.transform_keys(&:to_s))
     end
 
     test ".filter_relevant_paths excludes paths from vendored gems" do
       valid_paths = ["/application/app/models"]
       paths = valid_paths + ["/application/vendor/something/app/models"]
+      paths = paths.each_with_object({}) { |p, h| h[p.to_s] = Object }
       filtered_paths = ApplicationLoadPaths.filter_relevant_paths(
         paths,
         bundle_path: Pathname.new("/application/vendor/"),
         rails_root: Pathname.new("/application/")
       )
 
-      assert_equal valid_paths, filtered_paths.map(&:to_s)
+      assert_equal({ "/application/app/models" => Object }, filtered_paths.transform_keys(&:to_s))
     end
 
     test ".extract_relevant_paths calls out to filter the paths" do
-      ApplicationLoadPaths.expects(:filter_relevant_paths).once.returns([Pathname.new("/fake_path")])
+      ApplicationLoadPaths.expects(:filter_relevant_paths).once.returns(Pathname.new("/fake_path").to_s => Object)
       ApplicationLoadPaths.expects(:require_application).with("/application", "test").once.returns(true)
 
       ApplicationLoadPaths.extract_relevant_paths("/application", "test")
-    end
-
-    test ".extract_relevant_paths returns unique load paths" do
-      path = Pathname.new("/application/app/models")
-      ApplicationLoadPaths.expects(:filter_relevant_paths).once.returns([path, path])
-      ApplicationLoadPaths.expects(:require_application).with("/application", "test").once.returns(true)
-
-      assert_equal 1, ApplicationLoadPaths.extract_relevant_paths("/application", "test").count
-    end
-
-    test ".extract_application_autoload_paths returns unique autoload paths" do
-      path = Pathname.new("/application/app/models")
-      Rails.application.config.expects(:autoload_paths).once.returns([path])
-      Rails.application.config.expects(:eager_load_paths).once.returns([path])
-      Rails.application.config.expects(:autoload_once_paths).once.returns([path])
-
-      assert_equal 1, ApplicationLoadPaths.extract_application_autoload_paths.count
-    end
-
-    test ".extract_application_autoload_paths returns autoload paths as strings" do
-      path = Pathname.new("/application/app/models")
-      Rails.application.config.expects(:autoload_paths).once.returns([path])
-
-      assert_instance_of String, ApplicationLoadPaths.extract_application_autoload_paths.first
     end
   end
 end
