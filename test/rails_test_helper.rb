@@ -8,6 +8,8 @@ class Dummy < Rails::Application
     ROOT.join("test", "fixtures", "skeleton", *path).to_s
   end
 
+  config.autoloader = :zeitwerk
+  config.eager_load = false
   config.eager_load_paths    = [skeleton("components", "platform", "app", "models")]
   config.autoload_paths      = [skeleton("components", "sales", "app", "models")]
   config.autoload_once_paths = [
@@ -16,4 +18,7 @@ class Dummy < Rails::Application
     skeleton("vendor", "cache", "gems", "example", "models"),
   ]
   config.root = skeleton(".")
+  config.logger = Logger.new("/dev/null")
 end
+
+Rails.application.initialize!

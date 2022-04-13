@@ -9,7 +9,7 @@ module Packwerk
     class << self
       extend T::Sig
 
-      sig { params(root: String, environment: String).returns(T::Array[String]) }
+      sig { params(root: String, environment: String).returns(T::Hash[String, Module]) }
       def extract_relevant_paths(root, environment)
         require_application(root, environment)
         all_paths = extract_application_autoload_paths
@@ -18,36 +18,30 @@ module Packwerk
         relative_path_strings(relevant_paths)
       end
 
-      sig { returns(T::Array[String]) }
+      sig { returns(T::Hash[String, Module]) }
       def extract_application_autoload_paths
-        Rails.application.railties
-          .select { |railtie| railtie.is_a?(Rails::Engine) }
-          .push(Rails.application)
-          .flat_map do |engine|
-            paths = (engine.config.autoload_paths + engine.config.eager_load_paths + engine.config.autoload_once_paths)
-            paths.map(&:to_s).uniq
-          end
+        Rails.autoloaders.inject({}) do |h, loader|
+          h.merge(loader.root_dirs)
+        end
       end
 
       sig do
-        params(all_paths: T::Array[String], bundle_path: Pathname, rails_root: Pathname)
-          .returns(T::Array[Pathname])
+        params(all_paths: T::Hash[String, Module], bundle_path: Pathname, rails_root: Pathname)
+          .returns(T::Hash[Pathname, Module])
       end
       def filter_relevant_paths(all_paths, bundle_path: Bundler.bundle_path, rails_root: Rails.root)
         bundle_path_match = bundle_path.join("**")
         rails_root_match = rails_root.join("**")
 
         all_paths
-          .map { |path| Pathname.new(path).expand_path }
+          .transform_keys { |path| Pathname.new(path).expand_path }
           .select { |path| path.fnmatch(rails_root_match.to_s) } # path needs to be in application directory
           .reject { |path| path.fnmatch(bundle_path_match.to_s) } # reject paths from vendored gems
       end
 
-      sig { params(paths: T::Array[Pathname], rails_root: Pathname).returns(T::Array[String]) }
-      def relative_path_strings(paths, rails_root: Rails.root)
-        paths
-          .map { |path| path.relative_path_from(rails_root).to_s }
-          .uniq
+      sig { params(load_paths: T::Hash[Pathname, Module], rails_root: Pathname).returns(T::Hash[String, Module]) }
+      def relative_path_strings(load_paths, rails_root: Rails.root)
+        load_paths.transform_keys { |path| Pathname.new(path).relative_path_from(rails_root).to_s }
       end
 
       private
@@ -65,7 +59,7 @@ module Packwerk
         end
       end
 
-      sig { params(paths: T::Array[T.untyped]).void }
+      sig { params(paths: T::Hash[T.untyped, Module]).void }
       def assert_load_paths_present(paths)
         if paths.empty?
           raise <<~EOS
