@@ -24,14 +24,6 @@ module Packwerk
       end
     end
 
-    test "#call early returns with offense if it is not a reference type" do
-      input_offense = FileProcessor::UnknownFileTypeResult.new(file: "tempfile")
-      offenses = reference_checker.call(input_offense)
-
-      assert_equal 1, offenses.length
-      assert_equal input_offense, offenses.first
-    end
-
     test "#call enumerates the list of checkers to create ReferenceOffense objects" do
       instance = reference_checker([StubChecker.new(
         invalid_reference?: true,

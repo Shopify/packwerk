@@ -29,28 +29,30 @@ module Packwerk
       @parser_factory = T.let(parser_factory || Packwerk::Parsers::Factory.instance, Parsers::Factory)
     end
 
+    class ProcessedFile < T::Struct
+      const :unresolved_references, T::Array[UnresolvedReference], default: []
+      const :offenses, T::Array[Offense], default: []
+    end
+
     sig do
-      params(absolute_file: String).returns(
-        T::Array[
-          T.any(
-            Packwerk::UnresolvedReference,
-            Packwerk::Offense,
-          )
-        ]
-      )
+      params(absolute_file: String).returns(ProcessedFile)
     end
     def call(absolute_file)
       parser = parser_for(absolute_file)
-      return [UnknownFileTypeResult.new(file: absolute_file)] if T.unsafe(parser).nil?
+      if parser.nil?
+        return ProcessedFile.new(offenses: [UnknownFileTypeResult.new(file: absolute_file)])
+      end
 
-      @cache.with_cache(absolute_file) do
-        node = parse_into_ast(absolute_file, T.must(parser))
-        return [] unless node
+      unresolved_references = @cache.with_cache(absolute_file) do
+        node = parse_into_ast(absolute_file, parser)
+        return ProcessedFile.new unless node
 
         references_from_ast(node, absolute_file)
       end
+
+      ProcessedFile.new(unresolved_references: unresolved_references)
     rescue Parsers::ParseError => e
-      [e.result]
+      ProcessedFile.new(offenses: [e.result])
     end
 
     private

@@ -79,13 +79,15 @@ module Packwerk
 
     sig { params(absolute_file: String).returns(T::Array[Packwerk::Offense]) }
     def process_file(absolute_file:)
-      unresolved_references_and_offenses = file_processor.call(absolute_file)
-      references_and_offenses = ReferenceExtractor.get_fully_qualified_references_and_offenses_from(
-        unresolved_references_and_offenses,
+      processed_file = file_processor.call(absolute_file)
+
+      references = ReferenceExtractor.get_fully_qualified_references_from(
+        processed_file.unresolved_references,
         context_provider
       )
       reference_checker = ReferenceChecking::ReferenceChecker.new(@checkers)
-      references_and_offenses.flat_map { |reference| reference_checker.call(reference) }
+
+      processed_file.offenses + references.flat_map { |reference| reference_checker.call(reference) }
     end
 
     private

@@ -23,23 +23,25 @@ module Packwerk
       @node_processor_factory.expects(:for).returns(@node_processor)
       @node_processor.expects(:call).twice.returns(nil)
 
-      references = tempfile(name: "foo", content: "def food_bar; end") do |file_path|
+      processed_file = tempfile(name: "foo", content: "def food_bar; end") do |file_path|
         @file_processor.call(file_path)
       end
 
-      assert_empty references
+      assert_equal processed_file.unresolved_references, []
+      assert_equal processed_file.offenses, []
     end
 
     test "#call visits a node in file path with an reference" do
-      reference = build_reference(path: "tempfile", source_location: Packwerk::Node::Location.new(3, 22))
-
+      unresolved_reference = UnresolvedReference.new("SomeName", [], "tempfile", Node::Location.new(3, 22))
       @node_processor_factory.expects(:for).returns(@node_processor)
-      @node_processor.expects(:call).returns(reference)
+      @node_processor.expects(:call).returns(unresolved_reference)
 
-      references = tempfile(name: "foo", content: "a_variable_name") do |file_path|
+      processed_file = tempfile(name: "foo", content: "a_variable_name") do |file_path|
         @file_processor.call(file_path)
       end
 
+      assert_equal 0, processed_file.offenses.count
+      references = processed_file.unresolved_references
       assert_equal 1, references.length
 
       reference = references.first
@@ -50,7 +52,7 @@ module Packwerk
     end
 
     test "#call provides node processor with the correct ancestors" do
-      reference = mock
+      reference = typed_mock
       @node_processor_factory.expects(:for).returns(@node_processor)
       @node_processor.expects(:call).with do |node, ancestors|
         Node.class?(node) && # class Hello; world; end
@@ -74,19 +76,21 @@ module Packwerk
           Node.class_or_module_name(parent) == "Hello"
       end.returns(reference)
 
-      references = tempfile(name: "hello_world", content: "class Hello; world; end") do |file_path|
+      processed_file = tempfile(name: "hello_world", content: "class Hello; world; end") do |file_path|
         @file_processor.call(file_path)
       end
 
-      assert_equal [reference], references
+      assert_equal processed_file.unresolved_references, [reference]
+      assert_equal processed_file.offenses, []
     end
 
     test "#call reports no references for an empty file" do
-      references = tempfile(name: "foo", content: "# no fun") do |file_path|
+      processed_file = tempfile(name: "foo", content: "# no fun") do |file_path|
         @file_processor.call(file_path)
       end
 
-      assert_empty references
+      assert_equal processed_file.unresolved_references, []
+      assert_equal processed_file.offenses, []
     end
 
     test "#call with an invalid syntax doesn't parse node" do
@@ -106,11 +110,12 @@ module Packwerk
     end
 
     test "#call with a path that can't be parsed outputs error message" do
-      results = @file_processor.call("what/kind/of/file.ami")
-
-      assert_equal 1, results.length
-      assert_equal "what/kind/of/file.ami", results.first.file
-      assert_equal "unknown file type", results.first.message
+      processed_file = @file_processor.call("what/kind/of/file.ami")
+      assert_equal 0, processed_file.unresolved_references.count
+      offenses = processed_file.offenses
+      assert_equal 1, offenses.length
+      assert_equal "what/kind/of/file.ami", offenses.first.file
+      assert_equal "unknown file type", offenses.first.message
     end
 
     private
