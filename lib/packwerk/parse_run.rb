@@ -14,14 +14,14 @@ module Packwerk
 
     sig do
       params(
-        absolute_file_set: FilesForProcessing::AbsoluteFileSet,
+        relative_file_set: FilesForProcessing::RelativeFileSet,
         configuration: Configuration,
         progress_formatter: Formatters::ProgressFormatter,
         offenses_formatter: OffensesFormatter,
       ).void
     end
     def initialize(
-      absolute_file_set:,
+      relative_file_set:,
       configuration:,
       progress_formatter: Formatters::ProgressFormatter.new(StringIO.new),
       offenses_formatter: Formatters::OffensesFormatter.new
@@ -29,7 +29,7 @@ module Packwerk
       @configuration = configuration
       @progress_formatter = progress_formatter
       @offenses_formatter = offenses_formatter
-      @absolute_file_set = absolute_file_set
+      @relative_file_set = relative_file_set
     end
 
     sig { returns(Result) }
@@ -73,13 +73,13 @@ module Packwerk
     sig { params(show_errors: T::Boolean).returns(OffenseCollection) }
     def find_offenses(show_errors: false)
       offense_collection = OffenseCollection.new(@configuration.root_path)
-      @progress_formatter.started(@absolute_file_set)
+      @progress_formatter.started(@relative_file_set)
 
       run_context = Packwerk::RunContext.from_configuration(@configuration)
       all_offenses = T.let([], T::Array[Offense])
 
-      process_file = T.let(-> (absolute_file) do
-        run_context.process_file(absolute_file: absolute_file).tap do |offenses|
+      process_file = T.let(-> (relative_file) do
+        run_context.process_file(relative_file: relative_file).tap do |offenses|
           failed = show_errors && offenses.any? { |offense| !offense_collection.listed?(offense) }
           update_progress(failed: failed)
         end
@@ -87,7 +87,7 @@ module Packwerk
 
       execution_time = Benchmark.realtime do
         all_offenses = if @configuration.parallel?
-          Parallel.flat_map(@absolute_file_set, &process_file)
+          Parallel.flat_map(@relative_file_set, &process_file)
         else
           serial_find_offenses(&process_file)
         end
@@ -103,8 +103,8 @@ module Packwerk
     def serial_find_offenses(&block)
       all_offenses = T.let([], T::Array[Offense])
       begin
-        @absolute_file_set.each do |absolute_file|
-          offenses = block.call(absolute_file)
+        @relative_file_set.each do |relative_file|
+          offenses = block.call(relative_file)
           all_offenses.concat(offenses)
         end
       rescue Interrupt
