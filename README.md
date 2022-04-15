@@ -66,6 +66,7 @@ Various third parties have built tooling on top of packwerk. Here's a selection 
 - https://github.com/bellroy/graphwerk draws a graph of your package dependencies
 - https://github.com/Gusto/packwerk-vscode integrates packwerk into Visual Studio Code so you can see violations right in your editor
 - https://github.com/Gusto/stimpack sets up Rails autoloading, as well as `rspec` and `FactoryBot` integration, for packages arranged in a flat list. Stimpack is quite convenient, but for autoloading we recommend to use `Rails::Engine`s instead.
+- https://github.com/BigRails/danger-packwerk integrates packwerk with [danger.systems](https://danger.systems) to provide packwerk feedback as Github inline PR comments
 
 ## Development
 
