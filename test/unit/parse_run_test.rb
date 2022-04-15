@@ -1,3 +1,4 @@
+# typed: true
 # frozen_string_literal: true
 require "test_helper"
 require "rails_test_helper"
@@ -73,7 +74,12 @@ module Packwerk
 
     test "#check only reports error progress for unlisted violations" do
       use_template(:minimal)
-      offense = ReferenceOffense.new(reference: build_reference, violation_type: ViolationType::Privacy)
+      offense = ReferenceOffense.new(
+        reference: build_reference,
+        message: "some message",
+        violation_type: ViolationType::Privacy
+      )
+
       DeprecatedReferences.any_instance.stubs(:listed?).returns(true)
       out = StringIO.new
       parse_run = Packwerk::ParseRun.new(
@@ -101,7 +107,12 @@ module Packwerk
 
     test "#check result has failure status when stale violations exist" do
       use_template(:minimal)
-      offense = ReferenceOffense.new(reference: build_reference, violation_type: ViolationType::Privacy)
+      offense = ReferenceOffense.new(
+        reference: build_reference,
+        message: "some message",
+        violation_type: ViolationType::Privacy
+      )
+
       DeprecatedReferences.any_instance.stubs(:listed?).returns(true)
       OffenseCollection.any_instance.stubs(:stale_violations?).returns(true)
       out = StringIO.new
@@ -131,9 +142,15 @@ module Packwerk
 
     test "runs in parallel" do
       use_template(:minimal)
-      offense = ReferenceOffense.new(reference: build_reference, violation_type: ViolationType::Privacy)
+      offense = ReferenceOffense.new(
+        reference: build_reference,
+        message: "some message",
+        violation_type: ViolationType::Privacy
+      )
+
       offense2 = ReferenceOffense.new(
         reference: build_reference(path: "some/other_path.rb"),
+        message: "some message",
         violation_type: ViolationType::Privacy
       )
       parse_run = Packwerk::ParseRun.new(

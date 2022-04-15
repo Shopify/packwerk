@@ -8,13 +8,26 @@ module Packwerk
         extend T::Sig
         extend T::Helpers
 
-        interface!
+        abstract!
 
         sig { returns(ViolationType).abstract }
         def violation_type; end
 
         sig { params(reference: Reference).returns(T::Boolean).abstract }
         def invalid_reference?(reference); end
+
+        sig { params(reference: Reference).returns(String).abstract }
+        def message(reference); end
+
+        sig { params(reference: Reference).returns(String) }
+        def standard_help_message(reference)
+          standard_mesage = <<~EOS
+            Inference details: this is a reference to #{reference.constant.name} which seems to be defined in #{reference.constant.location}.
+            To receive help interpreting or resolving this error message, see: https://github.com/Shopify/packwerk/blob/main/TROUBLESHOOT.md#Troubleshooting-violations
+          EOS
+
+          standard_mesage.chomp
+        end
       end
     end
   end

@@ -1,4 +1,4 @@
-# typed: ignore
+# typed: true
 # frozen_string_literal: true
 
 require "test_helper"
@@ -13,12 +13,18 @@ module Packwerk
     end
 
     test "has its file attribute set to the relative path of the reference" do
-      offense = ReferenceOffense.new(reference: @reference, violation_type: ViolationType::Privacy)
+      offense = ReferenceOffense.new(
+        reference: @reference,
+        message: "some message",
+        violation_type: ViolationType::Privacy
+      )
+
       assert_equal(@reference.relative_path, offense.file)
     end
 
     test "generates a sensible message for privacy violations" do
-      offense = ReferenceOffense.new(reference: @reference, violation_type: ViolationType::Privacy)
+      message = ReferenceChecking::Checkers::PrivacyChecker.new.message(@reference)
+      offense = ReferenceOffense.new(reference: @reference, message: message, violation_type: ViolationType::Privacy)
 
       assert_match(
         "Privacy violation: '::SomeName' is private to 'destination_package' but referenced from " \
@@ -27,7 +33,8 @@ module Packwerk
     end
 
     test "generates a sensible message for dependency violations" do
-      offense = ReferenceOffense.new(reference: @reference, violation_type: ViolationType::Dependency)
+      message = ReferenceChecking::Checkers::DependencyChecker.new.message(@reference)
+      offense = ReferenceOffense.new(reference: @reference, message: message, violation_type: ViolationType::Dependency)
 
       expected = <<~EXPECTED
         Dependency violation: ::SomeName belongs to 'destination_package', but 'components/source' does not specify a dependency on 'destination_package'.
