@@ -96,7 +96,7 @@ PATH
       digest
       parallel
       parser
-      sorbet-runtime
+      sorbet-runtime (>= 0.5.9914)
 
 GEM
   remote: https://rubygems.org/
