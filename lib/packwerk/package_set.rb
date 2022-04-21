@@ -12,7 +12,7 @@ module Packwerk
     extend T::Generic
     include Enumerable
 
-    Elem = type_member(fixed: Package)
+    # Elem = type_member(fixed: Package)
 
     PACKAGE_CONFIG_FILENAME = "package.yml"
 
