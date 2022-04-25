@@ -43,7 +43,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency("activesupport", ">= 5.2")
   spec.add_dependency("constant_resolver", ">=0.2.0")
   spec.add_dependency("parallel")
-  spec.add_dependency("sorbet-runtime")
+  spec.add_dependency("sorbet-runtime", ">=0.5.9914")
   spec.add_dependency("bundler")
   spec.add_dependency("digest")
 
