@@ -77,9 +77,9 @@ module Packwerk
       )
     end
 
-    sig { params(absolute_file: String).returns(T::Array[Packwerk::Offense]) }
-    def process_file(absolute_file:)
-      processed_file = file_processor.call(absolute_file)
+    sig { params(relative_file: String).returns(T::Array[Packwerk::Offense]) }
+    def process_file(relative_file:)
+      processed_file = file_processor.call(relative_file)
 
       references = ReferenceExtractor.get_fully_qualified_references_from(
         processed_file.unresolved_references,

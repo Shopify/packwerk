@@ -21,7 +21,7 @@ module Packwerk
       RunContext.any_instance.stubs(:process_file).returns([])
 
       parse_run = Packwerk::ParseRun.new(
-        absolute_file_set: Set.new(["path/of/exile.rb"]),
+        relative_file_set: Set.new(["path/of/exile.rb"]),
         configuration: Configuration.from_path
       )
       result = parse_run.detect_stale_violations
@@ -35,7 +35,7 @@ module Packwerk
       OffenseCollection.any_instance.expects(:dump_deprecated_references_files).once
 
       parse_run = Packwerk::ParseRun.new(
-        absolute_file_set: Set.new(["path/of/exile.rb"]),
+        relative_file_set: Set.new(["path/of/exile.rb"]),
         configuration: Configuration.from_path
       )
       result = parse_run.update_deprecations
@@ -54,7 +54,7 @@ module Packwerk
       OffenseCollection.any_instance.expects(:dump_deprecated_references_files).once
 
       parse_run = Packwerk::ParseRun.new(
-        absolute_file_set: Set.new(["path/of/exile.rb"]),
+        relative_file_set: Set.new(["path/of/exile.rb"]),
         configuration: Configuration.from_path
       )
       result = parse_run.update_deprecations
@@ -77,7 +77,7 @@ module Packwerk
       DeprecatedReferences.any_instance.stubs(:listed?).returns(true)
       out = StringIO.new
       parse_run = Packwerk::ParseRun.new(
-        absolute_file_set: Set.new(["some/path.rb"]),
+        relative_file_set: Set.new(["some/path.rb"]),
         configuration: Configuration.new({ "parallel" => false }),
         progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
       )
@@ -106,7 +106,7 @@ module Packwerk
       OffenseCollection.any_instance.stubs(:stale_violations?).returns(true)
       out = StringIO.new
       parse_run = Packwerk::ParseRun.new(
-        absolute_file_set: Set.new(["some/path.rb"]),
+        relative_file_set: Set.new(["some/path.rb"]),
         configuration: Configuration.new({ "parallel" => false }),
         progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
       )
@@ -137,7 +137,7 @@ module Packwerk
         violation_type: ViolationType::Privacy
       )
       parse_run = Packwerk::ParseRun.new(
-        absolute_file_set: Set.new(["some/path.rb", "some/other_path.rb"]),
+        relative_file_set: Set.new(["some/path.rb", "some/other_path.rb"]),
         configuration: Configuration.new
       )
       RunContext.any_instance.stubs(:process_file).returns([offense]).returns([offense2])

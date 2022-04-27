@@ -11,9 +11,10 @@ module Packwerk
     end
 
     test "fetch with custom paths includes only include glob in custom paths" do
-      files = ::Packwerk::FilesForProcessing.fetch(relative_file_paths: [@package_path], configuration: @configuration)
-      included_file_pattern = File.join(@configuration.root_path, @package_path, "**/*.rb")
-
+      files = Dir.chdir("test/fixtures/skeleton") do
+        ::Packwerk::FilesForProcessing.fetch(relative_file_paths: [@package_path], configuration: @configuration)
+      end
+      included_file_pattern = File.join(@package_path, "**/*.rb")
       assert_all_match(files, [included_file_pattern])
     end
 
@@ -26,9 +27,8 @@ module Packwerk
 
     test "fetch with no custom paths includes only include glob across codebase" do
       files = ::Packwerk::FilesForProcessing.fetch(relative_file_paths: [], configuration: @configuration)
-      included_file_patterns = @configuration.include.map { |pattern| File.join(@configuration.root_path, pattern) }
 
-      assert_all_match(files, included_file_patterns)
+      assert_all_match(files, @configuration.include)
     end
 
     test "fetch with no custom paths excludes the exclude glob across codebase" do
@@ -49,20 +49,20 @@ module Packwerk
         configuration: @configuration,
         ignore_nested_packages: false
       )
-      included_file_patterns = @configuration.include.map { |pattern| File.join(@configuration.root_path, pattern) }
 
-      assert_all_match(files, Set.new(included_file_patterns))
+      assert_all_match(files, Set.new(@configuration.include))
     end
 
     test "fetch with no custom paths ignoring nested packages includes only include glob across codebase" do
-      files = ::Packwerk::FilesForProcessing.fetch(
-        relative_file_paths: [],
-        configuration: @configuration,
-        ignore_nested_packages: true
-      )
-      included_file_patterns = @configuration.include.map { |pattern| File.join(@configuration.root_path, pattern) }
+      files = Dir.chdir("test/fixtures/skeleton") do
+        ::Packwerk::FilesForProcessing.fetch(
+          relative_file_paths: [],
+          configuration: @configuration,
+          ignore_nested_packages: true
+        )
+      end
 
-      assert_all_match(files, included_file_patterns)
+      assert_all_match(files, @configuration.include)
     end
 
     test "fetch with custom paths ignoring nested packages includes only include glob in custom paths without nested package files" do

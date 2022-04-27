@@ -128,17 +128,17 @@ module Packwerk
       params(
         relative_file_paths: T::Array[String],
         ignore_nested_packages: T::Boolean
-      ).returns(FilesForProcessing::AbsoluteFileSet)
+      ).returns(FilesForProcessing::RelativeFileSet)
     end
     def fetch_files_to_process(relative_file_paths, ignore_nested_packages)
-      absolute_file_set = FilesForProcessing.fetch(
+      relative_file_set = FilesForProcessing.fetch(
         relative_file_paths: relative_file_paths,
         ignore_nested_packages: ignore_nested_packages,
         configuration: @configuration
       )
       abort("No files found or given. "\
-        "Specify files or check the include and exclude glob in the config file.") if absolute_file_set.empty?
-      absolute_file_set
+        "Specify files or check the include and exclude glob in the config file.") if relative_file_set.empty?
+      relative_file_set
     end
 
     sig { params(_paths: T::Array[String]).returns(T::Boolean) }
@@ -190,7 +190,7 @@ module Packwerk
       end
 
       ParseRun.new(
-        absolute_file_set: fetch_files_to_process(relative_file_paths, ignore_nested_packages),
+        relative_file_set: fetch_files_to_process(relative_file_paths, ignore_nested_packages),
         configuration: @configuration,
         progress_formatter: @progress_formatter,
         offenses_formatter: @offenses_formatter

@@ -5,7 +5,7 @@ module Packwerk
   class FilesForProcessing
     extend T::Sig
 
-    AbsoluteFileSet = T.type_alias { T::Set[String] }
+    RelativeFileSet = T.type_alias { T::Set[String] }
 
     class << self
       extend T::Sig
@@ -15,7 +15,7 @@ module Packwerk
           relative_file_paths: T::Array[String],
           configuration: Configuration,
           ignore_nested_packages: T::Boolean
-        ).returns(AbsoluteFileSet)
+        ).returns(RelativeFileSet)
       end
       def fetch(relative_file_paths:, configuration:, ignore_nested_packages: false)
         new(relative_file_paths, configuration, ignore_nested_packages).files
@@ -33,10 +33,10 @@ module Packwerk
       @relative_file_paths = relative_file_paths
       @configuration = configuration
       @ignore_nested_packages = ignore_nested_packages
-      @custom_files = T.let(nil, T.nilable(AbsoluteFileSet))
+      @custom_files = T.let(nil, T.nilable(RelativeFileSet))
     end
 
-    sig { returns(AbsoluteFileSet) }
+    sig { returns(RelativeFileSet) }
     def files
       include_files = if custom_files.empty?
         configured_included_files
@@ -49,59 +49,55 @@ module Packwerk
 
     private
 
-    sig { returns(AbsoluteFileSet) }
+    sig { returns(RelativeFileSet) }
     def custom_files
       @custom_files ||= Set.new(
         @relative_file_paths.map do |relative_file_path|
-          absolute_file_path = File.expand_path(relative_file_path, @configuration.root_path)
-          if File.file?(absolute_file_path)
-            absolute_file_path
+          if File.file?(relative_file_path)
+            relative_file_path
           else
-            custom_included_files(absolute_file_path)
+            custom_included_files(relative_file_path)
           end
         end
       ).flatten
     end
 
-    sig { params(absolute_file_path: String).returns(AbsoluteFileSet) }
-    def custom_included_files(absolute_file_path)
+    sig { params(relative_file_path: String).returns(RelativeFileSet) }
+    def custom_included_files(relative_file_path)
       # Note, assuming include globs are always relative paths
-      absolute_includes = @configuration.include.map do |glob|
-        File.expand_path(glob, @configuration.root_path)
-      end
-
-      absolute_files = Dir.glob([File.join(absolute_file_path, "**", "*")]).select do |absolute_path|
-        absolute_includes.any? do |pattern|
-          File.fnmatch?(pattern, absolute_path, File::FNM_EXTGLOB)
+      relative_includes = @configuration.include
+      relative_files = Dir.glob([File.join(relative_file_path, "**", "*")]).select do |relative_path|
+        relative_includes.any? do |pattern|
+          File.fnmatch?(pattern, relative_path, File::FNM_EXTGLOB)
         end
       end
 
       if @ignore_nested_packages
-        nested_packages_absolute_file_paths = Dir.glob(File.join(absolute_file_path, "*", "**", "package.yml"))
-        nested_packages_absolute_globs = nested_packages_absolute_file_paths.map do |npp|
+        nested_packages_relative_file_paths = Dir.glob(File.join(relative_file_path, "*", "**", "package.yml"))
+        nested_packages_relative_globs = nested_packages_relative_file_paths.map do |npp|
           npp.gsub("package.yml", "**/*")
         end
-        nested_packages_absolute_globs.each do |absolute_glob|
-          absolute_files -= Dir.glob(absolute_glob)
+        nested_packages_relative_globs.each do |relative_glob|
+          relative_files -= Dir.glob(relative_glob)
         end
       end
 
-      Set.new(absolute_files)
+      Set.new(relative_files)
     end
 
-    sig { returns(AbsoluteFileSet) }
+    sig { returns(RelativeFileSet) }
     def configured_included_files
-      absolute_files_for_globs(@configuration.include)
+      relative_files_for_globs(@configuration.include)
     end
 
-    sig { returns(AbsoluteFileSet) }
+    sig { returns(RelativeFileSet) }
     def configured_excluded_files
-      absolute_files_for_globs(@configuration.exclude)
+      relative_files_for_globs(@configuration.exclude)
     end
 
-    sig { params(relative_globs: T::Array[String]).returns(AbsoluteFileSet) }
-    def absolute_files_for_globs(relative_globs)
-      Set.new(relative_globs.flat_map { |glob| Dir[File.expand_path(glob, @configuration.root_path)] })
+    sig { params(relative_globs: T::Array[String]).returns(RelativeFileSet) }
+    def relative_files_for_globs(relative_globs)
+      Set.new(relative_globs.flat_map { |glob| Dir[glob] })
     end
   end
 end

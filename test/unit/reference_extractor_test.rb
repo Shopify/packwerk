@@ -251,7 +251,7 @@ module Packwerk
         root_node,
         ancestors: [],
         extractor: extractor,
-        file_path: file_path
+        file_path: Pathname.new(file_path).relative_path_from(app_dir).to_s
       )
 
       ::Packwerk::ReferenceExtractor.get_fully_qualified_references_from(
@@ -261,7 +261,7 @@ module Packwerk
     end
 
     def find_references_in_ast(root_node, ancestors:, extractor:, file_path:)
-      references = [extractor.reference_from_node(root_node, ancestors: ancestors, absolute_file: file_path)]
+      references = [extractor.reference_from_node(root_node, ancestors: ancestors, relative_file: file_path)]
 
       child_references = Node.each_child(root_node).flat_map do |child|
         find_references_in_ast(child, ancestors: [root_node] + ancestors, extractor: extractor, file_path: file_path)

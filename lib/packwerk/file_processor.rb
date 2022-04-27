@@ -35,19 +35,19 @@ module Packwerk
     end
 
     sig do
-      params(absolute_file: String).returns(ProcessedFile)
+      params(relative_file: String).returns(ProcessedFile)
     end
-    def call(absolute_file)
-      parser = parser_for(absolute_file)
+    def call(relative_file)
+      parser = parser_for(relative_file)
       if parser.nil?
-        return ProcessedFile.new(offenses: [UnknownFileTypeResult.new(file: absolute_file)])
+        return ProcessedFile.new(offenses: [UnknownFileTypeResult.new(file: relative_file)])
       end
 
-      unresolved_references = @cache.with_cache(absolute_file) do
-        node = parse_into_ast(absolute_file, parser)
+      unresolved_references = @cache.with_cache(relative_file) do
+        node = parse_into_ast(relative_file, parser)
         return ProcessedFile.new unless node
 
-        references_from_ast(node, absolute_file)
+        references_from_ast(node, relative_file)
       end
 
       ProcessedFile.new(unresolved_references: unresolved_references)
@@ -58,22 +58,22 @@ module Packwerk
     private
 
     sig do
-      params(node: Parser::AST::Node, absolute_file: String).returns(T::Array[UnresolvedReference])
+      params(node: Parser::AST::Node, relative_file: String).returns(T::Array[UnresolvedReference])
     end
-    def references_from_ast(node, absolute_file)
+    def references_from_ast(node, relative_file)
       references = []
 
-      node_processor = @node_processor_factory.for(absolute_file: absolute_file, node: node)
+      node_processor = @node_processor_factory.for(relative_file: relative_file, node: node)
       node_visitor = Packwerk::NodeVisitor.new(node_processor: node_processor)
       node_visitor.visit(node, ancestors: [], result: references)
 
       references
     end
 
-    sig { params(absolute_file: String, parser: Parsers::ParserInterface).returns(T.untyped) }
-    def parse_into_ast(absolute_file, parser)
-      File.open(absolute_file, "r", nil, external_encoding: Encoding::UTF_8) do |file|
-        parser.call(io: file, file_path: absolute_file)
+    sig { params(relative_file: String, parser: Parsers::ParserInterface).returns(T.untyped) }
+    def parse_into_ast(relative_file, parser)
+      File.open(relative_file, "r", nil, external_encoding: Encoding::UTF_8) do |file|
+        parser.call(io: file, file_path: relative_file)
       end
     end
 
