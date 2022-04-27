@@ -127,7 +127,7 @@ module Packwerk
           ["hi i am a custom offense formatter", *offenses].join("\n")
         end
 
-        def show_stale_violations(_offense_collection)
+        def show_stale_violations(_offense_collection, _fileset)
           "stale violations report"
         end
       end

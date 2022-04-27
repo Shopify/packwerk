@@ -36,29 +36,43 @@ module Packwerk
     sig { params(reference: Packwerk::Reference, violation_type: Packwerk::ViolationType).returns(T::Boolean) }
     def add_entries(reference, violation_type)
       package_violations = @new_entries.fetch(reference.constant.package.name, {})
-      entries_for_file = package_violations[reference.constant.name] ||= {}
+      entries_for_constant = package_violations[reference.constant.name] ||= {}
 
-      entries_for_file["violations"] ||= []
-      entries_for_file["violations"] << violation_type.serialize
+      entries_for_constant["violations"] ||= []
+      entries_for_constant["violations"] << violation_type.serialize
 
-      entries_for_file["files"] ||= []
-      entries_for_file["files"] << reference.relative_path.to_s
+      entries_for_constant["files"] ||= []
+      entries_for_constant["files"] << reference.relative_path.to_s
 
       @new_entries[reference.constant.package.name] = package_violations
       listed?(reference, violation_type: violation_type)
     end
 
-    sig { returns(T::Boolean) }
-    def stale_violations?
+    sig { params(for_files: T::Set[String]).returns(T::Boolean) }
+    def stale_violations?(for_files)
       prepare_entries_for_dump
+
       deprecated_references.any? do |package, package_violations|
-        package_violations.any? do |constant_name, entries_for_file|
+        package_violations_for_files = {}
+        package_violations.each do |constant_name, entries_for_constant|
+          entries_for_files = for_files & entries_for_constant["files"]
+          next if entries_for_files.none?
+
+          package_violations_for_files[constant_name] = {
+            "violations" => entries_for_constant["violations"],
+            "files" => entries_for_files.to_a,
+          }
+        end
+
+        return true if package_violations_for_files.empty?
+
+        package_violations_for_files.any? do |constant_name, entries_for_constant|
           new_entries_violation_types = @new_entries.dig(package, constant_name, "violations")
           return true if new_entries_violation_types.nil?
 
-          if entries_for_file["violations"].all? { |type| new_entries_violation_types.include?(type) }
+          if entries_for_constant["violations"].all? { |type| new_entries_violation_types.include?(type) }
             stale_violations =
-              entries_for_file["files"] - Array(@new_entries.dig(package, constant_name, "files"))
+              entries_for_constant["files"] - Array(@new_entries.dig(package, constant_name, "files"))
             stale_violations.any?
           else
             return true
@@ -93,9 +107,9 @@ module Packwerk
     sig { returns(ENTRIES_TYPE) }
     def prepare_entries_for_dump
       @new_entries.each do |package_name, package_violations|
-        package_violations.each do |_, entries_for_file|
-          entries_for_file["violations"].sort!.uniq!
-          entries_for_file["files"].sort!.uniq!
+        package_violations.each do |_, entries_for_constant|
+          entries_for_constant["violations"].sort!.uniq!
+          entries_for_constant["files"].sort!.uniq!
         end
         @new_entries[package_name] = package_violations.sort.to_h
       end

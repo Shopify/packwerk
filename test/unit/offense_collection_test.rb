@@ -31,7 +31,7 @@ module Packwerk
         .expects(:stale_violations?)
         .returns(true)
 
-      assert_predicate @offense_collection, :stale_violations?
+      assert @offense_collection.stale_violations?(Set.new)
     end
 
     test "#stale_violations? returns false if no stale violations" do
@@ -41,7 +41,7 @@ module Packwerk
         .expects(:stale_violations?)
         .returns(false)
 
-      refute_predicate @offense_collection, :stale_violations?
+      refute @offense_collection.stale_violations?(Set.new)
     end
 
     test "#listed? returns true if constant is listed in file" do

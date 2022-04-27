@@ -50,9 +50,11 @@ module Packwerk
       end
     end
 
-    sig { returns(T::Boolean) }
-    def stale_violations?
-      @deprecated_references.values.any?(&:stale_violations?)
+    sig { params(for_files: T::Set[String]).returns(T::Boolean) }
+    def stale_violations?(for_files)
+      @deprecated_references.values.any? do |deprecated_references|
+        deprecated_references.stale_violations?(for_files)
+      end
     end
 
     sig { void }
