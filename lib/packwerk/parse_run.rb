@@ -15,18 +15,18 @@ module Packwerk
     sig do
       params(
         relative_file_set: FilesForProcessing::RelativeFileSet,
-        configuration: Configuration,
+        run_context: RunContext,
         progress_formatter: Formatters::ProgressFormatter,
         offenses_formatter: OffensesFormatter,
       ).void
     end
     def initialize(
       relative_file_set:,
-      configuration:,
+      run_context:,
       progress_formatter: Formatters::ProgressFormatter.new(StringIO.new),
       offenses_formatter: Formatters::OffensesFormatter.new
     )
-      @configuration = configuration
+      @run_context = run_context
       @progress_formatter = progress_formatter
       @offenses_formatter = offenses_formatter
       @relative_file_set = relative_file_set
@@ -72,21 +72,19 @@ module Packwerk
 
     sig { params(show_errors: T::Boolean).returns(OffenseCollection) }
     def find_offenses(show_errors: false)
-      offense_collection = OffenseCollection.new(@configuration.root_path)
+      offense_collection = OffenseCollection.new(@run_context)
       @progress_formatter.started(@relative_file_set)
-
-      run_context = Packwerk::RunContext.from_configuration(@configuration)
       all_offenses = T.let([], T::Array[Offense])
 
       process_file = T.let(-> (relative_file) do
-        run_context.process_file(relative_file: relative_file).tap do |offenses|
+        @run_context.process_file(relative_file: relative_file).tap do |offenses|
           failed = show_errors && offenses.any? { |offense| !offense_collection.listed?(offense) }
           update_progress(failed: failed)
         end
       end, ProcessFileProc)
 
       execution_time = Benchmark.realtime do
-        all_offenses = if @configuration.parallel?
+        all_offenses = if @run_context.parallel?
           Parallel.flat_map(@relative_file_set, &process_file)
         else
           serial_find_offenses(&process_file)

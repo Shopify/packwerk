@@ -191,7 +191,7 @@ module Packwerk
 
       ParseRun.new(
         relative_file_set: fetch_files_to_process(relative_file_paths, ignore_nested_packages),
-        configuration: @configuration,
+        run_context: RunContext.from_configuration(@configuration),
         progress_formatter: @progress_formatter,
         offenses_formatter: @offenses_formatter
       )

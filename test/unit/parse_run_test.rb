@@ -18,11 +18,12 @@ module Packwerk
     test "#detect_stale_violations returns expected Result when stale violations present" do
       use_template(:minimal)
       OffenseCollection.any_instance.stubs(:stale_violations?).returns(true)
-      RunContext.any_instance.stubs(:process_file).returns([])
+      run_context = RunContext.from_configuration(Configuration.from_path)
+      run_context.stubs(:process_file).returns([])
 
       parse_run = Packwerk::ParseRun.new(
         relative_file_set: Set.new(["path/of/exile.rb"]),
-        configuration: Configuration.from_path
+        run_context: run_context
       )
       result = parse_run.detect_stale_violations
       assert_equal "There were stale violations found, please run `packwerk update-deprecations`", result.message
@@ -31,12 +32,13 @@ module Packwerk
 
     test "#update_deprecations returns success when there are no offenses" do
       use_template(:minimal)
-      RunContext.any_instance.stubs(:process_file).returns([])
+      run_context = RunContext.from_configuration(Configuration.from_path)
+      run_context.stubs(:process_file).returns([])
       OffenseCollection.any_instance.expects(:dump_deprecated_references_files).once
 
       parse_run = Packwerk::ParseRun.new(
         relative_file_set: Set.new(["path/of/exile.rb"]),
-        configuration: Configuration.from_path
+        run_context: run_context
       )
       result = parse_run.update_deprecations
 
@@ -47,15 +49,31 @@ module Packwerk
       assert result.status
     end
 
+    test "#update_deprecations deletes existing deprecated_references files when all reference violations are resolved" do
+      use_template(:minimal)
+      File.write(to_app_path("deprecated_references.yml"), "fake deprecated references data")
+      assert File.exist?(to_app_path("deprecated_references.yml"))
+
+      RunContext.any_instance.stubs(:process_file).returns([])
+      parse_run = Packwerk::ParseRun.new(
+        relative_file_set: Set.new(["path/of/exile.rb"]),
+        run_context: RunContext.from_configuration(Configuration.from_path)
+      )
+      parse_run.update_deprecations
+
+      refute File.exist?(to_app_path("deprecated_references.yml"))
+    end
+
     test "#update_deprecations returns exit code 1 when there are offenses" do
       use_template(:minimal)
       offense = Offense.new(file: "path/of/exile.rb", message: "something")
-      RunContext.any_instance.stubs(:process_file).returns([offense])
+      run_context = RunContext.from_configuration(Configuration.from_path)
+      run_context.stubs(:process_file).returns([offense])
       OffenseCollection.any_instance.expects(:dump_deprecated_references_files).once
 
       parse_run = Packwerk::ParseRun.new(
         relative_file_set: Set.new(["path/of/exile.rb"]),
-        configuration: Configuration.from_path
+        run_context: run_context
       )
       result = parse_run.update_deprecations
 
@@ -73,15 +91,22 @@ module Packwerk
 
     test "#check only reports error progress for unlisted violations" do
       use_template(:minimal)
-      offense = ReferenceOffense.new(reference: build_reference, violation_type: ViolationType::Privacy)
+      run_context = RunContext.from_configuration(Configuration.new({ "parallel" => false }))
+      package = run_context.package_set.first
+
+      offense = ReferenceOffense.new(
+        reference: build_reference(source_package: package),
+        violation_type: ViolationType::Privacy
+      )
+      run_context.stubs(:process_file).returns([offense])
+
       DeprecatedReferences.any_instance.stubs(:listed?).returns(true)
       out = StringIO.new
       parse_run = Packwerk::ParseRun.new(
         relative_file_set: Set.new(["some/path.rb"]),
-        configuration: Configuration.new({ "parallel" => false }),
+        run_context: run_context,
         progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
       )
-      RunContext.any_instance.stubs(:process_file).returns([offense])
       result = parse_run.check
 
       expected_output = <<~EOS
@@ -101,16 +126,15 @@ module Packwerk
 
     test "#check result has failure status when stale violations exist" do
       use_template(:minimal)
-      offense = ReferenceOffense.new(reference: build_reference, violation_type: ViolationType::Privacy)
       DeprecatedReferences.any_instance.stubs(:listed?).returns(true)
       OffenseCollection.any_instance.stubs(:stale_violations?).returns(true)
+      run_context = RunContext.from_configuration(Configuration.new({ "parallel" => false }))
       out = StringIO.new
       parse_run = Packwerk::ParseRun.new(
-        relative_file_set: Set.new(["some/path.rb"]),
-        configuration: Configuration.new({ "parallel" => false }),
+        relative_file_set: Set.new(["components/sales/app/models/order.rb"]),
+        run_context: run_context,
         progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
       )
-      RunContext.any_instance.stubs(:process_file).returns([offense])
       result = parse_run.check
 
       expected_output = <<~EOS
@@ -131,17 +155,23 @@ module Packwerk
 
     test "runs in parallel" do
       use_template(:minimal)
-      offense = ReferenceOffense.new(reference: build_reference, violation_type: ViolationType::Privacy)
-      offense2 = ReferenceOffense.new(
-        reference: build_reference(path: "some/other_path.rb"),
+      run_context = RunContext.from_configuration(Configuration.new)
+      package = run_context.package_set.first
+      offense = ReferenceOffense.new(
+        reference: build_reference(source_package: package),
         violation_type: ViolationType::Privacy
       )
-      parse_run = Packwerk::ParseRun.new(
-        relative_file_set: Set.new(["some/path.rb", "some/other_path.rb"]),
-        configuration: Configuration.new
+      offense2 = ReferenceOffense.new(
+        reference: build_reference(path: "components/sales/app/models/order.rb", source_package: package),
+        violation_type: ViolationType::Privacy
       )
-      RunContext.any_instance.stubs(:process_file).returns([offense]).returns([offense2])
+      file_set = Set.new([
+        "components/sales/app/models/order.rb",
+        "components/sales/app/models/sales/order.rb",
+      ])
+      run_context.stubs(:process_file).returns([offense]).returns([offense2])
 
+      parse_run = Packwerk::ParseRun.new(relative_file_set: file_set, run_context: run_context)
       result = parse_run.check
       refute result.status
       assert_match(/2 offenses detected/, result.message)

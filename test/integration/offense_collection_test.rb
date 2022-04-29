@@ -12,8 +12,10 @@ module Packwerk
 
       setup do
         setup_application_fixture
-        use_template(:blank)
-        @offense_collection = OffenseCollection.new(app_dir)
+        use_template(:minimal)
+
+        run_context = RunContext.from_configuration(Configuration.new)
+        @offense_collection = OffenseCollection.new(run_context)
       end
 
       teardown do

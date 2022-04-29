@@ -31,6 +31,7 @@ module Packwerk
           cache_enabled: configuration.cache_enabled?,
           cache_directory: configuration.cache_directory,
           config_path: configuration.config_path,
+          parallel: configuration.parallel?
         )
       end
     end
@@ -46,6 +47,7 @@ module Packwerk
         custom_associations: AssociationInspector::CustomAssociations,
         checkers: T::Array[ReferenceChecking::Checkers::Checker],
         cache_enabled: T::Boolean,
+        parallel: T::Boolean,
       ).void
     end
     def initialize(
@@ -57,7 +59,8 @@ module Packwerk
       package_paths: nil,
       custom_associations: [],
       checkers: DEFAULT_CHECKERS,
-      cache_enabled: false
+      cache_enabled: false,
+      parallel: true
     )
       @root_path = root_path
       @load_paths = load_paths
@@ -68,6 +71,7 @@ module Packwerk
       @cache_enabled = cache_enabled
       @cache_directory = cache_directory
       @config_path = config_path
+      @parallel = parallel
 
       @file_processor = T.let(nil, T.nilable(FileProcessor))
       @context_provider = T.let(nil, T.nilable(ConstantDiscovery))
@@ -89,6 +93,19 @@ module Packwerk
 
       processed_file.offenses + references.flat_map { |reference| reference_checker.call(reference) }
     end
+
+    sig { returns(PackageSet) }
+    def package_set
+      ::Packwerk::PackageSet.load_all_from(@root_path, package_pathspec: @package_paths)
+    end
+
+    sig { returns(T::Boolean) }
+    def parallel?
+      @parallel
+    end
+
+    sig { returns(String) }
+    attr_reader :root_path
 
     private
 
@@ -121,11 +138,6 @@ module Packwerk
         load_paths: @load_paths,
         inflector: @inflector,
       )
-    end
-
-    sig { returns(PackageSet) }
-    def package_set
-      ::Packwerk::PackageSet.load_all_from(@root_path, package_pathspec: @package_paths)
     end
 
     sig { returns(T::Array[ConstantNameInspector]) }

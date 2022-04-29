@@ -22,6 +22,7 @@ module Packwerk
   autoload :ConstantNameInspector
   autoload :ConstNodeInspector
   autoload :DeprecatedReferences
+  autoload :Error
   autoload :FileProcessor
   autoload :FilesForProcessing
   autoload :Graph

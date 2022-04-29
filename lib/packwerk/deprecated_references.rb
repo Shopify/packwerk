@@ -11,6 +11,16 @@ module Packwerk
       T::Hash[String, T.untyped]
     end
 
+    class << self
+      extend T::Sig
+
+      sig { params(package: Packwerk::Package, root_path: String).returns(Packwerk::DeprecatedReferences) }
+      def for(package:, root_path:)
+        file_path = File.join(root_path, package.name, "deprecated_references.yml")
+        new(package, file_path)
+      end
+    end
+
     sig { params(package: Packwerk::Package, filepath: String).void }
     def initialize(package, filepath)
       @package = package

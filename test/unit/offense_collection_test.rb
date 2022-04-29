@@ -6,10 +6,14 @@ require "test_helper"
 module Packwerk
   class OffenseCollectionTest < Minitest::Test
     include FactoryHelper
+    include TypedMock
 
     setup do
-      @offense_collection = OffenseCollection.new(".")
       @offense = ReferenceOffense.new(reference: build_reference, violation_type: ViolationType::Dependency)
+      @run_context = typed_mock
+      @run_context.stubs(:package_set).returns(Packwerk::PackageSet.new([@offense.reference.source_package]))
+      @run_context.stubs(:root_path).returns(".")
+      @offense_collection = OffenseCollection.new(@run_context)
     end
 
     test "#add_violation adds entry and returns true" do
@@ -41,20 +45,20 @@ module Packwerk
     end
 
     test "#listed? returns true if constant is listed in file" do
-      package = Package.new(name: "buyer", config: {})
+      package = @offense.reference.source_package
       reference = build_reference(source_package: package)
       deprecated_references = Packwerk::DeprecatedReferences.new(package, ".")
       deprecated_references
         .stubs(:listed?)
         .with(reference, violation_type: Packwerk::ViolationType::Dependency)
         .returns(true)
-      Packwerk::DeprecatedReferences
-        .stubs(:new)
-        .with(package, "./buyer/deprecated_references.yml")
-        .returns(deprecated_references)
+      Packwerk::DeprecatedReferences.stubs(:for).returns(deprecated_references)
 
+      # reinstantiate so that above stubs take effect
+      offense_collection = OffenseCollection.new(@run_context)
       offense = Packwerk::ReferenceOffense.new(reference: reference, violation_type: ViolationType::Dependency)
-      assert @offense_collection.listed?(offense)
+
+      assert offense_collection.listed?(offense)
     end
 
     test "#listed? returns false if constant is not listed in file " do

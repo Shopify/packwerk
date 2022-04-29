@@ -6,15 +6,11 @@ module Packwerk
     extend T::Sig
     extend T::Helpers
 
-    sig do
-      params(
-        root_path: String,
-        deprecated_references: T::Hash[Packwerk::Package, Packwerk::DeprecatedReferences]
-      ).void
-    end
-    def initialize(root_path, deprecated_references = {})
-      @root_path = root_path
-      @deprecated_references = T.let(deprecated_references, T::Hash[Packwerk::Package, Packwerk::DeprecatedReferences])
+    DepRefDictionary = T.type_alias { T::Hash[Packwerk::Package, Packwerk::DeprecatedReferences] }
+
+    sig { params(run_context: RunContext).void }
+    def initialize(run_context)
+      @dep_refs_dictionary = T.let(build_deprecated_references(run_context), DepRefDictionary)
       @new_violations = T.let([], T::Array[Packwerk::ReferenceOffense])
       @errors = T.let([], T::Array[Packwerk::Offense])
     end
@@ -51,12 +47,12 @@ module Packwerk
 
     sig { returns(T::Boolean) }
     def stale_violations?
-      @deprecated_references.values.any?(&:stale_violations?)
+      @dep_refs_dictionary.values.any?(&:stale_violations?)
     end
 
     sig { void }
     def dump_deprecated_references_files
-      @deprecated_references.each do |_, deprecated_references_file|
+      @dep_refs_dictionary.each do |_, deprecated_references_file|
         deprecated_references_file.dump
       end
     end
@@ -68,17 +64,22 @@ module Packwerk
 
     private
 
-    sig { params(package: Packwerk::Package).returns(Packwerk::DeprecatedReferences) }
-    def deprecated_references_for(package)
-      @deprecated_references[package] ||= Packwerk::DeprecatedReferences.new(
-        package,
-        deprecated_references_file_for(package),
-      )
+    sig { params(run_context: Packwerk::RunContext).returns(DepRefDictionary) }
+    def build_deprecated_references(run_context)
+      run_context.package_set.each_with_object({}) do |package, deprecated_references|
+        deprecated_references[package] = Packwerk::DeprecatedReferences.for(
+          package: package,
+          root_path: run_context.root_path
+        )
+      end
     end
 
-    sig { params(package: Packwerk::Package).returns(String) }
-    def deprecated_references_file_for(package)
-      File.join(@root_path, package.name, "deprecated_references.yml")
+    sig { params(package: Packwerk::Package).returns(Packwerk::DeprecatedReferences) }
+    def deprecated_references_for(package)
+      deprecated_references = @dep_refs_dictionary[package]
+      raise Packwerk::Error, "Reference belongs to unknown package!" if deprecated_references.nil?
+
+      deprecated_references
     end
   end
 end
