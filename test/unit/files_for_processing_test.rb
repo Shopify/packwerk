@@ -76,6 +76,19 @@ module Packwerk
       refute_any_match(files, Set.new([File.join(@configuration.root_path, "components/timeline", "**/*.rb")]))
     end
 
+    test "fetch with custom paths for files includes only include glob in custom paths" do
+      files = ::Packwerk::FilesForProcessing.fetch(
+        relative_file_paths: [
+          "components/sales/app/models/order.rb",
+          "components/sales/app/views/order.html.erb",
+        ],
+        configuration: @configuration
+      )
+      included_file_patterns = @configuration.include.map { |pattern| File.join(@configuration.root_path, pattern) }
+
+      assert_all_match(files, included_file_patterns)
+    end
+
     private
 
     def assert_all_match(files, patterns)

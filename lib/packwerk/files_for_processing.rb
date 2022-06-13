@@ -41,7 +41,7 @@ module Packwerk
       include_files = if custom_files.empty?
         configured_included_files
       else
-        custom_files
+        configured_included_files & custom_files
       end
 
       include_files - configured_excluded_files
