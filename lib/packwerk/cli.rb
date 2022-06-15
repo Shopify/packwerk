@@ -67,7 +67,6 @@ module Packwerk
           Subcommands:
             init - set up packwerk
             check - run all checks
-            update - update deprecated references (deprecated, use update-deprecations instead)
             update-deprecations - update deprecated references
             validate - verify integrity of packwerk and package configuration
             help  - display help information about packwerk
