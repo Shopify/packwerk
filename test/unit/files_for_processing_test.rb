@@ -84,7 +84,8 @@ module Packwerk
         ],
         configuration: @configuration
       )
-      included_file_patterns = @configuration.include.map { |pattern| File.join(@configuration.root_path, pattern) }
+
+      included_file_patterns = @configuration.include
 
       assert_all_match(files, included_file_patterns)
     end
