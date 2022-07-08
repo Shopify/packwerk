@@ -12,9 +12,9 @@ module Packwerk
     interface!
 
     sig do
-      params(node: ::AST::Node, ancestors: T::Array[::AST::Node])
+      abstract
+        .params(node: ::AST::Node, ancestors: T::Array[::AST::Node])
         .returns(T.nilable(String))
-        .abstract
     end
     def constant_name_from_node(node, ancestors:); end
   end

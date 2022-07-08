@@ -1,5 +1,5 @@
-# frozen_string_literal: true
 # typed: strict
+# frozen_string_literal: true
 
 require "digest"
 
@@ -71,7 +71,7 @@ module Packwerk
       ).returns(T::Array[UnresolvedReference])
     end
     def with_cache(file_path, &block)
-      return block.call unless @enable_cache
+      return yield unless @enable_cache
 
       cache_location = @cache_directory.join(digest_for_string(file_path))
 
@@ -89,7 +89,7 @@ module Packwerk
       else
         Debug.out("Cache miss for #{file_path}")
 
-        unresolved_references = block.call
+        unresolved_references = yield
 
         cache_contents = CacheContents.new(
           file_contents_digest: file_contents_digest,
@@ -116,6 +116,7 @@ module Packwerk
     sig { void }
     def bust_cache_if_packwerk_yml_has_changed!
       return nil if @config_path.nil?
+
       bust_cache_if_contents_have_changed(File.read(@config_path), :packwerk_yml)
     end
 

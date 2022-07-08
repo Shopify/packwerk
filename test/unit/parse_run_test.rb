@@ -1,5 +1,6 @@
 # typed: true
 # frozen_string_literal: true
+
 require "test_helper"
 require "rails_test_helper"
 

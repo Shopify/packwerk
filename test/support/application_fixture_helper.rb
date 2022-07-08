@@ -20,6 +20,7 @@ module ApplicationFixtureHelper
 
   def use_template(template)
     raise "use_template may only be called once per test" if using_template?
+
     copy_dir("test/fixtures/#{template}")
     Dir.chdir(app_dir)
   end
@@ -53,9 +54,9 @@ module ApplicationFixtureHelper
     FileUtils.remove_entry(to_app_path(relative_path))
   end
 
-  def open_app_file(path, mode: "w+")
+  def open_app_file(path, mode: "w+", &block)
     expanded_path = to_app_path(File.join(path))
-    File.open(expanded_path, mode) { |file| yield file }
+    File.open(expanded_path, mode, &block)
   end
 
   private

@@ -1,9 +1,10 @@
-# typed: ignore
+# typed: true
 # frozen_string_literal: true
 
 require "test_helper"
 
-Object.const_set(:Business, Module.new)
+module Business
+end
 
 module Packwerk
   class ConstantDiscoveryTest < Minitest::Test

@@ -59,6 +59,7 @@ module Packwerk
       sig { params(packages: T::Array[Package]).void }
       def create_root_package_if_none_in(packages)
         return if packages.any?(&:root?)
+
         packages << Package.new(name: Package::ROOT_PACKAGE_NAME, config: nil)
       end
 

@@ -18,8 +18,8 @@ module RailsApplicationFixtureHelper
     attr_reader :main, :once
 
     def each(&block)
-      block.call(main)
-      block.call(once)
+      yield(main)
+      yield(once)
     end
 
     def zeitwerk_enabled?

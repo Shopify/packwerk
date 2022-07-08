@@ -14,6 +14,7 @@ module Packwerk
     end
     def constant_name_from_node(node, ancestors:)
       return nil unless Node.constant?(node)
+
       parent = ancestors.first
 
       # Only process the root `const` node for namespaced constant references. For example, in the

@@ -23,6 +23,7 @@ module Packwerk
           return false unless reference.source_package
           return false unless reference.source_package.enforce_dependencies?
           return false if reference.source_package.dependency?(reference.constant.package)
+
           true
         end
 

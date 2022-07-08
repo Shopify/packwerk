@@ -13,6 +13,7 @@ module Packwerk
 
     sig { returns(String) }
     attr_reader :name
+
     sig { returns(T::Array[String]) }
     attr_reader :dependencies
 
@@ -42,6 +43,7 @@ module Packwerk
     sig { params(path: String).returns(T::Boolean) }
     def package_path?(path)
       return true if root?
+
       path.start_with?(@name)
     end
 
@@ -74,6 +76,7 @@ module Packwerk
     sig { params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
       return nil unless other.is_a?(self.class)
+
       name <=> other.name
     end
 

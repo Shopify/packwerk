@@ -19,6 +19,7 @@ module Packwerk
       def call(reference)
         @checkers.each_with_object([]) do |checker, violations|
           next unless checker.invalid_reference?(reference)
+
           offense = Packwerk::ReferenceOffense.new(
             location: reference.source_location,
             reference: reference,

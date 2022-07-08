@@ -115,7 +115,7 @@ module Packwerk
 
     test "check_package_manifests_for_privacy returns an error for constants without `::` prefix" do
       use_template(:minimal)
-      merge_into_app_yaml_file("package.yml", { "enforce_privacy" => %w[::PrivateThing OtherThing] })
+      merge_into_app_yaml_file("package.yml", { "enforce_privacy" => ["::PrivateThing", "OtherThing"] })
 
       result = validator.check_package_manifests_for_privacy
 

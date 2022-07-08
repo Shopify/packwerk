@@ -31,6 +31,7 @@ module Packwerk
     end
     def listed?(offense)
       return false unless offense.is_a?(ReferenceOffense)
+
       reference = offense.reference
       deprecated_references_for(reference.source_package).listed?(reference, violation_type: offense.violation_type)
     end
