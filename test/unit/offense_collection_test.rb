@@ -9,7 +9,11 @@ module Packwerk
 
     setup do
       @offense_collection = OffenseCollection.new(".")
-      @offense = ReferenceOffense.new(reference: build_reference, violation_type: ViolationType::Dependency)
+      @offense = ReferenceOffense.new(
+        reference: build_reference,
+        violation_type: ViolationType::Dependency,
+        message: "some message"
+      )
     end
 
     test "#add_violation adds entry and returns true" do
@@ -53,12 +57,22 @@ module Packwerk
         .with(package, "./buyer/deprecated_references.yml")
         .returns(deprecated_references)
 
-      offense = Packwerk::ReferenceOffense.new(reference: reference, violation_type: ViolationType::Dependency)
+      offense = Packwerk::ReferenceOffense.new(
+        reference: reference,
+        violation_type: ViolationType::Dependency,
+        message: "some message"
+      )
+
       assert @offense_collection.listed?(offense)
     end
 
     test "#listed? returns false if constant is not listed in file " do
-      offense = Packwerk::ReferenceOffense.new(reference: build_reference, violation_type: ViolationType::Dependency)
+      offense = Packwerk::ReferenceOffense.new(
+        reference: build_reference,
+        violation_type: ViolationType::Dependency,
+        message: "some message"
+      )
+
       refute @offense_collection.listed?(offense)
     end
   end

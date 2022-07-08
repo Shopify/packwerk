@@ -22,7 +22,8 @@ module Packwerk
           offense = Packwerk::ReferenceOffense.new(
             location: reference.source_location,
             reference: reference,
-            violation_type: checker.violation_type
+            violation_type: checker.violation_type,
+            message: checker.message(reference)
           )
           violations << offense
         end

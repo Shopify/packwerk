@@ -25,6 +25,21 @@ module Packwerk
           return false if reference.source_package.dependency?(reference.constant.package)
           true
         end
+
+        sig do
+          override
+            .params(reference: Packwerk::Reference)
+            .returns(String)
+        end
+        def message(reference)
+          <<~EOS
+            Dependency violation: #{reference.constant.name} belongs to '#{reference.constant.package}', but '#{reference.source_package}' does not specify a dependency on '#{reference.constant.package}'.
+            Are we missing an abstraction?
+            Is the code making the reference, and the referenced constant, in the right packages?
+
+            #{standard_help_message(reference)}
+          EOS
+        end
       end
     end
   end

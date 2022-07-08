@@ -31,6 +31,24 @@ module Packwerk
           true
         end
 
+        sig do
+          override
+            .params(reference: Packwerk::Reference)
+            .returns(String)
+        end
+        def message(reference)
+          source_desc = "'#{reference.source_package}'"
+
+          message = <<~EOS
+            Privacy violation: '#{reference.constant.name}' is private to '#{reference.constant.package}' but referenced from #{source_desc}.
+            Is there a public entrypoint in '#{reference.constant.package.public_path}' that you can use instead?
+
+            #{standard_help_message(reference)}
+          EOS
+
+          message.chomp
+        end
+
         private
 
         sig do

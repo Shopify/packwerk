@@ -26,6 +26,7 @@ module Packwerk
             constant_name: "::Foo",
             source_package: Package.new(name: ".", config: nil)
           ),
+          message: "some message",
           violation_type: ViolationType::Dependency
         )
         offense2 = ReferenceOffense.new(
@@ -33,6 +34,7 @@ module Packwerk
             constant_name: "::Bar",
             source_package: Package.new(name: ".", config: nil)
           ),
+          message: "some message",
           violation_type: ViolationType::Dependency
         )
         @offense_collection.add_offense(offense1)
