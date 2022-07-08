@@ -50,7 +50,7 @@ module Packwerk
       end
 
       def code_nodes(node, &block)
-        return enum_for(:code_nodes, node) unless block_given?
+        return enum_for(:code_nodes, node) unless block
         return unless node.is_a?(::AST::Node)
 
         yield node if node.type == :code
