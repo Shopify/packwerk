@@ -10,13 +10,13 @@ module Packwerk
 
         abstract!
 
-        sig { returns(ViolationType).abstract }
+        sig { abstract.returns(ViolationType) }
         def violation_type; end
 
-        sig { params(reference: Reference).returns(T::Boolean).abstract }
+        sig { abstract.params(reference: Reference).returns(T::Boolean) }
         def invalid_reference?(reference); end
 
-        sig { params(reference: Reference).returns(String).abstract }
+        sig { abstract.params(reference: Reference).returns(String) }
         def message(reference); end
 
         sig { params(reference: Reference).returns(String) }
