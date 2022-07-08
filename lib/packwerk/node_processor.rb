@@ -25,6 +25,7 @@ module Packwerk
     end
     def call(node, ancestors)
       return unless Node.method_call?(node) || Node.constant?(node)
+
       @reference_extractor.reference_from_node(node, ancestors: ancestors, relative_file: @relative_file)
     end
   end

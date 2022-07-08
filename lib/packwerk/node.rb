@@ -196,6 +196,7 @@ module Packwerk
 
       def value_from_hash(hash_node, key)
         raise TypeError unless hash?(hash_node)
+
         pair = hash_pairs(hash_node).detect { |pair_node| literal_value(hash_pair_key(pair_node)) == key }
         hash_pair_value(pair) if pair
       end

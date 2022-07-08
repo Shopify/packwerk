@@ -78,7 +78,7 @@ module Packwerk
       run_context = Packwerk::RunContext.from_configuration(@configuration)
       all_offenses = T.let([], T::Array[Offense])
 
-      process_file = T.let(-> (relative_file) do
+      process_file = T.let(->(relative_file) do
         run_context.process_file(relative_file: relative_file).tap do |offenses|
           failed = show_errors && offenses.any? { |offense| !offense_collection.listed?(offense) }
           update_progress(failed: failed)
@@ -104,7 +104,7 @@ module Packwerk
       all_offenses = T.let([], T::Array[Offense])
       begin
         @relative_file_set.each do |relative_file|
-          offenses = block.call(relative_file)
+          offenses = yield(relative_file)
           all_offenses.concat(offenses)
         end
       rescue Interrupt

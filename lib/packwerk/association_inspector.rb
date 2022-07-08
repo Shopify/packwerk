@@ -10,12 +10,12 @@ module Packwerk
     CustomAssociations = T.type_alias { T.any(T::Array[Symbol], T::Set[Symbol]) }
 
     RAILS_ASSOCIATIONS = T.let(
-      %i(
-        belongs_to
-        has_many
-        has_one
-        has_and_belongs_to_many
-      ).to_set,
+      [
+        :belongs_to,
+        :has_many,
+        :has_one,
+        :has_and_belongs_to_many,
+      ].to_set,
       CustomAssociations
     )
 
@@ -39,6 +39,7 @@ module Packwerk
 
       if (class_name_node = custom_class_name(arguments))
         return unless Node.string?(class_name_node)
+
         Node.literal_value(class_name_node)
       else
         @inflector.classify(association_name.to_s)

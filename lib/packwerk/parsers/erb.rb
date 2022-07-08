@@ -49,7 +49,7 @@ module Packwerk
         )
       end
 
-      def code_nodes(node)
+      def code_nodes(node, &block)
         return enum_for(:code_nodes, node) unless block_given?
         return unless node.is_a?(::AST::Node)
 
@@ -62,7 +62,7 @@ module Packwerk
         end
 
         node.children.each do |child|
-          code_nodes(child) { |n| yield n }
+          code_nodes(child, &block)
         end
       end
     end

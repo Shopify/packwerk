@@ -20,10 +20,10 @@ module Packwerk
         @out.puts("📦 Packwerk is inspecting #{files_size} #{files_string}")
       end
 
-      def started_validation
+      def started_validation(&block)
         @out.puts("📦 Packwerk is running validation...")
 
-        execution_time = Benchmark.realtime { yield }
+        execution_time = Benchmark.realtime(&block)
         finished(execution_time)
 
         @out.puts("✅ Packages are valid. Use `packwerk check` to run static checks.")
