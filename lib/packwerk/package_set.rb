@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "pathname"
+require "bundler"
 
 module Packwerk
   PathSpec = T.type_alias { T.any(String, T::Array[String]) }
