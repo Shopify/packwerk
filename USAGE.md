@@ -115,7 +115,7 @@ We recommend setting up the package system validation for your Rails application
 
 Use the following command to validate the application:
 
-    packwerk validate
+    bin/packwerk validate
 
 ![](static/packwerk_validate.gif)
 
