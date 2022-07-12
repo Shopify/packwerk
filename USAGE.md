@@ -204,17 +204,17 @@ It will be a dependency violation when `components/shop_identity` tries to refer
 
 After enforcing the boundary checks for a package, you may execute:
 
-    packwerk check
+    bin/packwerk check
 
 Packwerk will check the entire codebase for any new or stale violations.
 
 You can also specify folders for a shorter run time. When checking against folders all subfolders will be analyzed, irrespective of nested package boundaries.
 
-    packwerk check components/your_package
+    bin/packwerk check components/your_package
 
 You can also specify packages for a shorter run time. When checking against packages any packages nested underneath the specified packages will not be checked. This can be helpful to test packages like the root package, which can have many nested packages.
 
-    packwerk check --packages=components/your_package,components/your_other_package
+    bin/packwerk check --packages=components/your_package,components/your_other_package
 
 ![](static/packwerk_check.gif)
 
