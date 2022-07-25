@@ -36,8 +36,8 @@ module Packwerk
     def detect_stale_violations
       offense_collection = find_offenses
 
-      result_status = !offense_collection.stale_violations?
-      message = @offenses_formatter.show_stale_violations(offense_collection)
+      result_status = !offense_collection.stale_violations?(@relative_file_set)
+      message = @offenses_formatter.show_stale_violations(offense_collection, @relative_file_set)
 
       Result.new(message: message, status: result_status)
     end
@@ -61,9 +61,11 @@ module Packwerk
 
       messages = [
         @offenses_formatter.show_offenses(offense_collection.outstanding_offenses),
-        @offenses_formatter.show_stale_violations(offense_collection),
+        @offenses_formatter.show_stale_violations(offense_collection, @relative_file_set),
       ]
-      result_status = offense_collection.outstanding_offenses.empty? && !offense_collection.stale_violations?
+
+      result_status = offense_collection.outstanding_offenses.empty? &&
+        !offense_collection.stale_violations?(@relative_file_set)
 
       Result.new(message: messages.join("\n") + "\n", status: result_status)
     end

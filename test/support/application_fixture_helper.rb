@@ -59,6 +59,16 @@ module ApplicationFixtureHelper
     File.open(expanded_path, mode, &block)
   end
 
+  # This gets cleaned up by `teardown_application_fixture`
+  def write_app_file(path, content)
+    expanded_path = to_app_path(File.join(*path))
+    FileUtils.mkdir_p(Pathname.new(expanded_path).dirname)
+    File.open(expanded_path, "w+") do |file|
+      file.write(content)
+      file.flush
+    end
+  end
+
   private
 
   def using_template?

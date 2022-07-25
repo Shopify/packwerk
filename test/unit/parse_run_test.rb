@@ -106,6 +106,130 @@ module Packwerk
       assert_equal expected_message, result.message
     end
 
+    test "#check lists stale violations when run on a single file with new violations when the containing package has violations" do
+      use_template(:minimal)
+      file_to_check = "components/source/some/path.rb"
+      other_file = "components/source/some/other/path.rb"
+
+      source_package_name = "components/source"
+      source_package = Packwerk::Package.new(name: "components/source", config: {})
+      destination_package = Packwerk::Package.new(name: "components/destination", config: {})
+      write_app_file("#{source_package_name}/deprecated_references.yml", <<~YML.strip)
+        ---
+        "components/destination":
+          "::SomeName":
+            violations:
+            - privacy
+            files:
+            - #{other_file}
+            - #{file_to_check}
+          "::SomeOtherName":
+            violations:
+            - privacy
+            files:
+            - #{other_file}
+          "::SomeStaleViolation":
+            violations:
+            - privacy
+            files:
+            - #{file_to_check}
+      YML
+
+      reference1 = build_reference(
+        source_package: source_package,
+        destination_package: destination_package,
+        path: file_to_check
+      )
+
+      reference2 = build_reference(
+        source_package: source_package,
+        destination_package: destination_package,
+        path: file_to_check
+      )
+
+      offense1 = ReferenceOffense.new(
+        reference: reference1,
+        message: "some message",
+        violation_type: ViolationType::Privacy
+      )
+
+      offense2 = ReferenceOffense.new(
+        reference: reference2,
+        message: "some message",
+        violation_type: ViolationType::Privacy
+      )
+
+      out = StringIO.new
+      parse_run = Packwerk::ParseRun.new(
+        relative_file_set: Set.new([file_to_check]),
+        configuration: Configuration.new({ "parallel" => false }),
+        progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
+      )
+      RunContext.any_instance.stubs(:process_file).returns([offense1, offense2])
+      result = parse_run.check
+
+      expected_output = <<~EOS
+        📦 Packwerk is inspecting 1 file
+        \\.
+        📦 Finished in \\d+\\.\\d+ seconds
+      EOS
+      assert_match(/#{expected_output}/, out.string)
+
+      expected_message = <<~EOS
+        No offenses detected
+        There were stale violations found, please run `packwerk update-deprecations`
+      EOS
+      assert_equal expected_message, result.message
+
+      refute result.status
+    end
+
+    test "#check does not list stale violations when run on a single file with no violations, even if the containing package has violations" do
+      use_template(:minimal)
+      file_to_check = "components/source/some/path.rb"
+      other_file = "components/source/some/other/path.rb"
+
+      source_package_name = "components/source"
+      write_app_file("#{source_package_name}/deprecated_references.yml", <<~YML.strip)
+        ---
+        "components/destination":
+          "::SomeName":
+            violations:
+            - privacy
+            files:
+            - #{other_file}
+          "::SomeOtherName":
+            violations:
+            - privacy
+            files:
+            - #{other_file}
+      YML
+
+      out = StringIO.new
+      parse_run = Packwerk::ParseRun.new(
+        relative_file_set: Set.new([file_to_check]),
+        configuration: Configuration.new({ "parallel" => false }),
+        progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
+      )
+      RunContext.any_instance.stubs(:process_file).returns([])
+      result = parse_run.check
+
+      expected_output = <<~EOS
+        📦 Packwerk is inspecting 1 file
+        \\.
+        📦 Finished in \\d+\\.\\d+ seconds
+      EOS
+      assert_match(/#{expected_output}/, out.string)
+
+      expected_message = <<~EOS
+        No offenses detected
+        No stale violations detected
+      EOS
+      assert_equal expected_message, result.message
+
+      assert result.status
+    end
+
     test "#check result has failure status when stale violations exist" do
       use_template(:minimal)
       offense = ReferenceOffense.new(

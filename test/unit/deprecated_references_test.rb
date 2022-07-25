@@ -40,13 +40,13 @@ module Packwerk
 
     test "#stale_violations? returns true if deprecated references exist but no violations can be found in code" do
       deprecated_references = DeprecatedReferences.new(destination_package, "test/fixtures/deprecated_references.yml")
-      assert deprecated_references.stale_violations?
+      assert deprecated_references.stale_violations?(Set.new)
     end
 
     test "#stale_violations? returns false if deprecated references does not exist but violations are found in code" do
       deprecated_references = DeprecatedReferences.new(destination_package, "nonexistant_file_path")
       deprecated_references.add_entries(build_reference, ViolationType::Dependency)
-      refute deprecated_references.stale_violations?
+      refute deprecated_references.stale_violations?(Set.new)
     end
 
     test "#stale_violations? returns false if deprecated references violation match violations found in code" do
@@ -66,7 +66,10 @@ module Packwerk
       deprecated_references = DeprecatedReferences.new(package, "test/fixtures/deprecated_references.yml")
       deprecated_references.add_entries(first_violated_reference, Packwerk::ViolationType::Dependency)
       deprecated_references.add_entries(second_violated_reference, Packwerk::ViolationType::Dependency)
-      refute deprecated_references.stale_violations?
+      refute deprecated_references.stale_violations?(Set.new([
+        "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
+        "orders/app/models/orders/services/adjustment_engine.rb",
+      ]))
     end
 
     test "#stale_violations? returns true if dependency deprecated references violation turns into privacy deprecated references violation" do
@@ -86,10 +89,21 @@ module Packwerk
       deprecated_references = DeprecatedReferences.new(package, "test/fixtures/deprecated_references.yml")
       deprecated_references.add_entries(first_violated_reference, Packwerk::ViolationType::Privacy)
       deprecated_references.add_entries(second_violated_reference, Packwerk::ViolationType::Privacy)
-      assert deprecated_references.stale_violations?
+      assert deprecated_references.stale_violations?(Set.new([
+        "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
+        "orders/app/models/orders/services/adjustment_engine.rb",
+      ]))
     end
 
     test "#stale_violations? returns true if violations in deprecated_references.yml exist but are not found when checking for violations" do
+      package = Package.new(name: "buyers", config: { "enforce_dependencies" => true })
+      deprecated_references = DeprecatedReferences.new(package, "test/fixtures/deprecated_references.yml")
+      assert deprecated_references.stale_violations?(
+        Set.new(["orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb"])
+      )
+    end
+
+    test "#stale_violations? returns false if violations in deprecated_references.yml exist but are found when checking for violations" do
       package = Package.new(name: "buyers", config: { "enforce_dependencies" => true })
 
       violated_reference = build_reference(
@@ -99,7 +113,9 @@ module Packwerk
       )
       deprecated_references = DeprecatedReferences.new(package, "test/fixtures/deprecated_references.yml")
       deprecated_references.add_entries(violated_reference, ViolationType::Dependency)
-      assert deprecated_references.stale_violations?
+      refute deprecated_references.stale_violations?(
+        Set.new(["orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb"])
+      )
     end
 
     test "#listed? returns false if constant is not violated" do
