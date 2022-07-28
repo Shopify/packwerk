@@ -226,7 +226,10 @@ See: [TROUBLESHOOT.md - Sample violations](TROUBLESHOOT.md#Sample-violations)
 
 ## Resolving new violations
 ### Understanding how to respond to new violations
-[Check out this flow chart to help you think about and resolve new violations!](docs/new_violation_flow_chart.pdf)
+
+When you have a new dependency or privacy violation, what do you do?
+
+See: [RESOLVING_VIOLATIONS.md](RESOLVING_VIOLATIONS.md)
 
 ## Recording existing violations
 
