@@ -7,14 +7,13 @@ require "rails_test_helper"
 module Packwerk
   module Integration
     class CustomExecutableTest < Minitest::Test
-      include ApplicationFixtureHelper
+      include RailsApplicationFixtureHelper
 
       TIMELINE_PATH = Pathname.new("components/timeline")
 
       setup do
         reset_output
         setup_application_fixture
-        use_template(:skeleton)
       end
 
       teardown do
@@ -22,6 +21,8 @@ module Packwerk
       end
 
       test "'packwerk check' with no violations succeeds in all variants" do
+        use_template(:skeleton)
+
         assert_successful_run("check")
         assert_match(/No offenses detected/, captured_output)
 
@@ -35,6 +36,8 @@ module Packwerk
       end
 
       test "'packwerk check' with violations only in nested packages has different outcomes per variant" do
+        use_template(:skeleton)
+
         open_app_file(TIMELINE_PATH.join("nested", "timeline_comment.rb")) do |file|
           file.write("class TimelineComment; belongs_to :order, class_name: '::Order'; end")
           file.flush
@@ -55,6 +58,8 @@ module Packwerk
       end
 
       test "'packwerk check' with failures in different parts of the app has different outcomes per variant" do
+        use_template(:skeleton)
+  
         open_app_file(TIMELINE_PATH.join("nested", "timeline_comment.rb")) do |file|
           file.write("class TimelineComment; belongs_to :order, class_name: '::Order'; end")
           file.flush
@@ -74,6 +79,8 @@ module Packwerk
       end
 
       test "'packwerk update-deprecations' with no violations succeeds and updates no files" do
+        use_template(:skeleton)
+        
         deprecated_reference_content = read_deprecated_references
 
         assert_successful_run("update-deprecations")
@@ -94,6 +101,8 @@ module Packwerk
       end
 
       test "'packwerk update-deprecations' with violations succeeds and updates relevant deprecated_references" do
+        use_template(:skeleton)
+        
         deprecated_reference_content = read_deprecated_references
         timeline_deprecated_reference_path = to_app_path(File.join(TIMELINE_PATH, "deprecated_references.yml"))
 
@@ -127,6 +136,19 @@ module Packwerk
             "expected no updates to any deprecated references files besides timeline/deprecated_references.yml")
           assert_match(/#{expected_output}/, captured_output)
         end
+      end
+
+      test "'packwerk check' for an app with external packages it detects a violation referencing a constant in the external package" do
+        use_template(:external_packages)
+
+        open_app_file(TIMELINE_PATH.join("nested", "timeline_comment.rb")) do |file|
+          file.write("class TimelineComment; belongs_to :order, class_name: '::Order'; end")
+          file.flush
+        end
+
+        refute_successful_run("check")
+        assert_match(/Privacy violation: '::Order'/, captured_output)
+        assert_match(/1 offense detected/, captured_output)
       end
 
       private

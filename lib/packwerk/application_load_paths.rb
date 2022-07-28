@@ -31,7 +31,6 @@ module Packwerk
       end
       def filter_relevant_paths(all_paths, bundle_path: Bundler.bundle_path, rails_root: Rails.root)
         bundle_path_match = bundle_path.join("**")
-        rails_root_match = rails_root.join("**")
 
         all_paths
           .transform_keys { |path| Pathname.new(path).expand_path }

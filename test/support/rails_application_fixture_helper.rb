@@ -27,6 +27,18 @@ module RailsApplicationFixtureHelper
     end
   end
 
+  class Railties
+    include Enumerable
+
+    def initialize
+      @railties = []
+    end
+   
+    def each(&block)
+      [].each(block)
+    end
+  end
+
   def use_template(template)
     super(template)
 
@@ -41,7 +53,8 @@ module RailsApplicationFixtureHelper
       set_load_paths_for_skeleton_template
     when :external_packages
       set_load_paths_for_external_packages_template
-      root = Pathname.new("#{app_dir}/app")
+      create_new_engine_at_path(*to_app_paths("../sales/components/sales/"))
+      Rails.application.stubs(:railties).returns(Rails::Engine::Railties.new)
     else
       raise "Unknown fixture template #{template}"
     end
@@ -65,8 +78,16 @@ module RailsApplicationFixtureHelper
   end
 
   def set_load_paths_for_external_packages_template
-    Rails.autoloaders.main.push_dir(*to_app_paths("/app/components/platform/app/models"))
+    Rails.autoloaders.main.push_dir(*to_app_paths("/components/timeline/app/models"))
 
-    Rails.autoloaders.once.push_dir(*to_app_paths("/sales/components/sales"))
+    Rails.autoloaders.once.push_dir(*to_app_paths("../sales/components/sales/app/models"))
+  end
+
+  def create_new_engine_at_path(path)
+    Class.new(Rails::Engine) do
+      define_method(:root) do
+        path
+      end
+    end
   end
 end

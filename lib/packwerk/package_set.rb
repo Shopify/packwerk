@@ -46,14 +46,12 @@ module Packwerk
           .push(Bundler.bundle_path.join("**").to_s)
           .map { |glob| File.expand_path(glob) }
 
-        load_paths = Configuration.from_path(root_path).load_paths.keys
-          .map { |path| File.expand_path(path, root_path) }
-          .push(root_path)
-        glob_patterns = load_paths.product(Array(package_pathspec)).map do |path, pathspec|
+        paths_to_scan = engine_paths_to_scan.push(root_path)
+
+        glob_patterns = paths_to_scan.product(Array(package_pathspec)).map do |path, pathspec|
           File.join(path, pathspec, PACKAGE_CONFIG_FILENAME)
         end
 
-        binding.irb
         paths = Dir.glob(glob_patterns)
           .map { |path| Pathname.new(path).cleanpath }
           .reject { |path| exclude_path?(exclude_pathspec, path) }
@@ -62,6 +60,16 @@ module Packwerk
       end
 
       private
+
+      def engine_paths_to_scan
+        bundle_path_match = Bundler.bundle_path.join("**")
+
+        Rails.application.railties
+          .select { |r| r.is_a?(Rails::Engine) }
+          .map { |r| Pathname.new(r.root).expand_path }
+          .reject { |path| path.fnmatch(bundle_path_match.to_s) } # reject paths from vendored gems
+          .map { |path| path.to_s }
+      end
 
       sig { params(packages: T::Array[Package]).void }
       def create_root_package_if_none_in(packages)

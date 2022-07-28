@@ -39,6 +39,16 @@ module Packwerk
       )
     end
 
+    test "#package_from_path returns a package from an external package in autoload paths" do
+      use_template(:external_packages)
+
+      package_set = PackageSet.load_all_from(app_dir)
+      assert_equal(
+        package_set.package_from_path("../sales/components/sales/app/models/order.rb").name,
+        "../sales/components/sales"
+      )
+    end
+
     test "#fetch returns a package instance for known package name" do
       use_template(:skeleton)
       package_set = PackageSet.load_all_from(app_dir)
@@ -88,7 +98,7 @@ module Packwerk
       package_paths = PackageSet.package_paths(".", "**")
       assert_includes(package_paths, vendor_package_path)
 
-      Bundler.expects(:bundle_path).returns(Rails.root.join("vendor/cache/gems"))
+      Bundler.expects(:bundle_path).twice.returns(Rails.root.join("vendor/cache/gems"))
       package_paths = PackageSet.package_paths(".", "**")
       refute_includes(package_paths, vendor_package_path)
     end
@@ -126,13 +136,6 @@ module Packwerk
         PackageSet.package_paths(".", "**"),
         PackageSet.package_paths(".", "**", [])
       )
-    end
-
-    test ".with packages in engines" do
-      use_template(:external_packages)
-
-      package_set = PackageSet.load_all_from("#{app_dir}/app")
-      binding.irb
     end
   end
 end
