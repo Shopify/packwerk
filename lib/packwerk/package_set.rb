@@ -46,11 +46,14 @@ module Packwerk
           .push(Bundler.bundle_path.join("**").to_s)
           .map { |glob| File.expand_path(glob) }
 
-        load_paths = Configuration.from_path(root_path).load_paths.keys.push(root_path)
+        load_paths = Configuration.from_path(root_path).load_paths.keys
+          .map { |path| File.expand_path(path, root_path) }
+          .push(root_path)
         glob_patterns = load_paths.product(Array(package_pathspec)).map do |path, pathspec|
           File.join(path, pathspec, PACKAGE_CONFIG_FILENAME)
         end
 
+        binding.irb
         paths = Dir.glob(glob_patterns)
           .map { |path| Pathname.new(path).cleanpath }
           .reject { |path| exclude_path?(exclude_pathspec, path) }
