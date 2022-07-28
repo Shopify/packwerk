@@ -59,6 +59,29 @@ module Packwerk
         assert_equal(file_path.to_s, exc.result.file)
       end
 
+      test "#call skips ERB files with CDATA tags" do
+        parser = stub
+        parser.stubs(:ast).raises(RuntimeError.new("Unhandled token cdata_end"))
+
+        parser_class_stub = stub(new: parser)
+
+        parser = Erb.new(parser_class: parser_class_stub)
+        file_path = fixture_path("with_cdata.erb")
+
+        exc = assert_raises(Parsers::ParseError) do
+          File.open(file_path, "r") do |fixture|
+            parser.call(io: fixture, file_path: file_path)
+          end
+        end
+
+        message = <<~MESSAGE
+          Packwerk cannot parse ERB files with CDATA tags.
+          Please add this file to the `exclude` key of `packwerk.yml`
+        MESSAGE
+        assert_equal(message, exc.result.message)
+        assert_equal(file_path.to_s, exc.result.file)
+      end
+
       private
 
       def fixture_path(name)

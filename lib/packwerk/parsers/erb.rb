@@ -31,6 +31,17 @@ module Packwerk
       rescue Parser::SyntaxError => e
         result = ParseResult.new(file: file_path, message: "Syntax error: #{e}")
         raise Parsers::ParseError, result
+      rescue RuntimeError => e
+        if e.message.include?("Unhandled token cdata_end")
+          message = <<~MESSAGE
+            Packwerk cannot parse ERB files with CDATA tags.
+            Please add this file to the `exclude` key of `packwerk.yml`
+          MESSAGE
+          result = ParseResult.new(file: file_path, message: message)
+          raise Parsers::ParseError, result
+        else
+          raise
+        end
       end
 
       private
