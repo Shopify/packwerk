@@ -35,11 +35,9 @@ module Packwerk
       end
       def filter_relevant_paths(all_paths, bundle_path: Bundler.bundle_path, rails_root: Rails.root)
         bundle_path_match = bundle_path.join("**")
-        rails_root_match = rails_root.join("**")
 
         all_paths
           .transform_keys { |path| Pathname.new(path).expand_path }
-          .select { |path| path.fnmatch(rails_root_match.to_s) } # path needs to be in application directory
           .reject { |path| path.fnmatch(bundle_path_match.to_s) } # reject paths from vendored gems
       end
 

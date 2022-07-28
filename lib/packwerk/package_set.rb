@@ -19,10 +19,11 @@ module Packwerk
       extend T::Sig
 
       sig do
-        params(root_path: String, package_pathspec: T.nilable(PackagePaths::PathSpec)).returns(PackageSet)
+        params(root_path: String, package_pathspec: T.nilable(PackagePaths::PathSpec),
+          scan_for_packages_outside_of_app_dir: T.nilable(T::Boolean)).returns(PackageSet)
       end
-      def load_all_from(root_path, package_pathspec: nil)
-        package_paths = PackagePaths.new(root_path, package_pathspec || "**", nil)
+      def load_all_from(root_path, package_pathspec: nil, scan_for_packages_outside_of_app_dir: false)
+        package_paths = PackagePaths.new(root_path, package_pathspec || "**", nil, scan_for_packages_outside_of_app_dir)
 
         packages = package_paths.all_paths.map do |path|
           root_relative = path.dirname.relative_path_from(root_path)

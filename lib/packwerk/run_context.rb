@@ -21,6 +21,7 @@ module Packwerk
           root_path: configuration.root_path,
           load_paths: configuration.load_paths,
           package_paths: configuration.package_paths,
+          packages_outside_of_app_dir_enabled: configuration.packages_outside_of_app_dir_enabled,
           inflector: inflector,
           custom_associations: configuration.custom_associations,
           cache_enabled: configuration.cache_enabled?,
@@ -42,6 +43,7 @@ module Packwerk
         custom_associations: AssociationInspector::CustomAssociations,
         checkers: T::Array[Checker],
         cache_enabled: T::Boolean,
+        packages_outside_of_app_dir_enabled: T.nilable(T::Boolean),
       ).void
     end
     def initialize(
@@ -129,7 +131,7 @@ module Packwerk
         inflector: @inflector,
       )
     end
-
+    
     sig { returns(T::Array[ConstantNameInspector]) }
     def constant_name_inspectors
       [
