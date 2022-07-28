@@ -46,13 +46,16 @@ module Packwerk
           .push(Bundler.bundle_path.join("**").to_s)
           .map { |glob| File.expand_path(glob) }
 
-        glob_patterns = Array(package_pathspec).map do |pathspec|
-          File.join(root_path, pathspec, PACKAGE_CONFIG_FILENAME)
+        load_paths = Configuration.from_path(root_path).load_paths.keys.push(root_path)
+        glob_patterns = load_paths.product(Array(package_pathspec)).map do |path, pathspec|
+          File.join(path, pathspec, PACKAGE_CONFIG_FILENAME)
         end
 
-        Dir.glob(glob_patterns)
+        paths = Dir.glob(glob_patterns)
           .map { |path| Pathname.new(path).cleanpath }
           .reject { |path| exclude_path?(exclude_pathspec, path) }
+
+        paths
       end
 
       private
