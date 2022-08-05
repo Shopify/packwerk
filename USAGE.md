@@ -54,7 +54,7 @@ Here is a list of files generated:
 
 | File                        | Location     | Description |
 |-----------------------------|--------------|------------|
-| Packwerk configuration      | packwerk.yml | See [Setting up the configuration file](#Setting-up-the-configuration-file) |
+| Packwerk configuration      | packwerk.yml | See [Setting up the configuration file](#configuring-packwerk) |
 | Root package                | package.yml  | A package for the root folder |
 
 After that, you may begin creating packages for your application. See [Defining packages](#Defining-packages)
