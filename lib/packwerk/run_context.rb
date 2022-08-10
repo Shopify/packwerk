@@ -26,6 +26,7 @@ module Packwerk
           cache_enabled: configuration.cache_enabled?,
           cache_directory: configuration.cache_directory,
           config_path: configuration.config_path,
+          packages_outside_of_app_dir_enabled: configuration.packages_outside_of_app_dir_enabled,
         )
       end
     end
@@ -52,7 +53,8 @@ module Packwerk
       package_paths: nil,
       custom_associations: [],
       checkers: Checker.all,
-      cache_enabled: false
+      cache_enabled: false,
+      packages_outside_of_app_dir_enabled: false
     )
       @root_path = root_path
       @load_paths = load_paths
@@ -63,7 +65,7 @@ module Packwerk
       @cache_enabled = cache_enabled
       @cache_directory = cache_directory
       @config_path = config_path
-
+      @packages_outside_of_app_dir_enabled = packages_outside_of_app_dir_enabled
       @file_processor = T.let(nil, T.nilable(FileProcessor))
       @context_provider = T.let(nil, T.nilable(ConstantDiscovery))
       @package_set = T.let(nil, T.nilable(PackageSet))
@@ -88,7 +90,11 @@ module Packwerk
 
     sig { returns(PackageSet) }
     def package_set
-      @package_set ||= ::Packwerk::PackageSet.load_all_from(@root_path, package_pathspec: @package_paths)
+      @package_set ||= ::Packwerk::PackageSet.load_all_from(
+        @root_path,
+        package_pathspec: @package_paths,
+        scan_for_packages_outside_of_app_dir: @packages_outside_of_app_dir_enabled,
+      ) 
     end
 
     private

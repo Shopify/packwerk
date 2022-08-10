@@ -27,6 +27,8 @@ module Packwerk
   autoload :Package
   autoload :PackageSet
   autoload :PackageTodo
+  autoload :PackagePaths
+  autoload :ParsedConstantDefinitions
   autoload :Parsers
   autoload :RailsLoadPaths
   autoload :Reference
