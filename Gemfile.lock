@@ -161,7 +161,6 @@ GEM
     pry (0.14.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    psych (3.3.2)
     racc (1.6.0)
     rack (2.2.3)
     rack-test (1.1.0)
@@ -256,7 +255,6 @@ DEPENDENCIES
   minitest-focus
   mocha
   packwerk!
-  psych (~> 3)
   rails!
   rake
   rubocop-performance

@@ -46,13 +46,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency("parallel")
   spec.add_dependency("sorbet-runtime", ">=0.5.9914")
 
-  spec.add_development_dependency("m")
-  spec.add_development_dependency("rake")
-  spec.add_development_dependency("sorbet")
-  # https://github.com/ruby/psych/pull/487
-  spec.add_development_dependency("psych", "~> 3")
-  spec.add_development_dependency("zeitwerk")
-
   # For Ruby parsing
   spec.add_dependency("ast")
   spec.add_dependency("parser")
