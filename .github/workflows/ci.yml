@@ -52,9 +52,11 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.1
-          bundler-cache: true
+          # bundler-cache: true
       - name: Run static type checks
-        run: bin/srb tc
+        run: |
+          bundle install --jobs 4 --retry 3
+          bin/srb tc
   buildall:
     if: ${{ always() }}
     runs-on: ubuntu-latest
