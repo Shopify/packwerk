@@ -147,8 +147,6 @@ GEM
     nokogiri (1.13.4)
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
-    nokogiri (1.13.4-x86_64-darwin)
-      racc (~> 1.4)
     parallel (1.22.1)
     parlour (6.0.0)
       commander (~> 4.5)
@@ -199,18 +197,22 @@ GEM
       syntax_tree (>= 2.4)
     ruby-progressbar (1.11.0)
     smart_properties (1.17.0)
-    sorbet (0.5.9914)
-      sorbet-static (= 0.5.9914)
-    sorbet-runtime (0.5.9914)
-    sorbet-static (0.5.9914-universal-darwin-14)
-    sorbet-static (0.5.9914-universal-darwin-15)
-    sorbet-static (0.5.9914-universal-darwin-16)
-    sorbet-static (0.5.9914-universal-darwin-17)
-    sorbet-static (0.5.9914-universal-darwin-18)
-    sorbet-static (0.5.9914-universal-darwin-19)
-    sorbet-static (0.5.9914-universal-darwin-20)
-    sorbet-static (0.5.9914-universal-darwin-21)
-    sorbet-static (0.5.9914-x86_64-linux)
+    sorbet (0.5.10313)
+      sorbet-static (= 0.5.10313)
+    sorbet-runtime (0.5.10313)
+    sorbet-static (0.5.10313-universal-darwin-14)
+    sorbet-static (0.5.10313-universal-darwin-15)
+    sorbet-static (0.5.10313-universal-darwin-16)
+    sorbet-static (0.5.10313-universal-darwin-17)
+    sorbet-static (0.5.10313-universal-darwin-18)
+    sorbet-static (0.5.10313-universal-darwin-19)
+    sorbet-static (0.5.10313-universal-darwin-20)
+    sorbet-static (0.5.10313-universal-darwin-21)
+    sorbet-static (0.5.10313-universal-darwin-22)
+    sorbet-static (0.5.10313-x86_64-linux)
+    sorbet-static-and-runtime (0.5.10313)
+      sorbet (= 0.5.10313)
+      sorbet-runtime (= 0.5.10313)
     spoom (1.1.0)
       colorize
       sorbet (>= 0.5.6347)
@@ -261,8 +263,7 @@ DEPENDENCIES
   rubocop-shopify
   rubocop-sorbet
   ruby-lsp (~> 0.2.1)
-  sorbet
-  sorbet-runtime
+  sorbet-static-and-runtime
   spring
   tapioca
   zeitwerk

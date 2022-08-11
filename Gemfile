@@ -10,7 +10,6 @@ gemspec
 gem("spring")
 gem("rails", github: "rails/rails", branch: "main")
 gem("constant_resolver", require: false)
-gem("sorbet-runtime", require: false)
 gem("rubocop-performance", require: false)
 gem("rubocop-sorbet", require: false)
 gem("mocha", require: false)
@@ -24,6 +23,6 @@ group :development do
 
   gem("m")
   gem("rake")
-  gem("sorbet")
+  gem("sorbet-static-and-runtime")
   gem("zeitwerk")
 end
