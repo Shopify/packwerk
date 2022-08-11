@@ -96,6 +96,7 @@ PATH
       parallel
       parser
       sorbet-runtime (>= 0.5.9914)
+      zeitwerk
 
 GEM
   remote: https://rubygems.org/
@@ -258,7 +259,6 @@ DEPENDENCIES
   sorbet-runtime
   spring
   tapioca
-  zeitwerk
 
 BUNDLED WITH
    2.3.5
