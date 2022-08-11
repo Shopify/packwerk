@@ -10,7 +10,7 @@ We are keeping `packwerk` compatible with current versions of Ruby and Rails, bu
 
 -- _Sandi Metz, Practical Object-Oriented Design in Ruby_
 
-Packwerk is a Ruby gem used to enforce boundaries and modularize Rails applications.
+Packwerk is a Ruby gem used to enforce boundaries and modularize Ruby applications (including Rails apps!).
 
 Packwerk can be used to:
 * Combine groups of files into packages
