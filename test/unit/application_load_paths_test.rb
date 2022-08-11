@@ -54,29 +54,27 @@ module Packwerk
     test ".extract_relevant_paths uses Zeitwerk loaders" do
       result = ApplicationLoadPaths.extract_relevant_paths("./test/fixtures/skeleton", "test")
       assert_equal([
-          "components/sales/app/models", 
-          "components/platform/app/models", 
-          "components/timeline/app/models", 
-          "components/timeline/app/models/concerns", 
-          "vendor/cache/gems/example/models", 
-        ], 
-        result.keys
-      )
+        "components/sales/app/models",
+        "components/platform/app/models",
+        "components/timeline/app/models",
+        "components/timeline/app/models/concerns",
+        "vendor/cache/gems/example/models",
+      ],
+        result.keys)
 
       loader = Zeitwerk::Loader.new
-      loader.push_dir('./test/fixtures/skeleton/gems/gem_a')
+      loader.push_dir("./test/fixtures/skeleton/gems/gem_a")
 
       result = ApplicationLoadPaths.extract_relevant_paths("./test/fixtures/skeleton", "test")
       assert_equal([
-          "components/sales/app/models", 
-          "components/platform/app/models", 
-          "components/timeline/app/models", 
-          "components/timeline/app/models/concerns", 
-          "vendor/cache/gems/example/models", 
-          "gems/gem_a",
-        ], 
-        result.keys
-      )
+        "components/sales/app/models",
+        "components/platform/app/models",
+        "components/timeline/app/models",
+        "components/timeline/app/models/concerns",
+        "vendor/cache/gems/example/models",
+        "gems/gem_a",
+      ],
+        result.keys)
     end
   end
 end
