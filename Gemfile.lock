@@ -126,6 +126,7 @@ GEM
     i18n (1.8.10)
       concurrent-ruby (~> 1.0)
     json (2.6.2)
+    language_server-protocol (3.16.0.3)
     loofah (2.9.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -156,6 +157,7 @@ GEM
       sorbet-runtime (>= 0.5)
     parser (3.1.2.0)
       ast (~> 2.4.1)
+    prettier_print (0.1.0)
     pry (0.14.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -192,6 +194,10 @@ GEM
       rubocop (~> 1.31)
     rubocop-sorbet (0.6.1)
       rubocop
+    ruby-lsp (0.2.1)
+      language_server-protocol
+      sorbet-runtime
+      syntax_tree (>= 2.4)
     ruby-progressbar (1.11.0)
     smart_properties (1.17.0)
     sorbet (0.5.9914)
@@ -219,6 +225,8 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
+    syntax_tree (3.3.0)
+      prettier_print
     tapioca (0.4.19)
       bundler (>= 1.17.3)
       parlour (>= 2.1.0)
@@ -254,6 +262,7 @@ DEPENDENCIES
   rubocop-performance
   rubocop-shopify
   rubocop-sorbet
+  ruby-lsp (~> 0.2.1)
   sorbet
   sorbet-runtime
   spring
