@@ -6,6 +6,49 @@ module Packwerk
   class ReferenceExtractor
     extend T::Sig
 
+    class << self
+      extend T::Sig
+
+      sig do
+        params(
+          unresolved_references: T::Array[UnresolvedReference],
+          context_provider: ConstantDiscovery
+        ).returns(T::Array[Reference])
+      end
+      def get_fully_qualified_references_from(unresolved_references, context_provider)
+        fully_qualified_references = T.let([], T::Array[Reference])
+
+        unresolved_references.each do |unresolved_references_or_offense|
+          unresolved_reference = unresolved_references_or_offense
+
+          constant =
+            context_provider.context_for(
+              unresolved_reference.constant_name,
+              current_namespace_path: unresolved_reference.namespace_path
+            )
+
+          next if constant.nil?
+
+          package_for_constant = constant.package
+
+          next if package_for_constant.nil?
+
+          source_package = context_provider.package_from_path(unresolved_reference.relative_path)
+
+          next if source_package == package_for_constant
+
+          fully_qualified_references << Reference.new(
+            source_package,
+            unresolved_reference.relative_path,
+            constant,
+            unresolved_reference.source_location
+          )
+        end
+
+        fully_qualified_references
+      end
+    end
+
     sig do
       params(
         constant_name_inspectors: T::Array[Packwerk::ConstantNameInspector],
@@ -47,45 +90,6 @@ module Packwerk
           relative_file: relative_file
         )
       end
-    end
-
-    sig do
-      params(
-        unresolved_references: T::Array[UnresolvedReference],
-        context_provider: ConstantDiscovery
-      ).returns(T::Array[Reference])
-    end
-    def self.get_fully_qualified_references_from(unresolved_references, context_provider)
-      fully_qualified_references = T.let([], T::Array[Reference])
-
-      unresolved_references.each do |unresolved_references_or_offense|
-        unresolved_reference = unresolved_references_or_offense
-
-        constant =
-          context_provider.context_for(
-            unresolved_reference.constant_name,
-            current_namespace_path: unresolved_reference.namespace_path
-          )
-
-        next if constant.nil?
-
-        package_for_constant = constant.package
-
-        next if package_for_constant.nil?
-
-        source_package = context_provider.package_from_path(unresolved_reference.relative_path)
-
-        next if source_package == package_for_constant
-
-        fully_qualified_references << Reference.new(
-          source_package,
-          unresolved_reference.relative_path,
-          constant,
-          unresolved_reference.source_location
-        )
-      end
-
-      fully_qualified_references
     end
 
     private

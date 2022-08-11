@@ -4,8 +4,10 @@
 require "rails"
 
 class Dummy < Rails::Application
-  def self.skeleton(*path)
-    ROOT.join("test", "fixtures", "skeleton", *path).to_s
+  class << self
+    def skeleton(*path)
+      ROOT.join("test", "fixtures", "skeleton", *path).to_s
+    end
   end
 
   config.autoloader = :zeitwerk

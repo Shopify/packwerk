@@ -7,29 +7,12 @@ require:
 
 AllCops:
   TargetRubyVersion: 2.7
+  NewCops: disable
   UseCache: true
   SuggestExtensions: false
   CacheRootDirectory: tmp
   Exclude:
     - 'test/fixtures/**/*'
-
-Lint/UnusedMethodArgument:
-  AllowUnusedKeywordArguments: true
-
-Style/MethodCallWithArgsParentheses:
-  Enabled: true
-  IgnoreMacros: true
-  IgnoredMethods:
-  - require
-  - require_relative
-  - require_dependency
-  - yield
-  - raise
-  Exclude:
-  - Gemfile
-
-Style/StringLiterals:
-  EnforcedStyle: double_quotes
 
 Sorbet/ConstantsFromStrings:
   Enabled: true
@@ -37,7 +20,7 @@ Sorbet/ConstantsFromStrings:
 Sorbet/ForbidIncludeConstLiteral:
   Enabled: true
 
-Sorbet/ParametersOrderingInSignature:
+Sorbet/SignatureBuildOrder:
   Enabled: true
 
 Sorbet/KeywordArgumentOrdering:
