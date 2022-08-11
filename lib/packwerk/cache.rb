@@ -13,31 +13,35 @@ module Packwerk
       const :file_contents_digest, String
       const :unresolved_references, T::Array[UnresolvedReference]
 
+      class << self
+        extend T::Sig
+
+        sig { params(serialized_cache_contents: String).returns(CacheContents) }
+        def deserialize(serialized_cache_contents)
+          cache_contents_json = JSON.parse(serialized_cache_contents)
+          unresolved_references = cache_contents_json["unresolved_references"].map do |json|
+            UnresolvedReference.new(
+              json["constant_name"],
+              json["namespace_path"],
+              json["relative_path"],
+              Node::Location.new(json["source_location"]["line"], json["source_location"]["column"],)
+            )
+          end
+
+          CacheContents.new(
+            file_contents_digest: cache_contents_json["file_contents_digest"],
+            unresolved_references: unresolved_references,
+          )
+        end
+      end
+
       sig { returns(String) }
       def serialize
         to_json
       end
-
-      sig { params(serialized_cache_contents: String).returns(CacheContents) }
-      def self.deserialize(serialized_cache_contents)
-        cache_contents_json = JSON.parse(serialized_cache_contents)
-        unresolved_references = cache_contents_json["unresolved_references"].map do |json|
-          UnresolvedReference.new(
-            json["constant_name"],
-            json["namespace_path"],
-            json["relative_path"],
-            Node::Location.new(json["source_location"]["line"], json["source_location"]["column"],)
-          )
-        end
-
-        CacheContents.new(
-          file_contents_digest: cache_contents_json["file_contents_digest"],
-          unresolved_references: unresolved_references,
-        )
-      end
     end
 
-    CACHE_SHAPE = T.type_alias do
+    CacheShape = T.type_alias do
       T::Hash[
         String,
         CacheContents
@@ -47,7 +51,7 @@ module Packwerk
     sig { params(enable_cache: T::Boolean, cache_directory: Pathname, config_path: T.nilable(String)).void }
     def initialize(enable_cache:, cache_directory:, config_path:)
       @enable_cache = enable_cache
-      @cache = T.let({}, CACHE_SHAPE)
+      @cache = T.let({}, CacheShape)
       @files_by_digest = T.let({}, T::Hash[String, String])
       @config_path = config_path
       @cache_directory = cache_directory
@@ -156,14 +160,16 @@ module Packwerk
   end
 
   class Debug
-    extend T::Sig
+    class << self
+      extend T::Sig
 
-    sig { params(out: String).void }
-    def self.out(out)
-      if ENV["DEBUG_PACKWERK_CACHE"]
-        puts(out)
+      sig { params(out: String).void }
+      def out(out)
+        if ENV["DEBUG_PACKWERK_CACHE"]
+          puts(out)
+        end
       end
-    end
+  end
   end
 
   private_constant :Debug

@@ -7,7 +7,7 @@ module Packwerk
   class DeprecatedReferences
     extend T::Sig
 
-    ENTRIES_TYPE = T.type_alias do
+    EntriesType = T.type_alias do
       T::Hash[String, T.untyped]
     end
 
@@ -15,8 +15,8 @@ module Packwerk
     def initialize(package, filepath)
       @package = package
       @filepath = filepath
-      @new_entries = T.let({}, ENTRIES_TYPE)
-      @deprecated_references = T.let(nil, T.nilable(ENTRIES_TYPE))
+      @new_entries = T.let({}, EntriesType)
+      @deprecated_references = T.let(nil, T.nilable(EntriesType))
     end
 
     sig do
@@ -104,7 +104,7 @@ module Packwerk
 
     private
 
-    sig { returns(ENTRIES_TYPE) }
+    sig { returns(EntriesType) }
     def prepare_entries_for_dump
       @new_entries.each do |package_name, package_violations|
         package_violations.each do |_, entries_for_constant|
@@ -117,7 +117,7 @@ module Packwerk
       @new_entries = @new_entries.sort.to_h
     end
 
-    sig { returns(ENTRIES_TYPE) }
+    sig { returns(EntriesType) }
     def deprecated_references
       @deprecated_references ||= if File.exist?(@filepath)
         load_yaml(@filepath)
@@ -126,7 +126,7 @@ module Packwerk
       end
     end
 
-    sig { params(filepath: String).returns(ENTRIES_TYPE) }
+    sig { params(filepath: String).returns(EntriesType) }
     def load_yaml(filepath)
       YAML.load_file(filepath) || {}
     rescue Psych::Exception

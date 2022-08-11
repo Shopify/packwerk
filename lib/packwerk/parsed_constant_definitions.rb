@@ -6,6 +6,21 @@ require "ast/node"
 module Packwerk
   # A collection of constant definitions parsed from an Abstract Syntax Tree (AST).
   class ParsedConstantDefinitions
+    class << self
+      # What fully qualified constants can this constant refer to in this context?
+      def reference_qualifications(constant_name, namespace_path:)
+        return [constant_name] if constant_name.start_with?("::")
+
+        resolved_constant_name = "::#{constant_name}"
+
+        possible_namespaces = namespace_path.each_with_object([""]) do |current, acc|
+          acc << "#{acc.last}::#{current}" if acc.last && current
+        end
+
+        possible_namespaces.map { |namespace| namespace + resolved_constant_name }
+      end
+    end
+
     def initialize(root_node:)
       @local_definitions = {}
 
@@ -19,19 +34,6 @@ module Packwerk
         @local_definitions[name] &&
           @local_definitions[name] != location
       end
-    end
-
-    # What fully qualified constants can this constant refer to in this context?
-    def self.reference_qualifications(constant_name, namespace_path:)
-      return [constant_name] if constant_name.start_with?("::")
-
-      resolved_constant_name = "::#{constant_name}"
-
-      possible_namespaces = namespace_path.each_with_object([""]) do |current, acc|
-        acc << "#{acc.last}::#{current}" if acc.last && current
-      end
-
-      possible_namespaces.map { |namespace| namespace + resolved_constant_name }
     end
 
     private
