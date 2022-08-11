@@ -3,7 +3,7 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  build:
+  tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -23,39 +23,44 @@ jobs:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     name: "Tests: Ruby ${{ matrix.ruby }} ${{ matrix.gemfile }}"
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Set up Ruby ${{ matrix.ruby }}
-        uses: actions/setup-ruby@v1
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
       - name: Run tests
-        run: |
-          gem install bundler
-          bundle install --jobs 4 --retry 3
-          bin/rake
+        run: bin/rake
   lint:
     runs-on: ubuntu-latest
+    name: Lint
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Set up Ruby
-        uses: actions/setup-ruby@v1
+        uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.0.x
+          ruby-version: 3.1
+          bundler-cache: true
       - name: Run style checks
-        run: |
-          gem install bundler
-          bundle install --jobs 4 --retry 3
-          bin/rubocop
-  static-type-checking:
+        run: bin/rubocop
+  static_type_checking:
     runs-on: ubuntu-latest
+    name: Type Checking
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Set up Ruby
-        uses: actions/setup-ruby@v1
+        uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.0.x
+          ruby-version: 3.1
+          bundler-cache: true
       - name: Run static type checks
-        run: |
-          gem install bundler
-          bundle install --jobs 4 --retry 3
-          bin/srb tc
+        run: bin/srb tc
+  buildall:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    name: Build (matrix)
+    needs: [lint, tests, static_type_checking]
+    steps:
+      - name: Check build matrix status
+        if: ${{ needs.tests.result != 'success' || needs.lint.result != 'success' || needs.static_type_checking.result != 'success' }}
+        run: exit 1
