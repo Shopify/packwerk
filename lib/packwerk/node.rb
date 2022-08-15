@@ -14,53 +14,36 @@ module Packwerk
       extend T::Sig
 
       def class_or_module_name(class_or_module_node)
-        case type_of(class_or_module_node)
-        when CLASS, MODULE
-          # (class (const nil :Foo) (const nil :Bar) (nil))
-          #   "class Foo < Bar; end"
-          # (module (const nil :Foo) (nil))
-          #   "module Foo; end"
-          identifier = class_or_module_node.children[0]
+        case class_or_module_node
+        when SyntaxTree::ClassDeclaration, SyntaxTree::ModuleDeclaration
+          identifier = class_or_module_node.constant
           constant_name(identifier)
         else
-          raise TypeError
+          raise TypeError, "Cannot handle #{class_or_module_node.class}"
         end
       end
 
       def constant_name(constant_node)
-        case type_of(constant_node)
-        when CONSTANT_ROOT_NAMESPACE
-          ""
-        when CONSTANT, CONSTANT_ASSIGNMENT, SELF
-          # (const nil :Foo)
-          #   "Foo"
-          # (const (cbase) :Foo)
-          #   "::Foo"
-          # (const (lvar :a) :Foo)
-          #   "a::Foo"
-          # (casgn nil :Foo (int 1))
-          #   "Foo = 1"
-          # (casgn (cbase) :Foo (int 1))
-          #   "::Foo = 1"
-          # (casgn (lvar :a) :Foo (int 1))
-          #   "a::Foo = 1"
-          # (casgn (self) :Foo (int 1))
-          #   "self::Foo = 1"
-          namespace, name = constant_node.children
-          if namespace
-            [constant_name(namespace), name].join("::")
-          else
-            name.to_s
-          end
+        case constant_node
+        when SyntaxTree::ConstPathRef, SyntaxTree::ConstPathField
+          constant_name(constant_node.parent) + "::" + constant_name(constant_node.constant)
+        when SyntaxTree::ConstRef
+          constant_name(constant_node.constant)
+        when SyntaxTree::VarRef, SyntaxTree::VarField
+          constant_name(constant_node.value)
+        when SyntaxTree::Const
+          constant_node.value
         else
-          raise TypeError
+          raise TypeError, "Cannot handle #{constant_node.class}"
         end
       end
 
-      def each_child(node)
-        if block_given?
-          node.children.each do |child|
-            yield child if child.is_a?(Parser::AST::Node)
+      def each_child(node, &block)
+        if block
+          node.child_nodes.each do |child|
+            if child.is_a?(SyntaxTree::Node)
+              yield child
+            end
           end
         else
           enum_for(:each_child, node)
@@ -98,11 +81,18 @@ module Packwerk
       end
 
       def constant?(node)
-        type_of(node) == CONSTANT
+        node.is_a?(SyntaxTree::Const) ||
+          node.is_a?(SyntaxTree::ConstRef) ||
+          node.is_a?(SyntaxTree::ConstPathRef) ||
+          node.is_a?(SyntaxTree::ConstPathField)
       end
 
       def constant_assignment?(node)
-        type_of(node) == CONSTANT_ASSIGNMENT
+        node.is_a?(SyntaxTree::Assign) && (constant?(node.target) || constant_var_field?(node.target))
+      end
+
+      def constant_var_field?(node)
+        node.is_a?(SyntaxTree::VarField) && constant?(node.value)
       end
 
       def class?(node)
@@ -142,8 +132,8 @@ module Packwerk
       end
 
       def module_name_from_definition(node)
-        case type_of(node)
-        when CLASS, MODULE
+        case node
+        when SyntaxTree::ClassDeclaration, SyntaxTree::ModuleDeclaration
           # "class My::Class; end"
           # "module My::Module; end"
           class_or_module_name(node)
@@ -168,10 +158,7 @@ module Packwerk
       def name_location(node)
         location = node.location
 
-        if location.respond_to?(:name)
-          name = location.name
-          Location.new(name.line, name.column)
-        end
+        Location.new(location.start_line, location.start_column)
       end
 
       def parent_class(class_node)
@@ -182,7 +169,7 @@ module Packwerk
         class_node.children[1]
       end
 
-      sig { params(ancestors: T::Array[AST::Node]).returns(String) }
+      sig { params(ancestors: T::Array[SyntaxTree::Node]).returns(String) }
       def parent_module_name(ancestors:)
         definitions = ancestors
           .select { |n| [CLASS, MODULE, CONSTANT_ASSIGNMENT, BLOCK].include?(type_of(n)) }

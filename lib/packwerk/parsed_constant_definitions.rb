@@ -40,18 +40,31 @@ module Packwerk
 
     def collect_local_definitions_from_root(node, current_namespace_path = [])
       if Node.constant_assignment?(node)
-        add_definition(Node.constant_name(node), current_namespace_path, Node.name_location(node))
+        add_definition(Node.constant_name(node.target), current_namespace_path, Node.name_location(node.target))
       elsif Node.module_name_from_definition(node)
-        # handle compact constant nesting (e.g. "module Sales::Order")
-        tempnode = node
-        while (tempnode = Node.each_child(tempnode).find { |n| Node.constant?(n) })
-          add_definition(Node.constant_name(tempnode), current_namespace_path, Node.name_location(tempnode))
-        end
+        namespace = add_definitions_for_module_name(node.constant, current_namespace_path)
 
-        current_namespace_path += Node.class_or_module_name(node).split("::")
+        current_namespace_path = namespace
       end
 
       Node.each_child(node) { |child| collect_local_definitions_from_root(child, current_namespace_path) }
+    end
+
+    def add_definitions_for_module_name(node, current_namespace_path = [])
+      case node
+      when SyntaxTree::ConstPathRef
+        path = add_definitions_for_module_name(node.parent, current_namespace_path)
+        add_definitions_for_module_name(node.constant, path)
+      when SyntaxTree::ConstRef
+        add_definitions_for_module_name(node.constant, current_namespace_path)
+      when SyntaxTree::VarRef
+        add_definitions_for_module_name(node.value, current_namespace_path)
+      when SyntaxTree::Const
+        constant_name = Node.constant_name(node)
+        add_definition(constant_name, current_namespace_path, Node.name_location(node))
+        current_namespace_path += [constant_name]
+        current_namespace_path
+      end
     end
 
     def add_definition(constant_name, current_namespace_path, location)
