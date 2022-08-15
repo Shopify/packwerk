@@ -14,28 +14,19 @@ module Packwerk
           Erb.new.call(io: fixture)
         end
 
-        assert_kind_of(::AST::Node, node)
+        assert_kind_of(SyntaxTree::Node, node)
       end
 
       test "#call writes parse error to stdout" do
-        error_message = "stub error"
-        err = Parser::SyntaxError.new(stub(message: error_message))
-        parser = stub
-        parser.stubs(:ast).raises(err)
-
-        parser_class_stub = stub(new: parser)
-
-        parser = Erb.new(parser_class: parser_class_stub)
         file_path = fixture_path("invalid.erb")
 
-        exc = assert_raises(Parsers::ParseError) do
+        exception = assert_raises(Parsers::ParseError) do
           File.open(file_path, "r") do |fixture|
-            parser.call(io: fixture, file_path: file_path)
+            Erb.new.call(io: fixture, file_path: file_path)
           end
         end
 
-        assert_equal("Syntax error: stub error", exc.result.message)
-        assert_equal(file_path, exc.result.file)
+        assert_equal("Syntax error: syntax error, unexpected '}', expecting => in #{file_path}", exception.message)
       end
 
       test "#call writes encoding error to stdout" do
