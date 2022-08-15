@@ -18,6 +18,7 @@ PATH
       parallel
       parser
       sorbet-runtime (>= 0.5.9914)
+      syntax_tree
 
 GEM
   remote: https://rubygems.org/
