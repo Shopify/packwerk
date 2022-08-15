@@ -21,7 +21,7 @@ group :development do
   gem("minitest-focus", require: false)
   gem("ruby-lsp", "~> 0.2.1")
 
-  gem("m")
+  gem("m", github: "qrush/m")
   gem("rake")
   gem("sorbet-static-and-runtime")
   gem("zeitwerk")

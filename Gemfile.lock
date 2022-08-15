@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/qrush/m.git
+  revision: 8b9783ef072ad4702d56a664f35cd5b26a6a31ff
+  specs:
+    m (1.6.0)
+      method_source (>= 0.6.7)
+      rake (>= 0.9.2.2)
+
 PATH
   remote: .
   specs:
@@ -107,9 +115,6 @@ GEM
     loofah (2.18.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
-    m (1.6.0)
-      method_source (>= 0.6.7)
-      rake (>= 0.9.2.2)
     mail (2.7.1)
       mini_mime (>= 0.1.1)
     marcel (1.0.2)
@@ -273,7 +278,7 @@ PLATFORMS
 DEPENDENCIES
   byebug
   constant_resolver
-  m
+  m!
   minitest-focus
   mocha
   packwerk!
