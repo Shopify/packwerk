@@ -11,11 +11,17 @@ module Packwerk
       @node_processor = node_processor
     end
 
+    sig do
+      params(node: SyntaxTree::Node, ancestors: T::Array[SyntaxTree::Node],
+        result: Array).void
+    end
     def visit(node, ancestors:, result:)
       reference = @node_processor.call(node, ancestors)
+
       result << reference if reference
 
       child_ancestors = [node] + ancestors
+
       Node.each_child(node) do |child|
         visit(child, ancestors: child_ancestors, result: result)
       end
