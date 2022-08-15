@@ -14,7 +14,7 @@ module Packwerk
       attr_reader :result
 
       def initialize(result)
-        super(result.message)
+        super(result.message + " in #{result.file}")
         @result = result
       end
     end
