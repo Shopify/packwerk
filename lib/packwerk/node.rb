@@ -84,7 +84,8 @@ module Packwerk
         node.is_a?(SyntaxTree::Const) ||
           node.is_a?(SyntaxTree::ConstRef) ||
           node.is_a?(SyntaxTree::ConstPathRef) ||
-          node.is_a?(SyntaxTree::ConstPathField)
+          node.is_a?(SyntaxTree::ConstPathField) ||
+          constant_var_ref?(node)
       end
 
       def constant_assignment?(node)
@@ -95,12 +96,16 @@ module Packwerk
         node.is_a?(SyntaxTree::VarField) && constant?(node.value)
       end
 
+      def constant_var_ref?(node)
+        node.is_a?(SyntaxTree::VarRef) && constant?(node.value)
+      end
+
       def class?(node)
         type_of(node) == CLASS
       end
 
       def method_call?(node)
-        type_of(node) == METHOD_CALL
+        node.is_a?(SyntaxTree::Call)
       end
 
       def hash?(node)
@@ -171,11 +176,8 @@ module Packwerk
 
       sig { params(ancestors: T::Array[SyntaxTree::Node]).returns(String) }
       def parent_module_name(ancestors:)
-        definitions = ancestors
-          .select { |n| [CLASS, MODULE, CONSTANT_ASSIGNMENT, BLOCK].include?(type_of(n)) }
-
-        names = definitions.map do |definition|
-          name_part_from_definition(definition)
+        names = ancestors.map do |definition|
+          module_name_from_definition(definition)
         end.compact
 
         names.empty? ? "Object" : names.reverse.join("::")
@@ -256,22 +258,6 @@ module Packwerk
           constant?(receiver(node)) &&
           ["Class", "Module"].include?(constant_name(receiver(node))) &&
           method_name(node) == :new
-      end
-
-      def name_from_block_definition(node)
-        if method_name(method_call_node(node)) == :class_eval
-          receiver = receiver(node)
-          constant_name(receiver) if receiver && constant?(receiver)
-        end
-      end
-
-      def name_part_from_definition(node)
-        case type_of(node)
-        when CLASS, MODULE, CONSTANT_ASSIGNMENT
-          module_name_from_definition(node)
-        when BLOCK
-          name_from_block_definition(node)
-        end
       end
 
       def receiver(method_call_or_block_node)

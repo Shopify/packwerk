@@ -27,7 +27,7 @@ module Packwerk
 
     sig do
       override
-        .params(node: AST::Node, ancestors: T::Array[AST::Node])
+        .params(node: SyntaxTree::Node, ancestors: T::Array[SyntaxTree::Node])
         .returns(T.nilable(String))
     end
     def constant_name_from_node(node, ancestors:)
@@ -48,13 +48,13 @@ module Packwerk
 
     private
 
-    sig { params(node: AST::Node).returns(T::Boolean) }
+    sig { params(node: SyntaxTree::Node).returns(T::Boolean) }
     def association?(node)
       method_name = Node.method_name(node)
       @associations.include?(method_name)
     end
 
-    sig { params(arguments: T::Array[AST::Node]).returns(T.nilable(AST::Node)) }
+    sig { params(arguments: T::Array[SyntaxTree::Node]).returns(T.nilable(SyntaxTree::Node)) }
     def custom_class_name(arguments)
       association_options = arguments.detect { |n| Node.hash?(n) }
       return unless association_options

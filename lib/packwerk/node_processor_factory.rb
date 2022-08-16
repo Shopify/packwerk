@@ -9,7 +9,7 @@ module Packwerk
     const :context_provider, Packwerk::ConstantDiscovery
     const :constant_name_inspectors, T::Array[ConstantNameInspector]
 
-    sig { params(relative_file: String, node: AST::Node).returns(NodeProcessor) }
+    sig { params(relative_file: String, node: SyntaxTree::Node).returns(NodeProcessor) }
     def for(relative_file:, node:)
       ::Packwerk::NodeProcessor.new(
         reference_extractor: reference_extractor(node: node),
@@ -19,7 +19,7 @@ module Packwerk
 
     private
 
-    sig { params(node: AST::Node).returns(::Packwerk::ReferenceExtractor) }
+    sig { params(node: SyntaxTree::Node).returns(::Packwerk::ReferenceExtractor) }
     def reference_extractor(node:)
       ::Packwerk::ReferenceExtractor.new(
         constant_name_inspectors: constant_name_inspectors,

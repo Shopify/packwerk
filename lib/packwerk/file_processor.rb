@@ -45,7 +45,8 @@ module Packwerk
 
       unresolved_references = @cache.with_cache(relative_file) do
         node = parse_into_ast(relative_file, parser)
-        return ProcessedFile.new unless node
+
+        pp(node)
 
         references_from_ast(node, relative_file)
       end
@@ -58,7 +59,7 @@ module Packwerk
     private
 
     sig do
-      params(node: Parser::AST::Node, relative_file: String).returns(T::Array[UnresolvedReference])
+      params(node: SyntaxTree::Node, relative_file: String).returns(T::Array[UnresolvedReference])
     end
     def references_from_ast(node, relative_file)
       references = []

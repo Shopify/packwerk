@@ -13,7 +13,7 @@ module Packwerk
 
     sig do
       abstract
-        .params(node: ::AST::Node, ancestors: T::Array[::AST::Node])
+        .params(node: SyntaxTree::Node, ancestors: T::Array[SyntaxTree::Node])
         .returns(T.nilable(String))
     end
     def constant_name_from_node(node, ancestors:); end

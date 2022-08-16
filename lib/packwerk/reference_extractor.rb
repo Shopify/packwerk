@@ -52,7 +52,7 @@ module Packwerk
     sig do
       params(
         constant_name_inspectors: T::Array[Packwerk::ConstantNameInspector],
-        root_node: ::AST::Node,
+        root_node: SyntaxTree::Node,
         root_path: String,
       ).void
     end
@@ -68,8 +68,8 @@ module Packwerk
 
     sig do
       params(
-        node: Parser::AST::Node,
-        ancestors: T::Array[Parser::AST::Node],
+        node: SyntaxTree::Node,
+        ancestors: T::Array[SyntaxTree::Node],
         relative_file: String
       ).returns(T.nilable(UnresolvedReference))
     end
@@ -97,8 +97,8 @@ module Packwerk
     sig do
       params(
         constant_name: String,
-        node: Parser::AST::Node,
-        ancestors: T::Array[Parser::AST::Node],
+        node: SyntaxTree::Node,
+        ancestors: T::Array[SyntaxTree::Node],
         relative_file: String
       ).returns(T.nilable(UnresolvedReference))
     end

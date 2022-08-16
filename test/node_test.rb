@@ -180,7 +180,7 @@ module Packwerk
 
     test ".parent_module_name returns the name of a constant’s enclosing module" do
       grandparent = parse("module A; class B; C; end end")
-      parent = Node.each_child(grandparent).entries[1] # "class B; C; end"
+      parent = grandparent.bodystmt.statements.body.second # "class B; C; end"
       assert_equal "A::B", Node.parent_module_name(ancestors: [parent, grandparent])
     end
 
@@ -211,7 +211,7 @@ module Packwerk
     end
 
     test ".constant? can identify a constant node" do
-      assert Node.constant?(parse("Oranges"))
+      assert Node.constant?(constant)
     end
 
     test ".constant_assignment? can identify a constant assignment node" do
@@ -247,7 +247,8 @@ module Packwerk
     private
 
     def parse(string)
-      ParserTestHelper.parse(string)
+      program = ParserTestHelper.parse(string)
+      program.statements.body.first
     end
   end
 end

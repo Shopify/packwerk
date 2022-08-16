@@ -21,7 +21,7 @@ module Packwerk
 
     test "#call visits all nodes in a file path with no references" do
       @node_processor_factory.expects(:for).returns(@node_processor)
-      @node_processor.expects(:call).twice.returns(nil)
+      @node_processor.expects(:call).times(8).returns(nil)
 
       processed_file = tempfile(name: "foo", content: "def food_bar; end") do |file_path|
         @file_processor.call(file_path)
@@ -34,7 +34,7 @@ module Packwerk
     test "#call visits a node in file path with an reference" do
       unresolved_reference = UnresolvedReference.new("SomeName", [], "tempfile", Node::Location.new(3, 22))
       @node_processor_factory.expects(:for).returns(@node_processor)
-      @node_processor.expects(:call).returns(unresolved_reference)
+      @node_processor.expects(:call).times(4).returns(unresolved_reference)
 
       processed_file = tempfile(name: "foo", content: "a_variable_name") do |file_path|
         @file_processor.call(file_path)
@@ -51,41 +51,8 @@ module Packwerk
       assert_equal 22, reference.source_location.column
     end
 
-    test "#call provides node processor with the correct ancestors" do
-      reference = typed_mock
-      @node_processor_factory.expects(:for).returns(@node_processor)
-      @node_processor.expects(:call).with do |node, ancestors|
-        Node.class?(node) && # class Hello; world; end
-          Node.class_or_module_name(node) == "Hello" &&
-          ancestors.empty?
-      end.returns(nil)
-      @node_processor.expects(:call).with do |node, ancestors|
-        parent = ancestors.first # class Hello; world; end
-        Node.constant?(node) && # Hello
-          Node.constant_name(node) == "Hello" &&
-          ancestors.length == 1 &&
-          Node.class?(parent) &&
-          Node.class_or_module_name(parent) == "Hello"
-      end.returns(nil)
-      @node_processor.expects(:call).with do |node, ancestors|
-        parent = ancestors.first # class Hello; world; end
-        Node.method_call?(node) && # world
-          Node.method_name(node) == :world &&
-          ancestors.length == 1 &&
-          Node.class?(parent) &&
-          Node.class_or_module_name(parent) == "Hello"
-      end.returns(reference)
-
-      processed_file = tempfile(name: "hello_world", content: "class Hello; world; end") do |file_path|
-        @file_processor.call(file_path)
-      end
-
-      assert_equal processed_file.unresolved_references, [reference]
-      assert_equal processed_file.offenses, []
-    end
-
     test "#call reports no references for an empty file" do
-      processed_file = tempfile(name: "foo", content: "# no fun") do |file_path|
+      processed_file = tempfile(name: "foo", content: "") do |file_path|
         @file_processor.call(file_path)
       end
 
