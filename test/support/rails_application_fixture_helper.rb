@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 require "support/rails_test_helper"
@@ -73,7 +73,7 @@ module RailsApplicationFixtureHelper
 
   def create_new_engine_at_path(path)
     Class.new(Rails::Engine) do
-      define_method(:root) do
+      T.unsafe(self).define_method(:root) do
         path
       end
     end

@@ -27,6 +27,7 @@ module Packwerk
       @scan_for_packages_outside_of_app_dir = scan_for_packages_outside_of_app_dir
     end
 
+    sig {returns(T::Array[Pathname])}
     def all_paths
       exclude_pathspec = Array(@exclude_pathspec).dup
         .push(Bundler.bundle_path.join("**").to_s)
