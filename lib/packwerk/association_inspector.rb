@@ -64,9 +64,10 @@ module Packwerk
 
     sig { params(arguments: T::Array[AST::Node]).returns(T.any(T.nilable(Symbol), T.nilable(String))) }
     def association_name(arguments)
-      return unless NodeHelpers.symbol?(arguments[0])
+      association_name_node = T.must(arguments[0])
+      return unless NodeHelpers.symbol?(association_name_node)
 
-      NodeHelpers.literal_value(arguments[0])
+      NodeHelpers.literal_value(association_name_node)
     end
   end
 end

@@ -12,6 +12,7 @@ module Packwerk
     class << self
       extend T::Sig
 
+      sig { params(class_or_module_node: AST::Node).returns(String) }
       def class_or_module_name(class_or_module_node)
         case type_of(class_or_module_node)
         when CLASS, MODULE
@@ -26,6 +27,7 @@ module Packwerk
         end
       end
 
+      sig { params(constant_node: AST::Node).returns(String) }
       def constant_name(constant_node)
         case type_of(constant_node)
         when CONSTANT_ROOT_NAMESPACE
@@ -46,6 +48,7 @@ module Packwerk
           # (casgn (self) :Foo (int 1))
           #   "self::Foo = 1"
           namespace, name = constant_node.children
+
           if namespace
             [constant_name(namespace), name].join("::")
           else
@@ -56,6 +59,7 @@ module Packwerk
         end
       end
 
+      sig { params(node: AST::Node).returns(T.untyped) }
       def each_child(node)
         if block_given?
           node.children.each do |child|
@@ -66,6 +70,7 @@ module Packwerk
         end
       end
 
+      sig { params(starting_node: AST::Node, ancestors: T::Array[AST::Node]).returns(T::Array[String]) }
       def enclosing_namespace_path(starting_node, ancestors:)
         ancestors.select { |n| [CLASS, MODULE].include?(type_of(n)) }
           .each_with_object([]) do |node, namespace|
@@ -78,6 +83,7 @@ module Packwerk
         end
       end
 
+      sig { params(string_or_symbol_node: AST::Node).returns(T.any(String, Symbol)) }
       def literal_value(string_or_symbol_node)
         case type_of(string_or_symbol_node)
         when STRING, SYMBOL
@@ -91,39 +97,48 @@ module Packwerk
         end
       end
 
+      sig { params(node: Parser::AST::Node).returns(Node::Location) }
       def location(node)
         location = node.location
         Node::Location.new(location.line, location.column)
       end
 
+      sig { params(node: AST::Node).returns(T::Boolean) }
       def constant?(node)
         type_of(node) == CONSTANT
       end
 
+      sig { params(node: AST::Node).returns(T::Boolean) }
       def constant_assignment?(node)
         type_of(node) == CONSTANT_ASSIGNMENT
       end
 
+      sig { params(node: AST::Node).returns(T::Boolean) }
       def class?(node)
         type_of(node) == CLASS
       end
 
+      sig { params(node: AST::Node).returns(T::Boolean) }
       def method_call?(node)
         type_of(node) == METHOD_CALL
       end
 
+      sig { params(node: AST::Node).returns(T::Boolean) }
       def hash?(node)
         type_of(node) == HASH
       end
 
+      sig { params(node: AST::Node).returns(T::Boolean) }
       def string?(node)
         type_of(node) == STRING
       end
 
+      sig { params(node: AST::Node).returns(T::Boolean) }
       def symbol?(node)
         type_of(node) == SYMBOL
       end
 
+      sig { params(method_call_node: AST::Node).returns(T::Array[AST::Node]) }
       def method_arguments(method_call_node)
         raise TypeError unless method_call?(method_call_node)
 
@@ -132,6 +147,7 @@ module Packwerk
         method_call_node.children.slice(2..-1)
       end
 
+      sig { params(method_call_node: AST::Node).returns(Symbol) }
       def method_name(method_call_node)
         raise TypeError unless method_call?(method_call_node)
 
@@ -140,6 +156,7 @@ module Packwerk
         method_call_node.children[1]
       end
 
+      sig { params(node: AST::Node).returns(T.nilable(String)) }
       def module_name_from_definition(node)
         case type_of(node)
         when CLASS, MODULE
@@ -164,6 +181,7 @@ module Packwerk
         end
       end
 
+      sig { params(node: Parser::AST::Node).returns(T.nilable(Node::Location)) }
       def name_location(node)
         location = node.location
 
@@ -173,6 +191,7 @@ module Packwerk
         end
       end
 
+      sig { params(class_node: AST::Node).returns(T.nilable(AST::Node)) }
       def parent_class(class_node)
         raise TypeError unless type_of(class_node) == CLASS
 
@@ -193,6 +212,7 @@ module Packwerk
         names.empty? ? "Object" : names.reverse.join("::")
       end
 
+      sig { params(hash_node: AST::Node, key: Symbol).returns(T.untyped) }
       def value_from_hash(hash_node, key)
         raise TypeError unless hash?(hash_node)
 
@@ -220,10 +240,12 @@ module Packwerk
         :MODULE, :SELF, :STRING, :SYMBOL,
       )
 
+      sig { params(node: AST::Node).returns(Symbol) }
       def type_of(node)
         node.type
       end
 
+      sig { params(hash_pair_node: AST::Node).returns(T.untyped) }
       def hash_pair_key(hash_pair_node)
         raise TypeError unless type_of(hash_pair_node) == HASH_PAIR
 
@@ -234,6 +256,7 @@ module Packwerk
         hash_pair_node.children[0]
       end
 
+      sig { params(hash_pair_node: AST::Node).returns(T.untyped) }
       def hash_pair_value(hash_pair_node)
         raise TypeError unless type_of(hash_pair_node) == HASH_PAIR
 
@@ -244,6 +267,7 @@ module Packwerk
         hash_pair_node.children[1]
       end
 
+      sig { params(hash_node: AST::Node).returns(T::Array[AST::Node]) }
       def hash_pairs(hash_node)
         raise TypeError unless hash?(hash_node)
 
@@ -252,6 +276,7 @@ module Packwerk
         hash_node.children.select { |n| type_of(n) == HASH_PAIR }
       end
 
+      sig { params(block_node: AST::Node).returns(AST::Node) }
       def method_call_node(block_node)
         raise TypeError unless type_of(block_node) == BLOCK
 
@@ -260,16 +285,23 @@ module Packwerk
         block_node.children[0]
       end
 
+      sig { params(node: AST::Node).returns(T::Boolean) }
       def module_creation?(node)
         # "Class.new"
         # "Module.new"
         method_call?(node) &&
-          receiver(node) &&
-          constant?(receiver(node)) &&
-          ["Class", "Module"].include?(constant_name(receiver(node))) &&
+          dynamic_class_creation?(receiver(node)) &&
           method_name(node) == :new
       end
 
+      sig { params(node: T.nilable(AST::Node)).returns(T::Boolean) }
+      def dynamic_class_creation?(node)
+        !!node &&
+          constant?(node) &&
+          ["Class", "Module"].include?(constant_name(node))
+      end
+
+      sig { params(node: AST::Node).returns(T.nilable(String)) }
       def name_from_block_definition(node)
         if method_name(method_call_node(node)) == :class_eval
           receiver = receiver(node)
@@ -277,6 +309,7 @@ module Packwerk
         end
       end
 
+      sig { params(node: AST::Node).returns(T.nilable(String)) }
       def name_part_from_definition(node)
         case type_of(node)
         when CLASS, MODULE, CONSTANT_ASSIGNMENT
@@ -286,6 +319,7 @@ module Packwerk
         end
       end
 
+      sig { params(method_call_or_block_node: AST::Node).returns(T.nilable(AST::Node)) }
       def receiver(method_call_or_block_node)
         case type_of(method_call_or_block_node)
         when METHOD_CALL
