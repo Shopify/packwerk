@@ -72,15 +72,16 @@ Secondly, to enable Spring, first run `bin/spring binstub packwerk` which will "
 
 Packwerk reads from the `packwerk.yml` configuration file in the root directory. Packwerk will run with the default configuration if any of these settings are not specified.
 
-| Key                  | Default value                             | Description  |
-|----------------------|-------------------------------------------|--------------|
-| include              | **/*.{rb,rake,erb}                        | list of patterns for folder paths to include |
-| exclude              | {bin,node_modules,script,tmp,vendor}/**/* | list of patterns for folder paths to exclude |
-| package_paths        | **/                                       | a single pattern or a list of patterns to find package configuration files, see: [Defining packages](#Defining-packages) |
-| custom_associations  | N/A                                       | list of custom associations, if any |
-| parallel             | true                                      | when true, fork code parsing out to subprocesses |
-| cache                | false                                     | when true, caches the results of parsing files |
-| cache_directory      | tmp/cache/packwerk                        | the directory that will hold the packwerk cache |
+| Key                                 | Default value                             | Description                                                                                                              |
+|-------------------------------------|-------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| include                             | **/*.{rb,rake,erb}                        | list of patterns for folder paths to include                                                                             |
+| exclude                             | {bin,node_modules,script,tmp,vendor}/**/* | list of patterns for folder paths to exclude                                                                             |
+| package_paths                       | **/                                       | a single pattern or a list of patterns to find package configuration files, see: [Defining packages](#Defining-packages) |
+| custom_associations                 | N/A                                       | list of custom associations, if any                                                                                      |
+| parallel                            | true                                      | when true, fork code parsing out to subprocesses                                                                         |
+| cache                               | false                                     | when true, caches the results of parsing files                                                                           |
+| cache_directory                     | tmp/cache/packwerk                        | the directory that will hold the packwerk cache                                                                          |
+| packages_outside_of_app_dir_enabled | false                                     | when true, packwerk will scan for packages in folders for locally published rails engines                                |
 
 ### Using a custom ERB parser
 
