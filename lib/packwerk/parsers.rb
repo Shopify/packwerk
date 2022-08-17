@@ -7,6 +7,7 @@ module Packwerk
     autoload :Factory, "packwerk/parsers/factory"
     autoload :ParserInterface, "packwerk/parsers/parser_interface"
     autoload :Ruby, "packwerk/parsers/ruby"
+    autoload :SyntaxTree, "packwerk/parsers/syntax_tree"
 
     class ParseResult < Offense; end
 
