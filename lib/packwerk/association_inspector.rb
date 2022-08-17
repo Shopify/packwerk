@@ -31,16 +31,16 @@ module Packwerk
         .returns(T.nilable(String))
     end
     def constant_name_from_node(node, ancestors:)
-      return unless Node.method_call?(node)
+      return unless NodeHelpers.method_call?(node)
       return unless association?(node)
 
-      arguments = Node.method_arguments(node)
+      arguments = NodeHelpers.method_arguments(node)
       return unless (association_name = association_name(arguments))
 
       if (class_name_node = custom_class_name(arguments))
-        return unless Node.string?(class_name_node)
+        return unless NodeHelpers.string?(class_name_node)
 
-        Node.literal_value(class_name_node)
+        NodeHelpers.literal_value(class_name_node)
       else
         @inflector.classify(association_name.to_s)
       end
@@ -50,23 +50,23 @@ module Packwerk
 
     sig { params(node: AST::Node).returns(T::Boolean) }
     def association?(node)
-      method_name = Node.method_name(node)
+      method_name = NodeHelpers.method_name(node)
       @associations.include?(method_name)
     end
 
     sig { params(arguments: T::Array[AST::Node]).returns(T.nilable(AST::Node)) }
     def custom_class_name(arguments)
-      association_options = arguments.detect { |n| Node.hash?(n) }
+      association_options = arguments.detect { |n| NodeHelpers.hash?(n) }
       return unless association_options
 
-      Node.value_from_hash(association_options, :class_name)
+      NodeHelpers.value_from_hash(association_options, :class_name)
     end
 
     sig { params(arguments: T::Array[AST::Node]).returns(T.any(T.nilable(Symbol), T.nilable(String))) }
     def association_name(arguments)
-      return unless Node.symbol?(arguments[0])
+      return unless NodeHelpers.symbol?(arguments[0])
 
-      Node.literal_value(arguments[0])
+      NodeHelpers.literal_value(arguments[0])
     end
   end
 end

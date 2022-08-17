@@ -39,19 +39,20 @@ module Packwerk
     private
 
     def collect_local_definitions_from_root(node, current_namespace_path = [])
-      if Node.constant_assignment?(node)
-        add_definition(Node.constant_name(node), current_namespace_path, Node.name_location(node))
-      elsif Node.module_name_from_definition(node)
+      if NodeHelpers.constant_assignment?(node)
+        add_definition(NodeHelpers.constant_name(node), current_namespace_path, NodeHelpers.name_location(node))
+      elsif NodeHelpers.module_name_from_definition(node)
         # handle compact constant nesting (e.g. "module Sales::Order")
         tempnode = node
-        while (tempnode = Node.each_child(tempnode).find { |n| Node.constant?(n) })
-          add_definition(Node.constant_name(tempnode), current_namespace_path, Node.name_location(tempnode))
+        while (tempnode = NodeHelpers.each_child(tempnode).find { |n| NodeHelpers.constant?(n) })
+          add_definition(NodeHelpers.constant_name(tempnode), current_namespace_path,
+            NodeHelpers.name_location(tempnode))
         end
 
-        current_namespace_path += Node.class_or_module_name(node).split("::")
+        current_namespace_path += NodeHelpers.class_or_module_name(node).split("::")
       end
 
-      Node.each_child(node) { |child| collect_local_definitions_from_root(child, current_namespace_path) }
+      NodeHelpers.each_child(node) { |child| collect_local_definitions_from_root(child, current_namespace_path) }
     end
 
     def add_definition(constant_name, current_namespace_path, location)

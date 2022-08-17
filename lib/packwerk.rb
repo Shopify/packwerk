@@ -26,6 +26,7 @@ module Packwerk
   autoload :FilesForProcessing
   autoload :Graph
   autoload :Node
+  autoload :NodeHelpers
   autoload :NodeProcessor
   autoload :NodeProcessorFactory
   autoload :NodeVisitor

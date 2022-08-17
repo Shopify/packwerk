@@ -16,7 +16,7 @@ module Packwerk
       result << reference if reference
 
       child_ancestors = [node] + ancestors
-      Node.each_child(node) do |child|
+      NodeHelpers.each_child(node) do |child|
         visit(child, ancestors: child_ancestors, result: result)
       end
     end

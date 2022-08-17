@@ -104,14 +104,15 @@ module Packwerk
     test "doesn't count definition as reference" do
       ast = parse_code("class HelloWorld; end")
 
-      const_node = Node.each_child(ast).find { |n| Node.constant?(n) }
+      const_node = NodeHelpers.each_child(ast).find { |n| NodeHelpers.constant?(n) }
 
       definitions = ParsedConstantDefinitions.new(
         root_node: ast
       )
 
-      assert definitions.local_reference?(Node.constant_name(const_node))
-      refute definitions.local_reference?(Node.constant_name(const_node), location: Node.name_location(const_node))
+      assert definitions.local_reference?(NodeHelpers.constant_name(const_node))
+      refute definitions.local_reference?(NodeHelpers.constant_name(const_node),
+        location: NodeHelpers.name_location(const_node))
     end
 
     test "handles empty files" do
