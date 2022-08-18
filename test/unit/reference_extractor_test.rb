@@ -162,7 +162,7 @@ module Packwerk
 
     test "passes all arguments to association inspector" do
       call = "has_many :clowns, class_name: 'Order'"
-      arguments = Node.method_arguments(ParserTestHelper.parse(call))
+      arguments = NodeHelpers.method_arguments(ParserTestHelper.parse(call))
       process(
         "class Entry; #{call}; end",
         "components/timeline/app/models/entry.rb",
@@ -224,9 +224,9 @@ module Packwerk
 
       def constant_name_from_node(node, ancestors:)
         return nil unless @association
-        return nil unless Node.method_call?(node)
+        return nil unless NodeHelpers.method_call?(node)
 
-        args = Node.method_arguments(node)
+        args = NodeHelpers.method_arguments(node)
         if @expected_args && @expected_args != args
           raise("expected arguments don't match.\nExpected:\n#{@expected_args}\nActual:\n#{args}")
         end
@@ -263,7 +263,7 @@ module Packwerk
     def find_references_in_ast(root_node, ancestors:, extractor:, file_path:)
       references = [extractor.reference_from_node(root_node, ancestors: ancestors, relative_file: file_path)]
 
-      child_references = Node.each_child(root_node).flat_map do |child|
+      child_references = NodeHelpers.each_child(root_node).flat_map do |child|
         find_references_in_ast(child, ancestors: [root_node] + ancestors, extractor: extractor, file_path: file_path)
       end
 

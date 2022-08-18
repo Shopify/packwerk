@@ -103,11 +103,11 @@ module Packwerk
       ).returns(T.nilable(UnresolvedReference))
     end
     def reference_from_constant(constant_name, node:, ancestors:, relative_file:)
-      namespace_path = Node.enclosing_namespace_path(node, ancestors: ancestors)
+      namespace_path = NodeHelpers.enclosing_namespace_path(node, ancestors: ancestors)
 
-      return if local_reference?(constant_name, Node.name_location(node), namespace_path)
+      return if local_reference?(constant_name, NodeHelpers.name_location(node), namespace_path)
 
-      location = Node.location(node)
+      location = NodeHelpers.location(node)
 
       UnresolvedReference.new(
         constant_name,

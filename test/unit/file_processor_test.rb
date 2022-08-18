@@ -55,25 +55,25 @@ module Packwerk
       reference = typed_mock
       @node_processor_factory.expects(:for).returns(@node_processor)
       @node_processor.expects(:call).with do |node, ancestors|
-        Node.class?(node) && # class Hello; world; end
-          Node.class_or_module_name(node) == "Hello" &&
+        NodeHelpers.class?(node) && # class Hello; world; end
+          NodeHelpers.class_or_module_name(node) == "Hello" &&
           ancestors.empty?
       end.returns(nil)
       @node_processor.expects(:call).with do |node, ancestors|
         parent = ancestors.first # class Hello; world; end
-        Node.constant?(node) && # Hello
-          Node.constant_name(node) == "Hello" &&
+        NodeHelpers.constant?(node) && # Hello
+          NodeHelpers.constant_name(node) == "Hello" &&
           ancestors.length == 1 &&
-          Node.class?(parent) &&
-          Node.class_or_module_name(parent) == "Hello"
+          NodeHelpers.class?(parent) &&
+          NodeHelpers.class_or_module_name(parent) == "Hello"
       end.returns(nil)
       @node_processor.expects(:call).with do |node, ancestors|
         parent = ancestors.first # class Hello; world; end
-        Node.method_call?(node) && # world
-          Node.method_name(node) == :world &&
+        NodeHelpers.method_call?(node) && # world
+          NodeHelpers.method_name(node) == :world &&
           ancestors.length == 1 &&
-          Node.class?(parent) &&
-          Node.class_or_module_name(parent) == "Hello"
+          NodeHelpers.class?(parent) &&
+          NodeHelpers.class_or_module_name(parent) == "Hello"
       end.returns(reference)
 
       processed_file = tempfile(name: "hello_world", content: "class Hello; world; end") do |file_path|
