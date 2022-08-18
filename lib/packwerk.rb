@@ -27,6 +27,7 @@ module Packwerk
   autoload :Graph
   autoload :Node
   autoload :NodeHelpers
+  autoload :NodeHelpersSyntaxTree
   autoload :NodeProcessor
   autoload :NodeProcessorFactory
   autoload :NodeVisitor
