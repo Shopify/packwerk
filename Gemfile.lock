@@ -204,7 +204,7 @@ GEM
       rubocop (~> 1.33)
     rubocop-sorbet (0.6.11)
       rubocop (>= 0.90.0)
-    ruby-lsp (0.2.1)
+    ruby-lsp (0.2.3)
       language_server-protocol
       sorbet-runtime
       syntax_tree (>= 2.4)
