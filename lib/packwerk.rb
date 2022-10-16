@@ -85,4 +85,12 @@ module Packwerk
       autoload :PrivacyChecker
     end
   end
+
+  class ApplicationValidator
+    extend ActiveSupport::Autoload
+
+    autoload :Result
+    autoload :CheckPackageManifestsForPrivacy
+    autoload :Helpers
+  end
 end
