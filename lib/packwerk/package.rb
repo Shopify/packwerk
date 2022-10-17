@@ -17,17 +17,15 @@ module Packwerk
     sig { returns(T::Array[String]) }
     attr_reader :dependencies
 
+    sig { returns(T::Hash[T.untyped, T.untyped]) }
+    attr_reader :config
+
     sig { params(name: String, config: T.nilable(T.any(T::Hash[T.untyped, T.untyped], FalseClass))).void }
     def initialize(name:, config:)
       @name = name
       @config = T.let(config || {}, T::Hash[T.untyped, T.untyped])
       @dependencies = T.let(Array(@config["dependencies"]).freeze, T::Array[String])
       @public_path = T.let(nil, T.nilable(String))
-    end
-
-    sig { returns(T.nilable(T.any(T::Boolean, T::Array[String]))) }
-    def enforce_privacy
-      @config["enforce_privacy"]
     end
 
     sig { returns(T::Boolean) }
@@ -47,30 +45,32 @@ module Packwerk
       path.start_with?(@name)
     end
 
+    # These functions to get information about package privacy concerns will soon be removed
+    sig { returns(T.nilable(T.any(T::Boolean, T::Array[String]))) }
+    def enforce_privacy
+      privacy_protected_package.enforce_privacy
+    end
+
     sig { returns(String) }
     def public_path
-      @public_path ||= begin
-        unprefixed_public_path = user_defined_public_path || "app/public/"
-
-        if root?
-          unprefixed_public_path
-        else
-          File.join(@name, unprefixed_public_path)
-        end
-      end
+      privacy_protected_package.public_path
     end
 
     sig { params(path: String).returns(T::Boolean) }
     def public_path?(path)
-      path.start_with?(public_path)
+      privacy_protected_package.public_path?(path)
     end
 
     sig { returns(T.nilable(String)) }
     def user_defined_public_path
-      return unless @config["public_path"]
-      return @config["public_path"] if @config["public_path"].end_with?("/")
+      privacy_protected_package.user_defined_public_path
+    end
 
-      @config["public_path"] + "/"
+    sig { returns(ReferenceChecking::Checkers::PrivacyChecker::PrivacyProtectedPackage) }
+    def privacy_protected_package
+      @privacy_protected_package ||= T.let(@privacy_protected_package,
+        T.nilable(ReferenceChecking::Checkers::PrivacyChecker::PrivacyProtectedPackage))
+      @privacy_protected_package ||= ReferenceChecking::Checkers::PrivacyChecker::PrivacyProtectedPackage.from(self)
     end
 
     sig { params(other: T.untyped).returns(T.nilable(Integer)) }
