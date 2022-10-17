@@ -8,6 +8,8 @@ module Packwerk
         extend T::Sig
         extend T::Helpers
 
+        ViolationType = T.type_alias { String }
+
         abstract!
 
         sig { abstract.returns(ViolationType) }

@@ -17,7 +17,7 @@ module Packwerk
       end
 
       def violation_type
-        @violation_type || ViolationType::Dependency
+        @violation_type || ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       end
 
       def invalid_reference?(_reference)
@@ -35,7 +35,7 @@ module Packwerk
       instance = reference_checker([StubChecker.new(
         invalid_reference?: true,
         message: message,
-        violation_type: ViolationType::Privacy
+        violation_type: ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE
       )])
       offenses = instance.call(input_reference)
 
