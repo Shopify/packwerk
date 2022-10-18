@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    packwerk (2.2.0)
+    packwerk (2.2.1)
       activesupport (>= 5.2)
       ast
       better_html
@@ -80,7 +80,7 @@ GEM
       minitest (>= 5.1)
       tzinfo (~> 2.0)
     ast (2.4.2)
-    better_html (2.0.0)
+    better_html (2.0.1)
       actionview (>= 6.0)
       activesupport (>= 6.0)
       ast (~> 2.0)
