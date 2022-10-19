@@ -5,6 +5,9 @@ module Packwerk
   module ReferenceChecking
     module Checkers
       module Checker
+        extend ActiveSupport::Autoload
+        autoload :ViolationType
+
         extend T::Sig
         extend T::Helpers
 

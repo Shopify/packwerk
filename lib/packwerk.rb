@@ -80,10 +80,6 @@ module Packwerk
       extend ActiveSupport::Autoload
 
       autoload :Checker
-      module Checker
-        extend ActiveSupport::Autoload
-        autoload :ViolationType
-      end
 
       autoload :DependencyChecker
       autoload :PrivacyChecker
