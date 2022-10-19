@@ -66,11 +66,17 @@ module Packwerk
           }
         end
 
-        return true if package_violations_for_files.empty?
+        # We `next false` because if we cannot find existing violations for `for_files` within
+        # the `deprecated_references.yml` file, then there are no violations that
+        # can be considered stale.
+        next false if package_violations_for_files.empty?
 
         package_violations_for_files.any? do |constant_name, entries_for_constant|
           new_entries_violation_types = @new_entries.dig(package, constant_name, "violations")
-          return true if new_entries_violation_types.nil?
+          # If there are no NEW entries that match the old entries `for_files`,
+          # @new_entries is from the list of violations we get when we check this file.
+          # If this list is empty, we also must have stale violations.
+          next true if new_entries_violation_types.nil?
 
           if entries_for_constant["violations"].all? { |type| new_entries_violation_types.include?(type) }
             stale_violations =
