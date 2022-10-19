@@ -27,7 +27,7 @@ module Packwerk
             source_package: Package.new(name: ".", config: nil)
           ),
           message: "some message",
-          violation_type: ViolationType::Dependency
+          violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
         )
         offense2 = ReferenceOffense.new(
           reference: build_reference(
@@ -35,7 +35,7 @@ module Packwerk
             source_package: Package.new(name: ".", config: nil)
           ),
           message: "some message",
-          violation_type: ViolationType::Dependency
+          violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
         )
         @offense_collection.add_offense(offense1)
         @offense_collection.add_offense(offense2)

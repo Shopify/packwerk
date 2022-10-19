@@ -9,9 +9,11 @@ module Packwerk
         extend T::Sig
         include Checker
 
-        sig { override.returns(Packwerk::ViolationType) }
+        VIOLATION_TYPE = T.let("privacy", String)
+
+        sig { override.returns(String) }
         def violation_type
-          ViolationType::Privacy
+          VIOLATION_TYPE
         end
 
         sig do

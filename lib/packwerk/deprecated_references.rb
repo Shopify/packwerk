@@ -20,7 +20,7 @@ module Packwerk
     end
 
     sig do
-      params(reference: Packwerk::Reference, violation_type: ViolationType)
+      params(reference: Packwerk::Reference, violation_type: String)
         .returns(T::Boolean)
     end
     def listed?(reference, violation_type:)
@@ -30,16 +30,18 @@ module Packwerk
       violated_constant_in_file = violated_constants_found.fetch("files", []).include?(reference.relative_path)
       return false unless violated_constant_in_file
 
-      violated_constants_found.fetch("violations", []).include?(violation_type.serialize)
+      violated_constants_found.fetch("violations", []).include?(violation_type)
     end
 
-    sig { params(reference: Packwerk::Reference, violation_type: Packwerk::ViolationType).returns(T::Boolean) }
+    sig do
+      params(reference: Packwerk::Reference, violation_type: String).returns(T::Boolean)
+    end
     def add_entries(reference, violation_type)
       package_violations = @new_entries.fetch(reference.constant.package.name, {})
       entries_for_constant = package_violations[reference.constant.name] ||= {}
 
       entries_for_constant["violations"] ||= []
-      entries_for_constant["violations"] << violation_type.serialize
+      entries_for_constant["violations"] << violation_type
 
       entries_for_constant["files"] ||= []
       entries_for_constant["files"] << reference.relative_path.to_s

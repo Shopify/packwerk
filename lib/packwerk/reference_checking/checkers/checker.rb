@@ -10,7 +10,7 @@ module Packwerk
 
         abstract!
 
-        sig { abstract.returns(ViolationType) }
+        sig { abstract.returns(String) }
         def violation_type; end
 
         sig { abstract.params(reference: Reference).returns(T::Boolean) }

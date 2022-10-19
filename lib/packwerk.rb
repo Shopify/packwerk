@@ -45,7 +45,6 @@ module Packwerk
   autoload :Result
   autoload :RunContext
   autoload :Version
-  autoload :ViolationType
 
   module OutputStyles
     extend ActiveSupport::Autoload
@@ -81,6 +80,7 @@ module Packwerk
       extend ActiveSupport::Autoload
 
       autoload :Checker
+
       autoload :DependencyChecker
       autoload :PrivacyChecker
     end

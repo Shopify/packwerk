@@ -11,7 +11,7 @@ module Packwerk
       @offense_collection = OffenseCollection.new(".")
       @offense = ReferenceOffense.new(
         reference: build_reference,
-        violation_type: ViolationType::Dependency,
+        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE,
         message: "some message"
       )
     end
@@ -50,7 +50,7 @@ module Packwerk
       deprecated_references = Packwerk::DeprecatedReferences.new(package, ".")
       deprecated_references
         .stubs(:listed?)
-        .with(reference, violation_type: Packwerk::ViolationType::Dependency)
+        .with(reference, violation_type: Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
         .returns(true)
       Packwerk::DeprecatedReferences
         .stubs(:new)
@@ -59,7 +59,7 @@ module Packwerk
 
       offense = Packwerk::ReferenceOffense.new(
         reference: reference,
-        violation_type: ViolationType::Dependency,
+        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE,
         message: "some message"
       )
 
@@ -69,7 +69,7 @@ module Packwerk
     test "#listed? returns false if constant is not listed in file " do
       offense = Packwerk::ReferenceOffense.new(
         reference: build_reference,
-        violation_type: ViolationType::Dependency,
+        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE,
         message: "some message"
       )
 

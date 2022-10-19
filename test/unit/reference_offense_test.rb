@@ -16,7 +16,7 @@ module Packwerk
       offense = ReferenceOffense.new(
         reference: @reference,
         message: "some message",
-        violation_type: ViolationType::Privacy
+        violation_type: ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE
       )
 
       assert_equal(@reference.relative_path, offense.file)
@@ -24,7 +24,8 @@ module Packwerk
 
     test "generates a sensible message for privacy violations" do
       message = ReferenceChecking::Checkers::PrivacyChecker.new.message(@reference)
-      offense = ReferenceOffense.new(reference: @reference, message: message, violation_type: ViolationType::Privacy)
+      offense = ReferenceOffense.new(reference: @reference, message: message,
+        violation_type: ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE)
 
       assert_match(
         "Privacy violation: '::SomeName' is private to 'destination_package' but referenced from " \
@@ -34,7 +35,8 @@ module Packwerk
 
     test "generates a sensible message for dependency violations" do
       message = ReferenceChecking::Checkers::DependencyChecker.new.message(@reference)
-      offense = ReferenceOffense.new(reference: @reference, message: message, violation_type: ViolationType::Dependency)
+      offense = ReferenceOffense.new(reference: @reference, message: message,
+        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
 
       expected = <<~EXPECTED
         Dependency violation: ::SomeName belongs to 'destination_package', but 'components/source' does not specify a dependency on 'destination_package'.

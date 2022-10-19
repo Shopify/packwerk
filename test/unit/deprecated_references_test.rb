@@ -17,7 +17,7 @@ module Packwerk
 
       assert deprecated_references.listed?(
         violated_reference,
-        violation_type: ViolationType::Dependency
+        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       )
     end
 
@@ -34,7 +34,7 @@ module Packwerk
 
       refute deprecated_references.listed?(
         violated_reference,
-        violation_type: ViolationType::Dependency
+        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       )
     end
 
@@ -45,7 +45,7 @@ module Packwerk
 
     test "#stale_violations? returns false if deprecated references does not exist but violations are found in code" do
       deprecated_references = DeprecatedReferences.new(destination_package, "nonexistant_file_path")
-      deprecated_references.add_entries(build_reference, ViolationType::Dependency)
+      deprecated_references.add_entries(build_reference, ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
       refute deprecated_references.stale_violations?(Set.new)
     end
 
@@ -64,8 +64,10 @@ module Packwerk
       )
 
       deprecated_references = DeprecatedReferences.new(package, "test/fixtures/deprecated_references.yml")
-      deprecated_references.add_entries(first_violated_reference, Packwerk::ViolationType::Dependency)
-      deprecated_references.add_entries(second_violated_reference, Packwerk::ViolationType::Dependency)
+      deprecated_references.add_entries(first_violated_reference,
+        Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
+      deprecated_references.add_entries(second_violated_reference,
+        Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
       refute deprecated_references.stale_violations?(Set.new([
         "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
         "orders/app/models/orders/services/adjustment_engine.rb",
@@ -87,8 +89,10 @@ module Packwerk
       )
 
       deprecated_references = DeprecatedReferences.new(package, "test/fixtures/deprecated_references.yml")
-      deprecated_references.add_entries(first_violated_reference, Packwerk::ViolationType::Privacy)
-      deprecated_references.add_entries(second_violated_reference, Packwerk::ViolationType::Privacy)
+      deprecated_references.add_entries(first_violated_reference,
+        Packwerk::ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE)
+      deprecated_references.add_entries(second_violated_reference,
+        Packwerk::ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE)
       assert deprecated_references.stale_violations?(Set.new([
         "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
         "orders/app/models/orders/services/adjustment_engine.rb",
@@ -112,7 +116,8 @@ module Packwerk
         constant_name: "::Buyers::Document"
       )
       deprecated_references = DeprecatedReferences.new(package, "test/fixtures/deprecated_references.yml")
-      deprecated_references.add_entries(violated_reference, ViolationType::Dependency)
+      deprecated_references.add_entries(violated_reference,
+        ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
       refute deprecated_references.stale_violations?(
         Set.new(["orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb"])
       )
@@ -124,7 +129,7 @@ module Packwerk
 
       refute deprecated_references.listed?(
         reference,
-        violation_type: ViolationType::Privacy
+        violation_type: ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE
       )
     end
 
@@ -137,7 +142,7 @@ module Packwerk
 
       refute deprecated_references.listed?(
         violated_reference,
-        violation_type: ViolationType::Dependency
+        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       )
     end
 
@@ -146,7 +151,8 @@ module Packwerk
         reference = build_reference
         deprecated_references = DeprecatedReferences.new(reference.constant.package, file.path)
 
-        deprecated_references.add_entries(reference, Packwerk::ViolationType::Privacy)
+        deprecated_references.add_entries(reference,
+          Packwerk::ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE)
         deprecated_references.dump
 
         expected_output = {
@@ -199,12 +205,18 @@ module Packwerk
           path: "this/should/come/last.rb"
         )
 
-        deprecated_references.add_entries(second_package_first_reference, Packwerk::ViolationType::Privacy)
-        deprecated_references.add_entries(second_package_first_reference, Packwerk::ViolationType::Dependency)
-        deprecated_references.add_entries(second_package_second_reference, Packwerk::ViolationType::Dependency)
-        deprecated_references.add_entries(second_package_second_reference, Packwerk::ViolationType::Dependency)
-        deprecated_references.add_entries(second_package_third_reference, Packwerk::ViolationType::Dependency)
-        deprecated_references.add_entries(first_package_reference, Packwerk::ViolationType::Privacy)
+        deprecated_references.add_entries(second_package_first_reference,
+          Packwerk::ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE)
+        deprecated_references.add_entries(second_package_first_reference,
+          Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
+        deprecated_references.add_entries(second_package_second_reference,
+          Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
+        deprecated_references.add_entries(second_package_second_reference,
+          Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
+        deprecated_references.add_entries(second_package_third_reference,
+          Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
+        deprecated_references.add_entries(first_package_reference,
+          Packwerk::ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE)
 
         deprecated_references.dump
 
