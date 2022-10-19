@@ -5,17 +5,12 @@ module Packwerk
   module ReferenceChecking
     module Checkers
       module Checker
-        extend ActiveSupport::Autoload
-        autoload :ViolationType
-
         extend T::Sig
         extend T::Helpers
 
-        ViolationType = T.type_alias { String }
-
         abstract!
 
-        sig { abstract.returns(ViolationType) }
+        sig { abstract.returns(String) }
         def violation_type; end
 
         sig { abstract.params(reference: Reference).returns(T::Boolean) }

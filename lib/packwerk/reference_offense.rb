@@ -10,13 +10,13 @@ module Packwerk
     sig { returns(Reference) }
     attr_reader :reference
 
-    sig { returns(ReferenceChecking::Checkers::Checker::ViolationType) }
+    sig { returns(String) }
     attr_reader :violation_type
 
     sig do
       params(
         reference: Packwerk::Reference,
-        violation_type: ReferenceChecking::Checkers::Checker::ViolationType,
+        violation_type: String,
         message: String,
         location: T.nilable(Node::Location)
       )

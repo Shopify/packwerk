@@ -11,7 +11,7 @@ module Packwerk
 
         VIOLATION_TYPE = T.let("dependency", String)
 
-        sig { override.returns(ViolationType) }
+        sig { override.returns(String) }
         def violation_type
           VIOLATION_TYPE
         end

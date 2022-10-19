@@ -20,7 +20,7 @@ module Packwerk
     end
 
     sig do
-      params(reference: Packwerk::Reference, violation_type: ReferenceChecking::Checkers::Checker::ViolationType)
+      params(reference: Packwerk::Reference, violation_type: String)
         .returns(T::Boolean)
     end
     def listed?(reference, violation_type:)
@@ -34,8 +34,7 @@ module Packwerk
     end
 
     sig do
-      params(reference: Packwerk::Reference,
-        violation_type: ReferenceChecking::Checkers::Checker::ViolationType).returns(T::Boolean)
+      params(reference: Packwerk::Reference, violation_type: String).returns(T::Boolean)
     end
     def add_entries(reference, violation_type)
       package_violations = @new_entries.fetch(reference.constant.package.name, {})
