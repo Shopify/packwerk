@@ -79,8 +79,6 @@ To reduce the impact of those limitations, Packwerk is designed to avoid false p
 - Method calls and objects passed around the application are completely ignored. Packwerk only cares about static constant references. That said, if you want Packwerk to analyze parameters of a method, you can use [Sorbet](https://sorbet.org/) to define a type signature. Sorbet signatures are pure Ruby code and use constants to express types, and Packwerk understands that.
 - Support for custom Zeitwerk configuration is limited. If [custom ActiveSupport inflections](https://guides.rubyonrails.org/autoloading_and_reloading_constants.html#customizing-inflections) are used, Packwerk will understand that and everything is fine. However, if Zeitwerk is directly configured with [custom Zeitwerk inflections](https://github.com/fxn/zeitwerk#inflection) or to [collapse directories](https://github.com/fxn/zeitwerk#collapsing-directories), _Packwerk will get confused and produce false positives_.
 
-TODO: Remove this
-
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/Shopify/packwerk.

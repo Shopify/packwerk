@@ -73,7 +73,8 @@ module RailsApplicationFixtureHelper
 
   def create_new_engine_at_path(path)
     Class.new(Rails::Engine) do
-      T.unsafe(self).define_method(:root) do
+      T.bind(self, Class)
+      define_method(:root) do
         path
       end
     end
