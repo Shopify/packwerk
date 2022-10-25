@@ -65,7 +65,7 @@ module Packwerk
       refute checker.invalid_reference?(reference)
     end
 
-    test "only checks the deprecated references file for private constants" do
+    test "only checks the package TODO file for private constants" do
       destination_package = Package.new(name: "destination_package", config: { "enforce_privacy" => ["::SomeName"] })
       checker = privacy_checker
       reference = build_reference(destination_package: destination_package)

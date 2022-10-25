@@ -1,6 +1,8 @@
 # typed: strict
 # frozen_string_literal: true
 
+require "pathname"
+
 module Packwerk
   class OffenseCollection
     extend T::Sig
@@ -9,12 +11,12 @@ module Packwerk
     sig do
       params(
         root_path: String,
-        deprecated_references: T::Hash[Packwerk::Package, Packwerk::DeprecatedReferences]
+        package_todo: T::Hash[Packwerk::Package, Packwerk::PackageTodo]
       ).void
     end
-    def initialize(root_path, deprecated_references = {})
+    def initialize(root_path, package_todo = {})
       @root_path = root_path
-      @deprecated_references = T.let(deprecated_references, T::Hash[Packwerk::Package, Packwerk::DeprecatedReferences])
+      @package_todo = T.let(package_todo, T::Hash[Packwerk::Package, Packwerk::PackageTodo])
       @new_violations = T.let([], T::Array[Packwerk::ReferenceOffense])
       @errors = T.let([], T::Array[Packwerk::Offense])
     end
@@ -33,7 +35,7 @@ module Packwerk
       return false unless offense.is_a?(ReferenceOffense)
 
       reference = offense.reference
-      deprecated_references_for(reference.source_package).listed?(reference, violation_type: offense.violation_type)
+      package_todo_for(reference.source_package).listed?(reference, violation_type: offense.violation_type)
     end
 
     sig do
@@ -44,23 +46,23 @@ module Packwerk
         @errors << offense
         return
       end
-      deprecated_references = deprecated_references_for(offense.reference.source_package)
-      unless deprecated_references.add_entries(offense.reference, offense.violation_type)
+      package_todo = package_todo_for(offense.reference.source_package)
+      unless package_todo.add_entries(offense.reference, offense.violation_type)
         new_violations << offense
       end
     end
 
     sig { params(for_files: T::Set[String]).returns(T::Boolean) }
     def stale_violations?(for_files)
-      @deprecated_references.values.any? do |deprecated_references|
-        deprecated_references.stale_violations?(for_files)
+      @package_todo.values.any? do |package_todo|
+        package_todo.stale_violations?(for_files)
       end
     end
 
     sig { void }
-    def dump_deprecated_references_files
-      @deprecated_references.each do |_, deprecated_references_file|
-        deprecated_references_file.dump
+    def dump_package_todo_files
+      @package_todo.each do |_, package_todo_file|
+        package_todo_file.dump
       end
     end
 
@@ -71,17 +73,28 @@ module Packwerk
 
     private
 
-    sig { params(package: Packwerk::Package).returns(Packwerk::DeprecatedReferences) }
-    def deprecated_references_for(package)
-      @deprecated_references[package] ||= Packwerk::DeprecatedReferences.new(
+    sig { params(package: Packwerk::Package).returns(Packwerk::PackageTodo) }
+    def package_todo_for(package)
+      @package_todo[package] ||= Packwerk::PackageTodo.new(
         package,
-        deprecated_references_file_for(package),
+        package_todo_file_for(package),
       )
     end
 
     sig { params(package: Packwerk::Package).returns(String) }
-    def deprecated_references_file_for(package)
-      File.join(@root_path, package.name, "deprecated_references.yml")
+    def package_todo_file_for(package)
+      if Pathname.new(@root_path).join(package.name, "deprecated_references.yml").exist?
+        warning = <<~WARNING.squish
+          DEPRECATION WARNING: `deprecated_references.yml` files have been renamed to
+          `package_todo.yml`. Please see https://github.com/Shopify/packwerk/releases
+          for help renaming these.
+        WARNING
+
+        warn(warning)
+        File.join(@root_path, package.name, "deprecated_references.yml")
+      else
+        File.join(@root_path, package.name, "package_todo.yml")
+      end
     end
   end
 end

@@ -27,39 +27,39 @@ module Packwerk
         configuration: Configuration.from_path
       )
       result = parse_run.detect_stale_violations
-      assert_equal "There were stale violations found, please run `packwerk update-deprecations`", result.message
+      assert_equal "There were stale violations found, please run `packwerk update-todo`", result.message
       refute result.status
     end
 
-    test "#update_deprecations returns success when there are no offenses" do
+    test "#update-todo returns success when there are no offenses" do
       use_template(:minimal)
       RunContext.any_instance.stubs(:process_file).returns([])
-      OffenseCollection.any_instance.expects(:dump_deprecated_references_files).once
+      OffenseCollection.any_instance.expects(:dump_package_todo_files).once
 
       parse_run = Packwerk::ParseRun.new(
         relative_file_set: Set.new(["path/of/exile.rb"]),
         configuration: Configuration.from_path
       )
-      result = parse_run.update_deprecations
+      result = parse_run.update_todo
 
       assert_equal result.message, <<~EOS
         No offenses detected
-        ✅ `deprecated_references.yml` has been updated.
+        ✅ `package_todo.yml` has been updated.
       EOS
       assert result.status
     end
 
-    test "#update_deprecations returns exit code 1 when there are offenses" do
+    test "#update-todo returns exit code 1 when there are offenses" do
       use_template(:minimal)
       offense = Offense.new(file: "path/of/exile.rb", message: "something")
       RunContext.any_instance.stubs(:process_file).returns([offense])
-      OffenseCollection.any_instance.expects(:dump_deprecated_references_files).once
+      OffenseCollection.any_instance.expects(:dump_package_todo_files).once
 
       parse_run = Packwerk::ParseRun.new(
         relative_file_set: Set.new(["path/of/exile.rb"]),
         configuration: Configuration.from_path
       )
-      result = parse_run.update_deprecations
+      result = parse_run.update_todo
 
       expected = <<~EOS
         path/of/exile.rb
@@ -67,7 +67,7 @@ module Packwerk
 
         1 offense detected
 
-        ✅ `deprecated_references.yml` has been updated.
+        ✅ `package_todo.yml` has been updated.
       EOS
       assert_equal expected, result.message
       refute result.status
@@ -81,7 +81,7 @@ module Packwerk
         violation_type: ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE
       )
 
-      DeprecatedReferences.any_instance.stubs(:listed?).returns(true)
+      PackageTodo.any_instance.stubs(:listed?).returns(true)
       out = StringIO.new
       parse_run = Packwerk::ParseRun.new(
         relative_file_set: Set.new(["some/path.rb"]),
@@ -114,7 +114,7 @@ module Packwerk
       source_package_name = "components/source"
       source_package = Packwerk::Package.new(name: "components/source", config: {})
       destination_package = Packwerk::Package.new(name: "components/destination", config: {})
-      write_app_file("#{source_package_name}/deprecated_references.yml", <<~YML.strip)
+      write_app_file("#{source_package_name}/package_todo.yml", <<~YML.strip)
         ---
         "components/destination":
           "::SomeName":
@@ -177,7 +177,7 @@ module Packwerk
 
       expected_message = <<~EOS
         No offenses detected
-        There were stale violations found, please run `packwerk update-deprecations`
+        There were stale violations found, please run `packwerk update-todo`
       EOS
       assert_equal expected_message, result.message
 
@@ -190,7 +190,7 @@ module Packwerk
       other_file = "components/source/some/other/path.rb"
 
       source_package_name = "components/source"
-      write_app_file("#{source_package_name}/deprecated_references.yml", <<~YML.strip)
+      write_app_file("#{source_package_name}/package_todo.yml", <<~YML.strip)
         ---
         "components/destination":
           "::SomeName":
@@ -238,7 +238,7 @@ module Packwerk
         violation_type: ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE
       )
 
-      DeprecatedReferences.any_instance.stubs(:listed?).returns(true)
+      PackageTodo.any_instance.stubs(:listed?).returns(true)
       OffenseCollection.any_instance.stubs(:stale_violations?).returns(true)
       out = StringIO.new
       parse_run = Packwerk::ParseRun.new(
@@ -258,7 +258,7 @@ module Packwerk
 
       expected_message = <<~EOS
         No offenses detected
-        There were stale violations found, please run `packwerk update-deprecations`
+        There were stale violations found, please run `packwerk update-todo`
       EOS
 
       refute result.status

@@ -43,13 +43,13 @@ module Packwerk
     end
 
     sig { returns(Result) }
-    def update_deprecations
+    def update_todo
       offense_collection = find_offenses
-      offense_collection.dump_deprecated_references_files
+      offense_collection.dump_package_todo_files
 
       message = <<~EOS
         #{@offenses_formatter.show_offenses(offense_collection.errors)}
-        ✅ `deprecated_references.yml` has been updated.
+        ✅ `package_todo.yml` has been updated.
       EOS
 
       Result.new(message: message, status: offense_collection.errors.empty?)
