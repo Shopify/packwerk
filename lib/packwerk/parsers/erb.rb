@@ -11,6 +11,9 @@ module Packwerk
     class Erb
       include ParserInterface
 
+      ERB_REGEX = /\.erb\Z/
+      private_constant :ERB_REGEX
+
       def initialize(parser_class: BetterHtml::Parser, ruby_parser: Ruby.new)
         @parser_class = parser_class
         @ruby_parser = ruby_parser
@@ -31,6 +34,10 @@ module Packwerk
       rescue Parser::SyntaxError => e
         result = ParseResult.new(file: file_path, message: "Syntax error: #{e}")
         raise Parsers::ParseError, result
+      end
+
+      def self.match?(path)
+        ERB_REGEX.match?(path)
       end
 
       private

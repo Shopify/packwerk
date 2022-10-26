@@ -23,13 +23,19 @@ module Packwerk
         assert_instance_of(Parsers::Erb, factory.for_path("foo.html.erb"))
         assert_instance_of(Parsers::Erb, factory.for_path("foo.md.erb"))
         assert_instance_of(Parsers::Erb, factory.for_path("/sub/directory/foo.erb"))
+      end
 
-        fake_class = Class.new do
+      test "#for_path gives custom parser for paths the parser is defined to match" do
+        fake_erb_parser_class = Class.new do
           T.unsafe(self).include(ParserInterface)
+
+          def self.match?(path)
+            /\.erb\Z/.match?(path)
+          end
         end
 
-        with_erb_parser_class(fake_class) do
-          assert_instance_of(fake_class, factory.for_path("foo.html.erb"))
+        with_parser_class(fake_erb_parser_class) do
+          assert_instance_of(fake_erb_parser_class, factory.for_path("foo.html.erb"))
         end
       end
 
@@ -41,11 +47,11 @@ module Packwerk
 
       private
 
-      def with_erb_parser_class(klass)
-        factory.erb_parser_class = klass
+      def with_parser_class(klass)
+        factory.parsers = [klass]
         yield
       ensure
-        factory.erb_parser_class = nil
+        factory.parsers = Parsers::Factory::DEFAULT_PARSERS
       end
 
       def factory
