@@ -22,6 +22,7 @@ module Packwerk
   autoload :ConstantNameInspector
   autoload :ConstNodeInspector
   autoload :PackageTodo
+  autoload :ExtensionLoader
   autoload :FileProcessor
   autoload :FilesForProcessing
   autoload :Graph

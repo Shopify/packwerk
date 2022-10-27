@@ -13,6 +13,7 @@ module Packwerk
 
     teardown do
       teardown_application_fixture
+      Object.send(:remove_const, :MyLocalExtension) if defined?(MyLocalExtension)
     end
 
     test ".from_path raises ArgumentError if path does not exist" do
@@ -62,6 +63,34 @@ module Packwerk
       use_template(:blank)
       Configuration.expects(:new).with({}, config_path: to_app_path("packwerk.yml"))
       Configuration.from_path
+    end
+
+    test "require works when referencing a local file" do
+      refute defined?(MyLocalExtension)
+      use_template(:extended)
+      mock_require_method = ->(required_thing) do
+        next unless required_thing.include?("my_local_extension")
+
+        require required_thing
+      end
+      ExtensionLoader.stub(:require, mock_require_method) do
+        Configuration.from_path
+      end
+      assert defined?(MyLocalExtension)
+    end
+
+    test "require works when referencing a gem" do
+      use_template(:extended)
+
+      required_things = []
+      mock_require_method = ->(required_thing) do
+        required_things << required_thing
+      end
+      ExtensionLoader.stub(:require, mock_require_method) do
+        Configuration.from_path
+      end
+
+      assert_includes(required_things, "my_gem_extension")
     end
   end
 end
