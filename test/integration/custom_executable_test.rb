@@ -73,58 +73,58 @@ module Packwerk
         assert_match(/No offenses detected/, captured_output)
       end
 
-      test "'packwerk update-deprecations' with no violations succeeds and updates no files" do
-        deprecated_reference_content = read_deprecated_references
+      test "'packwerk update-todo' with no violations succeeds and updates no files" do
+        package_todo_content = read_package_todo
 
-        assert_successful_run("update-deprecations")
+        assert_successful_run("update-todo")
 
-        deprecated_reference_content_after_update = read_deprecated_references
+        package_todo_content_after_update = read_package_todo
         expected_output = <<~EOS
           📦 Packwerk is inspecting 13 files
           \\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.
           📦 Finished in \\d+\\.\\d+ seconds
 
           No offenses detected
-          ✅ `deprecated_references.yml` has been updated.
+          ✅ `package_todo.yml` has been updated.
         EOS
 
-        assert_equal(deprecated_reference_content, deprecated_reference_content_after_update,
-          "expected no updates to any deprecated references file")
+        assert_equal(package_todo_content, package_todo_content_after_update,
+          "expected no updates to any package todo file")
         assert_match(/#{expected_output}/, captured_output)
       end
 
-      test "'packwerk update-deprecations' with violations succeeds and updates relevant deprecated_references" do
-        deprecated_reference_content = read_deprecated_references
-        timeline_deprecated_reference_path = to_app_path(File.join(TIMELINE_PATH, "deprecated_references.yml"))
+      test "'packwerk update-todo' with violations succeeds and updates relevant package_todo" do
+        package_todo_content = read_package_todo
+        timeline_package_todo_path = to_app_path(File.join(TIMELINE_PATH, "package_todo.yml"))
 
         open_app_file(TIMELINE_PATH.join("app", "models", "timeline_comment.rb")) do |file|
           file.write("class TimelineComment; belongs_to :order; end")
           file.flush
 
-          assert_successful_run("update-deprecations")
+          assert_successful_run("update-todo")
 
-          assert(File.exist?(timeline_deprecated_reference_path),
-            "expected new deprecated_reference for timeline package to be created")
+          assert(File.exist?(timeline_package_todo_path),
+            "expected new package_todo for timeline package to be created")
 
-          timeline_deprecated_reference_content = File.read(timeline_deprecated_reference_path)
+          timeline_package_todo_content = File.read(timeline_package_todo_path)
           assert_match(
             "components/sales:\n  \"::Order\":\n    violations:\n    - privacy",
-            timeline_deprecated_reference_content
+            timeline_package_todo_content
           )
 
-          deprecated_reference_content_after_update =
-            read_deprecated_references.reject { |k, _v| k.match?(timeline_deprecated_reference_path) }
+          package_todo_content_after_update =
+            read_package_todo.reject { |k, _v| k.match?(timeline_package_todo_path) }
           expected_output = <<~EOS
             📦 Packwerk is inspecting 14 files
             \\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.
             📦 Finished in \\d+\\.\\d+ seconds
 
             No offenses detected
-            ✅ `deprecated_references.yml` has been updated.
+            ✅ `package_todo.yml` has been updated.
           EOS
 
-          assert_equal(deprecated_reference_content, deprecated_reference_content_after_update,
-            "expected no updates to any deprecated references files besides timeline/deprecated_references.yml")
+          assert_equal(package_todo_content, package_todo_content_after_update,
+            "expected no updates to any package todo files besides timeline/package_todo.yml")
           assert_match(/#{expected_output}/, captured_output)
         end
       end
@@ -151,11 +151,11 @@ module Packwerk
         @out.string
       end
 
-      def read_deprecated_references
-        deprecated_references_glob = File.join("**", "deprecated_references.yml")
-        deprecated_references_files = Dir.glob(deprecated_references_glob)
+      def read_package_todo
+        package_todo_glob = File.join("**", "package_todo.yml")
+        package_todo_files = Dir.glob(package_todo_glob)
         Hash[
-          deprecated_references_files.collect do |file|
+          package_todo_files.collect do |file|
             [to_app_path(file), File.read(file)]
           end
         ]

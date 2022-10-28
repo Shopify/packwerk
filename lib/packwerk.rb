@@ -21,7 +21,7 @@ module Packwerk
   autoload :ConstantDiscovery
   autoload :ConstantNameInspector
   autoload :ConstNodeInspector
-  autoload :DeprecatedReferences
+  autoload :PackageTodo
   autoload :FileProcessor
   autoload :FilesForProcessing
   autoload :Graph

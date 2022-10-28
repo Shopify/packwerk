@@ -39,7 +39,7 @@ module Packwerk
         )
         @offense_collection.add_offense(offense1)
         @offense_collection.add_offense(offense2)
-        @offense_collection.dump_deprecated_references_files
+        @offense_collection.dump_package_todo_files
 
         expected = {
           "components/destination" => {
@@ -47,7 +47,7 @@ module Packwerk
             "::Foo" => { "violations" => ["dependency"], "files" => ["some/path.rb"] },
           },
         }
-        assert_equal expected, YAML.load_file("deprecated_references.yml")
+        assert_equal expected, YAML.load_file("package_todo.yml")
       end
     end
   end

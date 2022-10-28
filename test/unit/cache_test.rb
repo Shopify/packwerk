@@ -25,7 +25,7 @@ module Packwerk
       teardown_application_fixture
     end
 
-    test "#update_deprecations writes to the cache" do
+    test "#todo writes to the cache" do
       filepath = Pathname.pwd.join("path/of/exile.rb")
       FileUtils.mkdir_p(filepath.dirname)
       filepath.write("class MyClass; end")
@@ -44,8 +44,8 @@ module Packwerk
       configuration.stubs(cache_enabled?: true)
 
       parse_run = Packwerk::ParseRun.new(relative_file_set: Set.new([filepath.to_s]), configuration: configuration)
-      parse_run.update_deprecations
-      parse_run.update_deprecations
+      parse_run.update_todo
+      parse_run.update_todo
 
       cache_files = Pathname.pwd.join(Pathname.new("tmp/cache/packwerk")).glob("**")
       assert_equal cache_files.count, 3

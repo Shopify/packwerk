@@ -57,7 +57,17 @@ module Packwerk
       when "detect-stale-violations"
         output_result(parse_run(args).detect_stale_violations)
       when "update-deprecations"
-        output_result(parse_run(args).update_deprecations)
+        warning = <<~WARNING.squish
+          DEPRECATION WARNING: `update-deprecations` is deprecated in favor of
+          `update-todo`.
+        WARNING
+
+        warn(warning)
+        output_result(parse_run(args).update_todo)
+      when "update-todo"
+        output_result(parse_run(args).update_todo)
+      when "update"
+        output_result(parse_run(args).update_todo)
       when "validate"
         validate(args)
       when nil, "help"
@@ -67,7 +77,7 @@ module Packwerk
           Subcommands:
             init - set up packwerk
             check - run all checks
-            update-deprecations - update deprecated references
+            update-todo - update package_todo.yml files
             validate - verify integrity of packwerk and package configuration
             help  - display help information about packwerk
         USAGE
