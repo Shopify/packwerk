@@ -17,7 +17,7 @@ module Packwerk
     end
 
     test "#add_violation adds entry and returns true" do
-      Packwerk::DeprecatedReferences.any_instance
+      Packwerk::PackageTodo.any_instance
         .expects(:add_entries)
         .with(@offense.reference, @offense.violation_type)
 
@@ -27,7 +27,7 @@ module Packwerk
     test "#stale_violations? returns true if there are stale violations" do
       @offense_collection.add_offense(@offense)
 
-      Packwerk::DeprecatedReferences.any_instance
+      Packwerk::PackageTodo.any_instance
         .expects(:stale_violations?)
         .returns(true)
 
@@ -37,7 +37,7 @@ module Packwerk
     test "#stale_violations? returns false if no stale violations" do
       @offense_collection.add_offense(@offense)
 
-      Packwerk::DeprecatedReferences.any_instance
+      Packwerk::PackageTodo.any_instance
         .expects(:stale_violations?)
         .returns(false)
 
@@ -47,15 +47,15 @@ module Packwerk
     test "#listed? returns true if constant is listed in file" do
       package = Package.new(name: "buyer", config: {})
       reference = build_reference(source_package: package)
-      deprecated_references = Packwerk::DeprecatedReferences.new(package, ".")
-      deprecated_references
+      package_todo = Packwerk::PackageTodo.new(package, ".")
+      package_todo
         .stubs(:listed?)
         .with(reference, violation_type: Packwerk::ViolationType::Dependency)
         .returns(true)
-      Packwerk::DeprecatedReferences
+      Packwerk::PackageTodo
         .stubs(:new)
-        .with(package, "./buyer/deprecated_references.yml")
-        .returns(deprecated_references)
+        .with(package, "./buyer/package_todo.yml")
+        .returns(package_todo)
 
       offense = Packwerk::ReferenceOffense.new(
         reference: reference,

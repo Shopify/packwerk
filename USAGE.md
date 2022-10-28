@@ -20,7 +20,7 @@
 * [Resolving new violations](#resolving-new-violations)
   * [Understanding how to respond to new violations](#understanding-how-to-respond-to-new-violations)
 * [Recording existing violations](#recording-existing-violations)
-  * [Understanding the list of deprecated references](#understanding-the-list-of-deprecated-references)
+  * [Understanding the package todo file](#understanding-the-package-todo-file)
 
 ## What problem does Packwerk solve?
 
@@ -235,28 +235,28 @@ See: [RESOLVING_VIOLATIONS.md](RESOLVING_VIOLATIONS.md)
 
 For existing codebases, packages are likely to have existing boundary violations.
 
-If so, you will want to stop the bleeding and prevent more violations from occuring. The existing violations in the codebase can be recorded in a [deprecated references list](#Understanding_the_list_of_deprecated_references) by executing:
+If so, you will want to stop the bleeding and prevent more violations from occuring. The existing violations in the codebase can be recorded in a [todo list](#understanding-the-package-todo-file) by executing:
 
-    bin/packwerk update-deprecations
+    bin/packwerk update-todo
 
-Similar to `bin/packwerk check`, you may also run `bin/packwerk update-deprecations` on folders or packages:
+Similar to `bin/packwerk check`, you may also run `bin/packwerk update-todo` on folders or packages:
 
-    bin/packwerk update-deprecations components/your_package
+    bin/packwerk update-todo components/your_package
 
 ![](static/packwerk_update.gif)
 
 _Note: Changing dependencies or enabling dependencies will not require a full update of the codebase, only the package that changed. On the other hand, changing or enabling privacy will require a full update of the codebase._
 
-`bin/packwerk update-deprecations` should only be run to record existing violations and to remove deprecated references that have been worked off. Running `bin/packwerk update-deprecations` to resolve a violation should be the very last resort.
+`bin/packwerk update-todo` should only be run to record existing violations and to remove violations that have been worked off. Running `bin/packwerk update-todo` to resolve a violation should be the very last resort.
 
 See: [TROUBLESHOOT.md - Troubleshooting violations](TROUBLESHOOT.md#Troubleshooting_violations)
 
 
-### Understanding the list of deprecated references
+### Understanding the package todo file
 
-The deprecated references list is called `deprecated_references.yml` and can be found in the package folder. The list outlines the constant violations of the package, where the violation is located, and the file defining the violation.
+The package TODO list is called `package_todo.yml` and can be found in the package folder. The list outlines the constant violations of the package, where the violation is located, and the file defining the violation.
 
-The deprecated references list should not be added to, but worked off over time.
+The package TODO list should not be added to, but worked off over time.
 
 ```yaml
 components/merchant:
@@ -267,11 +267,11 @@ components/merchant:
     - components/merchant/app/public/merchant/generate_order.rb
 ```
 
-Above is an example of a constant violation entry in `deprecated_references.yml`.
+Above is an example of a constant violation entry in `package_todo.yml`.
 
 * `components/merchant` - package where the constant violation is found
 * `::Checkouts::Core::CheckoutId` - violated constant in question
 * `dependency` - type of violation, either dependency or privacy
 * `components/merchant/app/public/merchant/generate_order.rb` - path to the file containing the violated constant
 
-Violations exist within the package that makes a violating reference. This means privacy violations of your package can be found listed in `deprecated_references.yml` files in the packages with the reference to a private constant.
+Violations exist within the package that makes a violating reference. This means privacy violations of your package can be found listed in `package_todo.yml` files in the packages with the reference to a private constant.

@@ -4,7 +4,7 @@
 require "yaml"
 
 module Packwerk
-  class DeprecatedReferences
+  class PackageTodo
     extend T::Sig
 
     EntriesType = T.type_alias do
@@ -16,7 +16,7 @@ module Packwerk
       @package = package
       @filepath = filepath
       @new_entries = T.let({}, EntriesType)
-      @deprecated_references = T.let(nil, T.nilable(EntriesType))
+      @todo_list = T.let(nil, T.nilable(EntriesType))
     end
 
     sig do
@@ -24,7 +24,7 @@ module Packwerk
         .returns(T::Boolean)
     end
     def listed?(reference, violation_type:)
-      violated_constants_found = deprecated_references.dig(reference.constant.package.name, reference.constant.name)
+      violated_constants_found = todo_list.dig(reference.constant.package.name, reference.constant.name)
       return false unless violated_constants_found
 
       violated_constant_in_file = violated_constants_found.fetch("files", []).include?(reference.relative_path)
@@ -52,7 +52,7 @@ module Packwerk
     def stale_violations?(for_files)
       prepare_entries_for_dump
 
-      deprecated_references.any? do |package, package_violations|
+      todo_list.any? do |package, package_violations|
         package_violations_for_files = {}
         package_violations.each do |constant_name, entries_for_constant|
           entries_for_files = for_files & entries_for_constant["files"]
@@ -93,7 +93,7 @@ module Packwerk
           #
           # You can regenerate this file using the following command:
           #
-          # bin/packwerk update-deprecations #{@package.name}
+          # bin/packwerk update-todo #{@package.name}
         MESSAGE
         File.open(@filepath, "w") do |f|
           f.write(message)
@@ -123,8 +123,8 @@ module Packwerk
     end
 
     sig { returns(EntriesType) }
-    def deprecated_references
-      @deprecated_references ||= if File.exist?(@filepath)
+    def todo_list
+      @todo_list ||= if File.exist?(@filepath)
         load_yaml(@filepath)
       else
         {}

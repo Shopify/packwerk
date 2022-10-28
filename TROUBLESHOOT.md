@@ -16,7 +16,7 @@ You can specify folders or packages in Packwerk commands for a shorter run time:
 
      bin/packwerk check components/your_package
 
-     bin/packwerk update-deprecations components/your_package
+     bin/packwerk update-todo components/your_package
 
 _Note: You cannot specify folders or packages for `bin/packwerk validate` because the command runs for the entire application._
 
