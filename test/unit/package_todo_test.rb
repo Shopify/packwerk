@@ -40,7 +40,10 @@ module Packwerk
 
     test "#stale_violations? returns true if package TODO exist but no violations can be found in code" do
       package_todo = PackageTodo.new(destination_package, "test/fixtures/package_todo.yml")
-      assert package_todo.stale_violations?(Set.new)
+      assert package_todo.stale_violations?(Set.new([
+        "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
+        "orders/app/models/orders/services/adjustment_engine.rb",
+      ]))
     end
 
     test "#stale_violations? returns false if package TODO does not exist but violations are found in code" do
