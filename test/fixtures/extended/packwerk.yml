@@ -1,0 +1,4 @@
+parallel: false
+require:
+  - ./config/my_local_extension
+  - my_gem_extension

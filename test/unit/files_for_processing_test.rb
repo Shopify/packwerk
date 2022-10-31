@@ -5,15 +5,21 @@ require "test_helper"
 
 module Packwerk
   class FilesForProcessingTest < Minitest::Test
-    def setup
+    include ApplicationFixtureHelper
+
+    setup do
+      setup_application_fixture
+      use_template(:skeleton)
       @package_path = "components/sales"
-      @configuration = ::Packwerk::Configuration.from_path("test/fixtures/skeleton")
+      @configuration = ::Packwerk::Configuration.from_path
+    end
+
+    teardown do
+      teardown_application_fixture
     end
 
     test "fetch with custom paths includes only include glob in custom paths" do
-      files = Dir.chdir("test/fixtures/skeleton") do
-        ::Packwerk::FilesForProcessing.fetch(relative_file_paths: [@package_path], configuration: @configuration)
-      end
+      files = ::Packwerk::FilesForProcessing.fetch(relative_file_paths: [@package_path], configuration: @configuration)
       included_file_pattern = File.join(@package_path, "**/*.rb")
       assert_all_match(files, [included_file_pattern])
     end
@@ -54,13 +60,11 @@ module Packwerk
     end
 
     test "fetch with no custom paths ignoring nested packages includes only include glob across codebase" do
-      files = Dir.chdir("test/fixtures/skeleton") do
-        ::Packwerk::FilesForProcessing.fetch(
-          relative_file_paths: [],
-          configuration: @configuration,
-          ignore_nested_packages: true
-        )
-      end
+      files = ::Packwerk::FilesForProcessing.fetch(
+        relative_file_paths: [],
+        configuration: @configuration,
+        ignore_nested_packages: true
+      )
 
       assert_all_match(files, @configuration.include)
     end

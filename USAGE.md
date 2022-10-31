@@ -21,6 +21,8 @@
   * [Understanding how to respond to new violations](#understanding-how-to-respond-to-new-violations)
 * [Recording existing violations](#recording-existing-violations)
   * [Understanding the package todo file](#understanding-the-package-todo-file)
+  * [Understanding the list of deprecated references](#understanding-the-list-of-deprecated-references)
+* [Loading extensions](#loading-extensions)
 
 ## What problem does Packwerk solve?
 
@@ -275,3 +277,16 @@ Above is an example of a constant violation entry in `package_todo.yml`.
 * `components/merchant/app/public/merchant/generate_order.rb` - path to the file containing the violated constant
 
 Violations exist within the package that makes a violating reference. This means privacy violations of your package can be found listed in `package_todo.yml` files in the packages with the reference to a private constant.
+
+# Loading Extensions
+
+You can optionally specify ruby files that you'd like to be loaded with `packwerk` by specifying a `require` directive in `packwerk.yml`:
+```yml
+require:
+  - ./path/to/file.rb
+  - my_gem
+```
+
+`packwerk` will directly call `require` with these paths.
+You can prefix local files with a dot to define them relative to `packwerk.yml`, or you can use absolute paths.
+You can also reference the name of a gem.

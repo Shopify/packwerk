@@ -49,6 +49,12 @@ module Packwerk
       @cache_directory = Pathname.new(configs["cache_directory"] || "tmp/cache/packwerk")
       @config_path = config_path
 
+      if configs.key?("require")
+        configs["require"].each do |require_directive|
+          ExtensionLoader.load(require_directive, @root_path)
+        end
+      end
+
       if configs["load_paths"]
         warning = <<~WARNING
           DEPRECATION WARNING: The 'load_paths' key in `packwerk.yml` is deprecated.
