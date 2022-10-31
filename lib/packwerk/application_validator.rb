@@ -13,7 +13,7 @@ module Packwerk
 
     # This is a temporary API as we migrate validators to their own files.
     # Later, we can expose an API to get package sets to pass into validators when testing
-    # This API would likely just be `PackageSet.load_all_from(configruation)`, but we might want to clean
+    # This API would likely just be `PackageSet.load_all_from(configuration)`, but we might want to clean
     # up that API a bit (it looks like there are some unnecessary input variables).
     sig { returns(PackageSet) }
     attr_reader :package_set
