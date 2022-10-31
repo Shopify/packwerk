@@ -8,7 +8,7 @@ module Packwerk
     include FactoryHelper
 
     class StubChecker
-      include ReferenceChecking::Checkers::Checker
+      include Checker
 
       def initialize(**options)
         @is_invalid_reference = options[:invalid_reference?]
@@ -31,11 +31,11 @@ module Packwerk
 
     test "#call enumerates the list of checkers to create ReferenceOffense objects" do
       input_reference = build_reference
-      message = ReferenceChecking::Checkers::PrivacyChecker.new.message(input_reference)
+      message = ReferenceChecking::Checkers::DependencyChecker.new.message(input_reference)
       instance = reference_checker([StubChecker.new(
         invalid_reference?: true,
         message: message,
-        violation_type: ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE
+        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       )])
       offenses = instance.call(input_reference)
 
@@ -44,7 +44,7 @@ module Packwerk
       offense = offenses.first
       assert_equal input_reference.relative_path, offense.file
       assert_equal input_reference.source_location, offense.location
-      assert offense.message.start_with?("Privacy violation")
+      assert offense.message.start_with?("Dependency violation")
     end
 
     def reference_checker(checkers = [StubChecker.new])

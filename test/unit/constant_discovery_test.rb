@@ -31,7 +31,6 @@ module Packwerk
       assert_equal("::Order", constant.name)
       assert_equal("components/sales/app/models/order.rb", constant.location)
       assert_equal("components/sales", constant.package.name)
-      assert_equal(false, constant.public?)
     end
 
     test "discovers constant in root dir with non-default namespace" do
@@ -39,15 +38,6 @@ module Packwerk
       assert_equal("::Business::Special", constant.name)
       assert_equal("components/sales/app/internal/special.rb", constant.location)
       assert_equal("components/sales", constant.package.name)
-      assert_equal(false, constant.public?)
-    end
-
-    test "recognizes constants as public" do
-      constant = @discovery.context_for("Sales::RecordNewOrder")
-      assert_equal("::Sales::RecordNewOrder", constant.name)
-      assert_equal("components/sales/app/public/sales/record_new_order.rb", constant.location)
-      assert_equal("components/sales", constant.package.name)
-      assert_equal(true, constant.public?)
     end
 
     test "raises with helpful message if there is a constant resolver error" do

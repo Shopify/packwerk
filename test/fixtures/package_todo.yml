@@ -2,7 +2,7 @@
 buyers:
   "::Buyers::Document":
     violations:
-    - dependency
+    - some_checker_type
     files:
     - orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb
     - orders/app/models/orders/services/adjustment_engine.rb

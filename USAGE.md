@@ -13,8 +13,6 @@
 * [Defining packages](#defining-packages)
   * [Package metadata](#package-metadata)
 * [Types of boundary checks](#types-of-boundary-checks)
-  * [Enforcing privacy boundary](#enforcing-privacy-boundary)
-    * [Using public folders](#using-public-folders)
   * [Enforcing dependency boundary](#enforcing-dependency-boundary)
 * [Checking for violations](#checking-for-violations)
 * [Resolving new violations](#resolving-new-violations)
@@ -145,48 +143,7 @@ Example:
 
 ## Types of boundary checks
 
-Packwerk can perform two types of boundary checks: privacy and dependency.
-
-#### Enforcing privacy boundary
-
-A package's privacy boundary is violated when there is a reference to the package's private constants from a source outside the package.
-
-There are two ways you can enforce privacy for your package:
-
-1. Enforce privacy for all external sources
-
-```yaml
-# components/merchandising/package.yml
-enforce_privacy: true  # will make everything private that is not in
-                        # the components/merchandising/app/public folder
-```
-
-Setting `enforce_privacy` to true will make all references to private constants in your package a violation.
-
-2. Enforce privacy for specific constants
-
-```yaml
-# components/merchandising/package.yml
-enforce_privacy:
-  - "::Merchandising::Product"
-  - "::SomeNamespace"  # enforces privacy for the namespace and
-                       # everything nested in it
-```
-
-It will be a privacy violation when a file outside of the `components/merchandising` package tries to reference `Merchandising::Product`.
-
-##### Using public folders
-You may enforce privacy either way mentioned above and still expose a public API for your package by placing constants in the public folder, which by default is `app/public`. The constants in the public folder will be made available for use by the rest of the application.
-
-##### Defining your own public folder
-
-You may prefer to override the default public folder, you can do so on a per-package basis by defining a `public_path`.
-
-Example:
-
-```yaml
-public_path: my/custom/path/
-```
+Packwerk ships with dependency boundary checking only. See [`packwerk-extensions`](https://github.com/rubyatscale/packwerk-extensions) to incorporate privacy checks into your use of `packwerk`.
 
 #### Enforcing dependency boundary
 A package's dependency boundary is violated whenever it references a constant in some package that has not been declared as a dependency.
@@ -290,3 +247,12 @@ require:
 `packwerk` will directly call `require` with these paths.
 You can prefix local files with a dot to define them relative to `packwerk.yml`, or you can use absolute paths.
 You can also reference the name of a gem.
+
+## Examples
+### Privacy Checker
+
+[`packwerk-extensions`](https://github.com/rubyatscale/packwerk-extensions) (originally extracted from `packwerk`) can be used to help define and enforce public API boundaries of a package. See the README.md for more details. To use this, add it to your `Gemfile` and then require it via `packwerk.yml`:
+```yml
+require:
+  - packwerk-extensions
+```

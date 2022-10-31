@@ -37,6 +37,10 @@ module ApplicationFixtureHelper
     @config ||= Packwerk::Configuration.from_path(app_dir)
   end
 
+  def package_set
+    @package_set ||= Packwerk::PackageSet.load_all_from(config.root_path)
+  end
+
   def to_app_path(relative_path)
     File.join(app_dir, relative_path)
   end

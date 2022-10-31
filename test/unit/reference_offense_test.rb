@@ -8,7 +8,7 @@ module Packwerk
     include FactoryHelper
 
     setup do
-      destination_package = Package.new(name: "destination_package", config: { "enforce_privacy" => true })
+      destination_package = Package.new(name: "destination_package", config: {})
       @reference = build_reference(destination_package: destination_package)
     end
 
@@ -16,21 +16,10 @@ module Packwerk
       offense = ReferenceOffense.new(
         reference: @reference,
         message: "some message",
-        violation_type: ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE
+        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       )
 
       assert_equal(@reference.relative_path, offense.file)
-    end
-
-    test "generates a sensible message for privacy violations" do
-      message = ReferenceChecking::Checkers::PrivacyChecker.new.message(@reference)
-      offense = ReferenceOffense.new(reference: @reference, message: message,
-        violation_type: ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE)
-
-      assert_match(
-        "Privacy violation: '::SomeName' is private to 'destination_package' but referenced from " \
-          "'components/source'.", offense.message
-      )
     end
 
     test "generates a sensible message for dependency violations" do

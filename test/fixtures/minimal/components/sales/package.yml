@@ -1,6 +1,5 @@
 ---
-enforce_privacy: true
-
+enforce_dependencies: true
 metadata:
   stewards:
   - "@Shopify/sales"

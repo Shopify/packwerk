@@ -6,7 +6,7 @@ module Packwerk
     class ReferenceChecker
       extend T::Sig
 
-      sig { params(checkers: T::Array[Checkers::Checker]).void }
+      sig { params(checkers: T::Array[Checker]).void }
       def initialize(checkers)
         @checkers = checkers
       end

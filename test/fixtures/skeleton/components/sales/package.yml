@@ -1,5 +1,4 @@
 ---
-enforce_privacy: true
 dependencies:
 - 'components/timeline'
 

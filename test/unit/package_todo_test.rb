@@ -17,7 +17,7 @@ module Packwerk
 
       assert package_todo.listed?(
         violated_reference,
-        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
+        violation_type: "some_checker_type"
       )
     end
 
@@ -67,17 +67,15 @@ module Packwerk
       )
 
       package_todo = PackageTodo.new(package, "test/fixtures/package_todo.yml")
-      package_todo.add_entries(first_violated_reference,
-        Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
-      package_todo.add_entries(second_violated_reference,
-        Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
+      package_todo.add_entries(first_violated_reference, "some_checker_type")
+      package_todo.add_entries(second_violated_reference, "some_checker_type")
       refute package_todo.stale_violations?(Set.new([
         "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
         "orders/app/models/orders/services/adjustment_engine.rb",
       ]))
     end
 
-    test "#stale_violations? returns true if dependency package TODO violation turns into privacy package TODO violation" do
+    test "#stale_violations? returns true if one type of violation turns into a different type of violation" do
       package = Package.new(name: "buyers", config: { "enforce_dependencies" => true })
 
       first_violated_reference = build_reference(
@@ -93,9 +91,9 @@ module Packwerk
 
       package_todo = PackageTodo.new(package, "test/fixtures/package_todo.yml")
       package_todo.add_entries(first_violated_reference,
-        Packwerk::ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE)
+        Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
       package_todo.add_entries(second_violated_reference,
-        Packwerk::ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE)
+        Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
       assert package_todo.stale_violations?(Set.new([
         "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
         "orders/app/models/orders/services/adjustment_engine.rb",
@@ -119,8 +117,7 @@ module Packwerk
         constant_name: "::Buyers::Document"
       )
       package_todo = PackageTodo.new(package, "test/fixtures/package_todo.yml")
-      package_todo.add_entries(violated_reference,
-        ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
+      package_todo.add_entries(violated_reference, "some_checker_type")
       refute package_todo.stale_violations?(
         Set.new(["orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb"])
       )
@@ -132,7 +129,7 @@ module Packwerk
 
       refute package_todo.listed?(
         reference,
-        violation_type: ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE
+        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       )
     end
 
@@ -155,12 +152,12 @@ module Packwerk
         package_todo = PackageTodo.new(reference.constant.package, file.path)
 
         package_todo.add_entries(reference,
-          Packwerk::ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE)
+          Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
         package_todo.dump
 
         expected_output = {
           reference.constant.package.name => {
-            reference.constant.name => { "violations" => ["privacy"], "files" => [reference.relative_path] },
+            reference.constant.name => { "violations" => ["dependency"], "files" => [reference.relative_path] },
           },
         }
 
@@ -171,11 +168,11 @@ module Packwerk
     test "#dump dumps a package TODO file with sorted and unique package, constant and file violations" do
       expected_output = {
         "a_package" => {
-          "::Checkout::Wallet" => { "violations" => ["privacy"], "files" => ["some/violated/path.rb"] },
+          "::Checkout::Wallet" => { "violations" => ["dependency"], "files" => ["some/violated/path.rb"] },
         },
         "another_package" => {
           "::Abc::Constant" => { "violations" => ["dependency"], "files" => ["a/b/c.rb", "this/should/come/last.rb"] },
-          "::Checkout::Wallet" => { "violations" => ["dependency", "privacy"], "files" => ["some/violated/path.rb"] },
+          "::Checkout::Wallet" => { "violations" => ["dependency"], "files" => ["some/violated/path.rb"] },
         },
       }
 
@@ -209,7 +206,7 @@ module Packwerk
         )
 
         package_todo.add_entries(second_package_first_reference,
-          Packwerk::ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE)
+          Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
         package_todo.add_entries(second_package_first_reference,
           Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
         package_todo.add_entries(second_package_second_reference,
@@ -219,7 +216,7 @@ module Packwerk
         package_todo.add_entries(second_package_third_reference,
           Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
         package_todo.add_entries(first_package_reference,
-          Packwerk::ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE)
+          Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
 
         package_todo.dump
 

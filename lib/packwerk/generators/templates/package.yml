@@ -5,16 +5,6 @@
 # Turn on dependency checks for this package
 enforce_dependencies: true
 
-# Turn on privacy checks for this package
-# enforcing privacy is often not useful for the root package, because it would require defining a public interface
-# for something that should only be a thin wrapper in the first place.
-# We recommend enabling this for any new packages you create to aid with encapsulation.
-enforce_privacy: false
-
-# By default the public path will be app/public/, however this may not suit all applications' architecture so
-# this allows you to modify what your package's public path is.
-# public_path: app/public/
-
 # A list of this package's dependencies
 # Note that packages in this list require their own `package.yml` file
 # dependencies:

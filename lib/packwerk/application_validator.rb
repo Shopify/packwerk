@@ -9,63 +9,47 @@ module Packwerk
   # Checks the structure of the application and its packwerk configuration to make sure we can run a check and deliver
   # correct results.
   class ApplicationValidator
+    include Validator
     extend T::Sig
 
-    # This is a temporary API as we migrate validators to their own files.
-    # Later, we can expose an API to get package sets to pass into validators when testing
-    # This API would likely just be `PackageSet.load_all_from(configuration)`, but we might want to clean
-    # up that API a bit (it looks like there are some unnecessary input variables).
-    sig { returns(PackageSet) }
-    attr_reader :package_set
-
-    sig do
-      params(
-        config_file_path: String,
-        configuration: Configuration,
-        environment: String
-      ).void
-    end
-    def initialize(config_file_path:, configuration:, environment:)
-      @config_file_path = config_file_path
-      @configuration = configuration
-      @environment = environment
-      package_set = PackageSet.load_all_from(
-        @configuration.root_path,
-        package_pathspec: Helpers.package_glob(configuration)
-      )
-
-      @package_set = T.let(package_set, PackageSet)
+    sig { params(package_set: PackageSet, configuration: Configuration).returns(ApplicationValidator::Result) }
+    def check_all(package_set, configuration)
+      results = Validator.all.flat_map { |validator| validator.call(package_set, configuration) }
+      merge_results(results)
     end
 
-    sig { returns(Result) }
-    def check_all
+    sig { override.params(package_set: PackageSet, configuration: Configuration).returns(ApplicationValidator::Result) }
+    def call(package_set, configuration)
       results = [
-        CheckPackageManifestsForPrivacy.call(@package_set, @configuration),
-        check_package_manifest_syntax,
-        check_application_structure,
-        check_acyclic_graph,
-        check_package_manifest_paths,
-        check_valid_package_dependencies,
-        check_root_package_exists,
+        check_package_manifest_syntax(configuration),
+        check_application_structure(configuration),
+        check_acyclic_graph(package_set),
+        check_package_manifest_paths(configuration),
+        check_valid_package_dependencies(configuration),
+        check_root_package_exists(configuration),
       ]
 
-      Helpers.merge_results(results)
+      merge_results(results)
     end
 
-    sig { returns(Result) }
-    def check_package_manifest_syntax
+    sig { override.returns(T::Array[String]) }
+    def permitted_keys
+      [
+        "enforce_dependencies",
+        "dependencies",
+        "metadata",
+      ]
+    end
+
+    sig { params(configuration: Configuration).returns(Result) }
+    def check_package_manifest_syntax(configuration)
       errors = []
 
-      Helpers.package_manifests(@configuration).each do |f|
+      package_manifests(configuration).each do |f|
         hash = YAML.load_file(f)
         next unless hash
 
-        known_keys = [
-          *CheckPackageManifestsForPrivacy.permitted_keys,
-          "enforce_dependencies",
-          "dependencies",
-          "metadata",
-        ]
+        known_keys = Validator.all.flat_map(&:permitted_keys)
         unknown_keys = hash.keys - known_keys
 
         unless unknown_keys.empty?
@@ -93,11 +77,11 @@ module Packwerk
       end
     end
 
-    sig { returns(Result) }
-    def check_application_structure
+    sig { params(configuration: Configuration).returns(Result) }
+    def check_application_structure(configuration)
       resolver = ConstantResolver.new(
-        root_path: @configuration.root_path.to_s,
-        load_paths: @configuration.load_paths
+        root_path: configuration.root_path.to_s,
+        load_paths: configuration.load_paths
       )
 
       begin
@@ -108,10 +92,10 @@ module Packwerk
       end
     end
 
-    sig { returns(Result) }
-    def check_acyclic_graph
-      edges = @package_set.flat_map do |package|
-        package.dependencies.map { |dependency| [package, @package_set.fetch(dependency)] }
+    sig { params(package_set: PackageSet).returns(Result) }
+    def check_acyclic_graph(package_set)
+      edges = package_set.flat_map do |package|
+        package.dependencies.map { |dependency| [package, package_set.fetch(dependency)] }
       end
       dependency_graph = Graph.new(*T.unsafe(edges))
 
@@ -131,10 +115,10 @@ module Packwerk
       end
     end
 
-    sig { returns(Result) }
-    def check_package_manifest_paths
-      all_package_manifests = Helpers.package_manifests(@configuration, "**/")
-      package_paths_package_manifests = Helpers.package_manifests(@configuration, Helpers.package_glob(@configuration))
+    sig { params(configuration: Configuration).returns(Result) }
+    def check_package_manifest_paths(configuration)
+      all_package_manifests = package_manifests(configuration, "**/")
+      package_paths_package_manifests = package_manifests(configuration, package_glob(configuration))
 
       difference = all_package_manifests - package_paths_package_manifests
 
@@ -146,20 +130,20 @@ module Packwerk
           error_value: <<~EOS
             Expected package paths for all package.ymls to be specified, but paths were missing for the following manifests:
 
-            #{relative_paths(difference).join("\n")}
+            #{relative_paths(configuration, difference).join("\n")}
           EOS
         )
       end
     end
 
-    sig { returns(Result) }
-    def check_valid_package_dependencies
-      packages_dependencies = Helpers.package_manifests_settings_for(@configuration, "dependencies")
+    sig { params(configuration: Configuration).returns(Result) }
+    def check_valid_package_dependencies(configuration)
+      packages_dependencies = package_manifests_settings_for(configuration, "dependencies")
         .delete_if { |_, deps| deps.nil? }
 
       packages_with_invalid_dependencies =
         packages_dependencies.each_with_object([]) do |(package, dependencies), invalid_packages|
-          invalid_dependencies = dependencies.filter { |path| invalid_package_path?(path) }
+          invalid_dependencies = dependencies.filter { |path| invalid_package_path?(configuration, path) }
           invalid_packages << [package, invalid_dependencies] if invalid_dependencies.any?
         end
 
@@ -167,8 +151,8 @@ module Packwerk
         Result.new(ok: true)
       else
         error_locations = packages_with_invalid_dependencies.map do |package, invalid_dependencies|
-          package ||= @configuration.root_path
-          package_path = Pathname.new(package).relative_path_from(@configuration.root_path)
+          package ||= configuration.root_path
+          package_path = Pathname.new(package).relative_path_from(configuration.root_path)
           all_invalid_dependencies = invalid_dependencies.map { |d| "  - #{d}" }
 
           <<~EOS
@@ -188,10 +172,10 @@ module Packwerk
       end
     end
 
-    sig { returns(Result) }
-    def check_root_package_exists
-      root_package_path = File.join(@configuration.root_path, "package.yml")
-      all_packages_manifests = Helpers.package_manifests(@configuration, Helpers.package_glob(@configuration))
+    sig { params(configuration: Configuration).returns(Result) }
+    def check_root_package_exists(configuration)
+      root_package_path = File.join(configuration.root_path, "package.yml")
+      all_packages_manifests = package_manifests(configuration, package_glob(configuration))
 
       if all_packages_manifests.include?(root_package_path)
         Result.new(ok: true)
@@ -228,17 +212,17 @@ module Packwerk
       list.sort.map { |p| "- \"#{p}\"" }.join("\n")
     end
 
-    sig { params(paths: T::Array[String]).returns(T::Array[Pathname]) }
-    def relative_paths(paths)
-      paths.map { |path| Helpers.relative_path(@configuration, path) }
+    sig { params(configuration: Configuration, paths: T::Array[String]).returns(T::Array[Pathname]) }
+    def relative_paths(configuration, paths)
+      paths.map { |path| relative_path(configuration, path) }
     end
 
-    sig { params(path: T.untyped).returns(T::Boolean) }
-    def invalid_package_path?(path)
+    sig { params(configuration: Configuration, path: T.untyped).returns(T::Boolean) }
+    def invalid_package_path?(configuration, path)
       # Packages at the root can be implicitly specified as "."
       return false if path == "."
 
-      package_path = File.join(@configuration.root_path, path, PackageSet::PACKAGE_CONFIG_FILENAME)
+      package_path = File.join(configuration.root_path, path, PackageSet::PACKAGE_CONFIG_FILENAME)
       !File.file?(package_path)
     end
   end

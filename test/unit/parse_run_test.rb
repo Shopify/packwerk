@@ -110,7 +110,7 @@ module Packwerk
         "components/sales":
           "::Order":
             violations:
-            - privacy
+            - dependency
             files:
             - app/models/my_model.rb
       YML
@@ -120,7 +120,7 @@ module Packwerk
         "components/destination":
           "::SomeName":
             violations:
-            - privacy
+            - dependency
             files:
             - a/b/c.rb
       YML
@@ -147,7 +147,7 @@ module Packwerk
       offense = ReferenceOffense.new(
         reference: build_reference,
         message: "some message",
-        violation_type: ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE
+        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       )
 
       PackageTodo.any_instance.stubs(:listed?).returns(true)
@@ -188,18 +188,18 @@ module Packwerk
         "components/destination":
           "::SomeName":
             violations:
-            - privacy
+            - dependency
             files:
             - #{other_file}
             - #{file_to_check}
           "::SomeOtherName":
             violations:
-            - privacy
+            - dependency
             files:
             - #{other_file}
           "::SomeStaleViolation":
             violations:
-            - privacy
+            - dependency
             files:
             - #{file_to_check}
       YML
@@ -219,13 +219,13 @@ module Packwerk
       offense1 = ReferenceOffense.new(
         reference: reference1,
         message: "some message",
-        violation_type: ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE
+        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       )
 
       offense2 = ReferenceOffense.new(
         reference: reference2,
         message: "some message",
-        violation_type: ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE
+        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       )
 
       out = StringIO.new
@@ -264,12 +264,12 @@ module Packwerk
         "components/destination":
           "::SomeName":
             violations:
-            - privacy
+            - dependency
             files:
             - #{other_file}
           "::SomeOtherName":
             violations:
-            - privacy
+            - dependency
             files:
             - #{other_file}
       YML
@@ -310,13 +310,13 @@ module Packwerk
         "components/destination":
           "::SomeName":
             violations:
-            - privacy
+            - dependency
             files:
             - #{other_file}
             - #{file_to_check}
           "::SomeOtherName":
             violations:
-            - privacy
+            - dependency
             files:
             - #{other_file}
       YML
@@ -331,7 +331,7 @@ module Packwerk
       offense = ReferenceOffense.new(
         reference: build_reference(path: file_to_check),
         message: "some message",
-        violation_type: Packwerk::ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE
+        violation_type: Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       )
 
       RunContext.any_instance.stubs(:process_file).returns([offense])
@@ -365,12 +365,12 @@ module Packwerk
         "components/destination":
           "::SomeName":
             violations:
-            - privacy
+            - dependency
             files:
             - #{other_file}
           "::SomeOtherName":
             violations:
-            - privacy
+            - dependency
             files:
             - #{other_file}
       YML
@@ -385,7 +385,7 @@ module Packwerk
       offense = ReferenceOffense.new(
         reference: build_reference(path: file_to_check),
         message: "some message",
-        violation_type: Packwerk::ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE
+        violation_type: Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       )
 
       RunContext.any_instance.stubs(:process_file).returns([offense])
@@ -418,7 +418,7 @@ module Packwerk
       offense = ReferenceOffense.new(
         reference: build_reference,
         message: "some message",
-        violation_type: ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE
+        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       )
 
       PackageTodo.any_instance.stubs(:listed?).returns(true)
@@ -453,13 +453,13 @@ module Packwerk
       offense = ReferenceOffense.new(
         reference: build_reference,
         message: "some message",
-        violation_type: ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE
+        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       )
 
       offense2 = ReferenceOffense.new(
         reference: build_reference(path: "some/other_path.rb"),
         message: "some message",
-        violation_type: ReferenceChecking::Checkers::PrivacyChecker::VIOLATION_TYPE
+        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       )
       parse_run = Packwerk::ParseRun.new(
         relative_file_set: Set.new(["some/path.rb", "some/other_path.rb"]),
