@@ -6,6 +6,9 @@ module Packwerk
     module Checkers
       # Checks whether a given reference references a private constant of another package.
       class PrivacyChecker
+        extend ActiveSupport::Autoload
+        autoload :PrivacyProtectedPackage
+
         extend T::Sig
         include Checker
 
