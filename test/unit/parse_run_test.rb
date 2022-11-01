@@ -236,7 +236,7 @@ module Packwerk
       other_file = "components/source/some/other/path.rb"
 
       source_package_name = "components/source"
-      write_app_file("#{source_package_name}/deprecated_references.yml", <<~YML.strip)
+      write_app_file("#{source_package_name}/package_todo.yml", <<~YML.strip)
         ---
         "components/destination":
           "::SomeName":
@@ -291,7 +291,7 @@ module Packwerk
       other_file = "components/source/some/other/path.rb"
 
       source_package_name = "components/source"
-      write_app_file("#{source_package_name}/deprecated_references.yml", <<~YML.strip)
+      write_app_file("#{source_package_name}/package_todo.yml", <<~YML.strip)
         ---
         "components/destination":
           "::SomeName":
