@@ -54,35 +54,6 @@ module Packwerk
           ExtensionLoader.load(require_directive, @root_path)
         end
       end
-
-      if configs["load_paths"]
-        warning = <<~WARNING
-          DEPRECATION WARNING: The 'load_paths' key in `packwerk.yml` is deprecated.
-          This value is no longer cached, and you can remove the key from `packwerk.yml`.
-        WARNING
-
-        warn(warning)
-      end
-
-      if configs["inflections_file"]
-        warning = <<~WARNING
-          DEPRECATION WARNING: The 'inflections_file' key in `packwerk.yml` is deprecated.
-          This value is no longer cached, and you can remove the key from `packwerk.yml`.
-          You can also delete #{configs["inflections_file"]}.
-        WARNING
-
-        warn(warning)
-      end
-
-      inflection_file = File.expand_path(configs["inflections_file"] || "config/inflections.yml", @root_path)
-      if Pathname.new(inflection_file).exist?
-        warning = <<~WARNING
-          DEPRECATION WARNING: Inflections YMLs in packwerk are now deprecated.
-          This value is no longer cached, and you can now delete #{inflection_file}
-        WARNING
-
-        warn(warning)
-      end
     end
 
     def load_paths

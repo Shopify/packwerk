@@ -67,7 +67,7 @@ module Packwerk
         end
 
         # We `next false` because if we cannot find existing violations for `for_files` within
-        # the `deprecated_references.yml` file, then there are no violations that
+        # the `package_todo.yml` file, then there are no violations that
         # can be considered stale.
         next false if package_violations_for_files.empty?
 

@@ -99,18 +99,7 @@ module Packwerk
 
     sig { params(package: Packwerk::Package).returns(String) }
     def package_todo_file_for(package)
-      if Pathname.new(@root_path).join(package.name, "deprecated_references.yml").exist?
-        warning = <<~WARNING.squish
-          DEPRECATION WARNING: `deprecated_references.yml` files have been renamed to
-          `package_todo.yml`. Please see https://github.com/Shopify/packwerk/releases
-          for help renaming these.
-        WARNING
-
-        warn(warning)
-        File.join(@root_path, package.name, "deprecated_references.yml")
-      else
-        File.join(@root_path, package.name, "package_todo.yml")
-      end
+      File.join(@root_path, package.name, "package_todo.yml")
     end
   end
 end
