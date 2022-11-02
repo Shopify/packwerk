@@ -10,15 +10,11 @@ jobs:
         gemfile:
           - Gemfile
           - gemfiles/Gemfile-rails-6-0
-          - gemfiles/Gemfile-rails-6-1
+          - gemfiles/Gemfile-rails-7-0
         ruby:
-          - 2.6
           - 2.7
           - 3.0
           - 3.1
-        exclude:
-          - ruby: 2.6
-            gemfile: Gemfile
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     name: "Tests: Ruby ${{ matrix.ruby }} ${{ matrix.gemfile }}"
