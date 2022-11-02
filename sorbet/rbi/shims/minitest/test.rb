@@ -1,5 +1,8 @@
 # typed: true
+# frozen_string_literal: true
 
-class Minitest::Test
-  include StubConst
+module Minitest
+  class Test
+    include StubConst
+  end
 end

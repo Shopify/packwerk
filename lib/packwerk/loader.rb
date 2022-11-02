@@ -5,9 +5,11 @@ module Packwerk
   class Loader < SimpleDelegator
     ROOT_DIRS_DEPRECATION_VERSION = "2.6.4"
 
-    def self.autoloaders
-      Rails.autoloaders.map do |loader|
-        new(loader)
+    class << self
+      def autoloaders
+        Rails.autoloaders.map do |loader|
+          new(loader)
+        end
       end
     end
 
