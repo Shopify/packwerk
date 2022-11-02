@@ -20,7 +20,7 @@ module Packwerk
 
       sig { returns(T::Hash[String, Module]) }
       def extract_application_autoload_paths
-        Rails.autoloaders.inject({}) do |h, loader|
+        Loader.autoloaders.inject({}) do |h, loader|
           h.merge(loader.__roots)
         end
       end

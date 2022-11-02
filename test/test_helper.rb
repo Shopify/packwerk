@@ -12,6 +12,7 @@ require "minitest/autorun"
 require "minitest/focus"
 require "mocha/minitest"
 require "support/application_fixture_helper"
+require "support/stub_const"
 require "support/factory_helper"
 require "support/rails_application_fixture_helper"
 require "support/test_macro"
@@ -19,6 +20,7 @@ require "support/test_assertions"
 require "support/yaml_file"
 require "support/typed_mock"
 
+Minitest::Test.include(StubConst)
 Minitest::Test.extend(TestMacro)
 Minitest::Test.include(TestAssertions)
 
