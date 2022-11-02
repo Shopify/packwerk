@@ -13,6 +13,7 @@ module Packwerk
 
     def root_dirs
       return super if Zeitwerk::VERSION < ROOT_DIRS_DEPRECATION_VERSION
+
       __roots
     end
   end
