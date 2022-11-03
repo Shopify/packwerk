@@ -59,19 +59,11 @@ module Packwerk
       when "validate"
         validate(args)
       when nil, "help"
-        @err_out.puts(<<~USAGE)
-          Usage: #{$PROGRAM_NAME} <subcommand>
-
-          Subcommands:
-            init - set up packwerk
-            check - run all checks
-            update-todo - update package_todo.yml files
-            validate - verify integrity of packwerk and package configuration
-            help  - display help information about packwerk
-        USAGE
-        true
+        usage
       else
-        @err_out.puts("'#{subcommand}' is not a packwerk command. See `packwerk help`.")
+        @err_out.puts(
+          "'#{subcommand}' is not a packwerk command. See `packwerk help`."
+        )
         false
       end
     end
@@ -112,6 +104,21 @@ module Packwerk
 
       @out.puts(result)
       success
+    end
+
+    sig { returns(T::Boolean) }
+    def usage
+      @err_out.puts(<<~USAGE)
+        Usage: #{$PROGRAM_NAME} <subcommand>
+
+        Subcommands:
+          init - set up packwerk
+          check - run all checks
+          update-todo - update package_todo.yml files
+          validate - verify integrity of packwerk and package configuration
+          help  - display help information about packwerk
+      USAGE
+      true
     end
 
     sig { params(result: Result).returns(T::Boolean) }
