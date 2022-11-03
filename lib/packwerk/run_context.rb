@@ -71,6 +71,7 @@ module Packwerk
 
       @file_processor = T.let(nil, T.nilable(FileProcessor))
       @context_provider = T.let(nil, T.nilable(ConstantDiscovery))
+      @package_set = T.let(nil, T.nilable(PackageSet))
       # We need to initialize this before we fork the process, see https://github.com/Shopify/packwerk/issues/182
       @cache = T.let(
         Cache.new(enable_cache: @cache_enabled, cache_directory: @cache_directory, config_path: @config_path), Cache
@@ -88,6 +89,11 @@ module Packwerk
       reference_checker = ReferenceChecking::ReferenceChecker.new(@checkers)
 
       processed_file.offenses + references.flat_map { |reference| reference_checker.call(reference) }
+    end
+
+    sig { returns(PackageSet) }
+    def package_set
+      @package_set ||= ::Packwerk::PackageSet.load_all_from(@root_path, package_pathspec: @package_paths)
     end
 
     private
@@ -121,11 +127,6 @@ module Packwerk
         load_paths: @load_paths,
         inflector: @inflector,
       )
-    end
-
-    sig { returns(PackageSet) }
-    def package_set
-      ::Packwerk::PackageSet.load_all_from(@root_path, package_pathspec: @package_paths)
     end
 
     sig { returns(T::Array[ConstantNameInspector]) }
