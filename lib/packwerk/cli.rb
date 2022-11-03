@@ -50,8 +50,6 @@ module Packwerk
       case subcommand
       when "init"
         init
-      when "generate_configs"
-        generate_configs
       when "check"
         output_result(parse_run(args).check)
       when "detect-stale-violations"
