@@ -17,6 +17,24 @@ module Packwerk
       teardown_application_fixture
     end
 
+    test "#detect_stale_violations is deprecated" do
+      use_template(:minimal)
+      RunContext.any_instance.stubs(:process_file).returns([])
+
+      parse_run = Packwerk::ParseRun.new(
+        relative_file_set: Set.new(["path/of/exile.rb"]),
+        configuration: Configuration.from_path
+      )
+
+      _, error_message = capture_io do
+        parse_run.detect_stale_violations
+      end
+
+      assert_equal(<<~MSG, error_message)
+        DEPRECATION WARNING: `detect-stale-violation` is deprecated, the output of `check` includes stale references.
+      MSG
+    end
+
     test "#detect_stale_violations returns expected Result when stale violations present" do
       use_template(:minimal)
       OffenseCollection.any_instance.stubs(:stale_violations?).returns(true)
@@ -26,9 +44,11 @@ module Packwerk
         relative_file_set: Set.new(["path/of/exile.rb"]),
         configuration: Configuration.from_path
       )
-      result = parse_run.detect_stale_violations
-      assert_equal "There were stale violations found, please run `packwerk update-todo`", result.message
-      refute result.status
+      capture_io do
+        result = parse_run.detect_stale_violations
+        assert_equal "There were stale violations found, please run `packwerk update-todo`", result.message
+        refute result.status
+      end
     end
 
     test "#update-todo returns success when there are no offenses" do
