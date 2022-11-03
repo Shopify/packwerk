@@ -84,7 +84,7 @@ module Packwerk
     sig { void }
     def dump
       if @new_entries.empty?
-        File.delete(@filepath) if File.exist?(@filepath)
+        delete_if_exists
       else
         prepare_entries_for_dump
         message = <<~MESSAGE
@@ -100,6 +100,11 @@ module Packwerk
           f.write(@new_entries.to_yaml)
         end
       end
+    end
+
+    sig { void }
+    def delete_if_exists
+      File.delete(@filepath) if File.exist?(@filepath)
     end
 
     private

@@ -37,9 +37,10 @@ module Packwerk
           message: "some message",
           violation_type: ViolationType::Dependency
         )
+
         @offense_collection.add_offense(offense1)
         @offense_collection.add_offense(offense2)
-        @offense_collection.dump_deprecated_references_files
+        dump_deprecated_references_files
 
         expected = {
           "components/destination" => {
@@ -48,6 +49,12 @@ module Packwerk
           },
         }
         assert_equal expected, YAML.load_file("deprecated_references.yml")
+      end
+
+      private
+
+      def dump_deprecated_references_files
+        @offense_collection.persist_deprecated_references_files(PackageSet.new([]))
       end
     end
   end

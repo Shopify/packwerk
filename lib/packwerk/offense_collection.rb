@@ -57,11 +57,10 @@ module Packwerk
       end
     end
 
-    sig { void }
-    def dump_deprecated_references_files
-      @deprecated_references.each do |_, deprecated_references_file|
-        deprecated_references_file.dump
-      end
+    sig { params(package_set: Packwerk::PackageSet).void }
+    def persist_deprecated_references_files(package_set)
+      dump_deprecated_references_files
+      cleanup_extra_deprecated_references_files(package_set)
     end
 
     sig { returns(T::Array[Packwerk::Offense]) }
@@ -70,6 +69,23 @@ module Packwerk
     end
 
     private
+
+    sig { params(package_set: Packwerk::PackageSet).void }
+    def cleanup_extra_deprecated_references_files(package_set)
+      packages_without_todos = (package_set.packages.values - @deprecated_references.keys)
+
+      packages_without_todos.each do |package|
+        Packwerk::DeprecatedReferences.new(
+          package,
+          deprecated_references_file_for(package),
+        ).delete_if_exists
+      end
+    end
+
+    sig { void }
+    def dump_deprecated_references_files
+      @deprecated_references.each_value(&:dump)
+    end
 
     sig { params(package: Packwerk::Package).returns(Packwerk::DeprecatedReferences) }
     def deprecated_references_for(package)
