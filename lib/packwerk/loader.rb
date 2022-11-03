@@ -3,9 +3,12 @@
 
 module Packwerk
   class Loader < SimpleDelegator
-    ROOT_DIRS_DEPRECATION_VERSION = "2.6.4"
+    INTROSPECTION_SUPPORTED_VERSION = "2.6.1"
 
     class << self
+      extend T::Sig
+
+      sig { returns(T::Array[Loader]) }
       def autoloaders
         Rails.autoloaders.map do |loader|
           new(loader)
@@ -13,10 +16,12 @@ module Packwerk
       end
     end
 
-    def root_dirs
-      return super if Zeitwerk::VERSION < ROOT_DIRS_DEPRECATION_VERSION
-
-      __getobj__.__roots
+    def dirs(namespaces:)
+      if Zeitwerk::VERSION < INTROSPECTION_SUPPORTED_VERSION
+        __getobj__.root_dirs
+      else
+        super
+      end
     end
   end
 end
