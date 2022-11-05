@@ -21,6 +21,7 @@ module Packwerk
 
     test "#execute_command with the subcommand check starts processing files" do
       use_template(:blank)
+
       file_path = "path/of/exile.rb"
       violation_message = "This is a violation of code health."
       offense = Offense.new(file: file_path, message: violation_message)
@@ -34,7 +35,9 @@ module Packwerk
       cli = ::Packwerk::Cli.new(out: string_io, configuration: configuration)
 
       # TODO: Dependency injection for a "target finder" (https://github.com/Shopify/packwerk/issues/164)
-      ::Packwerk::FilesForProcessing.stubs(fetch: Set.new([file_path]))
+      FilesForProcessing.any_instance.stubs(
+        files: Set.new([file_path])
+      )
 
       success = cli.execute_command(["check", file_path])
 
@@ -46,6 +49,7 @@ module Packwerk
 
     test "#execute_command with the subcommand check traps the interrupt signal" do
       use_template(:blank)
+
       file_path = "path/of/exile.rb"
       interrupt_message = "Manually interrupted. Violations caught so far are listed below:"
       violation_message = "This is a violation of code health."
@@ -64,7 +68,9 @@ module Packwerk
 
       cli = ::Packwerk::Cli.new(out: string_io, configuration: configuration)
 
-      ::Packwerk::FilesForProcessing.stubs(fetch: Set.new([file_path, "test.rb", "foo.rb"]))
+      FilesForProcessing.any_instance.stubs(
+        files: Set.new([file_path, "test.rb", "foo.rb"])
+      )
 
       success = cli.execute_command(["check", file_path])
 
@@ -85,6 +91,7 @@ module Packwerk
 
     test "#execute_command with validate subcommand runs application validator and succeeds if no errors" do
       use_template(:blank)
+
       string_io = StringIO.new
       cli = ::Packwerk::Cli.new(out: string_io)
 
@@ -129,6 +136,7 @@ module Packwerk
 
     test "#execute_command using a custom offenses class" do
       use_template(:blank)
+
       offenses_formatter = Class.new do
         include Packwerk::OffensesFormatter
 
@@ -144,7 +152,6 @@ module Packwerk
           "custom"
         end
       end
-
       file_path = "path/of/exile.rb"
       violation_message = "This is a violation of code health."
       offense = Offense.new(file: file_path, message: violation_message)
@@ -162,7 +169,9 @@ module Packwerk
         offenses_formatter: T.unsafe(offenses_formatter).new
       )
 
-      ::Packwerk::FilesForProcessing.stubs(fetch: Set.new([file_path]))
+      FilesForProcessing.any_instance.stubs(
+        files: Set.new([file_path])
+      )
 
       success = cli.execute_command(["check", file_path])
 
@@ -196,7 +205,9 @@ module Packwerk
         cli = ::Packwerk::Cli.new(out: string_io)
       end
 
-      ::Packwerk::FilesForProcessing.stubs(fetch: Set.new([file_path]))
+      FilesForProcessing.any_instance.stubs(
+        files: Set.new([file_path])
+      )
 
       success = T.must(cli).execute_command(["check", file_path])
 
@@ -232,7 +243,9 @@ module Packwerk
         cli = ::Packwerk::Cli.new(out: string_io)
       end
 
-      ::Packwerk::FilesForProcessing.stubs(fetch: Set.new([file_path]))
+      FilesForProcessing.any_instance.stubs(
+        files: Set.new([file_path])
+      )
 
       success = T.must(cli).execute_command(["check", "--offenses-formatter=default", file_path])
 
