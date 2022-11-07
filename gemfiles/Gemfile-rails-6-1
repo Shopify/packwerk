@@ -7,7 +7,7 @@ gemspec path: ".."
 # Specify the same dependency sources as the application Gemfile
 
 gem("spring")
-gem("rails", "~> 7.0")
+gem("rails", "~> 6.1")
 gem("constant_resolver", require: false)
 gem("sorbet-runtime", require: false)
 gem("rubocop-performance", require: false)
