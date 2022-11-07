@@ -10,6 +10,7 @@ PATH
       parallel
       parser
       sorbet-runtime (>= 0.5.9914)
+      zeitwerk (>= 2.6.1)
 
 GEM
   remote: https://rubygems.org/
