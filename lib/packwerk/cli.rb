@@ -56,14 +56,6 @@ module Packwerk
         output_result(parse_run(args).check)
       when "detect-stale-violations"
         output_result(parse_run(args).detect_stale_violations)
-      when "update-deprecations"
-        warning = <<~WARNING.squish
-          DEPRECATION WARNING: `update-deprecations` is deprecated in favor of
-          `update-todo`.
-        WARNING
-
-        warn(warning)
-        output_result(parse_run(args).update_todo)
       when "update-todo"
         output_result(parse_run(args).update_todo)
       when "update"
