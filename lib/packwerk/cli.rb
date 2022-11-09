@@ -50,32 +50,20 @@ module Packwerk
       case subcommand
       when "init"
         init
-      when "generate_configs"
-        generate_configs
       when "check"
         output_result(parse_run(args).check)
       when "detect-stale-violations"
         output_result(parse_run(args).detect_stale_violations)
-      when "update-todo"
-        output_result(parse_run(args).update_todo)
-      when "update"
+      when "update-todo", "update"
         output_result(parse_run(args).update_todo)
       when "validate"
         validate(args)
       when nil, "help"
-        @err_out.puts(<<~USAGE)
-          Usage: #{$PROGRAM_NAME} <subcommand>
-
-          Subcommands:
-            init - set up packwerk
-            check - run all checks
-            update-todo - update package_todo.yml files
-            validate - verify integrity of packwerk and package configuration
-            help  - display help information about packwerk
-        USAGE
-        true
+        usage
       else
-        @err_out.puts("'#{subcommand}' is not a packwerk command. See `packwerk help`.")
+        @err_out.puts(
+          "'#{subcommand}' is not a packwerk command. See `packwerk help`."
+        )
         false
       end
     end
@@ -116,6 +104,21 @@ module Packwerk
 
       @out.puts(result)
       success
+    end
+
+    sig { returns(T::Boolean) }
+    def usage
+      @err_out.puts(<<~USAGE)
+        Usage: #{$PROGRAM_NAME} <subcommand>
+
+        Subcommands:
+          init - set up packwerk
+          check - run all checks
+          update-todo - update package_todo.yml files
+          validate - verify integrity of packwerk and package configuration
+          help  - display help information about packwerk
+      USAGE
+      true
     end
 
     sig { params(result: Result).returns(T::Boolean) }
