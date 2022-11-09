@@ -17,6 +17,24 @@ module Packwerk
       teardown_application_fixture
     end
 
+    test "#detect_stale_violations is deprecated" do
+      use_template(:minimal)
+      RunContext.any_instance.stubs(:process_file).returns([])
+
+      parse_run = Packwerk::ParseRun.new(
+        relative_file_set: Set.new(["path/of/exile.rb"]),
+        configuration: Configuration.from_path
+      )
+
+      _, error_message = capture_io do
+        parse_run.detect_stale_violations
+      end
+
+      assert_equal(<<~MSG, error_message)
+        DEPRECATION WARNING: `detect-stale-violation` is deprecated, the output of `check` includes stale references.
+      MSG
+    end
+
     test "#detect_stale_violations returns expected Result when stale violations present" do
       use_template(:minimal)
       OffenseCollection.any_instance.stubs(:stale_violations?).returns(true)
@@ -26,9 +44,11 @@ module Packwerk
         relative_file_set: Set.new(["path/of/exile.rb"]),
         configuration: Configuration.from_path
       )
-      result = parse_run.detect_stale_violations
-      assert_equal "There were stale violations found, please run `packwerk update-deprecations`", result.message
-      refute result.status
+      capture_io do
+        result = parse_run.detect_stale_violations
+        assert_equal "There were stale violations found, please run `packwerk update-deprecations`", result.message
+        refute result.status
+      end
     end
 
     test "#update_deprecations returns success when there are no offenses" do
@@ -73,7 +93,7 @@ module Packwerk
       refute result.status
     end
 
-    test "#update_todo cleans up old package_todo files" do
+    test "#update_deprecations cleans up old deprecated_references files" do
       use_template(:minimal)
 
       FileUtils.mkdir_p("app/models")
@@ -85,7 +105,7 @@ module Packwerk
         end
       YML
 
-      File.write("package_todo.yml", <<~YML.strip)
+      File.write("deprecated_references.yml", <<~YML.strip)
         ---
         "components/sales":
           "::Order":
@@ -95,7 +115,7 @@ module Packwerk
             - app/models/my_model.rb
       YML
 
-      File.write("components/sales/package_todo.yml", <<~YML.strip)
+      File.write("components/sales/deprecated_references.yml", <<~YML.strip)
         ---
         "components/destination":
           "::SomeName":
