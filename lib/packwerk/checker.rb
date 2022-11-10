@@ -22,6 +22,11 @@ module Packwerk
       def all
         T.unsafe(@checkers).map(&:new)
       end
+
+      sig { params(violation_type: String).returns(Checker) }
+      def find(violation_type)
+        T.must(Checker.all.find { |c| c.violation_type == violation_type })
+      end
     end
 
     sig { abstract.returns(String) }
@@ -32,5 +37,10 @@ module Packwerk
 
     sig { abstract.params(reference: Reference).returns(String) }
     def message(reference); end
+
+    sig { params(reference: Reference).returns(Package) }
+    def todo_file_for(reference)
+      reference.source_package
+    end
   end
 end
