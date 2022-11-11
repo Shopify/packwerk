@@ -110,10 +110,10 @@ module Packwerk
       location = NodeHelpers.location(node)
 
       UnresolvedReference.new(
-        constant_name,
-        namespace_path,
-        relative_file,
-        location
+        constant_name: constant_name,
+        namespace_path: namespace_path,
+        relative_path: relative_file,
+        source_location: location
       )
     end
 

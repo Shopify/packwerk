@@ -32,7 +32,12 @@ module Packwerk
     end
 
     test "#call visits a node in file path with an reference" do
-      unresolved_reference = UnresolvedReference.new("SomeName", [], "tempfile", Node::Location.new(3, 22))
+      unresolved_reference = UnresolvedReference.new(
+        constant_name: "SomeName",
+        namespace_path: [],
+        relative_path: "tempfile",
+        source_location: Node::Location.new(3, 22),
+      )
       @node_processor_factory.expects(:for).returns(@node_processor)
       @node_processor.expects(:call).returns(unresolved_reference)
 
