@@ -38,10 +38,10 @@ module Packwerk
           next if source_package == package_for_constant
 
           fully_qualified_references << Reference.new(
-            source_package,
-            unresolved_reference.relative_path,
-            constant,
-            unresolved_reference.source_location
+            package: source_package,
+            relative_path: unresolved_reference.relative_path,
+            constant: constant,
+            source_location: unresolved_reference.source_location,
           )
         end
 

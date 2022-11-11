@@ -39,7 +39,7 @@ module Packwerk
       assert_equal 1, references.count
 
       reference = references.first
-      assert_equal "components/timeline", reference.source_package.name
+      assert_equal "components/timeline", reference.package.name
       assert_equal "::Order", reference.constant.name
       assert_equal "components/sales", reference.constant.package.name
       assert_equal "components/sales/app/models/order.rb", reference.constant.location
@@ -87,7 +87,7 @@ module Packwerk
       assert_equal 1, references.count
 
       reference = references.first
-      assert_equal "components/timeline", reference.source_package.name
+      assert_equal "components/timeline", reference.package.name
       assert_equal "::Order", reference.constant.name
       assert_equal "components/sales", reference.constant.package.name
       assert_equal "components/sales/app/models/order.rb", reference.constant.location

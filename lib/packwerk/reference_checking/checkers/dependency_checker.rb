@@ -22,9 +22,8 @@ module Packwerk
             .returns(T::Boolean)
         end
         def invalid_reference?(reference)
-          return false unless reference.source_package
-          return false unless reference.source_package.enforce_dependencies?
-          return false if reference.source_package.dependency?(reference.constant.package)
+          return false unless reference.package.enforce_dependencies?
+          return false if reference.package.dependency?(reference.constant.package)
 
           true
         end
@@ -35,8 +34,12 @@ module Packwerk
             .returns(String)
         end
         def message(reference)
+          const_name = reference.constant.name
+          const_package = reference.constant.package
+          ref_package = reference.package
+
           <<~EOS
-            Dependency violation: #{reference.constant.name} belongs to '#{reference.constant.package}', but '#{reference.source_package}' does not specify a dependency on '#{reference.constant.package}'.
+            Dependency violation: #{const_name} belongs to '#{const_package}', but '#{ref_package}' does not specify a dependency on '#{const_package}'.
             Are we missing an abstraction?
             Is the code making the reference, and the referenced constant, in the right packages?
 
