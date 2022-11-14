@@ -45,34 +45,6 @@ module Packwerk
       path.start_with?(@name)
     end
 
-    # These functions to get information about package privacy concerns will soon be removed
-    sig { returns(T.nilable(T.any(T::Boolean, T::Array[String]))) }
-    def enforce_privacy
-      privacy_protected_package.enforce_privacy
-    end
-
-    sig { returns(String) }
-    def public_path
-      privacy_protected_package.public_path
-    end
-
-    sig { params(path: String).returns(T::Boolean) }
-    def public_path?(path)
-      privacy_protected_package.public_path?(path)
-    end
-
-    sig { returns(T.nilable(String)) }
-    def user_defined_public_path
-      privacy_protected_package.user_defined_public_path
-    end
-
-    sig { returns(ReferenceChecking::Checkers::PrivacyChecker::PrivacyProtectedPackage) }
-    def privacy_protected_package
-      @privacy_protected_package ||= T.let(@privacy_protected_package,
-        T.nilable(ReferenceChecking::Checkers::PrivacyChecker::PrivacyProtectedPackage))
-      @privacy_protected_package ||= ReferenceChecking::Checkers::PrivacyChecker::PrivacyProtectedPackage.from(self)
-    end
-
     sig { params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
       return nil unless other.is_a?(self.class)

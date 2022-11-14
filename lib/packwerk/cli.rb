@@ -148,7 +148,7 @@ module Packwerk
     sig { params(_paths: T::Array[String]).returns(T::Boolean) }
     def validate(_paths)
       @progress_formatter.started_validation do
-        result = checker.check_all
+        result = validator.check_all(package_set, @configuration)
 
         list_validation_errors(result)
 
@@ -157,11 +157,15 @@ module Packwerk
     end
 
     sig { returns(ApplicationValidator) }
-    def checker
-      Packwerk::ApplicationValidator.new(
-        config_file_path: @configuration.config_path,
-        configuration: @configuration,
-        environment: @environment,
+    def validator
+      Packwerk::ApplicationValidator.new
+    end
+
+    sig { returns(PackageSet) }
+    def package_set
+      PackageSet.load_all_from(
+        @configuration.root_path,
+        package_pathspec: @configuration.package_paths || "**"
       )
     end
 

@@ -17,7 +17,7 @@ module Packwerk
   class ConstantDiscovery
     extend T::Sig
 
-    ConstantContext = Struct.new(:name, :location, :package, :public?)
+    ConstantContext = Struct.new(:name, :location, :package)
 
     # @param constant_resolver [ConstantResolver]
     # @param packages [Packwerk::PackageSet]
@@ -71,7 +71,6 @@ module Packwerk
         constant.name,
         constant.location,
         package,
-        package.public_path?(constant.location),
       )
     end
   end

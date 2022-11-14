@@ -15,7 +15,6 @@ Packwerk is a Ruby gem used to enforce boundaries and modularize Rails applicati
 Packwerk can be used to:
 * Combine groups of files into packages
 * Define package-level constant visibility (i.e. have publicly accessible constants)
-* Enforce privacy (inbound) and dependency (outbound) boundaries between packages
 * Help existing codebases to become more modular without obstructing development
 
 ## Prerequisites
@@ -67,6 +66,7 @@ Various third parties have built tooling on top of packwerk. Here's a selection 
 - https://github.com/Gusto/packwerk-vscode integrates packwerk into Visual Studio Code so you can see violations right in your editor
 - https://github.com/Gusto/stimpack sets up Rails autoloading, as well as `rspec` and `FactoryBot` integration, for packages arranged in a flat list. Stimpack is quite convenient, but for autoloading we recommend to use `Rails::Engine`s instead.
 - https://github.com/rubyatscale/danger-packwerk integrates packwerk with [danger.systems](https://danger.systems) to provide packwerk feedback as Github inline PR comments
+- https://github.com/rubyatscale/packwerk-extensions contains extensions for packwerk, including a checker for packwerk that allows you to enforce public API boundaries. This was originally extracted from `packwerk` itself.
 
 ## Development
 

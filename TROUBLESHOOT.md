@@ -22,26 +22,6 @@ _Note: You cannot specify folders or packages for `bin/packwerk validate` becaus
 
 ![](static/packwerk_check_violation.gif)
 
-### Package Privacy violation
-A constant that is private to its package has been referenced from outside of the package. Constants are declared private in their package’s `package.yml`.
-
-See: [USAGE.md - Enforcing privacy boundary](USAGE.md#Enforcing-privacy-boundary)
-
-#### Interpreting Privacy violation
-
-> /Users/JaneDoe/src/github.com/sample-project/user/app/controllers/labels_controller.rb:170:30
-> Privacy violation: '::Billing::CarrierInvoiceTransaction' is private to 'billing' but referenced from 'user'.
-> Is there a public entrypoint in 'billing/app/public/' that you can use instead?
->
-> Inference details: 'Billing::CarrierInvoiceTransaction' refers to ::Billing::CarrierInvoiceTransaction which seems to be defined in billing/app/models/billing/carrier_invoice_transaction.rb.
-
-There has been a privacy violation of the package `billing` in the package `user`, through the use of the constant `Billing::CarrierInvoiceTransaction` in the file `user/app/controllers/labels_controller.rb`.
-
-##### Suggestions
-You may be accessing the implementation of a piece of functionality that is supposed to be accessed through a public interface on the package. Try to use the public interface instead. A package’s public interface should be defined in its `app/public` folder and documented.
-
-The functionality you’re looking for may not be intended to be reused across packages at all. If there is no public interface for it but you have a good reason to use it from outside of its package, find the people responsible for the package and discuss a solution with them.
-
 ### Package Dependency violation
 A constant defined in a package A is referenced from a package B that doesn’t define a dependency on A. Packages define their dependencies in their `package.yml`.
 

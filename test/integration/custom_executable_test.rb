@@ -41,12 +41,12 @@ module Packwerk
         end
 
         refute_successful_run("check")
-        assert_match(/Privacy violation: '::Order'/, captured_output)
+        assert_match(/Dependency violation: ::Order/, captured_output)
         assert_match(/1 offense detected/, captured_output)
 
         reset_output
         refute_successful_run(["check", "components/timeline"])
-        assert_match(/Privacy violation: '::Order'/, captured_output)
+        assert_match(/Dependency violation: ::Order/, captured_output)
         assert_match(/1 offense detected/, captured_output)
 
         reset_output
@@ -61,7 +61,7 @@ module Packwerk
         end
 
         refute_successful_run("check")
-        assert_match(/Privacy violation: '::Order'/, captured_output)
+        assert_match(/Dependency violation: ::Order/, captured_output)
         assert_match(/1 offense detected/, captured_output)
 
         reset_output
@@ -80,8 +80,8 @@ module Packwerk
 
         package_todo_content_after_update = read_package_todo
         expected_output = <<~EOS
-          📦 Packwerk is inspecting 13 files
-          \\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.
+          📦 Packwerk is inspecting 12 files
+          \\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.
           📦 Finished in \\d+\\.\\d+ seconds
 
           No offenses detected
@@ -108,15 +108,15 @@ module Packwerk
 
           timeline_package_todo_content = File.read(timeline_package_todo_path)
           assert_match(
-            "components/sales:\n  \"::Order\":\n    violations:\n    - privacy",
+            "components/sales:\n  \"::Order\":\n    violations:\n    - dependency",
             timeline_package_todo_content
           )
 
           package_todo_content_after_update =
             read_package_todo.reject { |k, _v| k.match?(timeline_package_todo_path) }
           expected_output = <<~EOS
-            📦 Packwerk is inspecting 14 files
-            \\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.
+            📦 Packwerk is inspecting 13 files
+            \\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.
             📦 Finished in \\d+\\.\\d+ seconds
 
             No offenses detected
