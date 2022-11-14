@@ -25,7 +25,16 @@ module Packwerk
 
       sig { params(violation_type: String).returns(Checker) }
       def find(violation_type)
-        T.must(Checker.all.find { |c| c.violation_type == violation_type })
+        checker_by_violation_type(violation_type)
+      end
+
+      private
+
+      sig { params(name: String).returns(Checker) }
+      def checker_by_violation_type(name)
+        @checker_by_violation_type ||= T.let(@checker_by_violation_type, T.nilable(T::Hash[String, T.nilable(Checker)]))
+        @checker_by_violation_type ||= Checker.all.map { |c| [c.violation_type, c] }.to_h
+        T.must(@checker_by_violation_type[name])
       end
     end
 
