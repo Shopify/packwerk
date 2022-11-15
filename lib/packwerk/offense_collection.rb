@@ -35,9 +35,7 @@ module Packwerk
       return false unless offense.is_a?(ReferenceOffense)
 
       reference = offense.reference
-      checker = Checker.find(offense.violation_type)
-      package_name_where_violation_should_live = checker.todo_file_for(reference)
-      package_todo_for(package_name_where_violation_should_live).listed?(reference,
+      package_todo_for_offense(offense).listed?(reference,
         violation_type: offense.violation_type)
     end
 
@@ -49,10 +47,8 @@ module Packwerk
         @errors << offense
         return
       end
-      checker = Checker.find(offense.violation_type)
-      package_name_where_violation_should_live = checker.todo_file_for(offense.reference)
-      package_todo = package_todo_for(package_name_where_violation_should_live)
-      unless package_todo.add_entries(offense.reference, offense.violation_type)
+
+      unless package_todo_for_offense(offense).add_entries(offense.reference, offense.violation_type)
         new_violations << offense
       end
     end
@@ -76,6 +72,13 @@ module Packwerk
     end
 
     private
+
+    sig { params(offense: ReferenceOffense).returns(Packwerk::PackageTodo) }
+    def package_todo_for_offense(offense)
+      checker = Checker.find(offense.violation_type)
+      package_name_where_violation_should_live = checker.todo_file_for(offense.reference)
+      package_todo_for(package_name_where_violation_should_live)
+    end
 
     sig { params(package_set: Packwerk::PackageSet).void }
     def cleanup_extra_package_todo_files(package_set)
