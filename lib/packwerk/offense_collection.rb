@@ -76,7 +76,7 @@ module Packwerk
     sig { params(offense: ReferenceOffense).returns(Packwerk::PackageTodo) }
     def package_todo_for_offense(offense)
       checker = Checker.find(offense.violation_type)
-      package_name_where_violation_should_live = checker.offending_package_for(offense.reference)
+      package_name_where_violation_should_live = offending_package_for(checker, offense.reference)
       package_todo_for(package_name_where_violation_should_live)
     end
 
@@ -89,6 +89,19 @@ module Packwerk
           package,
           package_todo_file_for(package),
         ).delete_if_exists
+      end
+    end
+
+    sig { params(checker: Checker, reference: Reference).returns(Package) }
+    def offending_package_for(checker, reference)
+      location = checker.offending_package
+      case location
+      when Checker::OffendingPackage::DefinitionPackage
+        reference.constant.package
+      when Checker::OffendingPackage::ReferencePackage
+        reference.source_package
+      else
+        T.absurd(location)
       end
     end
 

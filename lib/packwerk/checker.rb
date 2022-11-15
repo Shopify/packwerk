@@ -55,21 +55,8 @@ module Packwerk
     def message(reference); end
 
     sig { returns(OffendingPackage) }
-    def todo_location
+    def offending_package
       OffendingPackage::ReferencePackage
-    end
-
-    sig { params(reference: Reference).returns(Package) }
-    def offending_package_for(reference)
-      location = todo_location
-      case location
-      when OffendingPackage::DefinitionPackage
-        reference.constant.package
-      when OffendingPackage::ReferencePackage
-        reference.source_package
-      else
-        T.absurd(location)
-      end
     end
   end
 end
