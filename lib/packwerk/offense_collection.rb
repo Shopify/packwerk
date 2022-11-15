@@ -76,7 +76,7 @@ module Packwerk
     sig { params(offense: ReferenceOffense).returns(Packwerk::PackageTodo) }
     def package_todo_for_offense(offense)
       checker = Checker.find(offense.violation_type)
-      package_name_where_violation_should_live = checker.todo_file_for(offense.reference)
+      package_name_where_violation_should_live = checker.offending_package_for(offense.reference)
       package_todo_for(package_name_where_violation_should_live)
     end
 
