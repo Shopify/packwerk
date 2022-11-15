@@ -6,6 +6,13 @@ module Packwerk
     extend T::Sig
     extend T::Helpers
 
+    class TodoLocation < T::Enum
+      enums do
+        PackageReferencingConstant = new
+        PackageDefiningConstant = new
+      end
+    end
+
     abstract!
 
     class << self
@@ -47,9 +54,22 @@ module Packwerk
     sig { abstract.params(reference: Reference).returns(String) }
     def message(reference); end
 
+    sig { returns(TodoLocation) }
+    def todo_location
+      TodoLocation::PackageReferencingConstant
+    end
+
     sig { params(reference: Reference).returns(Package) }
     def todo_file_for(reference)
-      reference.source_package
+      location = todo_location
+      case location
+      when TodoLocation::PackageDefiningConstant
+        reference.constant.package
+      when TodoLocation::PackageReferencingConstant
+        reference.source_package
+      else
+        T.absurd(location)
+      end
     end
   end
 end
