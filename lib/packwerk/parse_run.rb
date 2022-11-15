@@ -33,22 +33,6 @@ module Packwerk
     end
 
     sig { returns(Result) }
-    def detect_stale_violations
-      warn(<<~WARNING.squish)
-        DEPRECATION WARNING: `detect-stale-violation` is deprecated,
-        the output of `check` includes stale references.
-      WARNING
-
-      run_context = Packwerk::RunContext.from_configuration(@configuration)
-      offense_collection = find_offenses(run_context)
-
-      result_status = !offense_collection.stale_violations?(@relative_file_set)
-      message = @offenses_formatter.show_stale_violations(offense_collection, @relative_file_set)
-
-      Result.new(message: message, status: result_status)
-    end
-
-    sig { returns(Result) }
     def update_todo
       run_context = Packwerk::RunContext.from_configuration(@configuration)
       offense_collection = find_offenses(run_context)
