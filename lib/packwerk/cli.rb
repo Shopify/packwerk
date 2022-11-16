@@ -52,8 +52,6 @@ module Packwerk
         init
       when "check"
         output_result(parse_run(args).check)
-      when "detect-stale-violations"
-        output_result(parse_run(args).detect_stale_violations)
       when "update-todo", "update"
         output_result(parse_run(args).update_todo)
       when "validate"
