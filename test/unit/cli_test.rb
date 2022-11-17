@@ -7,18 +7,20 @@ require "rails_test_helper"
 module Packwerk
   class CliTest < Minitest::Test
     include TypedMock
+    include ApplicationFixtureHelper
 
     setup do
+      setup_application_fixture
       @err_out = StringIO.new
       @cli = ::Packwerk::Cli.new(err_out: @err_out)
-      @temp_dir = Dir.mktmpdir
     end
 
     teardown do
-      FileUtils.remove_entry(@temp_dir)
+      teardown_application_fixture
     end
 
     test "#execute_command with the subcommand check starts processing files" do
+      use_template(:blank)
       file_path = "path/of/exile.rb"
       violation_message = "This is a violation of code health."
       offense = Offense.new(file: file_path, message: violation_message)
@@ -43,6 +45,7 @@ module Packwerk
     end
 
     test "#execute_command with the subcommand check traps the interrupt signal" do
+      use_template(:blank)
       file_path = "path/of/exile.rb"
       interrupt_message = "Manually interrupted. Violations caught so far are listed below:"
       violation_message = "This is a violation of code health."
@@ -74,12 +77,14 @@ module Packwerk
     end
 
     test "#execute_command with the subcommand help lists all the valid subcommands" do
+      use_template(:blank)
       @cli.execute_command(["help"])
 
       assert_match(/Subcommands:/, @err_out.string)
     end
 
     test "#execute_command with validate subcommand runs application validator and succeeds if no errors" do
+      use_template(:blank)
       string_io = StringIO.new
       cli = ::Packwerk::Cli.new(out: string_io)
 
@@ -93,6 +98,7 @@ module Packwerk
     end
 
     test "#execute_command with validate subcommand runs application validator, fails and prints errors if any" do
+      use_template(:blank)
       string_io = StringIO.new
       cli = ::Packwerk::Cli.new(out: string_io)
 
@@ -107,12 +113,14 @@ module Packwerk
     end
 
     test "#execute_command with empty subcommand lists all the valid subcommands" do
+      use_template(:blank)
       @cli.execute_command([])
 
       assert_match(/Subcommands:/, @err_out.string)
     end
 
     test "#execute_command with an invalid subcommand" do
+      use_template(:blank)
       @cli.execute_command(["beep boop"])
 
       expected_output = "'beep boop' is not a packwerk command. See `packwerk help`.\n"
@@ -120,6 +128,7 @@ module Packwerk
     end
 
     test "#execute_command using a custom offenses class" do
+      use_template(:blank)
       offenses_formatter = Class.new do
         include Packwerk::OffensesFormatter
 
