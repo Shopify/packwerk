@@ -7,7 +7,7 @@ require "parser/current"
 module Packwerk
   module Parsers
     class Ruby
-      include ParserInterface
+      include Packwerk::Parser
 
       RUBY_REGEX = %r{
         # Although not important for regex, these are ordered from most likely to match to least likely.
@@ -24,7 +24,7 @@ module Packwerk
         end
       end
 
-      class TolerateInvalidUtf8Builder < Parser::Builders::Default
+      class TolerateInvalidUtf8Builder < ::Parser::Builders::Default
         def string_value(token)
           value(token)
         end
@@ -36,14 +36,14 @@ module Packwerk
       end
 
       def call(io:, file_path: "<unknown>")
-        buffer = Parser::Source::Buffer.new(file_path)
+        buffer = ::Parser::Source::Buffer.new(file_path)
         buffer.source = io.read
         parser = @parser_class.new(@builder)
         parser.parse(buffer)
       rescue EncodingError => e
         result = ParseResult.new(file: file_path, message: e.message)
         raise Parsers::ParseError, result
-      rescue Parser::SyntaxError => e
+      rescue ::Parser::SyntaxError => e
         result = ParseResult.new(file: file_path, message: "Syntax error: #{e}")
         raise Parsers::ParseError, result
       end

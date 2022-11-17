@@ -25,8 +25,8 @@ module Packwerk
 
     sig do
       params(
-        node: Parser::AST::Node,
-        ancestors: T::Array[Parser::AST::Node],
+        node: ::Parser::AST::Node,
+        ancestors: T::Array[::Parser::AST::Node],
         absolute_file: String
       ).returns(T.nilable(UnresolvedReference))
     end
@@ -99,8 +99,8 @@ module Packwerk
     sig do
       params(
         constant_name: String,
-        node: Parser::AST::Node,
-        ancestors: T::Array[Parser::AST::Node],
+        node: ::Parser::AST::Node,
+        ancestors: T::Array[::Parser::AST::Node],
         absolute_file: String
       ).returns(T.nilable(UnresolvedReference))
     end

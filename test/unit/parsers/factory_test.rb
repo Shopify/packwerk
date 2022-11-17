@@ -26,16 +26,16 @@ module Packwerk
       end
 
       test "#for_path gives custom parser for paths the parser is defined to match" do
-        fake_erb_parser_class = Class.new do
-          T.unsafe(self).include(ParserInterface)
+        fake_class = Class.new do
+          T.unsafe(self).include(Packwerk::Parser)
 
           def self.match?(path)
-            /\.erb\Z/.match?(path)
+            /\.slim\Z/.match?(path)
           end
         end
 
-        with_parser_class(fake_erb_parser_class) do
-          assert_instance_of(fake_erb_parser_class, factory.for_path("foo.html.erb"))
+        with_parser_class(fake_class) do
+          assert_instance_of(fake_class, factory.for_path("foo.html.erb"))
         end
       end
 

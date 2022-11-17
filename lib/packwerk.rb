@@ -35,6 +35,7 @@ module Packwerk
   autoload :Package
   autoload :PackageSet
   autoload :ParsedConstantDefinitions
+  autoload :Parser
   autoload :Parsers
   autoload :ParseRun
   autoload :UnresolvedReference

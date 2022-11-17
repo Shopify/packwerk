@@ -60,7 +60,7 @@ module Packwerk
       def each_child(node)
         if block_given?
           node.children.each do |child|
-            yield child if child.is_a?(Parser::AST::Node)
+            yield child if child.is_a?(::Parser::AST::Node)
           end
         else
           enum_for(:each_child, node)

@@ -9,7 +9,7 @@ require "parser/source/buffer"
 module Packwerk
   module Parsers
     class Erb
-      include ParserInterface
+      include Packwerk::Parser
 
       ERB_REGEX = /\.erb\Z/
       private_constant :ERB_REGEX
@@ -20,7 +20,7 @@ module Packwerk
       end
 
       def call(io:, file_path: "<unknown>")
-        buffer = Parser::Source::Buffer.new(file_path)
+        buffer = ::Parser::Source::Buffer.new(file_path)
         buffer.source = io.read
         parse_buffer(buffer, file_path: file_path)
       end
@@ -31,7 +31,7 @@ module Packwerk
       rescue EncodingError => e
         result = ParseResult.new(file: file_path, message: e.message)
         raise Parsers::ParseError, result
-      rescue Parser::SyntaxError => e
+      rescue ::Parser::SyntaxError => e
         result = ParseResult.new(file: file_path, message: "Syntax error: #{e}")
         raise Parsers::ParseError, result
       end
