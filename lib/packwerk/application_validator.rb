@@ -95,9 +95,10 @@ module Packwerk
     sig { params(package_set: PackageSet).returns(Result) }
     def check_acyclic_graph(package_set)
       edges = package_set.flat_map do |package|
-        package.dependencies.map { |dependency| [package, package_set.fetch(dependency)] }
+        package.dependencies.map { |dependency| [package.name, T.must(package_set.fetch(dependency)).name] }
       end
-      dependency_graph = Graph.new(*T.unsafe(edges))
+
+      dependency_graph = Graph.new(edges)
 
       cycle_strings = build_cycle_strings(dependency_graph.cycles)
 
