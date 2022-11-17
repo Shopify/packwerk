@@ -13,6 +13,18 @@ module ApplicationFixtureHelper
     @old_working_dir = Dir.pwd
   end
 
+  def remove_extensions
+    Object.send(:remove_const, :MyLocalExtension)
+    reset_formatters
+  end
+
+  def reset_formatters
+    Packwerk::OffensesFormatter.instance_variable_set(:@formatter_by_identifier, nil)
+    current_formatters = Packwerk::OffensesFormatter.instance_variable_get(:@offenses_formatters)
+    new_formatters = current_formatters.delete_if { |f| f.new.identifier == "my_offenses_formatter" }
+    Packwerk::OffensesFormatter.instance_variable_set(:@offenses_formatters, new_formatters)
+  end
+
   def teardown_application_fixture
     Dir.chdir(@old_working_dir)
     FileUtils.remove_entry(@app_dir, true) if using_template?

@@ -342,9 +342,10 @@ module Packwerk
       YML
 
       out = StringIO.new
+
       parse_run = Packwerk::ParseRun.new(
         relative_file_set: Set.new([file_to_check]),
-        configuration: Configuration.new({ "parallel" => false }),
+        configuration: Configuration.new({ "parallel" => false, "offenses_formatter" => "plain" }),
         progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
       )
 

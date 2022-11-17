@@ -146,6 +146,7 @@ Example:
 Packwerk ships with dependency boundary checking only. See [`packwerk-extensions`](https://github.com/rubyatscale/packwerk-extensions) to incorporate privacy checks into your use of `packwerk`.
 
 #### Enforcing dependency boundary
+
 A package's dependency boundary is violated whenever it references a constant in some package that has not been declared as a dependency.
 
 Specify `enforce_dependencies: true` to start enforcing the dependencies of a package. The intentional dependencies of the package are specified as a list under a `dependencies:` key.
@@ -184,6 +185,7 @@ In order to keep the package system valid at each version of the application, we
 See: [TROUBLESHOOT.md - Sample violations](TROUBLESHOOT.md#Sample-violations)
 
 ## Resolving new violations
+
 ### Understanding how to respond to new violations
 
 When you have a new dependency or privacy violation, what do you do?
@@ -209,7 +211,6 @@ _Note: Changing dependencies or enabling dependencies will not require a full up
 `bin/packwerk update-todo` should only be run to record existing violations and to remove violations that have been worked off. Running `bin/packwerk update-todo` to resolve a violation should be the very last resort.
 
 See: [TROUBLESHOOT.md - Troubleshooting violations](TROUBLESHOOT.md#Troubleshooting_violations)
-
 
 ### Understanding the package todo file
 
@@ -249,6 +250,34 @@ You can prefix local files with a dot to define them relative to `packwerk.yml`,
 You can also reference the name of a gem.
 
 ## Examples
+
+### Custom Offense Formatter
+
+While `packwerk` ships with its own offense formatter, you may specify a custom one in your configuration file via the `offenses_formatter:` key.  Your custom formatter will be used when `bin/packwerk check` is run.
+
+Firstly, you'll need to create an `OffensesFormatter` class that includes `Packwerk::OffensesFormatter`. You can use [`Packwerk::Formatters::OffensesFormatter`](lib/packwerk/formatters/offenses_formatter.rb) as a point of reference for this. Then, in the `require` directive described above, you'll want to tell `packwerk` about it:
+```ruby
+# ./path/to/file.rb
+class MyOffensesFormatter
+  include Packwerk::OffensesFormatter
+  # implement the `OffensesFormatter` interface
+
+  def identifier
+    'my_offenses_formatter'
+  end
+end
+```
+
+Then in `packwerk.yml`, you can set the `formatter` to the identifier for your class:
+```yml
+offenses_formatter: my_offenses_formatter
+```
+
+You can also pass in a formatter on the command line:
+```
+bin/packwerk check --offenses-formatter=my_offenses_formatter
+```
+
 ### Privacy Checker
 
 [`packwerk-extensions`](https://github.com/rubyatscale/packwerk-extensions) (originally extracted from `packwerk`) can be used to help define and enforce public API boundaries of a package. See the README.md for more details. To use this, add it to your `Gemfile` and then require it via `packwerk.yml`:

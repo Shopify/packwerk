@@ -7,7 +7,7 @@ module Packwerk
   module Formatters
     class OffensesFormatterTest < Minitest::Test
       setup do
-        @offenses_formatter = OffensesFormatter.new
+        @offenses_formatter = OffensesFormatterPlain.new
       end
 
       test "#show_offenses prints No offenses detected when there are no offenses" do
