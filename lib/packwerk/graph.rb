@@ -4,8 +4,14 @@
 module Packwerk
   # A general implementation of a graph data structure with the ability to check for - and list - cycles.
   class Graph
-    # @param [Array<Array>] edges The edges of the graph; An edge being represented as an Array of two nodes.
-    def initialize(*edges)
+    extend T::Sig
+    sig do
+      params(
+        # The edges of the graph; An edge being represented as an Array of two nodes.
+        edges: T::Array[T::Array[T.any(String, Integer)]]
+      ).void
+    end
+    def initialize(edges)
       @edges = edges.uniq
       @cycles = Set.new
       process
