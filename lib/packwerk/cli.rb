@@ -33,7 +33,7 @@ module Packwerk
       @configuration = T.let(configuration || Configuration.from_path, Configuration)
       @progress_formatter = T.let(Formatters::ProgressFormatter.new(@out, style: style), Formatters::ProgressFormatter)
       @offenses_formatter = T.let(
-        offenses_formatter || Formatters::OffensesFormatter.new(style: @style),
+        offenses_formatter || Configuration.offenses_formatter || Formatters::OffensesFormatter.new(style: @style),
         OffensesFormatter
       )
     end

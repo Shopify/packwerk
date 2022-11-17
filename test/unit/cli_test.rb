@@ -17,6 +17,7 @@ module Packwerk
 
     teardown do
       teardown_application_fixture
+      remove_extensions
     end
 
     test "#execute_command with the subcommand check starts processing files" do
@@ -157,6 +158,38 @@ module Packwerk
         configuration: configuration,
         offenses_formatter: offenses_formatter.new
       )
+
+      ::Packwerk::FilesForProcessing.stubs(fetch: Set.new([file_path]))
+
+      success = cli.execute_command(["check", file_path])
+
+      assert_includes string_io.string, "hi i am a custom offense formatter"
+      assert_includes string_io.string, "stale violations report"
+      assert_includes string_io.string, violation_message
+
+      refute success
+    end
+
+    test "#execute_command using a custom offenses class loaded in via packwerk.yml" do
+      use_template(:extended)
+
+      file_path = "path/of/exile.rb"
+      violation_message = "This is a violation of code health."
+      offense = Offense.new(file: file_path, message: violation_message)
+
+      RunContext.any_instance.stubs(:process_file)
+        .returns([offense])
+
+      cli = nil
+      string_io = StringIO.new
+      mock_require_method = ->(required_thing) do
+        next unless required_thing.include?("my_local_extension")
+
+        require required_thing
+      end
+      ExtensionLoader.stub(:require, mock_require_method) do
+        cli = ::Packwerk::Cli.new(out: string_io)
+      end
 
       ::Packwerk::FilesForProcessing.stubs(fetch: Set.new([file_path]))
 

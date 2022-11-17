@@ -13,6 +13,11 @@ module ApplicationFixtureHelper
     @old_working_dir = Dir.pwd
   end
 
+  def remove_extensions
+    Object.send(:remove_const, :MyLocalExtension) if defined?(MyLocalExtension)
+    Packwerk::Configuration.offenses_formatter = nil
+  end
+
   def teardown_application_fixture
     Dir.chdir(@old_working_dir)
     FileUtils.remove_entry(@app_dir, true) if using_template?

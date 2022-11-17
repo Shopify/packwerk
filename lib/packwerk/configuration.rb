@@ -7,6 +7,8 @@ require "yaml"
 module Packwerk
   class Configuration
     class << self
+      extend T::Sig
+
       def from_path(path = Dir.pwd)
         raise ArgumentError, "#{File.expand_path(path)} does not exist" unless File.exist?(path)
 
@@ -18,6 +20,9 @@ module Packwerk
           new
         end
       end
+
+      sig { returns(T.nilable(OffensesFormatter)) }
+      attr_accessor :offenses_formatter
 
       private
 
