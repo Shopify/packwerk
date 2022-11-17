@@ -249,6 +249,15 @@ You can prefix local files with a dot to define them relative to `packwerk.yml`,
 You can also reference the name of a gem.
 
 ## Examples
+### Custom `OffensesFormatter`
+While `packwerk` ships with its own `OffensesFormatter`, the extension system provides a mechanism to configure your own to be used when `bin/packwerk check` is run.
+
+Firstly, you'll need to create an `OffensesFormatter` that implements the `Packwerk::OffensesFormatter` interface. You can use [`Packwerk::Formatters::OffensesFormatter`](lib/packwerk/formatters/offenses_formatter.rb) as a model for this. Then, in the `require` directive described above, you'll want to tell `packwerk` about it:
+```ruby
+# ./path/to/file.rb
+Packwerk::Configuration.offenses_formatter = MyOffensesFormatter.new
+```
+
 ### Privacy Checker
 
 [`packwerk-extensions`](https://github.com/rubyatscale/packwerk-extensions) (originally extracted from `packwerk`) can be used to help define and enforce public API boundaries of a package. See the README.md for more details. To use this, add it to your `Gemfile` and then require it via `packwerk.yml`:
