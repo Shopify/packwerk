@@ -14,6 +14,10 @@ module Packwerk
       sig { abstract.params(io: File, file_path: String).returns(T.untyped) }
       def call(io:, file_path:)
       end
+
+      sig { abstract.params(path: String).returns(T.boolean) }
+      def self.match?(path:)
+      end
     end
   end
 end
