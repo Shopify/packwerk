@@ -9,7 +9,7 @@ module Packwerk
       extend T::Sig
       include Singleton
 
-      sig { params(path: String).returns(T.nilable(T.untyped)) }
+      sig { params(path: String).returns(T.nilable(Packwerk::Parser)) }
       def for_path(path)
         Packwerk::Parser.all.find { |parser| parser.match?(path: path) }
       end

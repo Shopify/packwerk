@@ -17,7 +17,7 @@ module Packwerk
       @parsers << base
     end
 
-    sig { returns(T::Array[T.untyped]) }
+    sig { returns(T::Array[Parser]) }
     def self.all
       T.unsafe(@parsers).map(&:new)
     end
