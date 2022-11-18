@@ -36,7 +36,7 @@ module Packwerk
         raise Parsers::ParseError, result
       end
 
-      def self.match?(path)
+      def match?(path:)
         ERB_REGEX.match?(path)
       end
 

@@ -19,7 +19,7 @@ module Packwerk
 
       test "#call writes parse error to stdout" do
         error_message = "stub error"
-        err = Parser::SyntaxError.new(stub(message: error_message))
+        err = ::Parser::SyntaxError.new(stub(message: error_message))
         parser = stub
         parser.stubs(:ast).raises(err)
 

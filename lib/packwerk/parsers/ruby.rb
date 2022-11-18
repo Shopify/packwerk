@@ -17,7 +17,7 @@ module Packwerk
       }x
       private_constant :RUBY_REGEX
 
-      class RaiseExceptionsParser < Parser::CurrentRuby
+      class RaiseExceptionsParser < ::Parser::CurrentRuby
         def initialize(builder)
           super(builder)
           super.diagnostics.all_errors_are_fatal = true
@@ -48,7 +48,7 @@ module Packwerk
         raise Parsers::ParseError, result
       end
 
-      def self.match?(path)
+      def match?(path:)
         RUBY_REGEX.match?(path)
       end
     end
