@@ -2,8 +2,6 @@
 
 * [Troubleshooting violations](#Troubleshooting-violations)
   * [Feedback loop](#Feedback-loop)
-  * [Package Privacy violation](#Package-Privacy-violation)
-    * [Interpreting Privacy violation](#Interpreting-Privacy-violation)
   * [Package Dependency violation](#Package-Dependency-violation)
     * [Interpreting Dependency violation](#Interpreting-Dependency-violation)
 
