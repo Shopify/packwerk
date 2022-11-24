@@ -7,6 +7,8 @@ require "fileutils"
 
 # Provides String#pluralize
 require "active_support/core_ext/string"
+# Provides Object#to_json
+require "active_support/core_ext/object/json"
 
 module Packwerk
   extend ActiveSupport::Autoload
