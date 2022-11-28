@@ -17,7 +17,7 @@ module Packwerk
       end
 
       def violation_type
-        @violation_type || ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
+        @violation_type || "stubbed_violation_type"
       end
 
       def invalid_reference?(_reference)

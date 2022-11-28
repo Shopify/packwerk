@@ -27,6 +27,7 @@ module Packwerk
 
       sig { returns(T::Array[Checker]) }
       def all
+        require "packwerk/reference_checking/checkers/dependency_checker"
         T.unsafe(@checkers).map(&:new)
       end
 
