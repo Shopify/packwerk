@@ -6,12 +6,9 @@ module Packwerk
     class OffensesFormatter
       include Packwerk::OffensesFormatter
 
-      extend T::Sig
+      IDENTIFIER = T.let("default", String)
 
-      sig { params(style: OutputStyle).void }
-      def initialize(style: OutputStyles::Plain.new)
-        @style = style
-      end
+      extend T::Sig
 
       sig { override.params(offenses: T::Array[T.nilable(Offense)]).returns(String) }
       def show_offenses(offenses)
@@ -32,13 +29,23 @@ module Packwerk
         end
       end
 
+      sig { override.returns(String) }
+      def identifier
+        IDENTIFIER
+      end
+
       private
+
+      sig { returns(OutputStyle) }
+      def style
+        @style ||= T.let(Packwerk::OutputStyles::Coloured.new, T.nilable(Packwerk::OutputStyles::Coloured))
+      end
 
       sig { params(offenses: T::Array[T.nilable(Offense)]).returns(String) }
       def offenses_list(offenses)
         offenses
           .compact
-          .map { |offense| offense.to_s(@style) }
+          .map { |offense| offense.to_s(style) }
           .join("\n")
       end
 

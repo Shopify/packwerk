@@ -16,19 +16,20 @@ module Packwerk
       params(
         relative_file_set: FilesForProcessing::RelativeFileSet,
         configuration: Configuration,
+        offenses_formatter: T.nilable(OffensesFormatter),
         progress_formatter: Formatters::ProgressFormatter,
-        offenses_formatter: OffensesFormatter,
       ).void
     end
     def initialize(
       relative_file_set:,
       configuration:,
-      progress_formatter: Formatters::ProgressFormatter.new(StringIO.new),
-      offenses_formatter: Formatters::OffensesFormatter.new
+      offenses_formatter: nil,
+      progress_formatter: Formatters::ProgressFormatter.new(StringIO.new)
     )
+
       @configuration = configuration
       @progress_formatter = progress_formatter
-      @offenses_formatter = offenses_formatter
+      @offenses_formatter = T.let(offenses_formatter || configuration.offenses_formatter, Packwerk::OffensesFormatter)
       @relative_file_set = relative_file_set
     end
 

@@ -64,7 +64,6 @@ module Packwerk
   module Formatters
     extend ActiveSupport::Autoload
 
-    autoload :OffensesFormatter
     autoload :ProgressFormatter
   end
 

@@ -6,6 +6,8 @@ require "yaml"
 
 module Packwerk
   class Configuration
+    extend T::Sig
+
     class << self
       def from_path(path = Dir.pwd)
         raise ArgumentError, "#{File.expand_path(path)} does not exist" unless File.exist?(path)
@@ -49,6 +51,8 @@ module Packwerk
       @cache_directory = Pathname.new(configs["cache_directory"] || "tmp/cache/packwerk")
       @config_path = config_path
 
+      @offenses_formatter_identifier = configs["offenses_formatter"] || Formatters::OffensesFormatter::IDENTIFIER
+
       if configs.key?("require")
         configs["require"].each do |require_directive|
           ExtensionLoader.load(require_directive, @root_path)
@@ -62,6 +66,11 @@ module Packwerk
 
     def parallel?
       @parallel
+    end
+
+    sig { returns(OffensesFormatter) }
+    def offenses_formatter
+      OffensesFormatter.find(@offenses_formatter_identifier)
     end
 
     def cache_enabled?

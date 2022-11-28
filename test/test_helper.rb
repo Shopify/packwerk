@@ -19,6 +19,7 @@ require "support/test_macro"
 require "support/test_assertions"
 require "support/yaml_file"
 require "support/typed_mock"
+require "support/offenses_formatter_plain"
 
 Minitest::Test.include(StubConst)
 Minitest::Test.extend(TestMacro)

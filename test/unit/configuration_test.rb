@@ -13,7 +13,6 @@ module Packwerk
 
     teardown do
       teardown_application_fixture
-      Object.send(:remove_const, :MyLocalExtension) if defined?(MyLocalExtension)
     end
 
     test ".from_path raises ArgumentError if path does not exist" do
@@ -77,6 +76,8 @@ module Packwerk
         Configuration.from_path
       end
       assert defined?(MyLocalExtension)
+
+      remove_extensions
     end
 
     test "require works when referencing a gem" do
