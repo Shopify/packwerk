@@ -59,10 +59,17 @@ module Packwerk
       end
     end
 
-    sig { params(package_set: Packwerk::PackageSet).void }
-    def persist_package_todo_files(package_set)
+    sig { params(package_set: Packwerk::PackageSet, full_codebase_run: T::Boolean).void }
+    def persist_package_todo_files(package_set, full_codebase_run: false)
       dump_package_todo_files
-      cleanup_extra_package_todo_files(package_set)
+      # We only cleanup `package_todo.yml` files if `update-todo` is run on the entire codebase.
+      # We are unable to determine if we should cleanup TODOs for packages that were not analyzed.
+      # In the future, we could instead:
+      # A) Only permit package paths to be inputted into the CLI for `update-todo`
+      # B) Cleanup extra package_todo.yml files for inputted packages
+      if full_codebase_run
+        cleanup_extra_package_todo_files(package_set)
+      end
     end
 
     sig { returns(T::Array[Packwerk::Offense]) }

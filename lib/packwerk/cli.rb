@@ -205,9 +205,12 @@ module Packwerk
         end.parse!(params)
       end
 
+      full_codebase_run = relative_file_paths.empty?
+
       ParseRun.new(
         relative_file_set: fetch_files_to_process(relative_file_paths, ignore_nested_packages),
         configuration: @configuration,
+        full_codebase_run: full_codebase_run,
         progress_formatter: @progress_formatter,
         offenses_formatter: formatter
       )

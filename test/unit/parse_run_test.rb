@@ -59,7 +59,57 @@ module Packwerk
       refute result.status
     end
 
-    test "#update_todo cleans up old package_todo files" do
+    test "#update_todo cleans up old package_todo files when run on entire codebase" do
+      use_template(:minimal)
+
+      FileUtils.mkdir_p("app/models")
+      File.write("app/models/my_model.rb", <<~YML.strip)
+        class MyModel
+          def something
+            Order
+          end
+        end
+      YML
+
+      File.write("package_todo.yml", <<~YML.strip)
+        ---
+        "components/sales":
+          "::Order":
+            violations:
+            - dependency
+            files:
+            - app/models/my_model.rb
+      YML
+
+      File.write("components/sales/package_todo.yml", <<~YML.strip)
+        ---
+        "components/destination":
+          "::SomeName":
+            violations:
+            - dependency
+            files:
+            - a/b/c.rb
+      YML
+
+      parse_run = Packwerk::ParseRun.new(
+        relative_file_set: Set.new(["app/models/my_model.rb", "components/sales/app/models/order.rb"]),
+        full_codebase_run: true,
+        configuration: Configuration.from_path
+      )
+      result = parse_run.update_todo
+
+      expected = <<~EOS
+        No offenses detected
+        ✅ `package_todo.yml` has been updated.
+      EOS
+      assert_equal expected, result.message
+      assert result.status
+
+      assert File.exist?("package_todo.yml")
+      refute File.exist?("components/sales/package_todo.yml")
+    end
+
+    test "#update_todo does not clean up old package_todo files when not run on entire codebase" do
       use_template(:minimal)
 
       FileUtils.mkdir_p("app/models")
@@ -105,7 +155,7 @@ module Packwerk
       assert result.status
 
       assert File.exist?("package_todo.yml")
-      refute File.exist?("components/sales/package_todo.yml")
+      assert File.exist?("components/sales/package_todo.yml")
     end
 
     test "#check only reports error progress for unlisted violations" do
