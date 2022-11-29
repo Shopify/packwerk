@@ -3,6 +3,7 @@
 
 require "pathname"
 require "yaml"
+require "packwerk/formatters/offenses_formatter"
 
 module Packwerk
   class Configuration
