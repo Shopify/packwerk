@@ -94,3 +94,7 @@ module Packwerk
     autoload :Helpers
   end
 end
+
+# Required to register the default OffensesFormatter
+# We put this at the *end* of the file to specify all autoloads first
+require "packwerk/formatters/offenses_formatter"
