@@ -8,10 +8,6 @@ module Packwerk
   class RunContext
     extend T::Sig
 
-    DEFAULT_CHECKERS = T.let([
-      ::Packwerk::ReferenceChecking::Checkers::DependencyChecker.new,
-    ], T::Array[Checker])
-
     class << self
       extend T::Sig
 

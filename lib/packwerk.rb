@@ -100,3 +100,6 @@ end
 # Required to register the default OffensesFormatter
 # We put this at the *end* of the file to specify all autoloads first
 require "packwerk/formatters/offenses_formatter"
+
+# Required to register the default DependencyChecker
+require "packwerk/reference_checking/checkers/dependency_checker"

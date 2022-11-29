@@ -17,7 +17,7 @@ module Packwerk
       end
 
       def violation_type
-        @violation_type || ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
+        @violation_type || "custom_violation_type"
       end
 
       def invalid_reference?(_reference)
@@ -26,6 +26,10 @@ module Packwerk
 
       def message(_reference)
         @message
+      end
+
+      def strict_mode_violation?(_listed_offense)
+        false
       end
     end
 

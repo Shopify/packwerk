@@ -15,4 +15,8 @@ class MyOffensesFormatter
   def identifier
     'my_offenses_formatter'
   end
+
+  def show_strict_mode_violations(offenses)
+    "strict mode violations report"
+  end
 end

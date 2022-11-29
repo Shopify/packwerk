@@ -18,6 +18,7 @@ module Packwerk
       @root_path = root_path
       @package_todo = T.let(package_todo, T::Hash[Packwerk::Package, Packwerk::PackageTodo])
       @new_violations = T.let([], T::Array[Packwerk::ReferenceOffense])
+      @strict_mode_violations = T.let([], T::Array[Packwerk::ReferenceOffense])
       @errors = T.let([], T::Array[Packwerk::Offense])
     end
 
@@ -26,6 +27,9 @@ module Packwerk
 
     sig { returns(T::Array[Packwerk::Offense]) }
     attr_reader :errors
+
+    sig { returns(T::Array[Packwerk::ReferenceOffense]) }
+    attr_reader :strict_mode_violations
 
     sig do
       params(offense: Packwerk::Offense)
@@ -46,9 +50,11 @@ module Packwerk
         @errors << offense
         return
       end
-      package_todo = package_todo_for(offense.reference.package)
-      unless package_todo.add_entries(offense.reference, offense.violation_type)
+
+      if !already_listed?(offense)
         new_violations << offense
+      elsif strict_mode_violation?(offense)
+        strict_mode_violations << offense
       end
     end
 
@@ -71,6 +77,18 @@ module Packwerk
     end
 
     private
+
+    sig { params(offense: ReferenceOffense).returns(T::Boolean) }
+    def already_listed?(offense)
+      package_todo_for(offense.reference.package).add_entries(offense.reference,
+        offense.violation_type)
+    end
+
+    sig { params(offense: ReferenceOffense).returns(T::Boolean) }
+    def strict_mode_violation?(offense)
+      checker = Checker.find(offense.violation_type)
+      checker.strict_mode_violation?(offense)
+    end
 
     sig { params(package_set: Packwerk::PackageSet).void }
     def cleanup_extra_package_todo_files(package_set)

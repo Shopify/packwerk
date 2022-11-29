@@ -143,6 +143,10 @@ module Packwerk
         def identifier
           "custom"
         end
+
+        def show_strict_mode_violations(_offenses)
+          "strict mode violations report"
+        end
       end
 
       file_path = "path/of/exile.rb"

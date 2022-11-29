@@ -34,11 +34,28 @@ module Packwerk
         IDENTIFIER
       end
 
+      sig { override.params(strict_mode_violations: T::Array[ReferenceOffense]).returns(String) }
+      def show_strict_mode_violations(strict_mode_violations)
+        if strict_mode_violations.any?
+          strict_mode_violations.compact.map { |offense| format_strict_mode_violation(offense) }.join("\n")
+        else
+          ""
+        end
+      end
+
       private
 
       sig { returns(OutputStyle) }
       def style
         @style ||= T.let(Packwerk::OutputStyles::Coloured.new, T.nilable(Packwerk::OutputStyles::Coloured))
+      end
+
+      sig { params(offense: ReferenceOffense).returns(String) }
+      def format_strict_mode_violation(offense)
+        reference_package = offense.reference.package
+        defining_package = offense.reference.constant.package
+        "#{reference_package} cannot have #{offense.violation_type} violations on #{defining_package} "\
+          "because strict mode is enabled for #{offense.violation_type} violations in #{reference_package}/package.yml"
       end
 
       sig { params(offenses: T::Array[T.nilable(Offense)]).returns(String) }
