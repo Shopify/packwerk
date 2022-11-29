@@ -29,7 +29,6 @@ module Packwerk
 
       sig { returns(T::Array[OffensesFormatter]) }
       def all
-        require "packwerk/formatters/offenses_formatter"
         T.unsafe(@offenses_formatters).map(&:new)
       end
 

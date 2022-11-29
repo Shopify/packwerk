@@ -1,8 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "packwerk/formatters/offenses_formatter"
-
 module Packwerk
   module Formatters
     class OffensesFormatterPlain < OffensesFormatter
