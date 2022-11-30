@@ -35,7 +35,7 @@ module Packwerk
       return false unless offense.is_a?(ReferenceOffense)
 
       reference = offense.reference
-      package_todo_for(reference.source_package).listed?(reference, violation_type: offense.violation_type)
+      package_todo_for(reference.package).listed?(reference, violation_type: offense.violation_type)
     end
 
     sig do
@@ -46,7 +46,7 @@ module Packwerk
         @errors << offense
         return
       end
-      package_todo = package_todo_for(offense.reference.source_package)
+      package_todo = package_todo_for(offense.reference.package)
       unless package_todo.add_entries(offense.reference, offense.violation_type)
         new_violations << offense
       end

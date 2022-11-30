@@ -32,10 +32,10 @@ module Packwerk
 
       unresolved_references = [
         UnresolvedReference.new(
-          "MyConstant",
-          [],
-          "path/of_exile.rb",
-          Node::Location.new(5, 5)
+          constant_name: "MyConstant",
+          namespace_path: [],
+          relative_path: "path/of_exile.rb",
+          source_location: Node::Location.new(5, 5)
         ),
       ]
 

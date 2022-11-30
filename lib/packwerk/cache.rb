@@ -21,10 +21,10 @@ module Packwerk
           cache_contents_json = JSON.parse(serialized_cache_contents)
           unresolved_references = cache_contents_json["unresolved_references"].map do |json|
             UnresolvedReference.new(
-              json["constant_name"],
-              json["namespace_path"],
-              json["relative_path"],
-              Node::Location.new(json["source_location"]["line"], json["source_location"]["column"],)
+              constant_name: json["constant_name"],
+              namespace_path: json["namespace_path"],
+              relative_path: json["relative_path"],
+              source_location: Node::Location.new(json["source_location"]["line"], json["source_location"]["column"],)
             )
           end
 

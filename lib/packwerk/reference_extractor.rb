@@ -38,10 +38,10 @@ module Packwerk
           next if source_package == package_for_constant
 
           fully_qualified_references << Reference.new(
-            source_package,
-            unresolved_reference.relative_path,
-            constant,
-            unresolved_reference.source_location
+            package: source_package,
+            relative_path: unresolved_reference.relative_path,
+            constant: constant,
+            source_location: unresolved_reference.source_location,
           )
         end
 
@@ -110,10 +110,10 @@ module Packwerk
       location = NodeHelpers.location(node)
 
       UnresolvedReference.new(
-        constant_name,
-        namespace_path,
-        relative_file,
-        location
+        constant_name: constant_name,
+        namespace_path: namespace_path,
+        relative_path: relative_file,
+        source_location: location
       )
     end
 
