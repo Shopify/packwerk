@@ -130,17 +130,20 @@ module Packwerk
       params(
         relative_file_paths: T::Array[String],
         ignore_nested_packages: T::Boolean
-      ).returns(FilesForProcessing::RelativeFileSet)
+      ).returns(FilesForProcessing)
     end
     def fetch_files_to_process(relative_file_paths, ignore_nested_packages)
-      relative_file_set = FilesForProcessing.fetch(
+      files_for_processing = FilesForProcessing.fetch(
         relative_file_paths: relative_file_paths,
         ignore_nested_packages: ignore_nested_packages,
         configuration: @configuration
       )
-      abort("No files found or given. "\
-        "Specify files or check the include and exclude glob in the config file.") if relative_file_set.empty?
-      relative_file_set
+      abort(<<~MSG.squish) if files_for_processing.files.empty?
+        No files found or given.
+        Specify files or check the include and exclude glob in the config file.
+      MSG
+
+      files_for_processing
     end
 
     sig { params(_paths: T::Array[String]).returns(T::Boolean) }
@@ -178,35 +181,38 @@ module Packwerk
       end
     end
 
-    sig { params(params: T.untyped).returns(ParseRun) }
-    def parse_run(params)
+    sig { params(args: T::Array[String]).returns(ParseRun) }
+    def parse_run(args)
       relative_file_paths = T.let([], T::Array[String])
       ignore_nested_packages = nil
       formatter = @offenses_formatter
 
-      if params.any? { |p| p.include?("--packages") }
+      if args.any? { |arg| arg.include?("--packages") }
         OptionParser.new do |parser|
           parser.on("--packages=PACKAGESLIST", Array, "package names, comma separated") do |p|
             relative_file_paths = p
           end
-        end.parse!(params)
+        end.parse!(args)
         ignore_nested_packages = true
       else
-        relative_file_paths = params
+        relative_file_paths = args
         ignore_nested_packages = false
       end
 
-      if params.any? { |p| p.include?("--offenses-formatter") }
+      if args.any? { |arg| arg.include?("--offenses-formatter") }
         OptionParser.new do |parser|
           parser.on("--offenses-formatter=FORMATTER", String,
             "identifier of offenses formatter to use") do |formatter_identifier|
             formatter = OffensesFormatter.find(formatter_identifier)
           end
-        end.parse!(params)
+        end.parse!(args)
       end
 
+      files_for_processing = fetch_files_to_process(relative_file_paths, ignore_nested_packages)
+
       ParseRun.new(
-        relative_file_set: fetch_files_to_process(relative_file_paths, ignore_nested_packages),
+        relative_file_set: files_for_processing.files,
+        file_set_specified: files_for_processing.files_specified?,
         configuration: @configuration,
         progress_formatter: @progress_formatter,
         offenses_formatter: formatter

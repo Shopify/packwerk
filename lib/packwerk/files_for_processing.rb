@@ -15,10 +15,10 @@ module Packwerk
           relative_file_paths: T::Array[String],
           configuration: Configuration,
           ignore_nested_packages: T::Boolean
-        ).returns(RelativeFileSet)
+        ).returns(FilesForProcessing)
       end
       def fetch(relative_file_paths:, configuration:, ignore_nested_packages: false)
-        new(relative_file_paths, configuration, ignore_nested_packages).files
+        new(relative_file_paths, configuration, ignore_nested_packages)
       end
     end
 
@@ -33,37 +33,48 @@ module Packwerk
       @relative_file_paths = relative_file_paths
       @configuration = configuration
       @ignore_nested_packages = ignore_nested_packages
-      @custom_files = T.let(nil, T.nilable(RelativeFileSet))
+      @specified_files = T.let(nil, T.nilable(RelativeFileSet))
+      @files = T.let(nil, T.nilable(RelativeFileSet))
     end
 
     sig { returns(RelativeFileSet) }
     def files
-      include_files = if custom_files.empty?
-        configured_included_files
-      else
-        configured_included_files & custom_files
-      end
+      @files ||= files_for_processing
+    end
 
-      include_files - configured_excluded_files
+    sig { returns(T::Boolean) }
+    def files_specified?
+      specified_files.any?
     end
 
     private
 
     sig { returns(RelativeFileSet) }
-    def custom_files
-      @custom_files ||= Set.new(
+    def files_for_processing
+      all_included_files = if specified_files.empty?
+        configured_included_files
+      else
+        configured_included_files & specified_files
+      end
+
+      all_included_files - configured_excluded_files
+    end
+
+    sig { returns(RelativeFileSet) }
+    def specified_files
+      @specified_files ||= Set.new(
         @relative_file_paths.map do |relative_file_path|
           if File.file?(relative_file_path)
             relative_file_path
           else
-            custom_included_files(relative_file_path)
+            specified_included_files(relative_file_path)
           end
         end
       ).flatten
     end
 
     sig { params(relative_file_path: String).returns(RelativeFileSet) }
-    def custom_included_files(relative_file_path)
+    def specified_included_files(relative_file_path)
       # Note, assuming include globs are always relative paths
       relative_includes = @configuration.include
       relative_files = Dir.glob([File.join(relative_file_path, "**", "*")]).select do |relative_path|

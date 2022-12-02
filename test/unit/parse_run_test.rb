@@ -59,6 +59,21 @@ module Packwerk
       refute result.status
     end
 
+    test "#update-todo returns exit code 1 when ran with file args" do
+      use_template(:minimal)
+
+      parse_run = Packwerk::ParseRun.new(
+        relative_file_set: Set.new(["path/of/exile.rb"]),
+        file_set_specified: true,
+        configuration: Configuration.from_path
+      )
+      result = parse_run.update_todo
+
+      expected = "⚠️ update-todo must be called without any file arguments."
+      assert_equal expected, result.message
+      refute result.status
+    end
+
     test "#update_todo cleans up old package_todo files" do
       use_template(:minimal)
 

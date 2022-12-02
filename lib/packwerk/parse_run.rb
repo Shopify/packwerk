@@ -16,6 +16,7 @@ module Packwerk
       params(
         relative_file_set: FilesForProcessing::RelativeFileSet,
         configuration: Configuration,
+        file_set_specified: T::Boolean,
         offenses_formatter: T.nilable(OffensesFormatter),
         progress_formatter: Formatters::ProgressFormatter,
       ).void
@@ -23,6 +24,7 @@ module Packwerk
     def initialize(
       relative_file_set:,
       configuration:,
+      file_set_specified: false,
       offenses_formatter: nil,
       progress_formatter: Formatters::ProgressFormatter.new(StringIO.new)
     )
@@ -31,10 +33,19 @@ module Packwerk
       @progress_formatter = progress_formatter
       @offenses_formatter = T.let(offenses_formatter || configuration.offenses_formatter, Packwerk::OffensesFormatter)
       @relative_file_set = relative_file_set
+      @file_set_specified = file_set_specified
     end
 
     sig { returns(Result) }
     def update_todo
+      if @file_set_specified
+        message = <<~MSG.squish
+          ⚠️ update-todo must be called without any file arguments.
+        MSG
+
+        return Result.new(message: message, status: false)
+      end
+
       run_context = Packwerk::RunContext.from_configuration(@configuration)
       offense_collection = find_offenses(run_context)
       offense_collection.persist_package_todo_files(run_context.package_set)

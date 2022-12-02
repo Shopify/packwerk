@@ -19,33 +19,39 @@ module Packwerk
     end
 
     test "fetch with custom paths includes only include glob in custom paths" do
-      files = ::Packwerk::FilesForProcessing.fetch(relative_file_paths: [@package_path], configuration: @configuration)
+      files = ::Packwerk::FilesForProcessing.fetch(
+        relative_file_paths: [@package_path],
+        configuration: @configuration,
+      ).files
       included_file_pattern = File.join(@package_path, "**/*.rb")
       assert_all_match(files, [included_file_pattern])
     end
 
     test "fetch with custom paths excludes the exclude glob in custom paths" do
-      files = ::Packwerk::FilesForProcessing.fetch(relative_file_paths: [@package_path], configuration: @configuration)
+      files = ::Packwerk::FilesForProcessing.fetch(
+        relative_file_paths: [@package_path],
+        configuration: @configuration
+      ).files
       excluded_file_pattern = File.join(@configuration.root_path, @package_path, "**/temp.rb")
 
       refute_any_match(files, [excluded_file_pattern])
     end
 
     test "fetch with no custom paths includes only include glob across codebase" do
-      files = ::Packwerk::FilesForProcessing.fetch(relative_file_paths: [], configuration: @configuration)
+      files = ::Packwerk::FilesForProcessing.fetch(relative_file_paths: [], configuration: @configuration).files
 
       assert_all_match(files, @configuration.include)
     end
 
     test "fetch with no custom paths excludes the exclude glob across codebase" do
-      files = ::Packwerk::FilesForProcessing.fetch(relative_file_paths: [], configuration: @configuration)
+      files = ::Packwerk::FilesForProcessing.fetch(relative_file_paths: [], configuration: @configuration).files
       excluded_file_patterns = @configuration.exclude.map { |pattern| File.join(@configuration.root_path, pattern) }
 
       refute_any_match(files, Set.new(excluded_file_patterns))
     end
 
     test "fetch does not return duplicated file paths" do
-      files = ::Packwerk::FilesForProcessing.fetch(relative_file_paths: [], configuration: @configuration)
+      files = ::Packwerk::FilesForProcessing.fetch(relative_file_paths: [], configuration: @configuration).files
       assert_equal files, Set.new(files)
     end
 
@@ -54,7 +60,7 @@ module Packwerk
         relative_file_paths: ["."],
         configuration: @configuration,
         ignore_nested_packages: false
-      )
+      ).files
 
       assert_all_match(files, Set.new(@configuration.include))
     end
@@ -64,7 +70,7 @@ module Packwerk
         relative_file_paths: [],
         configuration: @configuration,
         ignore_nested_packages: true
-      )
+      ).files
 
       assert_all_match(files, @configuration.include)
     end
@@ -74,7 +80,7 @@ module Packwerk
         relative_file_paths: ["."],
         configuration: @configuration,
         ignore_nested_packages: true
-      )
+      ).files
 
       refute_any_match(files, Set.new([File.join(@configuration.root_path, "components/sales", "**/*.rb")]))
       refute_any_match(files, Set.new([File.join(@configuration.root_path, "components/timeline", "**/*.rb")]))
@@ -87,7 +93,7 @@ module Packwerk
           "components/sales/app/views/order.html.erb",
         ],
         configuration: @configuration
-      )
+      ).files
 
       included_file_patterns = @configuration.include
 
