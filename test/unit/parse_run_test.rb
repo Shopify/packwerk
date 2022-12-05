@@ -335,6 +335,54 @@ module Packwerk
       assert result.status
     end
 
+    test "#check lists out violations of strict mode" do
+      use_template(:minimal)
+
+      source_package = Packwerk::Package.new(name: "components/source", config: { "enforce_dependencies" => "strict" })
+      write_app_file("#{source_package.name}/package_todo.yml", <<~YML.strip)
+        ---
+        "components/destination":
+          "::SomeName":
+            violations:
+            - dependency
+            files:
+            - components/source/some/path.rb
+      YML
+
+      out = StringIO.new
+      parse_run = Packwerk::ParseRun.new(
+        relative_file_set: Set.new(["components/source/some/path.rb"]),
+        configuration: Configuration.new({ "parallel" => false }),
+        progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
+      )
+
+      offense = ReferenceOffense.new(
+        reference: build_reference(path: "components/source/some/path.rb", source_package: source_package),
+        message: "some message",
+        violation_type: Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
+      )
+
+      RunContext.any_instance.stubs(:process_file).returns([offense])
+      result = parse_run.check
+
+      expected_output = <<~EOS
+        📦 Packwerk is inspecting 1 file
+        .
+        📦 Finished in \\d+\\.\\d+ seconds
+      EOS
+
+      assert_match(/#{expected_output}/, out.string)
+
+      expected_message = <<~EOS
+        No offenses detected
+        No stale violations detected
+        components/source cannot have dependency violations on components/destination because strict mode is enabled for dependency violations in components/source/package.yml
+      EOS
+      assert_equal expected_message, result.message
+
+      refute result.status
+    end
+
     test "#check does not list stale violations when run on a single file with no exising violations, but one new violation" do
       use_template(:minimal)
       file_to_check = "components/source/some/path.rb"

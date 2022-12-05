@@ -20,6 +20,7 @@ module Packwerk
       Packwerk::PackageTodo.any_instance
         .expects(:add_entries)
         .with(@offense.reference, @offense.violation_type)
+        .returns(true)
 
       @offense_collection.add_offense(@offense)
     end

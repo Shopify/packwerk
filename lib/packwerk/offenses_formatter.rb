@@ -68,5 +68,9 @@ module Packwerk
     sig { abstract.returns(String) }
     def identifier
     end
+
+    sig { abstract.params(strict_mode_violations: T::Array[ReferenceOffense]).returns(String) }
+    def show_strict_mode_violations(strict_mode_violations)
+    end
   end
 end

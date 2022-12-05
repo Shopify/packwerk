@@ -59,7 +59,7 @@ module Packwerk
         end
 
         if hash.key?("enforce_dependencies")
-          unless [TrueClass, FalseClass].include?(hash["enforce_dependencies"].class)
+          unless [TrueClass, FalseClass, "strict"].include?(hash["enforce_dependencies"].class)
             errors << "Invalid 'enforce_dependencies' option in #{f.inspect}: #{hash["enforce_dependencies"].inspect}"
           end
         end
