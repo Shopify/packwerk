@@ -14,6 +14,7 @@
   * [Package metadata](#package-metadata)
 * [Types of boundary checks](#types-of-boundary-checks)
   * [Enforcing dependency boundary](#enforcing-dependency-boundary)
+* [Using strict mode](#using-strict-mode)
 * [Checking for violations](#checking-for-violations)
 * [Resolving new violations](#resolving-new-violations)
   * [Understanding how to respond to new violations](#understanding-how-to-respond-to-new-violations)
@@ -161,6 +162,15 @@ dependencies:
 ```
 
 It will be a dependency violation when `components/shop_identity` tries to reference a constant that is not within `components/platform` or itself.
+
+#### Using strict mode
+
+Once there are no more violations in a package, you can turn on `strict` mode, which will prevent new violations from being added to the package's `package_todo.yml`. To use this, simply change `enforce_dependencies: true` to `enforce_dependencies: strict` in your `package.yml`.
+
+Then, when you run `bin/packwerk check`, new violations will cause the following error to be displayed:
+```
+packs/referencing_package cannot have dependency violations on packs/defining_package because strict mode is enabled for dependency violations in packs/referencing_package/package.yml
+```
 
 ## Checking for violations
 
