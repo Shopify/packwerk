@@ -69,6 +69,8 @@ module Packwerk
     autoload :ProgressFormatter
   end
 
+  private_constant :Formatters
+
   module Generators
     extend ActiveSupport::Autoload
 

@@ -136,7 +136,7 @@ module Packwerk
       parse_run = Packwerk::ParseRun.new(
         relative_file_set: Set.new(["some/path.rb"]),
         configuration: Configuration.new({ "parallel" => false }),
-        progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
+        progress_formatter: Formatters::ProgressFormatter.new(out)
       )
       RunContext.any_instance.stubs(:process_file).returns([offense])
       result = parse_run.check
@@ -213,7 +213,7 @@ module Packwerk
       parse_run = Packwerk::ParseRun.new(
         relative_file_set: Set.new([file_to_check]),
         configuration: Configuration.new({ "parallel" => false }),
-        progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
+        progress_formatter: Formatters::ProgressFormatter.new(out)
       )
       RunContext.any_instance.stubs(:process_file).returns([offense1, offense2])
       result = parse_run.check
@@ -259,7 +259,7 @@ module Packwerk
       parse_run = Packwerk::ParseRun.new(
         relative_file_set: Set.new([file_to_check]),
         configuration: Configuration.new({ "parallel" => false }),
-        progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
+        progress_formatter: Formatters::ProgressFormatter.new(out)
       )
       RunContext.any_instance.stubs(:process_file).returns([])
       result = parse_run.check
@@ -306,7 +306,7 @@ module Packwerk
       parse_run = Packwerk::ParseRun.new(
         relative_file_set: Set.new([file_to_check]),
         configuration: Configuration.new({ "parallel" => false }),
-        progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
+        progress_formatter: Formatters::ProgressFormatter.new(out)
       )
 
       offense = ReferenceOffense.new(
@@ -353,7 +353,7 @@ module Packwerk
       parse_run = Packwerk::ParseRun.new(
         relative_file_set: Set.new(["components/source/some/path.rb"]),
         configuration: Configuration.new({ "parallel" => false }),
-        progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
+        progress_formatter: Formatters::ProgressFormatter.new(out)
       )
 
       offense = ReferenceOffense.new(
@@ -409,7 +409,7 @@ module Packwerk
       parse_run = Packwerk::ParseRun.new(
         relative_file_set: Set.new([file_to_check]),
         configuration: Configuration.new({ "parallel" => false, "offenses_formatter" => "plain" }),
-        progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
+        progress_formatter: Formatters::ProgressFormatter.new(out)
       )
 
       offense = ReferenceOffense.new(
@@ -457,7 +457,7 @@ module Packwerk
       parse_run = Packwerk::ParseRun.new(
         relative_file_set: Set.new(["some/path.rb"]),
         configuration: Configuration.new({ "parallel" => false }),
-        progress_formatter: Packwerk::Formatters::ProgressFormatter.new(out)
+        progress_formatter: Formatters::ProgressFormatter.new(out)
       )
       RunContext.any_instance.stubs(:process_file).returns([offense])
       result = parse_run.check
