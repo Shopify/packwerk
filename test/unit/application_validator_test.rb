@@ -73,9 +73,9 @@ module Packwerk
 
     private
 
-    sig { returns(Packwerk::ApplicationValidator) }
+    sig { returns(ApplicationValidator) }
     def validator
-      @application_validator ||= Packwerk::ApplicationValidator.new
+      @application_validator ||= ApplicationValidator.new
     end
   end
 end

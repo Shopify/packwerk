@@ -16,15 +16,15 @@ module Packwerk
       end
 
       test ".generate creates a default configuration file if there were empty load paths array" do
-        generated_file_path = File.join(@temp_dir, Packwerk::Configuration::DEFAULT_CONFIG_PATH)
-        assert(Packwerk::Generators::ConfigurationFile.generate(root: @temp_dir, out: @string_io))
+        generated_file_path = File.join(@temp_dir, Configuration::DEFAULT_CONFIG_PATH)
+        assert(Generators::ConfigurationFile.generate(root: @temp_dir, out: @string_io))
         assert(File.exist?(generated_file_path))
       end
 
       test ".generate does not create a configuration file if a file exists" do
-        file_path = File.join(@temp_dir, Packwerk::Configuration::DEFAULT_CONFIG_PATH)
+        file_path = File.join(@temp_dir, Configuration::DEFAULT_CONFIG_PATH)
         File.open(file_path, "w") do |_f|
-          assert(Packwerk::Generators::ConfigurationFile.generate(
+          assert(Generators::ConfigurationFile.generate(
             root: @temp_dir,
             out: @string_io
           ))

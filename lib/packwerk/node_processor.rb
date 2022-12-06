@@ -29,4 +29,6 @@ module Packwerk
       @reference_extractor.reference_from_node(node, ancestors: ancestors, relative_file: @relative_file)
     end
   end
+
+  private_constant :NodeProcessor
 end

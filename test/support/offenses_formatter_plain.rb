@@ -3,8 +3,8 @@
 
 module Packwerk
   module Formatters
-    class OffensesFormatterPlain < OffensesFormatter
-      include Packwerk::OffensesFormatter
+    class OffensesFormatterPlain < DefaultOffensesFormatter
+      include OffensesFormatter
       IDENTIFIER = T.let("plain", String)
 
       extend T::Sig

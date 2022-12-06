@@ -169,8 +169,9 @@ module Packwerk
           puts(out)
         end
       end
-  end
+    end
   end
 
+  private_constant :Cache
   private_constant :Debug
 end

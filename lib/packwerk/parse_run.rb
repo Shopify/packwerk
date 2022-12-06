@@ -35,17 +35,17 @@ module Packwerk
       @file_set_specified = file_set_specified
     end
 
-    sig { returns(Result) }
+    sig { returns(Cli::Result) }
     def update_todo
       if @file_set_specified
         message = <<~MSG.squish
           ⚠️ update-todo must be called without any file arguments.
         MSG
 
-        return Result.new(message: message, status: false)
+        return Cli::Result.new(message: message, status: false)
       end
 
-      run_context = Packwerk::RunContext.from_configuration(@configuration)
+      run_context = RunContext.from_configuration(@configuration)
       offense_collection = find_offenses(run_context)
       offense_collection.persist_package_todo_files(run_context.package_set)
 
@@ -54,12 +54,12 @@ module Packwerk
         ✅ `package_todo.yml` has been updated.
       EOS
 
-      Result.new(message: message, status: offense_collection.errors.empty?)
+      Cli::Result.new(message: message, status: offense_collection.errors.empty?)
     end
 
-    sig { returns(Result) }
+    sig { returns(Cli::Result) }
     def check
-      run_context = Packwerk::RunContext.from_configuration(@configuration)
+      run_context = RunContext.from_configuration(@configuration)
       offense_collection = find_offenses(run_context, show_errors: true)
 
       messages = [
@@ -71,12 +71,12 @@ module Packwerk
       result_status = offense_collection.outstanding_offenses.empty? &&
         !offense_collection.stale_violations?(@relative_file_set) && offense_collection.strict_mode_violations.empty?
 
-      Result.new(message: messages.select(&:present?).join("\n") + "\n", status: result_status)
+      Cli::Result.new(message: messages.select(&:present?).join("\n") + "\n", status: result_status)
     end
 
     private
 
-    sig { params(run_context: Packwerk::RunContext, show_errors: T::Boolean).returns(OffenseCollection) }
+    sig { params(run_context: RunContext, show_errors: T::Boolean).returns(OffenseCollection) }
     def find_offenses(run_context, show_errors: false)
       offense_collection = OffenseCollection.new(@configuration.root_path)
       all_offenses = T.let([], T::Array[Offense])
@@ -123,4 +123,6 @@ module Packwerk
       end
     end
   end
+
+  private_constant :ParseRun
 end

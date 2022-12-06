@@ -70,4 +70,6 @@ module Packwerk
       NodeHelpers.literal_value(association_name_node)
     end
   end
+
+  private_constant :AssociationInspector
 end

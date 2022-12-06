@@ -111,4 +111,6 @@ module Packwerk
       Set.new(relative_globs.flat_map { |glob| Dir[glob] })
     end
   end
+
+  private_constant :FilesForProcessing
 end

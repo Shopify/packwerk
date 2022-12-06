@@ -52,7 +52,7 @@ module Packwerk
     end
 
     def reference_checker(checkers = [StubChecker.new])
-      Packwerk::ReferenceChecking::ReferenceChecker.new(checkers)
+      ReferenceChecking::ReferenceChecker.new(checkers)
     end
   end
 end

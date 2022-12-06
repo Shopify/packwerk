@@ -12,13 +12,13 @@ module Packwerk
     include Validator
     extend T::Sig
 
-    sig { params(package_set: PackageSet, configuration: Configuration).returns(ApplicationValidator::Result) }
+    sig { params(package_set: PackageSet, configuration: Configuration).returns(Validator::Result) }
     def check_all(package_set, configuration)
       results = Validator.all.flat_map { |validator| validator.call(package_set, configuration) }
       merge_results(results)
     end
 
-    sig { override.params(package_set: PackageSet, configuration: Configuration).returns(ApplicationValidator::Result) }
+    sig { override.params(package_set: PackageSet, configuration: Configuration).returns(Validator::Result) }
     def call(package_set, configuration)
       results = [
         check_package_manifest_syntax(configuration),
@@ -37,7 +37,7 @@ module Packwerk
       ]
     end
 
-    sig { params(configuration: Configuration).returns(Result) }
+    sig { params(configuration: Configuration).returns(Validator::Result) }
     def check_package_manifest_syntax(configuration)
       errors = []
 
@@ -54,10 +54,10 @@ module Packwerk
       end
 
       if errors.empty?
-        Result.new(ok: true)
+        Validator::Result.new(ok: true)
       else
         merge_results(
-          errors.map { |error| Result.new(ok: false, error_value: error) },
+          errors.map { |error| Validator::Result.new(ok: false, error_value: error) },
           separator: "\n",
           before_errors: "Malformed syntax in the following manifests:\n\n",
           after_errors: "\n",
@@ -65,7 +65,7 @@ module Packwerk
       end
     end
 
-    sig { params(configuration: Configuration).returns(Result) }
+    sig { params(configuration: Configuration).returns(Validator::Result) }
     def check_application_structure(configuration)
       resolver = ConstantResolver.new(
         root_path: configuration.root_path.to_s,
@@ -74,13 +74,13 @@ module Packwerk
 
       begin
         resolver.file_map
-        Result.new(ok: true)
+        Validator::Result.new(ok: true)
       rescue => e
-        Result.new(ok: false, error_value: e.message)
+        Validator::Result.new(ok: false, error_value: e.message)
       end
     end
 
-    sig { params(configuration: Configuration).returns(Result) }
+    sig { params(configuration: Configuration).returns(Validator::Result) }
     def check_package_manifest_paths(configuration)
       all_package_manifests = package_manifests(configuration, "**/")
       package_paths_package_manifests = package_manifests(configuration, package_glob(configuration))
@@ -88,9 +88,9 @@ module Packwerk
       difference = all_package_manifests - package_paths_package_manifests
 
       if difference.empty?
-        Result.new(ok: true)
+        Validator::Result.new(ok: true)
       else
-        Result.new(
+        Validator::Result.new(
           ok: false,
           error_value: <<~EOS
             Expected package paths for all package.ymls to be specified, but paths were missing for the following manifests:
@@ -101,15 +101,15 @@ module Packwerk
       end
     end
 
-    sig { params(configuration: Configuration).returns(Result) }
+    sig { params(configuration: Configuration).returns(Validator::Result) }
     def check_root_package_exists(configuration)
       root_package_path = File.join(configuration.root_path, "package.yml")
       all_packages_manifests = package_manifests(configuration, package_glob(configuration))
 
       if all_packages_manifests.include?(root_package_path)
-        Result.new(ok: true)
+        Validator::Result.new(ok: true)
       else
-        Result.new(
+        Validator::Result.new(
           ok: false,
           error_value: <<~EOS
             A root package does not exist. Create an empty `package.yml` at the root directory.
@@ -130,4 +130,6 @@ module Packwerk
       paths.map { |path| relative_path(configuration, path) }
     end
   end
+
+  private_constant :ApplicationValidator
 end

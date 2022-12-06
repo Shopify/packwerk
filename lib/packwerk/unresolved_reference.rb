@@ -13,4 +13,6 @@ module Packwerk
     :source_location,
     keyword_init: true,
   )
+
+  private_constant :UnresolvedReference
 end

@@ -20,7 +20,7 @@ module Packwerk
       resolver = ConstantResolver.new(root_path: app_dir, load_paths: load_paths)
       packages = ::Packwerk::PackageSet.load_all_from(app_dir)
 
-      @context_provider = ::Packwerk::ConstantDiscovery.new(
+      @context_provider = ConstantDiscovery.new(
         constant_resolver: resolver,
         packages: packages
       )
@@ -214,7 +214,7 @@ module Packwerk
     private
 
     class DummyAssociationInspector
-      include Packwerk::ConstantNameInspector
+      include ConstantNameInspector
 
       def initialize(association: false, reference_name: "Dummy", expected_args: nil)
         @association = association
@@ -241,7 +241,7 @@ module Packwerk
       root_node = ParserTestHelper.parse(code)
       file_path = to_app_path(file_path)
 
-      extractor = ::Packwerk::ReferenceExtractor.new(
+      extractor = ReferenceExtractor.new(
         constant_name_inspectors: constant_name_inspectors,
         root_node: root_node,
         root_path: app_dir
@@ -254,7 +254,7 @@ module Packwerk
         file_path: Pathname.new(file_path).relative_path_from(app_dir).to_s
       )
 
-      ::Packwerk::ReferenceExtractor.get_fully_qualified_references_from(
+      ReferenceExtractor.get_fully_qualified_references_from(
         unresolved_references,
         @context_provider
       )

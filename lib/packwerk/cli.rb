@@ -14,8 +14,8 @@ module Packwerk
         out: T.any(StringIO, IO),
         err_out: T.any(StringIO, IO),
         environment: String,
-        style: Packwerk::OutputStyle,
-        offenses_formatter: T.nilable(Packwerk::OffensesFormatter)
+        style: OutputStyle,
+        offenses_formatter: T.nilable(OffensesFormatter)
       ).void
     end
     def initialize(
@@ -77,12 +77,12 @@ module Packwerk
 
     sig { returns(T::Boolean) }
     def generate_configs
-      configuration_file = Packwerk::Generators::ConfigurationFile.generate(
+      configuration_file = Generators::ConfigurationFile.generate(
         root: @configuration.root_path,
         out: @out
       )
 
-      root_package = Packwerk::Generators::RootPackage.generate(root: @configuration.root_path, out: @out)
+      root_package = Generators::RootPackage.generate(root: @configuration.root_path, out: @out)
 
       success = configuration_file && root_package
 
@@ -159,7 +159,7 @@ module Packwerk
 
     sig { returns(ApplicationValidator) }
     def validator
-      Packwerk::ApplicationValidator.new
+      ApplicationValidator.new
     end
 
     sig { returns(PackageSet) }
@@ -170,7 +170,7 @@ module Packwerk
       )
     end
 
-    sig { params(result: ApplicationValidator::Result).void }
+    sig { params(result: Validator::Result).void }
     def list_validation_errors(result)
       @out.puts
       if result.ok?

@@ -51,7 +51,7 @@ module Packwerk
       @cache_directory = Pathname.new(configs["cache_directory"] || "tmp/cache/packwerk")
       @config_path = config_path
 
-      @offenses_formatter_identifier = configs["offenses_formatter"] || Formatters::OffensesFormatter::IDENTIFIER
+      @offenses_formatter_identifier = configs["offenses_formatter"] || Formatters::DefaultOffensesFormatter::IDENTIFIER
 
       if configs.key?("require")
         configs["require"].each do |require_directive|
@@ -77,4 +77,6 @@ module Packwerk
       @cache_enabled
     end
   end
+
+  private_constant :Configuration
 end
