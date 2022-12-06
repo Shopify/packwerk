@@ -91,6 +91,8 @@ module Packwerk
     end
   end
 
+  private_constant :ReferenceChecking
+
   class ApplicationValidator
     extend ActiveSupport::Autoload
 

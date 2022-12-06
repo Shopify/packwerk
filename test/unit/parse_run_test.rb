@@ -312,7 +312,7 @@ module Packwerk
       offense = ReferenceOffense.new(
         reference: build_reference(path: file_to_check),
         message: "some message",
-        violation_type: Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
+        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       )
 
       RunContext.any_instance.stubs(:process_file).returns([offense])
@@ -359,7 +359,7 @@ module Packwerk
       offense = ReferenceOffense.new(
         reference: build_reference(path: "components/source/some/path.rb", source_package: source_package),
         message: "some message",
-        violation_type: Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
+        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       )
 
       RunContext.any_instance.stubs(:process_file).returns([offense])
@@ -415,7 +415,7 @@ module Packwerk
       offense = ReferenceOffense.new(
         reference: build_reference(path: file_to_check),
         message: "some message",
-        violation_type: Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
+        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       )
 
       RunContext.any_instance.stubs(:process_file).returns([offense])

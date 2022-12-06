@@ -51,7 +51,7 @@ module Packwerk
       package_todo = Packwerk::PackageTodo.new(package, ".")
       package_todo
         .stubs(:listed?)
-        .with(reference, violation_type: Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
+        .with(reference, violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
         .returns(true)
       Packwerk::PackageTodo
         .stubs(:new)
