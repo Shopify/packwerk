@@ -16,7 +16,7 @@ module Packwerk
         cache_directory: Pathname.new("tmp/cache/packwerk"),
         config_path: "packwerk.yml"
       )
-      @file_processor = ::Packwerk::FileProcessor.new(node_processor_factory: @node_processor_factory, cache: @cache)
+      @file_processor = FileProcessor.new(node_processor_factory: @node_processor_factory, cache: @cache)
     end
 
     test "#call visits all nodes in a file path with no references" do
@@ -100,7 +100,7 @@ module Packwerk
 
     test "#call with an invalid syntax doesn't parse node" do
       @node_processor_factory.expects(:for).never
-      file_processor = ::Packwerk::FileProcessor.new(
+      file_processor = FileProcessor.new(
         node_processor_factory: @node_processor_factory,
         cache: Cache.new(
           enable_cache: false,

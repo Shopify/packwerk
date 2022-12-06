@@ -51,7 +51,7 @@ module Packwerk
 
     sig do
       params(
-        constant_name_inspectors: T::Array[Packwerk::ConstantNameInspector],
+        constant_name_inspectors: T::Array[ConstantNameInspector],
         root_node: ::AST::Node,
         root_path: String,
       ).void

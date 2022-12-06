@@ -5,7 +5,7 @@ require "rails_test_helper"
 require "zeitwerk"
 
 module RailsApplicationFixtureHelper
-  include ApplicationFixtureHelper
+  include Packwerk::ApplicationFixtureHelper
 
   class Autoloaders
     include Enumerable

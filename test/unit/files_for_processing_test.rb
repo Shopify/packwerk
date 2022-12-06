@@ -11,7 +11,7 @@ module Packwerk
       setup_application_fixture
       use_template(:skeleton)
       @package_path = "components/sales"
-      @configuration = ::Packwerk::Configuration.from_path
+      @configuration = Configuration.from_path
     end
 
     teardown do
@@ -19,7 +19,7 @@ module Packwerk
     end
 
     test "fetch with custom paths includes only include glob in custom paths" do
-      files = ::Packwerk::FilesForProcessing.fetch(
+      files = FilesForProcessing.fetch(
         relative_file_paths: [@package_path],
         configuration: @configuration,
       ).files
@@ -28,7 +28,7 @@ module Packwerk
     end
 
     test "fetch with custom paths excludes the exclude glob in custom paths" do
-      files = ::Packwerk::FilesForProcessing.fetch(
+      files = FilesForProcessing.fetch(
         relative_file_paths: [@package_path],
         configuration: @configuration
       ).files
@@ -38,25 +38,25 @@ module Packwerk
     end
 
     test "fetch with no custom paths includes only include glob across codebase" do
-      files = ::Packwerk::FilesForProcessing.fetch(relative_file_paths: [], configuration: @configuration).files
+      files = FilesForProcessing.fetch(relative_file_paths: [], configuration: @configuration).files
 
       assert_all_match(files, @configuration.include)
     end
 
     test "fetch with no custom paths excludes the exclude glob across codebase" do
-      files = ::Packwerk::FilesForProcessing.fetch(relative_file_paths: [], configuration: @configuration).files
+      files = FilesForProcessing.fetch(relative_file_paths: [], configuration: @configuration).files
       excluded_file_patterns = @configuration.exclude.map { |pattern| File.join(@configuration.root_path, pattern) }
 
       refute_any_match(files, Set.new(excluded_file_patterns))
     end
 
     test "fetch does not return duplicated file paths" do
-      files = ::Packwerk::FilesForProcessing.fetch(relative_file_paths: [], configuration: @configuration).files
+      files = FilesForProcessing.fetch(relative_file_paths: [], configuration: @configuration).files
       assert_equal files, Set.new(files)
     end
 
     test "fetch with custom paths without ignoring nested packages includes only include glob in custom paths including nested package files" do
-      files = ::Packwerk::FilesForProcessing.fetch(
+      files = FilesForProcessing.fetch(
         relative_file_paths: ["."],
         configuration: @configuration,
         ignore_nested_packages: false
@@ -66,7 +66,7 @@ module Packwerk
     end
 
     test "fetch with no custom paths ignoring nested packages includes only include glob across codebase" do
-      files = ::Packwerk::FilesForProcessing.fetch(
+      files = FilesForProcessing.fetch(
         relative_file_paths: [],
         configuration: @configuration,
         ignore_nested_packages: true
@@ -76,7 +76,7 @@ module Packwerk
     end
 
     test "fetch with custom paths ignoring nested packages includes only include glob in custom paths without nested package files" do
-      files = ::Packwerk::FilesForProcessing.fetch(
+      files = FilesForProcessing.fetch(
         relative_file_paths: ["."],
         configuration: @configuration,
         ignore_nested_packages: true
@@ -87,7 +87,7 @@ module Packwerk
     end
 
     test "fetch with custom paths for files includes only include glob in custom paths" do
-      files = ::Packwerk::FilesForProcessing.fetch(
+      files = FilesForProcessing.fetch(
         relative_file_paths: [
           "components/sales/app/models/order.rb",
           "components/sales/app/views/order.html.erb",

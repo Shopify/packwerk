@@ -14,8 +14,8 @@ module Packwerk
         out: T.any(StringIO, IO),
         err_out: T.any(StringIO, IO),
         environment: String,
-        style: Packwerk::OutputStyle,
-        offenses_formatter: T.nilable(Packwerk::OffensesFormatter)
+        style: OutputStyle,
+        offenses_formatter: T.nilable(OffensesFormatter)
       ).void
     end
     def initialize(
@@ -159,7 +159,7 @@ module Packwerk
 
     sig { returns(ApplicationValidator) }
     def validator
-      Packwerk::ApplicationValidator.new
+      ApplicationValidator.new
     end
 
     sig { returns(PackageSet) }

@@ -25,7 +25,7 @@ module Packwerk
       sig { returns(T::Boolean) }
       def generate
         @out.puts("📦 Generating Packwerk configuration file...")
-        default_config_path = File.join(@root, ::Packwerk::Configuration::DEFAULT_CONFIG_PATH)
+        default_config_path = File.join(@root, Configuration::DEFAULT_CONFIG_PATH)
 
         if File.exist?(default_config_path)
           @out.puts("⚠️  Packwerk configuration file already exists.")

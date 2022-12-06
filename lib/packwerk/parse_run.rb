@@ -45,7 +45,7 @@ module Packwerk
         return Result.new(message: message, status: false)
       end
 
-      run_context = Packwerk::RunContext.from_configuration(@configuration)
+      run_context = RunContext.from_configuration(@configuration)
       offense_collection = find_offenses(run_context)
       offense_collection.persist_package_todo_files(run_context.package_set)
 
@@ -59,7 +59,7 @@ module Packwerk
 
     sig { returns(Result) }
     def check
-      run_context = Packwerk::RunContext.from_configuration(@configuration)
+      run_context = RunContext.from_configuration(@configuration)
       offense_collection = find_offenses(run_context, show_errors: true)
 
       messages = [
@@ -76,7 +76,7 @@ module Packwerk
 
     private
 
-    sig { params(run_context: Packwerk::RunContext, show_errors: T::Boolean).returns(OffenseCollection) }
+    sig { params(run_context: RunContext, show_errors: T::Boolean).returns(OffenseCollection) }
     def find_offenses(run_context, show_errors: false)
       offense_collection = OffenseCollection.new(@configuration.root_path)
       all_offenses = T.let([], T::Array[Offense])

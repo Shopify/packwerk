@@ -1,10 +1,12 @@
 # typed: true
 # frozen_string_literal: true
 
-module ParserTestHelper
-  class << self
-    def parse(source)
-      Packwerk::Parsers::Ruby.new.call(io: StringIO.new(source))
+module Packwerk
+  module ParserTestHelper
+    class << self
+      def parse(source)
+        Parsers::Ruby.new.call(io: StringIO.new(source))
+      end
     end
   end
 end

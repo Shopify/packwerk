@@ -50,7 +50,7 @@ module Packwerk
     # @param const_name [String] The unresolved constant's name.
     # @param current_namespace_path [Array<String>] (optional) The namespace of the context in which the constant is
     #   used, e.g. ["Apps", "Models"] for `Apps::Models`. Defaults to [] which means top level.
-    # @return [Packwerk::ConstantDiscovery::ConstantContext]
+    # @return [ConstantDiscovery::ConstantContext]
     sig do
       params(
         const_name: String,

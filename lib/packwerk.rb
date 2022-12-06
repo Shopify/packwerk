@@ -13,44 +13,74 @@ require "active_support/core_ext/object/json"
 module Packwerk
   extend ActiveSupport::Autoload
 
-  autoload :ApplicationLoadPaths
-  autoload :ApplicationValidator
-  autoload :AssociationInspector
-  autoload :Cache
+  # Public APIs
   autoload :Checker
   autoload :Cli
-  autoload :Configuration
-  autoload :ConstantDiscovery
-  autoload :ConstantNameInspector
-  autoload :ConstNodeInspector
-  autoload :ExtensionLoader
-  autoload :FileProcessor
-  autoload :FilesForProcessing
-  autoload :Graph
-  autoload :Loader
-  autoload :Node
-  autoload :NodeHelpers
-  autoload :NodeProcessor
-  autoload :NodeProcessorFactory
-  autoload :NodeVisitor
   autoload :Offense
-  autoload :OffenseCollection
   autoload :OffensesFormatter
   autoload :OutputStyle
   autoload :Package
   autoload :PackageSet
   autoload :PackageTodo
-  autoload :ParsedConstantDefinitions
   autoload :Parsers
-  autoload :ParseRun
   autoload :Reference
-  autoload :ReferenceExtractor
   autoload :ReferenceOffense
   autoload :Result
+
+  # Private APIs
+  # Please submit an issue if you have a use-case for these
+  autoload :ApplicationLoadPaths
+  private_constant :ApplicationLoadPaths
+  autoload :ApplicationValidator
+  private_constant :ApplicationValidator
+  autoload :AssociationInspector
+  private_constant :AssociationInspector
+  autoload :Cache
+  private_constant :Cache
+  autoload :Configuration
+  private_constant :Configuration
+  autoload :ConstantDiscovery
+  private_constant :ConstantDiscovery
+  autoload :ConstantNameInspector
+  private_constant :ConstantNameInspector
+  autoload :ConstNodeInspector
+  private_constant :ConstNodeInspector
+  autoload :ExtensionLoader
+  private_constant :ExtensionLoader
+  autoload :FileProcessor
+  private_constant :FileProcessor
+  autoload :FilesForProcessing
+  private_constant :FilesForProcessing
+  autoload :Graph
+  private_constant :Graph
+  autoload :Loader
+  private_constant :Loader
+  autoload :Node
+  private_constant :Node
+  autoload :NodeHelpers
+  private_constant :NodeHelpers
+  autoload :NodeProcessor
+  private_constant :NodeProcessor
+  autoload :NodeProcessorFactory
+  private_constant :NodeProcessorFactory
+  autoload :NodeVisitor
+  private_constant :NodeVisitor
+  autoload :OffenseCollection
+  private_constant :OffenseCollection
+  autoload :ParsedConstantDefinitions
+  private_constant :ParsedConstantDefinitions
+  autoload :ParseRun
+  private_constant :ParseRun
+  autoload :ReferenceExtractor
+  private_constant :ReferenceExtractor
   autoload :RunContext
+  private_constant :RunContext
   autoload :UnresolvedReference
+  private_constant :UnresolvedReference
   autoload :Validator
+  private_constant :Validator
   autoload :Version
+  private_constant :Version
 
   module OutputStyles
     extend ActiveSupport::Autoload
@@ -103,9 +133,9 @@ module Packwerk
   end
 end
 
-# Required to register the default OffensesFormatter
+# Required to register the DefaultOffensesFormatter
 # We put this at the *end* of the file to specify all autoloads first
-require "packwerk/formatters/offenses_formatter"
+require "packwerk/formatters/default_offenses_formatter"
 
 # Required to register the default DependencyChecker
 require "packwerk/reference_checking/checkers/dependency_checker"
