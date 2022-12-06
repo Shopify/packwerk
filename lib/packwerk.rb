@@ -76,6 +76,8 @@ module Packwerk
     autoload :RootPackage
   end
 
+  private_constant :Generators
+
   module ReferenceChecking
     extend ActiveSupport::Autoload
 

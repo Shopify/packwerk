@@ -77,12 +77,12 @@ module Packwerk
 
     sig { returns(T::Boolean) }
     def generate_configs
-      configuration_file = Packwerk::Generators::ConfigurationFile.generate(
+      configuration_file = Generators::ConfigurationFile.generate(
         root: @configuration.root_path,
         out: @out
       )
 
-      root_package = Packwerk::Generators::RootPackage.generate(root: @configuration.root_path, out: @out)
+      root_package = Generators::RootPackage.generate(root: @configuration.root_path, out: @out)
 
       success = configuration_file && root_package
 
