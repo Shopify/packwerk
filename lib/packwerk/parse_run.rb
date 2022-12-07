@@ -66,16 +66,13 @@ module Packwerk
       messages = [
         @offenses_formatter.show_offenses(offense_collection.outstanding_offenses),
         @offenses_formatter.show_stale_violations(offense_collection, @relative_file_set),
+        @offenses_formatter.show_strict_mode_violations(offense_collection.strict_mode_violations),
       ]
-
-      unless offense_collection.strict_mode_violations.empty?
-        messages << @offenses_formatter.show_strict_mode_violations(offense_collection.strict_mode_violations)
-      end
 
       result_status = offense_collection.outstanding_offenses.empty? &&
         !offense_collection.stale_violations?(@relative_file_set) && offense_collection.strict_mode_violations.empty?
 
-      Result.new(message: messages.join("\n") + "\n", status: result_status)
+      Result.new(message: messages.select(&:present?).join("\n") + "\n", status: result_status)
     end
 
     private
