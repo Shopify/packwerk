@@ -1,7 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "benchmark"
 require "parallel"
 
 module Packwerk
@@ -80,10 +79,7 @@ module Packwerk
     sig { params(run_context: Packwerk::RunContext, show_errors: T::Boolean).returns(OffenseCollection) }
     def find_offenses(run_context, show_errors: false)
       offense_collection = OffenseCollection.new(@configuration.root_path)
-      @progress_formatter.started(@relative_file_set)
-
       all_offenses = T.let([], T::Array[Offense])
-
       process_file = T.let(->(relative_file) do
         run_context.process_file(relative_file: relative_file).tap do |offenses|
           failed = show_errors && offenses.any? { |offense| !offense_collection.listed?(offense) }
@@ -91,15 +87,13 @@ module Packwerk
         end
       end, ProcessFileProc)
 
-      execution_time = Benchmark.realtime do
+      @progress_formatter.started_inspection(@relative_file_set) do
         all_offenses = if @configuration.parallel?
           Parallel.flat_map(@relative_file_set, &process_file)
         else
           serial_find_offenses(&process_file)
         end
       end
-
-      @progress_formatter.finished(execution_time)
 
       all_offenses.each { |offense| offense_collection.add_offense(offense) }
       offense_collection
