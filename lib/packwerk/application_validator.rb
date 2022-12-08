@@ -106,7 +106,7 @@ module Packwerk
     def check_acyclic_graph(package_set)
       edges = package_set.flat_map do |package|
         package.dependencies.map do |dependency|
-          [package.name, T.must(package_set.fetch(dependency)).name]
+          [package.name, package_set.fetch(dependency)&.name]
         end
       end
 

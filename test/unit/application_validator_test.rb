@@ -38,6 +38,15 @@ module Packwerk
       assert_match %r{components/sales → components/timeline → components/sales}, result.error_value
     end
 
+    test "check_acyclic_graph returns allows nonexistent packages" do
+      use_template(:minimal)
+      merge_into_app_yaml_file("components/sales/package.yml", { "dependencies" => ["components/not_here"] })
+
+      result = validator.check_acyclic_graph(package_set)
+
+      assert result.ok?
+    end
+
     test "check_package_manifest_paths returns error when config only declares partial list of packages" do
       use_template(:minimal)
       merge_into_app_yaml_file("components/timeline/package.yml", {})
