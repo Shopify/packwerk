@@ -177,6 +177,7 @@ module Packwerk
         @out.puts("Validation successful 🎉")
       else
         @out.puts("Validation failed ❗")
+        @out.puts
         @out.puts(result.error_value)
       end
     end

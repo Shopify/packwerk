@@ -74,7 +74,7 @@ module Packwerk
 
       refute result.ok?
       assert_match(/These dependencies do not point to valid packages:/, result.error_value)
-      assert_match %r{\n\ncomponents/sales/package.yml:\n  - components/timeline\n\n$}m, result.error_value
+      assert_match(%r{\n\n\tcomponents/sales/package.yml:\n\t  - components/timeline\n$}m, result.error_value)
     end
 
     test "check_root_package_exists returns error when root directory is missing a package.yml file" do
@@ -85,6 +85,38 @@ module Packwerk
       refute result.ok?
       assert_match(/A root package does not exist./, result.error_value)
     end
+
+    test "check_package_manifest_syntax returns error when unknown keys are in the package.yml file" do
+      use_template(:minimal)
+      merge_into_app_yaml_file("components/sales/package.yml", { "invalid" => true })
+
+      result = validator.check_package_manifest_syntax(config)
+      refute result.ok?
+      assert_match("Malformed syntax in the following manifests:", result.error_value)
+      assert_match("Unknown keys: [\"invalid\"]", result.error_value)
+    end
+
+    test "check_package_manifest_syntax returns error when invalid enforce_dependencies value is in the package.yml file" do
+      use_template(:minimal)
+      merge_into_app_yaml_file("components/sales/package.yml", { "enforce_dependencies" => "yes" })
+
+      result = validator.check_package_manifest_syntax(config)
+      refute result.ok?
+      assert_match("Malformed syntax in the following manifests:", result.error_value)
+      assert_match("Invalid 'enforce_dependencies' option: \"yes\"", result.error_value)
+    end
+
+    test "check_package_manifest_syntax returns error when invalid dependencies value is in the package.yml file" do
+      use_template(:minimal)
+      merge_into_app_yaml_file("components/sales/package.yml", { "dependencies" => "yes" })
+
+      result = validator.check_package_manifest_syntax(config)
+      refute result.ok?
+      assert_match("Malformed syntax in the following manifests:", result.error_value)
+      assert_match("Invalid 'dependencies' option: \"yes\"", result.error_value)
+    end
+
+    private
 
     sig { returns(Packwerk::ApplicationValidator) }
     def validator
