@@ -1,7 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "benchmark"
 require "parallel"
 
 module Packwerk
@@ -66,16 +65,13 @@ module Packwerk
       messages = [
         @offenses_formatter.show_offenses(offense_collection.outstanding_offenses),
         @offenses_formatter.show_stale_violations(offense_collection, @relative_file_set),
+        @offenses_formatter.show_strict_mode_violations(offense_collection.strict_mode_violations),
       ]
-
-      unless offense_collection.strict_mode_violations.empty?
-        messages << @offenses_formatter.show_strict_mode_violations(offense_collection.strict_mode_violations)
-      end
 
       result_status = offense_collection.outstanding_offenses.empty? &&
         !offense_collection.stale_violations?(@relative_file_set) && offense_collection.strict_mode_violations.empty?
 
-      Result.new(message: messages.join("\n") + "\n", status: result_status)
+      Result.new(message: messages.select(&:present?).join("\n") + "\n", status: result_status)
     end
 
     private
@@ -83,10 +79,7 @@ module Packwerk
     sig { params(run_context: Packwerk::RunContext, show_errors: T::Boolean).returns(OffenseCollection) }
     def find_offenses(run_context, show_errors: false)
       offense_collection = OffenseCollection.new(@configuration.root_path)
-      @progress_formatter.started(@relative_file_set)
-
       all_offenses = T.let([], T::Array[Offense])
-
       process_file = T.let(->(relative_file) do
         run_context.process_file(relative_file: relative_file).tap do |offenses|
           failed = show_errors && offenses.any? { |offense| !offense_collection.listed?(offense) }
@@ -94,15 +87,13 @@ module Packwerk
         end
       end, ProcessFileProc)
 
-      execution_time = Benchmark.realtime do
+      @progress_formatter.started_inspection(@relative_file_set) do
         all_offenses = if @configuration.parallel?
           Parallel.flat_map(@relative_file_set, &process_file)
         else
           serial_find_offenses(&process_file)
         end
       end
-
-      @progress_formatter.finished(execution_time)
 
       all_offenses.each { |offense| offense_collection.add_offense(offense) }
       offense_collection

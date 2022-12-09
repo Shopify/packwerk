@@ -8,7 +8,7 @@ module Packwerk
     sig do
       params(
         # The edges of the graph; An edge being represented as an Array of two nodes.
-        edges: T::Array[T::Array[T.any(String, Integer)]]
+        edges: T::Array[T::Array[T.any(String, Integer, NilClass)]]
       ).void
     end
     def initialize(edges)

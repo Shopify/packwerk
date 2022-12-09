@@ -29,7 +29,7 @@ module Packwerk
         check_root_package_exists(configuration),
       ]
 
-      merge_results(results)
+      merge_results(results, separator: "\n❓ ")
     end
 
     sig { override.returns(T::Array[String]) }
@@ -45,35 +45,45 @@ module Packwerk
     def check_package_manifest_syntax(configuration)
       errors = []
 
-      package_manifests(configuration).each do |f|
-        hash = YAML.load_file(f)
+      package_manifests(configuration).each do |manifest|
+        hash = YAML.load_file(manifest)
         next unless hash
 
         known_keys = Validator.all.flat_map(&:permitted_keys)
         unknown_keys = hash.keys - known_keys
 
         unless unknown_keys.empty?
-          errors << "Unknown keys in #{f}: #{unknown_keys.inspect}\n"\
-            "If you think a key should be included in your package.yml, please "\
-            "open an issue in https://github.com/Shopify/packwerk"
+          errors << "\tUnknown keys: #{unknown_keys.inspect} in #{manifest.inspect}"
         end
 
         if hash.key?("enforce_dependencies")
-          unless [TrueClass, FalseClass, "strict"].include?(hash["enforce_dependencies"].class)
-            errors << "Invalid 'enforce_dependencies' option in #{f.inspect}: #{hash["enforce_dependencies"].inspect}"
+          option = hash["enforce_dependencies"]
+
+          unless [TrueClass, FalseClass, "strict"].include?(option.class)
+            errors << "\tInvalid 'enforce_dependencies' option: #{option.inspect} in #{manifest.inspect}"
           end
         end
 
-        next unless hash.key?("dependencies")
-        next if hash["dependencies"].is_a?(Array)
+        if hash.key?("dependencies")
+          option = hash["dependencies"]
 
-        errors << "Invalid 'dependencies' option in #{f.inspect}: #{hash["dependencies"].inspect}"
+          unless option.is_a?(Array)
+            errors << "\tInvalid 'dependencies' option: #{option.inspect} in #{manifest.inspect}"
+          end
+        else
+          next
+        end
       end
 
       if errors.empty?
         Result.new(ok: true)
       else
-        Result.new(ok: false, error_value: errors.join("\n---\n"))
+        merge_results(
+          errors.map { |error| Result.new(ok: false, error_value: error) },
+          separator: "\n",
+          before_errors: "Malformed syntax in the following manifests:\n\n",
+          after_errors: "\n",
+        )
       end
     end
 
@@ -95,7 +105,9 @@ module Packwerk
     sig { params(package_set: PackageSet).returns(Result) }
     def check_acyclic_graph(package_set)
       edges = package_set.flat_map do |package|
-        package.dependencies.map { |dependency| [package.name, T.must(package_set.fetch(dependency)).name] }
+        package.dependencies.map do |dependency|
+          [package.name, package_set.fetch(dependency)&.name]
+        end
       end
 
       dependency_graph = Graph.new(edges)
@@ -108,7 +120,7 @@ module Packwerk
         Result.new(
           ok: false,
           error_value: <<~EOS
-            Expected the package dependency graph to be acyclic, but it contains the following cycles:
+            Expected the package dependency graph to be acyclic, but it contains the following circular dependencies:
 
             #{cycle_strings.join("\n")}
           EOS
@@ -144,7 +156,11 @@ module Packwerk
 
       packages_with_invalid_dependencies =
         packages_dependencies.each_with_object([]) do |(package, dependencies), invalid_packages|
-          invalid_dependencies = dependencies.filter { |path| invalid_package_path?(configuration, path) }
+          invalid_dependencies = if dependencies.is_a?(Array)
+            dependencies.filter { |path| invalid_package_path?(configuration, path) }
+          else
+            []
+          end
           invalid_packages << [package, invalid_dependencies] if invalid_dependencies.any?
         end
 
@@ -157,18 +173,14 @@ module Packwerk
           all_invalid_dependencies = invalid_dependencies.map { |d| "  - #{d}" }
 
           <<~EOS
-            #{package_path}:
-            #{all_invalid_dependencies.join("\n")}
+            \t#{package_path}:
+            \t#{all_invalid_dependencies.join("\n\t")}
           EOS
         end
 
         Result.new(
           ok: false,
-          error_value: <<~EOS
-            These dependencies do not point to valid packages:
-
-            #{error_locations.join("\n")}
-          EOS
+          error_value: "These dependencies do not point to valid packages:\n\n#{error_locations.join("\n")}"
         )
       end
     end

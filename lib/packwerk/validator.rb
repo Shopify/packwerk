@@ -57,10 +57,14 @@ module Packwerk
     end
 
     sig do
-      params(results: T::Array[ApplicationValidator::Result], separator: String,
-        errors_headline: String).returns(ApplicationValidator::Result)
+      params(
+        results: T::Array[ApplicationValidator::Result],
+        separator: String,
+        before_errors: String,
+        after_errors: String,
+      ).returns(ApplicationValidator::Result)
     end
-    def merge_results(results, separator: "\n===\n", errors_headline: "")
+    def merge_results(results, separator: "\n", before_errors: "", after_errors: "")
       results.reject!(&:ok?)
 
       if results.empty?
@@ -68,7 +72,12 @@ module Packwerk
       else
         ApplicationValidator::Result.new(
           ok: false,
-          error_value: errors_headline + results.map(&:error_value).join(separator)
+          error_value: [
+            before_errors,
+            separator.lstrip,
+            results.map(&:error_value).join(separator),
+            after_errors,
+          ].join,
         )
       end
     end

@@ -11,21 +11,34 @@ module Packwerk
         @progress_formatter = ProgressFormatter.new(@string_io)
       end
 
-      test "#started prints the right file size for multiple files" do
-        @progress_formatter.started([1, 2, 3, 4, 5])
-        assert_match "5", @string_io.string
-        assert_match "files", @string_io.string
+      test "#started_inspection yields control to code block" do
+        @progress_formatter.started_inspection([]) do
+          @string_io.puts("This block has been run")
+        end
+
+        assert_match "This block has been run", @string_io.string
       end
 
-      test "#started prints the right file size for single files" do
-        @progress_formatter.started([1])
-        assert_match "1", @string_io.string
-        assert_match "file", @string_io.string
+      test "#started_inspection prints the right file size for multiple files" do
+        @progress_formatter.started_inspection([1, 2, 3, 4, 5]) {}
+        assert_match "5 files", @string_io.string
       end
 
-      test "#started prints the right file size for no files" do
-        @progress_formatter.started([])
+      test "#started_inspection prints the right file size for single files" do
+        @progress_formatter.started_inspection([1]) {}
+        assert_match "1 file", @string_io.string
+      end
+
+      test "#started_inspection prints the right file size for no files" do
+        @progress_formatter.started_inspection([]) {}
         assert_match "0 files", @string_io.string
+      end
+
+      test "#started_inspection prints the correct time" do
+        Benchmark.expects(:realtime).returns(4.5678)
+        @progress_formatter.started_inspection([]) {}
+
+        assert_match "4.57 seconds", @string_io.string
       end
 
       test "#started_validation yields control to code block" do
@@ -36,6 +49,13 @@ module Packwerk
         assert_match "This block has been run", @string_io.string
       end
 
+      test "#started_validation prints the correct time" do
+        Benchmark.expects(:realtime).returns(1.1234)
+        @progress_formatter.started_validation {}
+
+        assert_match "1.12 seconds", @string_io.string
+      end
+
       test "#mark_as_inspected prints a dot" do
         @progress_formatter.mark_as_inspected
         assert_equal ".", @string_io.string
@@ -44,11 +64,6 @@ module Packwerk
       test "#mark_as_failed prints an E" do
         @progress_formatter.mark_as_failed
         assert_equal "E", @string_io.string
-      end
-
-      test "#finished prints the correct time" do
-        @progress_formatter.finished(1.1234)
-        assert_match "1.12", @string_io.string
       end
     end
   end
