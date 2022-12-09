@@ -288,10 +288,86 @@ You can also pass in a formatter on the command line:
 bin/packwerk check --offenses-formatter=my_offenses_formatter
 ```
 
-### Privacy Checker
+### Custom Checkers
+
+Packwerk ships with a way to analyze dependencies and also supports custom checkers, such as the privacy checker listed below.
+
+Custom checkers will allow references to constants to be analyzed in new ways, and for those invalid references to show up as violations in `package_todo.yml`.
+
+To create a custom checker, you'll first need to create a checker class that includes `Packwerk::Checker`. You can use [`Packwerk::ReferenceChecking::Checkers::DependencyChecker`](lib/packwerk/reference_checking/checkers/dependency_checker.rb) as a point of reference for this. Here is an example:
+
+```ruby
+# ./path/to/file.rb
+class MyChecker
+  include Packwerk::Checker
+  # implement the `Checker` interface
+
+  sig { override.returns(String) }
+  def violation_type
+    'my_custom_violation_type'
+  end
+
+  sig { override.params(listed_offense: ReferenceOffense).returns(T::Boolean) }
+  def strict_mode_violation?(listed_offense)
+    # This will allow "strict mode" to be supported in your checker
+    referencing_package = listed_offense.reference.package
+    referencing_package.config["enforce_custom"] == "strict"
+  end
+
+  sig { override.params(reference: Reference).returns(T::Boolean) }
+  def invalid_reference?(reference)
+    # your logic here
+  end
+
+  sig { override.params(reference: Reference).returns(String) }
+  def message(reference)
+    # your message here
+  end
+end
+```
+
+Then, in the `require` directive described above, you'll want to tell `packwerk` about it:
+
+```yml
+require:
+  - ./path/to/file.rb
+```
+
+#### Privacy Checker
 
 [`packwerk-extensions`](https://github.com/rubyatscale/packwerk-extensions) (originally extracted from `packwerk`) can be used to help define and enforce public API boundaries of a package. See the README.md for more details. To use this, add it to your `Gemfile` and then require it via `packwerk.yml`:
 ```yml
 require:
   - packwerk-extensions
+```
+
+### Custom Validators
+
+Similar to checkers, you can define your own validator to be executed when `bin/packwerk validate` is invoked. This can be used to support your custom checker (by specifying permitted keys) or to provide any other validations you want to impose on packages.
+
+To create a custom validator, you'll first need to create a validator class that includes `Packwerk::Validator`. Here is an example:
+
+```ruby
+# ./path/to/file.rb
+class MyValidator
+  include Packwerk::Validator
+  # implement the `Validator` interface
+
+  sig { override.returns(T::Array[String]) }
+  def permitted_keys
+    ['enforce_my_custom_checker']
+  end
+
+  sig { override.params(package_set: PackageSet, configuration: Configuration).returns(ApplicationValidator::Result) }
+  def call(package_set, configuration)
+    # your logic here
+  end
+end
+```
+
+Then, in the `require` directive described above, you'll want to tell `packwerk` about it:
+
+```yml
+require:
+  - ./path/to/file.rb
 ```
