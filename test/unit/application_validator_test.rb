@@ -24,29 +24,6 @@ module Packwerk
       assert result.ok?, result.error_value
     end
 
-    # TODO: add test in the context of the extension template to ensure that extensions work as expected
-
-    test "check_acyclic_graph returns error when package set contains circular dependencies" do
-      use_template(:minimal)
-      merge_into_app_yaml_file("components/sales/package.yml", { "dependencies" => ["components/timeline"] })
-      merge_into_app_yaml_file("components/timeline/package.yml", { "dependencies" => ["components/sales"] })
-
-      result = validator.check_acyclic_graph(package_set)
-
-      refute result.ok?
-      assert_match(/Expected the package dependency graph to be acyclic/, result.error_value)
-      assert_match %r{components/sales → components/timeline → components/sales}, result.error_value
-    end
-
-    test "check_acyclic_graph returns allows nonexistent packages" do
-      use_template(:minimal)
-      merge_into_app_yaml_file("components/sales/package.yml", { "dependencies" => ["components/not_here"] })
-
-      result = validator.check_acyclic_graph(package_set)
-
-      assert result.ok?
-    end
-
     test "check_package_manifest_paths returns error when config only declares partial list of packages" do
       use_template(:minimal)
       merge_into_app_yaml_file("components/timeline/package.yml", {})
@@ -75,17 +52,6 @@ module Packwerk
       refute result.error_value
     end
 
-    test "check_valid_package_dependencies returns error when config contains invalid package dependency" do
-      use_template(:minimal)
-      merge_into_app_yaml_file("components/sales/package.yml", { "dependencies" => ["components/timeline"] })
-
-      result = validator.check_valid_package_dependencies(config)
-
-      refute result.ok?
-      assert_match(/These dependencies do not point to valid packages:/, result.error_value)
-      assert_match(%r{\n\n\tcomponents/sales/package.yml:\n\t  - components/timeline\n$}m, result.error_value)
-    end
-
     test "check_root_package_exists returns error when root directory is missing a package.yml file" do
       use_template(:minimal)
       remove_app_entry("package.yml")
@@ -103,26 +69,6 @@ module Packwerk
       refute result.ok?
       assert_match("Malformed syntax in the following manifests:", result.error_value)
       assert_match("Unknown keys: [\"invalid\"]", result.error_value)
-    end
-
-    test "check_package_manifest_syntax returns error when invalid enforce_dependencies value is in the package.yml file" do
-      use_template(:minimal)
-      merge_into_app_yaml_file("components/sales/package.yml", { "enforce_dependencies" => "yes" })
-
-      result = validator.check_package_manifest_syntax(config)
-      refute result.ok?
-      assert_match("Malformed syntax in the following manifests:", result.error_value)
-      assert_match("Invalid 'enforce_dependencies' option: \"yes\"", result.error_value)
-    end
-
-    test "check_package_manifest_syntax returns error when invalid dependencies value is in the package.yml file" do
-      use_template(:minimal)
-      merge_into_app_yaml_file("components/sales/package.yml", { "dependencies" => "yes" })
-
-      result = validator.check_package_manifest_syntax(config)
-      refute result.ok?
-      assert_match("Malformed syntax in the following manifests:", result.error_value)
-      assert_match("Invalid 'dependencies' option: \"yes\"", result.error_value)
     end
 
     private

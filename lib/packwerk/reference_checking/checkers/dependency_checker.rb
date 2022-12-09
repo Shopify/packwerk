@@ -57,7 +57,7 @@ module Packwerk
 
         sig { params(reference: Reference).returns(String) }
         def standard_help_message(reference)
-          standard_message = <<~EOS.chomp
+          standard_message = <<~EOS
             Inference details: this is a reference to #{reference.constant.name} which seems to be defined in #{reference.constant.location}.
             To receive help interpreting or resolving this error message, see: https://github.com/Shopify/packwerk/blob/main/TROUBLESHOOT.md#Troubleshooting-violations
           EOS
