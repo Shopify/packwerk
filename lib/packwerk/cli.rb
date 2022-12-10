@@ -148,13 +148,15 @@ module Packwerk
 
     sig { params(_paths: T::Array[String]).returns(T::Boolean) }
     def validate(_paths)
+      result = T.let(nil, T.nilable(ApplicationValidator::Result))
+
       @progress_formatter.started_validation do
         result = validator.check_all(package_set, @configuration)
 
         list_validation_errors(result)
-
-        return result.ok?
       end
+
+      T.must(result).ok?
     end
 
     sig { returns(ApplicationValidator) }

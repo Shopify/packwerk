@@ -12,7 +12,7 @@ module Packwerk
       end
 
       test "#started_inspection yields control to code block" do
-        @progress_formatter.started_inspection([]) do
+        @progress_formatter.started_inspection(Set[]) do
           @string_io.puts("This block has been run")
         end
 
@@ -20,23 +20,23 @@ module Packwerk
       end
 
       test "#started_inspection prints the right file size for multiple files" do
-        @progress_formatter.started_inspection([1, 2, 3, 4, 5]) {}
+        @progress_formatter.started_inspection(Set["1", "2", "3", "4", "5"]) {}
         assert_match "5 files", @string_io.string
       end
 
       test "#started_inspection prints the right file size for single files" do
-        @progress_formatter.started_inspection([1]) {}
+        @progress_formatter.started_inspection(Set["1"]) {}
         assert_match "1 file", @string_io.string
       end
 
       test "#started_inspection prints the right file size for no files" do
-        @progress_formatter.started_inspection([]) {}
+        @progress_formatter.started_inspection(Set[]) {}
         assert_match "0 files", @string_io.string
       end
 
       test "#started_inspection prints the correct time" do
         Benchmark.expects(:realtime).returns(4.5678)
-        @progress_formatter.started_inspection([]) {}
+        @progress_formatter.started_inspection(Set[]) {}
 
         assert_match "4.57 seconds", @string_io.string
       end
