@@ -103,3 +103,5 @@ require "packwerk/formatters/offenses_formatter"
 
 # Required to register the default DependencyChecker
 require "packwerk/reference_checking/checkers/dependency_checker"
+# Required to register the default DependencyValidator
+require "packwerk/validators/dependency_validator"

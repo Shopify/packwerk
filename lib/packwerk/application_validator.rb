@@ -23,9 +23,7 @@ module Packwerk
       results = [
         check_package_manifest_syntax(configuration),
         check_application_structure(configuration),
-        check_acyclic_graph(package_set),
         check_package_manifest_paths(configuration),
-        check_valid_package_dependencies(configuration),
         check_root_package_exists(configuration),
       ]
 
@@ -35,8 +33,6 @@ module Packwerk
     sig { override.returns(T::Array[String]) }
     def permitted_keys
       [
-        "enforce_dependencies",
-        "dependencies",
         "metadata",
       ]
     end
@@ -54,24 +50,6 @@ module Packwerk
 
         unless unknown_keys.empty?
           errors << "\tUnknown keys: #{unknown_keys.inspect} in #{manifest.inspect}"
-        end
-
-        if hash.key?("enforce_dependencies")
-          option = hash["enforce_dependencies"]
-
-          unless [TrueClass, FalseClass, "strict"].include?(option.class)
-            errors << "\tInvalid 'enforce_dependencies' option: #{option.inspect} in #{manifest.inspect}"
-          end
-        end
-
-        if hash.key?("dependencies")
-          option = hash["dependencies"]
-
-          unless option.is_a?(Array)
-            errors << "\tInvalid 'dependencies' option: #{option.inspect} in #{manifest.inspect}"
-          end
-        else
-          next
         end
       end
 
@@ -102,32 +80,6 @@ module Packwerk
       end
     end
 
-    sig { params(package_set: PackageSet).returns(Result) }
-    def check_acyclic_graph(package_set)
-      edges = package_set.flat_map do |package|
-        package.dependencies.map do |dependency|
-          [package.name, package_set.fetch(dependency)&.name]
-        end
-      end
-
-      dependency_graph = Graph.new(edges)
-
-      cycle_strings = build_cycle_strings(dependency_graph.cycles)
-
-      if dependency_graph.acyclic?
-        Result.new(ok: true)
-      else
-        Result.new(
-          ok: false,
-          error_value: <<~EOS
-            Expected the package dependency graph to be acyclic, but it contains the following circular dependencies:
-
-            #{cycle_strings.join("\n")}
-          EOS
-        )
-      end
-    end
-
     sig { params(configuration: Configuration).returns(Result) }
     def check_package_manifest_paths(configuration)
       all_package_manifests = package_manifests(configuration, "**/")
@@ -145,42 +97,6 @@ module Packwerk
 
             #{relative_paths(configuration, difference).join("\n")}
           EOS
-        )
-      end
-    end
-
-    sig { params(configuration: Configuration).returns(Result) }
-    def check_valid_package_dependencies(configuration)
-      packages_dependencies = package_manifests_settings_for(configuration, "dependencies")
-        .delete_if { |_, deps| deps.nil? }
-
-      packages_with_invalid_dependencies =
-        packages_dependencies.each_with_object([]) do |(package, dependencies), invalid_packages|
-          invalid_dependencies = if dependencies.is_a?(Array)
-            dependencies.filter { |path| invalid_package_path?(configuration, path) }
-          else
-            []
-          end
-          invalid_packages << [package, invalid_dependencies] if invalid_dependencies.any?
-        end
-
-      if packages_with_invalid_dependencies.empty?
-        Result.new(ok: true)
-      else
-        error_locations = packages_with_invalid_dependencies.map do |package, invalid_dependencies|
-          package ||= configuration.root_path
-          package_path = Pathname.new(package).relative_path_from(configuration.root_path)
-          all_invalid_dependencies = invalid_dependencies.map { |d| "  - #{d}" }
-
-          <<~EOS
-            \t#{package_path}:
-            \t#{all_invalid_dependencies.join("\n\t")}
-          EOS
-        end
-
-        Result.new(
-          ok: false,
-          error_value: "These dependencies do not point to valid packages:\n\n#{error_locations.join("\n")}"
         )
       end
     end
@@ -204,22 +120,6 @@ module Packwerk
 
     private
 
-    # Convert the cycles:
-    #
-    #   [[a, b, c], [b, c]]
-    #
-    # to the string:
-    #
-    #   ["a -> b -> c -> a", "b -> c -> b"]
-    sig { params(cycles: T.untyped).returns(T::Array[String]) }
-    def build_cycle_strings(cycles)
-      cycles.map do |cycle|
-        cycle_strings = cycle.map(&:to_s)
-        cycle_strings << cycle.first.to_s
-        "\t- #{cycle_strings.join(" → ")}"
-      end
-    end
-
     sig { params(list: T.untyped).returns(T.untyped) }
     def format_yaml_strings(list)
       list.sort.map { |p| "- \"#{p}\"" }.join("\n")
@@ -228,15 +128,6 @@ module Packwerk
     sig { params(configuration: Configuration, paths: T::Array[String]).returns(T::Array[Pathname]) }
     def relative_paths(configuration, paths)
       paths.map { |path| relative_path(configuration, path) }
-    end
-
-    sig { params(configuration: Configuration, path: T.untyped).returns(T::Boolean) }
-    def invalid_package_path?(configuration, path)
-      # Packages at the root can be implicitly specified as "."
-      return false if path == "."
-
-      package_path = File.join(configuration.root_path, path, PackageSet::PACKAGE_CONFIG_FILENAME)
-      !File.file?(package_path)
     end
   end
 end

@@ -345,7 +345,7 @@ require:
 
 Similar to checkers, you can define your own validator to be executed when `bin/packwerk validate` is invoked. This can be used to support your custom checker (by specifying permitted keys) or to provide any other validations you want to impose on packages.
 
-To create a custom validator, you'll first need to create a validator class that includes `Packwerk::Validator`. Here is an example:
+To create a custom validator, you'll first need to create a validator class that includes `Packwerk::Validator`. You can use [`Packwerk::Validators::DependencyValidator`](lib/packwerk/validators/dependency_validator.rb) as a point of reference for this. Here is an example:
 
 ```ruby
 # ./path/to/file.rb
