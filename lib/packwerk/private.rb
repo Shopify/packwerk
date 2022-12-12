@@ -20,7 +20,6 @@ module Packwerk
     autoload :FileProcessor
     autoload :FilesForProcessing
     autoload :Graph
-    autoload :Loader
     autoload :Node
     autoload :NodeHelpers
     autoload :NodeProcessor
@@ -32,7 +31,6 @@ module Packwerk
     autoload :ReferenceExtractor
     autoload :RunContext
     autoload :UnresolvedReference
-    autoload :Version
 
     module Formatters
       extend ActiveSupport::Autoload

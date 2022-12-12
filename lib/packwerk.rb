@@ -26,6 +26,7 @@ module Packwerk
   autoload :Reference
   autoload :ReferenceOffense
   autoload :Validator
+  autoload :Version
 
   module Validator
     extend ActiveSupport::Autoload
