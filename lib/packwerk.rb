@@ -80,6 +80,9 @@ module Packwerk
   autoload :Version
   private_constant :Version
 
+  autoload :Private
+  private_constant :Private
+
   module Validator
     extend ActiveSupport::Autoload
 
