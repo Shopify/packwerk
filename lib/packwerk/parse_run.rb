@@ -35,14 +35,14 @@ module Packwerk
       @file_set_specified = file_set_specified
     end
 
-    sig { returns(Result) }
+    sig { returns(Cli::Result) }
     def update_todo
       if @file_set_specified
         message = <<~MSG.squish
           ⚠️ update-todo must be called without any file arguments.
         MSG
 
-        return Result.new(message: message, status: false)
+        return Cli::Result.new(message: message, status: false)
       end
 
       run_context = RunContext.from_configuration(@configuration)
@@ -54,10 +54,10 @@ module Packwerk
         ✅ `package_todo.yml` has been updated.
       EOS
 
-      Result.new(message: message, status: offense_collection.errors.empty?)
+      Cli::Result.new(message: message, status: offense_collection.errors.empty?)
     end
 
-    sig { returns(Result) }
+    sig { returns(Cli::Result) }
     def check
       run_context = RunContext.from_configuration(@configuration)
       offense_collection = find_offenses(run_context, show_errors: true)
@@ -71,7 +71,7 @@ module Packwerk
       result_status = offense_collection.outstanding_offenses.empty? &&
         !offense_collection.stale_violations?(@relative_file_set) && offense_collection.strict_mode_violations.empty?
 
-      Result.new(message: messages.select(&:present?).join("\n") + "\n", status: result_status)
+      Cli::Result.new(message: messages.select(&:present?).join("\n") + "\n", status: result_status)
     end
 
     private

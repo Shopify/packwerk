@@ -25,7 +25,6 @@ module Packwerk
   autoload :Parsers
   autoload :Reference
   autoload :ReferenceOffense
-  autoload :Result
 
   # Private APIs
   # Please submit an issue if you have a use-case for these
@@ -81,6 +80,12 @@ module Packwerk
   private_constant :Validator
   autoload :Version
   private_constant :Version
+
+  class Cli
+    extend ActiveSupport::Autoload
+
+    autoload :Result
+  end
 
   module OutputStyles
     extend ActiveSupport::Autoload
