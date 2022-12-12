@@ -4,7 +4,7 @@
 require "test_helper"
 
 module Packwerk
-  class Private::FilesForProcessingTest < Minitest::Test
+  class FilesForProcessingTest < Minitest::Test
     include ApplicationFixtureHelper
 
     setup do

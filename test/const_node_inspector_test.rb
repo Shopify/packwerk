@@ -53,8 +53,10 @@ module Packwerk
 
     test "#constant_name_from_node should return correct name for nested and compact class definition" do
       grandparent = parse("module Foo::Bar; class Sales::Order; end; end")
-      parent = Private::NodeHelpers.each_child(grandparent).entries[1] # module node; second child is the body of the module
-      node = Private::NodeHelpers.each_child(parent).entries[0] # class node; first child is constant
+      # module node; second child is the body of the module
+      parent = Private::NodeHelpers.each_child(grandparent).entries[1]
+      # class node; first child is constant
+      node = Private::NodeHelpers.each_child(parent).entries[0]
 
       constant_name = @inspector.constant_name_from_node(node, ancestors: [parent, grandparent])
 

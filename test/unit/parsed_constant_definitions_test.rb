@@ -5,7 +5,7 @@ require "test_helper"
 require "parser_test_helper"
 
 module Packwerk
-  class Private::ParsedConstantDefinitionsTest < Minitest::Test
+  class ParsedConstantDefinitionsTest < Minitest::Test
     test "recognizes constant assignment" do
       definitions = Private::ParsedConstantDefinitions.new(
         root_node: parse_code('HELLO = "World"')

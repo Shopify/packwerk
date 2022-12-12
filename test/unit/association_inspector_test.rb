@@ -5,7 +5,7 @@ require "test_helper"
 require "parser_test_helper"
 
 module Packwerk
-  class Private::AssociationInspectorTest < Minitest::Test
+  class AssociationInspectorTest < Minitest::Test
     setup do
       @inflector = ActiveSupport::Inflector
     end

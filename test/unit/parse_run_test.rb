@@ -5,7 +5,7 @@ require "test_helper"
 require "rails_test_helper"
 
 module Packwerk
-  class Private::ParseRunTest < Minitest::Test
+  class ParseRunTest < Minitest::Test
     include FactoryHelper
     include ApplicationFixtureHelper
 

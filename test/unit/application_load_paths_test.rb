@@ -45,7 +45,9 @@ module Packwerk
     end
 
     test ".extract_relevant_paths calls out to filter the paths" do
-      Private::ApplicationLoadPaths.expects(:filter_relevant_paths).once.returns(Pathname.new("/fake_path").to_s => Object)
+      Private::ApplicationLoadPaths.expects(:filter_relevant_paths).once.returns(
+        Pathname.new("/fake_path").to_s => Object
+      )
       Private::ApplicationLoadPaths.expects(:require_application).with("/application", "test").once.returns(true)
 
       Private::ApplicationLoadPaths.extract_relevant_paths("/application", "test")

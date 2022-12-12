@@ -7,7 +7,7 @@ require "parser_test_helper"
 require "parser"
 
 module Packwerk
-  class Private::NodeHelpersTest < ActiveSupport::TestCase
+  class NodeHelpersTest < ActiveSupport::TestCase
     test ".class_or_module_name returns the name of a class being defined with the class keyword" do
       node = parse("class My::Class; end")
       assert_equal "My::Class", Private::NodeHelpers.class_or_module_name(node)
@@ -73,8 +73,10 @@ module Packwerk
 
     test "#enclosing_namespace_path should skip child class name when finding path for parent class" do
       grandparent = parse("module Sales; class Order < Base; end; end")
-      parent = Private::NodeHelpers.each_child(grandparent).entries[1] # module node; second child is the body of the module
-      node = Private::NodeHelpers.each_child(parent).entries[1] # class node; second child is parent
+      # module node; second child is the body of the module
+      parent = Private::NodeHelpers.each_child(grandparent).entries[1]
+      # class node; second child is parent
+      node = Private::NodeHelpers.each_child(parent).entries[1]
 
       path = Private::NodeHelpers.enclosing_namespace_path(node, ancestors: [parent, grandparent])
 
@@ -83,8 +85,10 @@ module Packwerk
 
     test "#enclosing_namespace_path should return correct path for nested and compact class definition" do
       grandparent = parse("module Foo::Bar; class Sales::Order; end; end")
-      parent = Private::NodeHelpers.each_child(grandparent).entries[1] # module node; second child is the body of the module
-      node = Private::NodeHelpers.each_child(parent).entries[0] # class node; first child is constant
+      # module node; second child is the body of the module
+      parent = Private::NodeHelpers.each_child(grandparent).entries[1]
+      # class node; first child is constant
+      node = Private::NodeHelpers.each_child(parent).entries[0]
 
       path = Private::NodeHelpers.enclosing_namespace_path(node, ancestors: [parent, grandparent])
 
