@@ -5,9 +5,9 @@ require "test_helper"
 require "parser_test_helper"
 
 module Packwerk
-  class ParsedConstantDefinitionsTest < Minitest::Test
+  class Private::ParsedConstantDefinitionsTest < Minitest::Test
     test "recognizes constant assignment" do
-      definitions = ParsedConstantDefinitions.new(
+      definitions = Private::ParsedConstantDefinitions.new(
         root_node: parse_code('HELLO = "World"')
       )
 
@@ -15,7 +15,7 @@ module Packwerk
     end
 
     test "recognizes class or module definitions" do
-      definitions = ParsedConstantDefinitions.new(
+      definitions = Private::ParsedConstantDefinitions.new(
         root_node: parse_code("module Sales; class Order; end; end")
       )
 
@@ -24,7 +24,7 @@ module Packwerk
     end
 
     test "recognizes constants that are more fully qualified" do
-      definitions = ParsedConstantDefinitions.new(
+      definitions = Private::ParsedConstantDefinitions.new(
         root_node: parse_code('module Sales; HELLO = "World"; end')
       )
 
@@ -34,7 +34,7 @@ module Packwerk
     end
 
     test "understands fully qualified references" do
-      definitions = ParsedConstantDefinitions.new(
+      definitions = Private::ParsedConstantDefinitions.new(
         root_node: parse_code("module Sales; class Order; end; end")
       )
 
@@ -45,7 +45,7 @@ module Packwerk
     end
 
     test "recognizes compact nested constant definition" do
-      definitions = ParsedConstantDefinitions.new(
+      definitions = Private::ParsedConstantDefinitions.new(
         root_node: parse_code("module Sales::Order::Something; end")
       )
 
@@ -56,7 +56,7 @@ module Packwerk
     end
 
     test "recognizes compact nested constant assignment" do
-      definitions = ParsedConstantDefinitions.new(
+      definitions = Private::ParsedConstantDefinitions.new(
         root_node: parse_code('Sales::HELLO = "World"')
       )
 
@@ -67,7 +67,7 @@ module Packwerk
     end
 
     test "recognizes compact nested constant definition and assignment" do
-      definitions = ParsedConstantDefinitions.new(
+      definitions = Private::ParsedConstantDefinitions.new(
         root_node: parse_code('module Sales::Order; Something::HELLO = "World"; end')
       )
 
@@ -85,7 +85,7 @@ module Packwerk
     end
 
     test "recognizes local constant reference from sub-namespace" do
-      definitions = ParsedConstantDefinitions.new(
+      definitions = Private::ParsedConstantDefinitions.new(
         root_node: parse_code("module Something; class Else; HELLO = 1; end; end")
       )
 
@@ -93,7 +93,7 @@ module Packwerk
     end
 
     test "recognizes multiple constants nested in a shared ancestor module" do
-      definitions = ParsedConstantDefinitions.new(
+      definitions = Private::ParsedConstantDefinitions.new(
         root_node: parse_code("module Sales; class Order; end; class Thing; end; end")
       )
 
@@ -104,21 +104,21 @@ module Packwerk
     test "doesn't count definition as reference" do
       ast = parse_code("class HelloWorld; end")
 
-      const_node = NodeHelpers.each_child(ast).find { |n| NodeHelpers.constant?(n) }
+      const_node = Private::NodeHelpers.each_child(ast).find { |n| Private::NodeHelpers.constant?(n) }
 
-      definitions = ParsedConstantDefinitions.new(
+      definitions = Private::ParsedConstantDefinitions.new(
         root_node: ast
       )
 
-      assert definitions.local_reference?(NodeHelpers.constant_name(const_node))
-      refute definitions.local_reference?(NodeHelpers.constant_name(const_node),
-        location: NodeHelpers.name_location(const_node))
+      assert definitions.local_reference?(Private::NodeHelpers.constant_name(const_node))
+      refute definitions.local_reference?(Private::NodeHelpers.constant_name(const_node),
+        location: Private::NodeHelpers.name_location(const_node))
     end
 
     test "handles empty files" do
       ast = parse_code("# just a comment")
 
-      definitions = ParsedConstantDefinitions.new(
+      definitions = Private::ParsedConstantDefinitions.new(
         root_node: ast
       )
 
@@ -127,14 +127,14 @@ module Packwerk
 
     test ".reference_qualifications generates all possible qualifications for a reference" do
       qualifications =
-        ParsedConstantDefinitions.reference_qualifications("Order", namespace_path: ["Sales", "Internal"])
+        Private::ParsedConstantDefinitions.reference_qualifications("Order", namespace_path: ["Sales", "Internal"])
 
       assert_equal ["::Order", "::Sales::Order", "::Sales::Internal::Order"].sort, qualifications.sort
     end
 
     test ".reference_qualifications generates all possible qualifications for a reference even when there are nil nodes in the namespace path" do
       qualifications =
-        ParsedConstantDefinitions.reference_qualifications("Order", namespace_path: [nil, "Sales", "Internal"])
+        Private::ParsedConstantDefinitions.reference_qualifications("Order", namespace_path: [nil, "Sales", "Internal"])
 
       assert_equal ["::Order", "::Sales::Order", "::Sales::Internal::Order"].sort, qualifications.sort
     end

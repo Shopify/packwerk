@@ -72,7 +72,7 @@ module Packwerk
 
         require required_thing
       end
-      ExtensionLoader.stub(:require, mock_require_method) do
+      Private::ExtensionLoader.stub(:require, mock_require_method) do
         Configuration.from_path
       end
       assert defined?(MyLocalExtension)
@@ -87,7 +87,7 @@ module Packwerk
       mock_require_method = ->(required_thing) do
         required_things << required_thing
       end
-      ExtensionLoader.stub(:require, mock_require_method) do
+      Private::ExtensionLoader.stub(:require, mock_require_method) do
         Configuration.from_path
       end
 

@@ -130,10 +130,10 @@ module Packwerk
       params(
         relative_file_paths: T::Array[String],
         ignore_nested_packages: T::Boolean
-      ).returns(FilesForProcessing)
+      ).returns(Private::FilesForProcessing)
     end
     def fetch_files_to_process(relative_file_paths, ignore_nested_packages)
-      files_for_processing = FilesForProcessing.fetch(
+      files_for_processing = Private::FilesForProcessing.fetch(
         relative_file_paths: relative_file_paths,
         ignore_nested_packages: ignore_nested_packages,
         configuration: @configuration
@@ -157,9 +157,9 @@ module Packwerk
       end
     end
 
-    sig { returns(ApplicationValidator) }
+    sig { returns(Private::ApplicationValidator) }
     def validator
-      ApplicationValidator.new
+      Private::ApplicationValidator.new
     end
 
     sig { returns(PackageSet) }
@@ -182,7 +182,7 @@ module Packwerk
       end
     end
 
-    sig { params(args: T::Array[String]).returns(ParseRun) }
+    sig { params(args: T::Array[String]).returns(Private::ParseRun) }
     def parse_run(args)
       relative_file_paths = T.let([], T::Array[String])
       ignore_nested_packages = nil
@@ -211,7 +211,7 @@ module Packwerk
 
       files_for_processing = fetch_files_to_process(relative_file_paths, ignore_nested_packages)
 
-      ParseRun.new(
+      Private::ParseRun.new(
         relative_file_set: files_for_processing.files,
         file_set_specified: files_for_processing.files_specified?,
         configuration: @configuration,

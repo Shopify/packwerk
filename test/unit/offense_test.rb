@@ -6,7 +6,7 @@ require "test_helper"
 module Packwerk
   class OffenseTest < Minitest::Test
     setup do
-      location = Node::Location.new(90, 10)
+      location = Private::Node::Location.new(90, 10)
       file = "components/platform/shop.rb"
       message = "Violation of developer rights"
       @offense = Offense.new(location: location, file: file, message: message)

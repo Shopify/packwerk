@@ -10,7 +10,7 @@ module Packwerk
       rails_root = Pathname.new("/application/")
       relative_path = "app/models"
       absolute_path = rails_root.join(relative_path)
-      relative_path_strings = ApplicationLoadPaths.relative_path_strings(
+      relative_path_strings = Private::ApplicationLoadPaths.relative_path_strings(
         { absolute_path => Object },
         rails_root: rails_root
       )
@@ -22,7 +22,7 @@ module Packwerk
       valid_paths = ["/application/app/models"]
       paths = valid_paths + ["/users/tobi/.gems/something/app/models", "/application/../something/"]
       paths = paths.each_with_object({}) { |p, h| h[p.to_s] = Object }
-      filtered_paths = ApplicationLoadPaths.filter_relevant_paths(
+      filtered_paths = Private::ApplicationLoadPaths.filter_relevant_paths(
         paths,
         bundle_path: Pathname.new("/application/vendor/"),
         rails_root: Pathname.new("/application/")
@@ -35,7 +35,7 @@ module Packwerk
       valid_paths = ["/application/app/models"]
       paths = valid_paths + ["/application/vendor/something/app/models"]
       paths = paths.each_with_object({}) { |p, h| h[p.to_s] = Object }
-      filtered_paths = ApplicationLoadPaths.filter_relevant_paths(
+      filtered_paths = Private::ApplicationLoadPaths.filter_relevant_paths(
         paths,
         bundle_path: Pathname.new("/application/vendor/"),
         rails_root: Pathname.new("/application/")
@@ -45,10 +45,10 @@ module Packwerk
     end
 
     test ".extract_relevant_paths calls out to filter the paths" do
-      ApplicationLoadPaths.expects(:filter_relevant_paths).once.returns(Pathname.new("/fake_path").to_s => Object)
-      ApplicationLoadPaths.expects(:require_application).with("/application", "test").once.returns(true)
+      Private::ApplicationLoadPaths.expects(:filter_relevant_paths).once.returns(Pathname.new("/fake_path").to_s => Object)
+      Private::ApplicationLoadPaths.expects(:require_application).with("/application", "test").once.returns(true)
 
-      ApplicationLoadPaths.extract_relevant_paths("/application", "test")
+      Private::ApplicationLoadPaths.extract_relevant_paths("/application", "test")
     end
   end
 end

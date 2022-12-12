@@ -11,12 +11,12 @@ module Packwerk
     setup do
       @node_processor_factory = typed_mock
       @node_processor = typed_mock
-      @cache = Cache.new(
+      @cache = Private::Cache.new(
         enable_cache: false,
         cache_directory: Pathname.new("tmp/cache/packwerk"),
         config_path: "packwerk.yml"
       )
-      @file_processor = FileProcessor.new(node_processor_factory: @node_processor_factory, cache: @cache)
+      @file_processor = Private::FileProcessor.new(node_processor_factory: @node_processor_factory, cache: @cache)
     end
 
     test "#call visits all nodes in a file path with no references" do
@@ -32,11 +32,11 @@ module Packwerk
     end
 
     test "#call visits a node in file path with an reference" do
-      unresolved_reference = UnresolvedReference.new(
+      unresolved_reference = Private::UnresolvedReference.new(
         constant_name: "SomeName",
         namespace_path: [],
         relative_path: "tempfile",
-        source_location: Node::Location.new(3, 22),
+        source_location: Private::Node::Location.new(3, 22),
       )
       @node_processor_factory.expects(:for).returns(@node_processor)
       @node_processor.expects(:call).returns(unresolved_reference)
@@ -60,25 +60,25 @@ module Packwerk
       reference = typed_mock
       @node_processor_factory.expects(:for).returns(@node_processor)
       @node_processor.expects(:call).with do |node, ancestors|
-        NodeHelpers.class?(node) && # class Hello; world; end
-          NodeHelpers.class_or_module_name(node) == "Hello" &&
+        Private::NodeHelpers.class?(node) && # class Hello; world; end
+          Private::NodeHelpers.class_or_module_name(node) == "Hello" &&
           ancestors.empty?
       end.returns(nil)
       @node_processor.expects(:call).with do |node, ancestors|
         parent = ancestors.first # class Hello; world; end
-        NodeHelpers.constant?(node) && # Hello
-          NodeHelpers.constant_name(node) == "Hello" &&
+        Private::NodeHelpers.constant?(node) && # Hello
+          Private::NodeHelpers.constant_name(node) == "Hello" &&
           ancestors.length == 1 &&
-          NodeHelpers.class?(parent) &&
-          NodeHelpers.class_or_module_name(parent) == "Hello"
+          Private::NodeHelpers.class?(parent) &&
+          Private::NodeHelpers.class_or_module_name(parent) == "Hello"
       end.returns(nil)
       @node_processor.expects(:call).with do |node, ancestors|
         parent = ancestors.first # class Hello; world; end
-        NodeHelpers.method_call?(node) && # world
-          NodeHelpers.method_name(node) == :world &&
+        Private::NodeHelpers.method_call?(node) && # world
+          Private::NodeHelpers.method_name(node) == :world &&
           ancestors.length == 1 &&
-          NodeHelpers.class?(parent) &&
-          NodeHelpers.class_or_module_name(parent) == "Hello"
+          Private::NodeHelpers.class?(parent) &&
+          Private::NodeHelpers.class_or_module_name(parent) == "Hello"
       end.returns(reference)
 
       processed_file = tempfile(name: "hello_world", content: "class Hello; world; end") do |file_path|
@@ -100,9 +100,9 @@ module Packwerk
 
     test "#call with an invalid syntax doesn't parse node" do
       @node_processor_factory.expects(:for).never
-      file_processor = FileProcessor.new(
+      file_processor = Private::FileProcessor.new(
         node_processor_factory: @node_processor_factory,
-        cache: Cache.new(
+        cache: Private::Cache.new(
           enable_cache: false,
           cache_directory: Pathname.new("tmp/cache/packwerk"),
           config_path: "packwerk.yml"

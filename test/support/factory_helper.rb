@@ -8,9 +8,9 @@ module Packwerk
       destination_package: Packwerk::Package.new(name: "components/destination", config: {}),
       path: "some/path.rb",
       constant_name: "::SomeName",
-      source_location: Node::Location.new(2, 12)
+      source_location: Private::Node::Location.new(2, 12)
     )
-      constant = ConstantDiscovery::ConstantContext.new(
+      constant = Private::ConstantDiscovery::ConstantContext.new(
         constant_name,
         "some/location.rb",
         destination_package,

@@ -18,7 +18,7 @@ module Packwerk
         reference: Packwerk::Reference,
         violation_type: String,
         message: String,
-        location: T.nilable(Node::Location)
+        location: T.nilable(Private::Node::Location)
       )
         .void
     end

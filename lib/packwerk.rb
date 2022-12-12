@@ -16,7 +16,10 @@ module Packwerk
   # Public APIs
   autoload :Checker
   autoload :Cli
+  autoload :Configuration
+  autoload :Graph
   autoload :Offense
+  autoload :OffenseCollection
   autoload :OffensesFormatter
   autoload :OutputStyle
   autoload :Package
@@ -27,6 +30,25 @@ module Packwerk
   autoload :ReferenceOffense
   autoload :Validator
   autoload :Version
+
+  module Generators
+    extend ActiveSupport::Autoload
+
+    autoload :ConfigurationFile
+    autoload :RootPackage
+  end
+
+  module ReferenceChecking
+    extend ActiveSupport::Autoload
+
+    autoload :ReferenceChecker
+
+    module Checkers
+      extend ActiveSupport::Autoload
+
+      autoload :DependencyChecker
+    end
+  end
 
   module Validator
     extend ActiveSupport::Autoload
@@ -51,10 +73,10 @@ module Packwerk
     autoload :OffenseProgressMarker
   end
 
-  class ApplicationValidator
+  module Formatters
     extend ActiveSupport::Autoload
 
-    autoload :Helpers
+    autoload :ProgressFormatter
   end
 
   # Private APIs

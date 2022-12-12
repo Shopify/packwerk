@@ -6,8 +6,8 @@ module Packwerk
       params(
         package: Package,
         relative_path: String,
-        constant: ConstantDiscovery::ConstantContext,
-        source_location: T.nilable(Node::Location),
+        constant: Private::ConstantDiscovery::ConstantContext,
+        source_location: T.nilable(Private::Node::Location),
       ).void
     end
     def initialize(
@@ -24,10 +24,10 @@ module Packwerk
     sig { returns(T.nilable(String)) }
     attr_reader(:relative_path)
 
-    sig { returns(ConstantDiscovery::ConstantContext) }
+    sig { returns(Private::ConstantDiscovery::ConstantContext) }
     attr_reader(:constant)
 
-    sig { returns(T.nilable(Node::Location)) }
+    sig { returns(T.nilable(Private::Node::Location)) }
     attr_reader(:source_location)
   end
 end

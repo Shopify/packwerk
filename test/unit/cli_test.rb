@@ -28,14 +28,14 @@ module Packwerk
 
       configuration = Configuration.new({ "parallel" => false })
       configuration.stubs(load_paths: {})
-      RunContext.any_instance.stubs(:process_file).at_least_once.returns([offense])
+      Private::RunContext.any_instance.stubs(:process_file).at_least_once.returns([offense])
 
       string_io = StringIO.new
 
       cli = ::Packwerk::Cli.new(out: string_io, configuration: configuration)
 
       # TODO: Dependency injection for a "target finder" (https://github.com/Shopify/packwerk/issues/164)
-      FilesForProcessing.any_instance.stubs(
+      Private::FilesForProcessing.any_instance.stubs(
         files: Set.new([file_path])
       )
 
@@ -58,7 +58,7 @@ module Packwerk
       configuration = Configuration.new({ "parallel" => false })
       configuration.stubs(load_paths: {})
 
-      RunContext.any_instance.stubs(:process_file)
+      Private::RunContext.any_instance.stubs(:process_file)
         .at_least(2)
         .returns([offense])
         .raises(Interrupt)
@@ -68,7 +68,7 @@ module Packwerk
 
       cli = ::Packwerk::Cli.new(out: string_io, configuration: configuration)
 
-      FilesForProcessing.any_instance.stubs(
+      Private::FilesForProcessing.any_instance.stubs(
         files: Set.new([file_path, "test.rb", "foo.rb"])
       )
 
@@ -96,7 +96,7 @@ module Packwerk
       cli = ::Packwerk::Cli.new(out: string_io)
 
       validator = typed_mock(check_all: Validator::Result.new(ok: true))
-      ApplicationValidator.expects(:new).returns(validator)
+      Private::ApplicationValidator.expects(:new).returns(validator)
 
       success = cli.execute_command(["validate"])
 
@@ -110,7 +110,7 @@ module Packwerk
       cli = ::Packwerk::Cli.new(out: string_io)
 
       validator = typed_mock(check_all: Validator::Result.new(ok: false, error_value: "I'm an error"))
-      ApplicationValidator.expects(:new).returns(validator)
+      Private::ApplicationValidator.expects(:new).returns(validator)
 
       success = cli.execute_command(["validate"])
 
@@ -162,7 +162,7 @@ module Packwerk
 
       configuration = Configuration.new
       configuration.stubs(load_paths: {})
-      RunContext.any_instance.stubs(:process_file)
+      Private::RunContext.any_instance.stubs(:process_file)
         .returns([offense])
 
       string_io = StringIO.new
@@ -173,7 +173,7 @@ module Packwerk
         offenses_formatter: T.unsafe(offenses_formatter).new
       )
 
-      FilesForProcessing.any_instance.stubs(
+      Private::FilesForProcessing.any_instance.stubs(
         files: Set.new([file_path])
       )
 
@@ -193,7 +193,7 @@ module Packwerk
       violation_message = "This is a violation of code health."
       offense = Offense.new(file: file_path, message: violation_message)
 
-      RunContext.any_instance.stubs(:process_file)
+      Private::RunContext.any_instance.stubs(:process_file)
         .returns([offense])
 
       cli = T.let(nil, T.nilable(Packwerk::Cli))
@@ -205,11 +205,11 @@ module Packwerk
       end
 
       reset_formatters
-      ExtensionLoader.stub(:require, mock_require_method) do
+      Private::ExtensionLoader.stub(:require, mock_require_method) do
         cli = ::Packwerk::Cli.new(out: string_io)
       end
 
-      FilesForProcessing.any_instance.stubs(
+      Private::FilesForProcessing.any_instance.stubs(
         files: Set.new([file_path])
       )
 
@@ -231,7 +231,7 @@ module Packwerk
       violation_message = "This is a violation of code health."
       offense = Offense.new(file: file_path, message: violation_message)
 
-      RunContext.any_instance.stubs(:process_file)
+      Private::RunContext.any_instance.stubs(:process_file)
         .returns([offense])
 
       cli = T.let(nil, T.nilable(Packwerk::Cli))
@@ -243,11 +243,11 @@ module Packwerk
       end
 
       reset_formatters
-      ExtensionLoader.stub(:require, mock_require_method) do
+      Private::ExtensionLoader.stub(:require, mock_require_method) do
         cli = ::Packwerk::Cli.new(out: string_io)
       end
 
-      FilesForProcessing.any_instance.stubs(
+      Private::FilesForProcessing.any_instance.stubs(
         files: Set.new([file_path])
       )
 

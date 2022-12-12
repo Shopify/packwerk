@@ -55,13 +55,13 @@ module Packwerk
 
       if configs.key?("require")
         configs["require"].each do |require_directive|
-          ExtensionLoader.load(require_directive, @root_path)
+          Private::ExtensionLoader.load(require_directive, @root_path)
         end
       end
     end
 
     def load_paths
-      @load_paths ||= ApplicationLoadPaths.extract_relevant_paths(@root_path, "test")
+      @load_paths ||= Private::ApplicationLoadPaths.extract_relevant_paths(@root_path, "test")
     end
 
     def parallel?

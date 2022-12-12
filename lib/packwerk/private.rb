@@ -12,57 +12,28 @@ module Packwerk
     autoload :ApplicationValidator
     autoload :AssociationInspector
     autoload :Cache
-    autoload :Configuration
     autoload :ConstantDiscovery
     autoload :ConstantNameInspector
     autoload :ConstNodeInspector
     autoload :ExtensionLoader
     autoload :FileProcessor
     autoload :FilesForProcessing
-    autoload :Graph
     autoload :Node
     autoload :NodeHelpers
     autoload :NodeProcessor
     autoload :NodeProcessorFactory
     autoload :NodeVisitor
-    autoload :OffenseCollection
     autoload :ParsedConstantDefinitions
     autoload :ParseRun
     autoload :ReferenceExtractor
     autoload :RunContext
     autoload :UnresolvedReference
 
-    module Formatters
+    class ApplicationValidator
       extend ActiveSupport::Autoload
 
-      autoload :ProgressFormatter
+      autoload :Helpers
     end
-
-    private_constant :Formatters
-
-    module Generators
-      extend ActiveSupport::Autoload
-
-      autoload :ConfigurationFile
-      autoload :RootPackage
-    end
-
-    private_constant :Generators
-
-    module ReferenceChecking
-      extend ActiveSupport::Autoload
-
-      autoload :ReferenceChecker
-
-      module Checkers
-        extend ActiveSupport::Autoload
-
-        autoload :DependencyChecker
-        autoload :PrivacyChecker
-      end
-    end
-
-    private_constant :ReferenceChecking
   end
 
   private_constant :Private

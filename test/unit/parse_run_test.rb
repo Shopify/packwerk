@@ -5,7 +5,7 @@ require "test_helper"
 require "rails_test_helper"
 
 module Packwerk
-  class ParseRunTest < Minitest::Test
+  class Private::ParseRunTest < Minitest::Test
     include FactoryHelper
     include ApplicationFixtureHelper
 
@@ -19,10 +19,10 @@ module Packwerk
 
     test "#update-todo returns success when there are no offenses" do
       use_template(:minimal)
-      RunContext.any_instance.stubs(:process_file).returns([])
+      Private::RunContext.any_instance.stubs(:process_file).returns([])
       OffenseCollection.any_instance.expects(:dump_package_todo_files).once
 
-      parse_run = ParseRun.new(
+      parse_run = Private::ParseRun.new(
         relative_file_set: Set.new(["path/of/exile.rb"]),
         configuration: Configuration.from_path
       )
@@ -38,10 +38,10 @@ module Packwerk
     test "#update-todo returns exit code 1 when there are offenses" do
       use_template(:minimal)
       offense = Offense.new(file: "path/of/exile.rb", message: "something")
-      RunContext.any_instance.stubs(:process_file).returns([offense])
+      Private::RunContext.any_instance.stubs(:process_file).returns([offense])
       OffenseCollection.any_instance.expects(:dump_package_todo_files).once
 
-      parse_run = ParseRun.new(
+      parse_run = Private::ParseRun.new(
         relative_file_set: Set.new(["path/of/exile.rb"]),
         configuration: Configuration.from_path
       )
@@ -62,7 +62,7 @@ module Packwerk
     test "#update-todo returns exit code 1 when ran with file args" do
       use_template(:minimal)
 
-      parse_run = ParseRun.new(
+      parse_run = Private::ParseRun.new(
         relative_file_set: Set.new(["path/of/exile.rb"]),
         file_set_specified: true,
         configuration: Configuration.from_path
@@ -106,7 +106,7 @@ module Packwerk
             - a/b/c.rb
       YML
 
-      parse_run = ParseRun.new(
+      parse_run = Private::ParseRun.new(
         relative_file_set: Set.new(["app/models/my_model.rb", "components/sales/app/models/order.rb"]),
         configuration: Configuration.from_path
       )
@@ -133,12 +133,12 @@ module Packwerk
 
       PackageTodo.any_instance.stubs(:listed?).returns(true)
       out = StringIO.new
-      parse_run = ParseRun.new(
+      parse_run = Private::ParseRun.new(
         relative_file_set: Set.new(["some/path.rb"]),
         configuration: Configuration.new({ "parallel" => false }),
         progress_formatter: Formatters::ProgressFormatter.new(out)
       )
-      RunContext.any_instance.stubs(:process_file).returns([offense])
+      Private::RunContext.any_instance.stubs(:process_file).returns([offense])
       result = parse_run.check
 
       expected_output = <<~EOS
@@ -210,12 +210,12 @@ module Packwerk
       )
 
       out = StringIO.new
-      parse_run = ParseRun.new(
+      parse_run = Private::ParseRun.new(
         relative_file_set: Set.new([file_to_check]),
         configuration: Configuration.new({ "parallel" => false }),
         progress_formatter: Formatters::ProgressFormatter.new(out)
       )
-      RunContext.any_instance.stubs(:process_file).returns([offense1, offense2])
+      Private::RunContext.any_instance.stubs(:process_file).returns([offense1, offense2])
       result = parse_run.check
 
       expected_output = <<~EOS
@@ -256,12 +256,12 @@ module Packwerk
       YML
 
       out = StringIO.new
-      parse_run = ParseRun.new(
+      parse_run = Private::ParseRun.new(
         relative_file_set: Set.new([file_to_check]),
         configuration: Configuration.new({ "parallel" => false }),
         progress_formatter: Formatters::ProgressFormatter.new(out)
       )
-      RunContext.any_instance.stubs(:process_file).returns([])
+      Private::RunContext.any_instance.stubs(:process_file).returns([])
       result = parse_run.check
 
       expected_output = <<~EOS
@@ -303,7 +303,7 @@ module Packwerk
       YML
 
       out = StringIO.new
-      parse_run = ParseRun.new(
+      parse_run = Private::ParseRun.new(
         relative_file_set: Set.new([file_to_check]),
         configuration: Configuration.new({ "parallel" => false }),
         progress_formatter: Formatters::ProgressFormatter.new(out)
@@ -315,7 +315,7 @@ module Packwerk
         violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       )
 
-      RunContext.any_instance.stubs(:process_file).returns([offense])
+      Private::RunContext.any_instance.stubs(:process_file).returns([offense])
       result = parse_run.check
 
       expected_output = <<~EOS
@@ -350,7 +350,7 @@ module Packwerk
       YML
 
       out = StringIO.new
-      parse_run = ParseRun.new(
+      parse_run = Private::ParseRun.new(
         relative_file_set: Set.new(["components/source/some/path.rb"]),
         configuration: Configuration.new({ "parallel" => false }),
         progress_formatter: Formatters::ProgressFormatter.new(out)
@@ -362,7 +362,7 @@ module Packwerk
         violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       )
 
-      RunContext.any_instance.stubs(:process_file).returns([offense])
+      Private::RunContext.any_instance.stubs(:process_file).returns([offense])
       result = parse_run.check
 
       expected_output = <<~EOS
@@ -406,7 +406,7 @@ module Packwerk
 
       out = StringIO.new
 
-      parse_run = ParseRun.new(
+      parse_run = Private::ParseRun.new(
         relative_file_set: Set.new([file_to_check]),
         configuration: Configuration.new({ "parallel" => false, "offenses_formatter" => "plain" }),
         progress_formatter: Formatters::ProgressFormatter.new(out)
@@ -418,7 +418,7 @@ module Packwerk
         violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       )
 
-      RunContext.any_instance.stubs(:process_file).returns([offense])
+      Private::RunContext.any_instance.stubs(:process_file).returns([offense])
       result = parse_run.check
 
       expected_output = <<~EOS
@@ -454,12 +454,12 @@ module Packwerk
       PackageTodo.any_instance.stubs(:listed?).returns(true)
       OffenseCollection.any_instance.stubs(:stale_violations?).returns(true)
       out = StringIO.new
-      parse_run = ParseRun.new(
+      parse_run = Private::ParseRun.new(
         relative_file_set: Set.new(["some/path.rb"]),
         configuration: Configuration.new({ "parallel" => false }),
         progress_formatter: Formatters::ProgressFormatter.new(out)
       )
-      RunContext.any_instance.stubs(:process_file).returns([offense])
+      Private::RunContext.any_instance.stubs(:process_file).returns([offense])
       result = parse_run.check
 
       expected_output = <<~EOS
@@ -491,11 +491,11 @@ module Packwerk
         message: "some message",
         violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
       )
-      parse_run = ParseRun.new(
+      parse_run = Private::ParseRun.new(
         relative_file_set: Set.new(["some/path.rb", "some/other_path.rb"]),
         configuration: Configuration.new
       )
-      RunContext.any_instance.stubs(:process_file).returns([offense]).returns([offense2])
+      Private::RunContext.any_instance.stubs(:process_file).returns([offense]).returns([offense2])
 
       result = parse_run.check
       refute result.status

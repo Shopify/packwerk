@@ -11,7 +11,7 @@ module Packwerk
     test "#visit visits the correct number of nodes" do
       node_processor = typed_mock
       node_processor.expects(:call).times(3).returns(["an offense"])
-      file_node_visitor = NodeVisitor.new(node_processor: node_processor)
+      file_node_visitor = Private::NodeVisitor.new(node_processor: node_processor)
 
       node = ParserTestHelper.parse("class Hello; world; end")
       result = []

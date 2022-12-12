@@ -20,7 +20,7 @@ module Packwerk
       resolver = ConstantResolver.new(root_path: app_dir, load_paths: load_paths)
       packages = ::Packwerk::PackageSet.load_all_from(app_dir)
 
-      @context_provider = ConstantDiscovery.new(
+      @context_provider = Private::ConstantDiscovery.new(
         constant_resolver: resolver,
         packages: packages
       )
@@ -162,7 +162,7 @@ module Packwerk
 
     test "passes all arguments to association inspector" do
       call = "has_many :clowns, class_name: 'Order'"
-      arguments = NodeHelpers.method_arguments(ParserTestHelper.parse(call))
+      arguments = Private::NodeHelpers.method_arguments(ParserTestHelper.parse(call))
       process(
         "class Entry; #{call}; end",
         "components/timeline/app/models/entry.rb",
@@ -214,7 +214,7 @@ module Packwerk
     private
 
     class DummyAssociationInspector
-      include ConstantNameInspector
+      include Private::ConstantNameInspector
 
       def initialize(association: false, reference_name: "Dummy", expected_args: nil)
         @association = association
@@ -224,9 +224,9 @@ module Packwerk
 
       def constant_name_from_node(node, ancestors:)
         return nil unless @association
-        return nil unless NodeHelpers.method_call?(node)
+        return nil unless Private::NodeHelpers.method_call?(node)
 
-        args = NodeHelpers.method_arguments(node)
+        args = Private::NodeHelpers.method_arguments(node)
         if @expected_args && @expected_args != args
           raise("expected arguments don't match.\nExpected:\n#{@expected_args}\nActual:\n#{args}")
         end
@@ -235,13 +235,13 @@ module Packwerk
       end
     end
 
-    DEFAULT_INSPECTORS = [ConstNodeInspector.new, DummyAssociationInspector.new]
+    DEFAULT_INSPECTORS = [Private::ConstNodeInspector.new, DummyAssociationInspector.new]
 
     def process(code, file_path, constant_name_inspectors = DEFAULT_INSPECTORS)
       root_node = ParserTestHelper.parse(code)
       file_path = to_app_path(file_path)
 
-      extractor = ReferenceExtractor.new(
+      extractor = Private::ReferenceExtractor.new(
         constant_name_inspectors: constant_name_inspectors,
         root_node: root_node,
         root_path: app_dir
@@ -254,7 +254,7 @@ module Packwerk
         file_path: Pathname.new(file_path).relative_path_from(app_dir).to_s
       )
 
-      ReferenceExtractor.get_fully_qualified_references_from(
+      Private::ReferenceExtractor.get_fully_qualified_references_from(
         unresolved_references,
         @context_provider
       )
@@ -263,7 +263,7 @@ module Packwerk
     def find_references_in_ast(root_node, ancestors:, extractor:, file_path:)
       references = [extractor.reference_from_node(root_node, ancestors: ancestors, relative_file: file_path)]
 
-      child_references = NodeHelpers.each_child(root_node).flat_map do |child|
+      child_references = Private::NodeHelpers.each_child(root_node).flat_map do |child|
         find_references_in_ast(child, ancestors: [root_node] + ancestors, extractor: extractor, file_path: file_path)
       end
 

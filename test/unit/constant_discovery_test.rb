@@ -19,7 +19,7 @@ module Packwerk
 
       load_paths["components/sales/app/internal"] = Business
 
-      @discovery = ConstantDiscovery.new(
+      @discovery = Private::ConstantDiscovery.new(
         constant_resolver: ConstantResolver.new(root_path: @root_path, load_paths: load_paths),
         packages: PackageSet.load_all_from(@root_path)
       )
@@ -43,7 +43,7 @@ module Packwerk
     test "raises with helpful message if there is a constant resolver error" do
       constant_resolver = typed_mock
       constant_resolver.stubs(:resolve).raises(ConstantResolver::Error, "initial error message")
-      discovery = ConstantDiscovery.new(
+      discovery = Private::ConstantDiscovery.new(
         constant_resolver: constant_resolver,
         packages: PackageSet.load_all_from(@root_path)
       )

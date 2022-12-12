@@ -8,7 +8,7 @@ module Packwerk
     extend T::Sig
     extend T::Helpers
 
-    sig { returns(T.nilable(Node::Location)) }
+    sig { returns(T.nilable(Private::Node::Location)) }
     attr_reader :location
 
     sig { returns(String) }
@@ -18,7 +18,7 @@ module Packwerk
     attr_reader :message
 
     sig do
-      params(file: String, message: String, location: T.nilable(Node::Location))
+      params(file: String, message: String, location: T.nilable(Private::Node::Location))
         .void
     end
     def initialize(file:, message:, location: nil)
