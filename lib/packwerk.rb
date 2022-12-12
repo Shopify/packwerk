@@ -27,7 +27,8 @@ module Packwerk
   autoload :ReferenceOffense
   autoload :Result
 
-  autoload :TestThing
+  # ./packwerk/lib/packwerk.rb:32:in `private_constant': constant Packwerk::TestThing not defined (NameError)
+  # autoload :TestThing
   # Calling `private_constant` and running test does not fail the test suite
   private_constant :TestThing
 
