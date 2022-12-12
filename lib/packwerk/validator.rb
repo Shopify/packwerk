@@ -32,7 +32,7 @@ module Packwerk
     def permitted_keys
     end
 
-    sig { abstract.params(package_set: PackageSet, configuration: Configuration).returns(ApplicationValidator::Result) }
+    sig { abstract.params(package_set: PackageSet, configuration: Configuration).returns(Validator::Result) }
     def call(package_set, configuration)
     end
 
@@ -58,19 +58,19 @@ module Packwerk
 
     sig do
       params(
-        results: T::Array[ApplicationValidator::Result],
+        results: T::Array[Validator::Result],
         separator: String,
         before_errors: String,
         after_errors: String,
-      ).returns(ApplicationValidator::Result)
+      ).returns(Validator::Result)
     end
     def merge_results(results, separator: "\n", before_errors: "", after_errors: "")
       results.reject!(&:ok?)
 
       if results.empty?
-        ApplicationValidator::Result.new(ok: true)
+        Validator::Result.new(ok: true)
       else
-        ApplicationValidator::Result.new(
+        Validator::Result.new(
           ok: false,
           error_value: [
             before_errors,

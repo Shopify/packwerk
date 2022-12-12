@@ -25,6 +25,7 @@ module Packwerk
   autoload :Parsers
   autoload :Reference
   autoload :ReferenceOffense
+  autoload :Validator
 
   # Private APIs
   # Please submit an issue if you have a use-case for these
@@ -76,10 +77,14 @@ module Packwerk
   private_constant :RunContext
   autoload :UnresolvedReference
   private_constant :UnresolvedReference
-  autoload :Validator
-  private_constant :Validator
   autoload :Version
   private_constant :Version
+
+  module Validator
+    extend ActiveSupport::Autoload
+
+    autoload :Result
+  end
 
   class Cli
     extend ActiveSupport::Autoload
@@ -133,7 +138,6 @@ module Packwerk
   class ApplicationValidator
     extend ActiveSupport::Autoload
 
-    autoload :Result
     autoload :Helpers
   end
 end

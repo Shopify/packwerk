@@ -358,7 +358,7 @@ class MyValidator
     ['enforce_my_custom_checker']
   end
 
-  sig { override.params(package_set: PackageSet, configuration: Configuration).returns(ApplicationValidator::Result) }
+  sig { override.params(package_set: PackageSet, configuration: Configuration).returns(Validator::Result) }
   def call(package_set, configuration)
     # your logic here
   end

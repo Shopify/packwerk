@@ -170,7 +170,7 @@ module Packwerk
       )
     end
 
-    sig { params(result: ApplicationValidator::Result).void }
+    sig { params(result: Validator::Result).void }
     def list_validation_errors(result)
       @out.puts
       if result.ok?

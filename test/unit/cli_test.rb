@@ -95,7 +95,7 @@ module Packwerk
       string_io = StringIO.new
       cli = ::Packwerk::Cli.new(out: string_io)
 
-      validator = typed_mock(check_all: ApplicationValidator::Result.new(ok: true))
+      validator = typed_mock(check_all: Validator::Result.new(ok: true))
       ApplicationValidator.expects(:new).returns(validator)
 
       success = cli.execute_command(["validate"])
@@ -109,7 +109,7 @@ module Packwerk
       string_io = StringIO.new
       cli = ::Packwerk::Cli.new(out: string_io)
 
-      validator = typed_mock(check_all: ApplicationValidator::Result.new(ok: false, error_value: "I'm an error"))
+      validator = typed_mock(check_all: Validator::Result.new(ok: false, error_value: "I'm an error"))
       ApplicationValidator.expects(:new).returns(validator)
 
       success = cli.execute_command(["validate"])

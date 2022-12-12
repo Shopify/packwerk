@@ -8,7 +8,7 @@ module Packwerk
       include Validator
 
       sig do
-        override.params(package_set: PackageSet, configuration: Configuration).returns(ApplicationValidator::Result)
+        override.params(package_set: PackageSet, configuration: Configuration).returns(Validator::Result)
       end
       def call(package_set, configuration)
         results = [
@@ -30,7 +30,7 @@ module Packwerk
 
       private
 
-      sig { params(configuration: Configuration).returns(ApplicationValidator::Result) }
+      sig { params(configuration: Configuration).returns(Validator::Result) }
       def check_package_manifest_syntax(configuration)
         errors = []
 
@@ -51,10 +51,10 @@ module Packwerk
         end
 
         if errors.empty?
-          ApplicationValidator::Result.new(ok: true)
+          Validator::Result.new(ok: true)
         else
           merge_results(
-            errors.map { |error| ApplicationValidator::Result.new(ok: false, error_value: error) },
+            errors.map { |error| Validator::Result.new(ok: false, error_value: error) },
             separator: "\n",
             before_errors: "Malformed syntax in the following manifests:\n\n",
             after_errors: "\n",
@@ -62,7 +62,7 @@ module Packwerk
         end
       end
 
-      sig { params(package_set: PackageSet).returns(ApplicationValidator::Result) }
+      sig { params(package_set: PackageSet).returns(Validator::Result) }
       def check_acyclic_graph(package_set)
         edges = package_set.flat_map do |package|
           package.dependencies.map do |dependency|
@@ -75,9 +75,9 @@ module Packwerk
         cycle_strings = build_cycle_strings(dependency_graph.cycles)
 
         if dependency_graph.acyclic?
-          ApplicationValidator::Result.new(ok: true)
+          Validator::Result.new(ok: true)
         else
-          ApplicationValidator::Result.new(
+          Validator::Result.new(
             ok: false,
             error_value: <<~EOS
               Expected the package dependency graph to be acyclic, but it contains the following circular dependencies:
@@ -88,7 +88,7 @@ module Packwerk
         end
       end
 
-      sig { params(configuration: Configuration).returns(ApplicationValidator::Result) }
+      sig { params(configuration: Configuration).returns(Validator::Result) }
       def check_valid_package_dependencies(configuration)
         packages_dependencies = package_manifests_settings_for(configuration, "dependencies")
           .delete_if { |_, deps| deps.nil? }
@@ -104,7 +104,7 @@ module Packwerk
           end
 
         if packages_with_invalid_dependencies.empty?
-          ApplicationValidator::Result.new(ok: true)
+          Validator::Result.new(ok: true)
         else
           error_locations = packages_with_invalid_dependencies.map do |package, invalid_dependencies|
             package ||= configuration.root_path
@@ -117,7 +117,7 @@ module Packwerk
             EOS
           end
 
-          ApplicationValidator::Result.new(
+          Validator::Result.new(
             ok: false,
             error_value: "These dependencies do not point to valid packages:\n\n#{error_locations.join("\n")}"
           )
