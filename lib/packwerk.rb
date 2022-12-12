@@ -27,62 +27,6 @@ module Packwerk
   autoload :ReferenceOffense
   autoload :Validator
 
-  # Private APIs
-  # Please submit an issue if you have a use-case for these
-  autoload :ApplicationLoadPaths
-  private_constant :ApplicationLoadPaths
-  autoload :ApplicationValidator
-  private_constant :ApplicationValidator
-  autoload :AssociationInspector
-  private_constant :AssociationInspector
-  autoload :Cache
-  private_constant :Cache
-  autoload :Configuration
-  private_constant :Configuration
-  autoload :ConstantDiscovery
-  private_constant :ConstantDiscovery
-  autoload :ConstantNameInspector
-  private_constant :ConstantNameInspector
-  autoload :ConstNodeInspector
-  private_constant :ConstNodeInspector
-  autoload :ExtensionLoader
-  private_constant :ExtensionLoader
-  autoload :FileProcessor
-  private_constant :FileProcessor
-  autoload :FilesForProcessing
-  private_constant :FilesForProcessing
-  autoload :Graph
-  private_constant :Graph
-  autoload :Loader
-  private_constant :Loader
-  autoload :Node
-  private_constant :Node
-  autoload :NodeHelpers
-  private_constant :NodeHelpers
-  autoload :NodeProcessor
-  private_constant :NodeProcessor
-  autoload :NodeProcessorFactory
-  private_constant :NodeProcessorFactory
-  autoload :NodeVisitor
-  private_constant :NodeVisitor
-  autoload :OffenseCollection
-  private_constant :OffenseCollection
-  autoload :ParsedConstantDefinitions
-  private_constant :ParsedConstantDefinitions
-  autoload :ParseRun
-  private_constant :ParseRun
-  autoload :ReferenceExtractor
-  private_constant :ReferenceExtractor
-  autoload :RunContext
-  private_constant :RunContext
-  autoload :UnresolvedReference
-  private_constant :UnresolvedReference
-  autoload :Version
-  private_constant :Version
-
-  autoload :Private
-  private_constant :Private
-
   module Validator
     extend ActiveSupport::Autoload
 
@@ -106,43 +50,14 @@ module Packwerk
     autoload :OffenseProgressMarker
   end
 
-  module Formatters
-    extend ActiveSupport::Autoload
-
-    autoload :ProgressFormatter
-  end
-
-  private_constant :Formatters
-
-  module Generators
-    extend ActiveSupport::Autoload
-
-    autoload :ConfigurationFile
-    autoload :RootPackage
-  end
-
-  private_constant :Generators
-
-  module ReferenceChecking
-    extend ActiveSupport::Autoload
-
-    autoload :ReferenceChecker
-
-    module Checkers
-      extend ActiveSupport::Autoload
-
-      autoload :DependencyChecker
-      autoload :PrivacyChecker
-    end
-  end
-
-  private_constant :ReferenceChecking
-
   class ApplicationValidator
     extend ActiveSupport::Autoload
 
     autoload :Helpers
   end
+
+  # Private APIs
+  autoload :Private
 end
 
 # Required to register the DefaultOffensesFormatter
