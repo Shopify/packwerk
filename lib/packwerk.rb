@@ -27,10 +27,10 @@ module Packwerk
   autoload :ReferenceOffense
   autoload :Result
 
-  # ./packwerk/lib/packwerk.rb:32:in `private_constant': constant Packwerk::TestThing not defined (NameError)
-  # autoload :TestThing
+  autoload :TestThing
   # Calling `private_constant` and running test does not fail the test suite
   private_constant :TestThing
+  TestThing
 
   # Private APIs
   # Please submit an issue if you have a use-case for these
