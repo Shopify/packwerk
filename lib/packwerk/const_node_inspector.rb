@@ -52,4 +52,6 @@ module Packwerk
       "::" + NodeHelpers.parent_module_name(ancestors: ancestors)
     end
   end
+
+  private_constant :ConstNodeInspector
 end

@@ -13,44 +13,58 @@ require "active_support/core_ext/object/json"
 module Packwerk
   extend ActiveSupport::Autoload
 
-  autoload :ApplicationLoadPaths
-  autoload :ApplicationValidator
-  autoload :AssociationInspector
-  autoload :OffenseCollection
-  autoload :Cache
+  # Public APIs
   autoload :Checker
   autoload :Cli
-  autoload :Configuration
-  autoload :ConstantDiscovery
-  autoload :ConstantNameInspector
-  autoload :ConstNodeInspector
-  autoload :PackageTodo
-  autoload :ExtensionLoader
-  autoload :FileProcessor
-  autoload :FilesForProcessing
-  autoload :Graph
-  autoload :Loader
-  autoload :Node
-  autoload :NodeHelpers
-  autoload :NodeProcessor
-  autoload :NodeProcessorFactory
-  autoload :NodeVisitor
   autoload :Offense
   autoload :OffensesFormatter
   autoload :OutputStyle
   autoload :Package
   autoload :PackageSet
-  autoload :ParsedConstantDefinitions
+  autoload :PackageTodo
   autoload :Parsers
-  autoload :ParseRun
-  autoload :UnresolvedReference
   autoload :Reference
-  autoload :ReferenceExtractor
   autoload :ReferenceOffense
-  autoload :Result
-  autoload :RunContext
   autoload :Validator
   autoload :Version
+
+  # Private APIs
+  # Please submit an issue if you have a use-case for these
+  autoload :ApplicationLoadPaths
+  autoload :ApplicationValidator
+  autoload :AssociationInspector
+  autoload :Cache
+  autoload :Configuration
+  autoload :ConstantDiscovery
+  autoload :ConstantNameInspector
+  autoload :ConstNodeInspector
+  autoload :ExtensionLoader
+  autoload :FileProcessor
+  autoload :FilesForProcessing
+  autoload :Graph
+  autoload :Node
+  autoload :NodeHelpers
+  autoload :NodeProcessor
+  autoload :NodeProcessorFactory
+  autoload :NodeVisitor
+  autoload :OffenseCollection
+  autoload :ParsedConstantDefinitions
+  autoload :ParseRun
+  autoload :ReferenceExtractor
+  autoload :RunContext
+  autoload :UnresolvedReference
+
+  module Validator
+    extend ActiveSupport::Autoload
+
+    autoload :Result
+  end
+
+  class Cli
+    extend ActiveSupport::Autoload
+
+    autoload :Result
+  end
 
   module OutputStyles
     extend ActiveSupport::Autoload
@@ -69,12 +83,16 @@ module Packwerk
     autoload :ProgressFormatter
   end
 
+  private_constant :Formatters
+
   module Generators
     extend ActiveSupport::Autoload
 
     autoload :ConfigurationFile
     autoload :RootPackage
   end
+
+  private_constant :Generators
 
   module ReferenceChecking
     extend ActiveSupport::Autoload
@@ -89,17 +107,18 @@ module Packwerk
     end
   end
 
+  private_constant :ReferenceChecking
+
   class ApplicationValidator
     extend ActiveSupport::Autoload
 
-    autoload :Result
     autoload :Helpers
   end
 end
 
-# Required to register the default OffensesFormatter
+# Required to register the DefaultOffensesFormatter
 # We put this at the *end* of the file to specify all autoloads first
-require "packwerk/formatters/offenses_formatter"
+require "packwerk/formatters/default_offenses_formatter"
 
 # Required to register the default DependencyChecker
 require "packwerk/reference_checking/checkers/dependency_checker"

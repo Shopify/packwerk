@@ -18,4 +18,6 @@ module Packwerk
     end
     def constant_name_from_node(node, ancestors:); end
   end
+
+  private_constant :ConstantNameInspector
 end

@@ -91,9 +91,9 @@ module Packwerk
 
       package_todo = PackageTodo.new(package, "test/fixtures/package_todo.yml")
       package_todo.add_entries(first_violated_reference,
-        Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
+        ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
       package_todo.add_entries(second_violated_reference,
-        Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
+        ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
       assert package_todo.stale_violations?(Set.new([
         "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
         "orders/app/models/orders/services/adjustment_engine.rb",
@@ -152,7 +152,7 @@ module Packwerk
         package_todo = PackageTodo.new(reference.constant.package, file.path)
 
         package_todo.add_entries(reference,
-          Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
+          ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
         package_todo.dump
 
         expected_output = {
@@ -206,17 +206,17 @@ module Packwerk
         )
 
         package_todo.add_entries(second_package_first_reference,
-          Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
+          ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
         package_todo.add_entries(second_package_first_reference,
-          Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
+          ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
         package_todo.add_entries(second_package_second_reference,
-          Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
+          ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
         package_todo.add_entries(second_package_second_reference,
-          Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
+          ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
         package_todo.add_entries(second_package_third_reference,
-          Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
+          ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
         package_todo.add_entries(first_package_reference,
-          Packwerk::ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
+          ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
 
         package_todo.dump
 

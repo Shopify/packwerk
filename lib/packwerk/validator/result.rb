@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 module Packwerk
-  class ApplicationValidator
+  module Validator
     class Result < T::Struct
       extend T::Sig
 

@@ -109,7 +109,7 @@ module Packwerk
 
     sig { returns(ConstantDiscovery) }
     def context_provider
-      @context_provider ||= ::Packwerk::ConstantDiscovery.new(
+      @context_provider ||= ConstantDiscovery.new(
         constant_resolver: resolver,
         packages: package_set
       )
@@ -127,9 +127,11 @@ module Packwerk
     sig { returns(T::Array[ConstantNameInspector]) }
     def constant_name_inspectors
       [
-        ::Packwerk::ConstNodeInspector.new,
-        ::Packwerk::AssociationInspector.new(inflector: @inflector, custom_associations: @custom_associations),
+        ConstNodeInspector.new,
+        AssociationInspector.new(inflector: @inflector, custom_associations: @custom_associations),
       ]
     end
   end
+
+  private_constant :RunContext
 end

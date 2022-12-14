@@ -21,4 +21,6 @@ module Packwerk
       end
     end
   end
+
+  private_constant :NodeVisitor
 end

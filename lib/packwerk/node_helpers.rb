@@ -332,4 +332,6 @@ module Packwerk
       end
     end
   end
+
+  private_constant :NodeHelpers
 end

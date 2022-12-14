@@ -61,4 +61,6 @@ module Packwerk
       @local_definitions[resolved_constant] = location
     end
   end
+
+  private_constant :ParsedConstantDefinitions
 end

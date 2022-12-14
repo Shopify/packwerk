@@ -79,4 +79,6 @@ module Packwerk
       @cycles << cycle
     end
   end
+
+  private_constant :Graph
 end

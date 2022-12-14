@@ -3,8 +3,8 @@
 
 module Packwerk
   module Formatters
-    class OffensesFormatter
-      include Packwerk::OffensesFormatter
+    class DefaultOffensesFormatter
+      include OffensesFormatter
 
       IDENTIFIER = T.let("default", String)
 
@@ -20,7 +20,7 @@ module Packwerk
         EOS
       end
 
-      sig { override.params(offense_collection: Packwerk::OffenseCollection, fileset: T::Set[String]).returns(String) }
+      sig { override.params(offense_collection: OffenseCollection, fileset: T::Set[String]).returns(String) }
       def show_stale_violations(offense_collection, fileset)
         if offense_collection.stale_violations?(fileset)
           "There were stale violations found, please run `packwerk update-todo`"

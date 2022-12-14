@@ -64,7 +64,7 @@ module Packwerk
       references = []
 
       node_processor = @node_processor_factory.for(relative_file: relative_file, node: node)
-      node_visitor = Packwerk::NodeVisitor.new(node_processor: node_processor)
+      node_visitor = NodeVisitor.new(node_processor: node_processor)
       node_visitor.visit(node, ancestors: [], result: references)
 
       references
@@ -82,4 +82,6 @@ module Packwerk
       @parser_factory.for_path(file_path)
     end
   end
+
+  private_constant :FileProcessor
 end
