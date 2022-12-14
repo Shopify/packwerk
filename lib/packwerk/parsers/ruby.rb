@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "parser"
@@ -7,9 +7,14 @@ require "parser/current"
 module Packwerk
   module Parsers
     class Ruby
+      extend T::Sig
+
       include ParserInterface
 
       class RaiseExceptionsParser < Parser::CurrentRuby
+        extend T::Sig
+
+        sig { params(builder: T.untyped).void }
         def initialize(builder)
           super(builder)
           super.diagnostics.all_errors_are_fatal = true
@@ -17,16 +22,21 @@ module Packwerk
       end
 
       class TolerateInvalidUtf8Builder < Parser::Builders::Default
+        extend T::Sig
+
+        sig { params(token: T.untyped).returns(T.untyped) }
         def string_value(token)
           value(token)
         end
       end
 
+      sig { params(parser_class: T.untyped).void }
       def initialize(parser_class: RaiseExceptionsParser)
-        @builder = TolerateInvalidUtf8Builder.new
+        @builder = T.let(TolerateInvalidUtf8Builder.new, Object)
         @parser_class = parser_class
       end
 
+      sig { override.params(io: T.any(IO, StringIO), file_path: String).returns(T.untyped) }
       def call(io:, file_path: "<unknown>")
         buffer = Parser::Source::Buffer.new(file_path)
         buffer.source = io.read

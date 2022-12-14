@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "ast/node"
@@ -9,19 +9,24 @@ require "parser/source/buffer"
 module Packwerk
   module Parsers
     class Erb
+      extend T::Sig
+
       include ParserInterface
 
+      sig { params(parser_class: T.untyped, ruby_parser: Ruby).void }
       def initialize(parser_class: BetterHtml::Parser, ruby_parser: Ruby.new)
         @parser_class = parser_class
         @ruby_parser = ruby_parser
       end
 
+      sig { override.params(io: T.any(IO, StringIO), file_path: String).returns(T.untyped) }
       def call(io:, file_path: "<unknown>")
         buffer = Parser::Source::Buffer.new(file_path)
         buffer.source = io.read
         parse_buffer(buffer, file_path: file_path)
       end
 
+      sig { params(buffer: Parser::Source::Buffer, file_path: String).returns(T.untyped) }
       def parse_buffer(buffer, file_path:)
         parser = @parser_class.new(buffer, template_language: :html)
         to_ruby_ast(parser.ast, file_path)
@@ -35,12 +40,18 @@ module Packwerk
 
       private
 
+      sig do
+        params(
+          erb_ast: T.all(::AST::Node, Object),
+          file_path: String
+        ).returns(::AST::Node)
+      end
       def to_ruby_ast(erb_ast, file_path)
         # Note that we're not using the source location (line/column) at the moment, but if we did
         # care about that, we'd need to tweak this to insert empty lines and spaces so that things
         # line up with the ERB file
-        code_pieces = code_nodes(erb_ast).map do |node|
-          node.children.first
+        code_pieces = T.must(code_nodes(erb_ast)).map do |node|
+          T.cast(node, ::AST::Node).children.first
         end
 
         @ruby_parser.call(
@@ -49,6 +60,14 @@ module Packwerk
         )
       end
 
+      sig do
+        params(
+          node: T.any(::AST::Node, String, NilClass),
+          block: T.nilable(T.proc.params(arg0: ::AST::Node).void),
+        ).returns(
+          T.any(T::Enumerator[::AST::Node], T::Array[String], NilClass)
+        )
+      end
       def code_nodes(node, &block)
         return enum_for(:code_nodes, node) unless block
         return unless node.is_a?(::AST::Node)

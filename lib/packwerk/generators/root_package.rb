@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 module Packwerk
@@ -7,11 +7,15 @@ module Packwerk
       extend T::Sig
 
       class << self
+        extend T::Sig
+
+        sig { params(root: String, out: T.any(IO, StringIO)).returns(T::Boolean) }
         def generate(root:, out:)
           new(root: root, out: out).generate
         end
       end
 
+      sig { params(root: String, out: T.any(IO, StringIO)).void }
       def initialize(root:, out: $stdout)
         @root = root
         @out = out

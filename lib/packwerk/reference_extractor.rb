@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 module Packwerk
@@ -63,7 +63,10 @@ module Packwerk
     )
       @constant_name_inspectors = constant_name_inspectors
       @root_path = root_path
-      @local_constant_definitions = ParsedConstantDefinitions.new(root_node: root_node)
+      @local_constant_definitions = T.let(
+        ParsedConstantDefinitions.new(root_node: root_node),
+        ParsedConstantDefinitions,
+      )
     end
 
     sig do
@@ -117,6 +120,13 @@ module Packwerk
       )
     end
 
+    sig do
+      params(
+        constant_name: String,
+        name_location: T.nilable(Node::Location),
+        namespace_path: T::Array[String],
+      ).returns(T::Boolean)
+    end
     def local_reference?(constant_name, name_location, namespace_path)
       @local_constant_definitions.local_reference?(
         constant_name,

@@ -100,7 +100,9 @@ module Packwerk
 
       success = cli.execute_command(["validate"])
 
-      assert_includes string_io.string, "Validation successful 🎉\n"
+      assert_match "📦 Packwerk is running validation...", string_io.string
+      assert_match "Validation successful 🎉", string_io.string
+      assert_match(/📦 Finished in \d+.\d{1,2} seconds/, string_io.string)
       assert success
     end
 
@@ -114,8 +116,10 @@ module Packwerk
 
       success = cli.execute_command(["validate"])
 
-      assert_includes string_io.string, "Validation failed ❗\n"
-      assert_includes string_io.string, "I'm an error"
+      assert_match "📦 Packwerk is running validation...", string_io.string
+      assert_match "Validation failed ❗", string_io.string
+      assert_match "I'm an error", string_io.string
+      assert_match(/📦 Finished in \d+.\d{1,2} seconds/, string_io.string)
       refute success
     end
 
