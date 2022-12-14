@@ -6,6 +6,8 @@ require "test_helper"
 module Packwerk
   module Parsers
     class RubyTest < Minitest::Test
+      include TypedMock
+
       test "#call returns node with valid file" do
         node = File.open(fixture_path("valid.rb"), "r") do |fixture|
           Ruby.new.call(io: fixture)
@@ -20,7 +22,7 @@ module Packwerk
         parser = stub
         parser.stubs(:parse).raises(err)
 
-        parser_class_stub = stub(new: parser)
+        parser_class_stub = typed_mock(new: parser, "<=": true)
 
         parser = Ruby.new(parser_class: parser_class_stub)
         file_path = fixture_path("invalid.rb")
@@ -41,7 +43,7 @@ module Packwerk
         parser = stub
         parser.stubs(:parse).raises(err)
 
-        parser_class_stub = stub(new: parser)
+        parser_class_stub = typed_mock(new: parser, "<=": true)
 
         parser = Ruby.new(parser_class: parser_class_stub)
         file_path = fixture_path("invalid.rb")
