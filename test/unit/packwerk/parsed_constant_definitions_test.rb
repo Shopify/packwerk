@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "parser_test_helper"
+require "support/packwerk/parser_test_helper"
 
 module Packwerk
   class ParsedConstantDefinitionsTest < Minitest::Test

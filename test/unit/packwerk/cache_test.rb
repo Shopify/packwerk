@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
-require "rails_test_helper"
+require "support/rails_test_helper"
 
 module Packwerk
   class CacheTest < Minitest::Test
