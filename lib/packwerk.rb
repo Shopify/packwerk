@@ -14,8 +14,11 @@ module Packwerk
   extend ActiveSupport::Autoload
 
   # Public APIs
+  autoload :ApplicationLoadPaths
   autoload :Checker
   autoload :Cli
+  autoload :ConstantContext
+  autoload :Node
   autoload :Offense
   autoload :OffensesFormatter
   autoload :OutputStyle
@@ -27,38 +30,6 @@ module Packwerk
   autoload :ReferenceOffense
   autoload :Validator
   autoload :Version
-
-  # Private APIs
-  # Please submit an issue if you have a use-case for these
-  autoload :ApplicationLoadPaths
-  autoload :ApplicationValidator
-  autoload :AssociationInspector
-  autoload :Cache
-  autoload :Configuration
-  autoload :ConstantDiscovery
-  autoload :ConstantNameInspector
-  autoload :ConstNodeInspector
-  autoload :ExtensionLoader
-  autoload :FileProcessor
-  autoload :FilesForProcessing
-  autoload :Graph
-  autoload :Node
-  autoload :NodeHelpers
-  autoload :NodeProcessor
-  autoload :NodeProcessorFactory
-  autoload :NodeVisitor
-  autoload :OffenseCollection
-  autoload :ParsedConstantDefinitions
-  autoload :ParseRun
-  autoload :ReferenceExtractor
-  autoload :RunContext
-  autoload :UnresolvedReference
-
-  module Validator
-    extend ActiveSupport::Autoload
-
-    autoload :Result
-  end
 
   class Cli
     extend ActiveSupport::Autoload
@@ -83,7 +54,35 @@ module Packwerk
     autoload :ProgressFormatter
   end
 
-  private_constant :Formatters
+  module Validator
+    extend ActiveSupport::Autoload
+
+    autoload :Result
+  end
+
+  # Private APIs
+  # Please submit an issue if you have a use-case for these
+  autoload :ApplicationValidator
+  autoload :AssociationInspector
+  autoload :Cache
+  autoload :Configuration
+  autoload :ConstantDiscovery
+  autoload :ConstantNameInspector
+  autoload :ConstNodeInspector
+  autoload :ExtensionLoader
+  autoload :FileProcessor
+  autoload :FilesForProcessing
+  autoload :Graph
+  autoload :NodeHelpers
+  autoload :NodeProcessor
+  autoload :NodeProcessorFactory
+  autoload :NodeVisitor
+  autoload :OffenseCollection
+  autoload :ParsedConstantDefinitions
+  autoload :ParseRun
+  autoload :ReferenceExtractor
+  autoload :RunContext
+  autoload :UnresolvedReference
 
   module Generators
     extend ActiveSupport::Autoload

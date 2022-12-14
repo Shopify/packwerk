@@ -10,7 +10,7 @@ module Packwerk
       constant_name: "::SomeName",
       source_location: Node::Location.new(2, 12)
     )
-      constant = ConstantDiscovery::ConstantContext.new(
+      constant = ConstantContext.new(
         constant_name,
         "some/location.rb",
         destination_package,
