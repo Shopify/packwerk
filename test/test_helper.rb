@@ -11,15 +11,15 @@ require "packwerk"
 require "minitest/autorun"
 require "minitest/focus"
 require "mocha/minitest"
-require "support/application_fixture_helper"
+require "support/packwerk/application_fixture_helper"
+require "support/packwerk/factory_helper"
 require "support/stub_const"
-require "support/factory_helper"
 require "support/rails_application_fixture_helper"
 require "support/test_macro"
 require "support/test_assertions"
 require "support/yaml_file"
 require "support/typed_mock"
-require "support/offenses_formatter_plain"
+require "support/packwerk/formatters/offenses_formatter_plain"
 
 Minitest::Test.include(StubConst)
 Minitest::Test.extend(TestMacro)
