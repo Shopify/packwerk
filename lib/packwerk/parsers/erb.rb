@@ -15,7 +15,7 @@ module Packwerk
 
       sig { params(parser_class: T.untyped, ruby_parser: Ruby).void }
       def initialize(parser_class: BetterHtml::Parser, ruby_parser: Ruby.new)
-        @parser_class = parser_class
+        @parser_class = T.let(parser_class, T.class_of(BetterHtml::Parser))
         @ruby_parser = ruby_parser
       end
 
@@ -26,7 +26,7 @@ module Packwerk
         parse_buffer(buffer, file_path: file_path)
       end
 
-      sig { params(buffer: Parser::Source::Buffer, file_path: String).returns(T.untyped) }
+      sig { params(buffer: Parser::Source::Buffer, file_path: String).returns(T.nilable(AST::Node)) }
       def parse_buffer(buffer, file_path:)
         parser = @parser_class.new(buffer, template_language: :html)
         to_ruby_ast(parser.ast, file_path)
@@ -44,7 +44,7 @@ module Packwerk
         params(
           erb_ast: T.all(::AST::Node, Object),
           file_path: String
-        ).returns(::AST::Node)
+        ).returns(T.nilable(::AST::Node))
       end
       def to_ruby_ast(erb_ast, file_path)
         # Note that we're not using the source location (line/column) at the moment, but if we did

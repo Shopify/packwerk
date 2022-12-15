@@ -9,6 +9,8 @@ require "test_helper"
 module Packwerk
   module Parsers
     class ErbTest < Minitest::Test
+      include TypedMock
+
       test "#call returns node with valid file" do
         node = File.open(fixture_path("valid.erb"), "r") do |fixture|
           Erb.new.call(io: fixture)
@@ -17,13 +19,21 @@ module Packwerk
         assert_kind_of(::AST::Node, node)
       end
 
+      test "#call returns node with valid javascript file" do
+        node = File.open(fixture_path("javascript_valid.erb"), "r") do |fixture|
+          Erb.new.call(io: fixture)
+        end
+
+        assert_kind_of(NilClass, node)
+      end
+
       test "#call writes parse error to stdout" do
         error_message = "stub error"
         err = Parser::SyntaxError.new(stub(message: error_message))
         parser = stub
         parser.stubs(:ast).raises(err)
 
-        parser_class_stub = stub(new: parser)
+        parser_class_stub = typed_mock(new: parser, "<=": true)
 
         parser = Erb.new(parser_class: parser_class_stub)
         file_path = fixture_path("invalid.erb")
@@ -44,7 +54,7 @@ module Packwerk
         parser = stub
         parser.stubs(:ast).raises(err)
 
-        parser_class_stub = stub(new: parser)
+        parser_class_stub = typed_mock(new: parser, "<=": true)
 
         parser = Erb.new(parser_class: parser_class_stub)
         file_path = fixture_path("invalid.erb")

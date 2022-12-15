@@ -33,10 +33,10 @@ module Packwerk
       sig { params(parser_class: T.untyped).void }
       def initialize(parser_class: RaiseExceptionsParser)
         @builder = T.let(TolerateInvalidUtf8Builder.new, Object)
-        @parser_class = parser_class
+        @parser_class = T.let(parser_class, T.class_of(RaiseExceptionsParser))
       end
 
-      sig { override.params(io: T.any(IO, StringIO), file_path: String).returns(T.untyped) }
+      sig { override.params(io: T.any(IO, StringIO), file_path: String).returns(T.nilable(Parser::AST::Node)) }
       def call(io:, file_path: "<unknown>")
         buffer = Parser::Source::Buffer.new(file_path)
         buffer.source = io.read
