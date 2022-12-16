@@ -17,6 +17,7 @@ module Packwerk
   autoload :ApplicationLoadPaths
   autoload :Checker
   autoload :Cli
+  autoload :Configuration
   autoload :ConstantContext
   autoload :Node
   autoload :Offense
@@ -66,7 +67,6 @@ module Packwerk
   autoload :ApplicationValidator
   autoload :AssociationInspector
   autoload :Cache
-  autoload :Configuration
   autoload :ConstantDiscovery
   autoload :ConstantNameInspector
   autoload :ConstNodeInspector

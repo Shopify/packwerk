@@ -77,6 +77,4 @@ module Packwerk
       @cache_enabled
     end
   end
-
-  private_constant :Configuration
 end
