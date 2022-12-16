@@ -104,7 +104,7 @@ module Packwerk
     test "doesn't count definition as reference" do
       ast = parse_code("class HelloWorld; end")
 
-      const_node = NodeHelpers.each_child(ast).find { |n| NodeHelpers.constant?(n) }
+      const_node = T.must(NodeHelpers.each_child(ast).find { |n| NodeHelpers.constant?(n) })
 
       definitions = ParsedConstantDefinitions.new(
         root_node: ast

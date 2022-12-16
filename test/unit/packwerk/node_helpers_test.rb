@@ -64,7 +64,7 @@ module Packwerk
 
     test "#enclosing_namespace_path should return correct path for simple class definition" do
       parent = parse("class Order; end")
-      node = NodeHelpers.each_child(parent).entries[0]
+      node = T.must(NodeHelpers.each_child(parent).entries[0])
 
       path = NodeHelpers.enclosing_namespace_path(node, ancestors: [parent])
 
@@ -73,8 +73,10 @@ module Packwerk
 
     test "#enclosing_namespace_path should skip child class name when finding path for parent class" do
       grandparent = parse("module Sales; class Order < Base; end; end")
-      parent = NodeHelpers.each_child(grandparent).entries[1] # module node; second child is the body of the module
-      node = NodeHelpers.each_child(parent).entries[1] # class node; second child is parent
+      parent = T.must(
+        NodeHelpers.each_child(grandparent).entries[1]
+      ) # module node; second child is the body of the module
+      node = T.must(NodeHelpers.each_child(parent).entries[1]) # class node; second child is parent
 
       path = NodeHelpers.enclosing_namespace_path(node, ancestors: [parent, grandparent])
 
@@ -83,8 +85,10 @@ module Packwerk
 
     test "#enclosing_namespace_path should return correct path for nested and compact class definition" do
       grandparent = parse("module Foo::Bar; class Sales::Order; end; end")
-      parent = NodeHelpers.each_child(grandparent).entries[1] # module node; second child is the body of the module
-      node = NodeHelpers.each_child(parent).entries[0] # class node; first child is constant
+      parent = T.must(
+        NodeHelpers.each_child(grandparent).entries[1]
+      ) # module node; second child is the body of the module
+      node = T.must(NodeHelpers.each_child(parent).entries[0]) # class node; first child is constant
 
       path = NodeHelpers.enclosing_namespace_path(node, ancestors: [parent, grandparent])
 

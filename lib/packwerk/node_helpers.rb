@@ -59,7 +59,7 @@ module Packwerk
         end
       end
 
-      sig { params(node: AST::Node).returns(T.untyped) }
+      sig { params(node: AST::Node).returns(T::Enumerable[AST::Node]) }
       def each_child(node)
         if block_given?
           node.children.each do |child|
@@ -181,9 +181,9 @@ module Packwerk
         end
       end
 
-      sig { params(node: Parser::AST::Node).returns(T.nilable(Node::Location)) }
+      sig { params(node: AST::Node).returns(T.nilable(Node::Location)) }
       def name_location(node)
-        location = node.location
+        location = T.cast(node, Parser::AST::Node).location
 
         if location.respond_to?(:name)
           name = location.name
