@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 module Packwerk
@@ -11,8 +11,12 @@ module Packwerk
     class ParseResult < Offense; end
 
     class ParseError < StandardError
-      attr_reader :result
+      extend T::Sig
 
+      sig { returns(ParseResult) }
+      attr_reader(:result)
+
+      sig { params(result: ParseResult).void }
       def initialize(result)
         super(result.message)
         @result = result
