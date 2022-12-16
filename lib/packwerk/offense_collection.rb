@@ -120,6 +120,4 @@ module Packwerk
       File.join(@root_path, package.name, "package_todo.yml")
     end
   end
-
-  private_constant :OffenseCollection
 end

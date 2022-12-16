@@ -17,9 +17,11 @@ module Packwerk
   autoload :ApplicationLoadPaths
   autoload :Checker
   autoload :Cli
+  autoload :Configuration
   autoload :ConstantContext
   autoload :Node
   autoload :Offense
+  autoload :OffenseCollection
   autoload :OffensesFormatter
   autoload :OutputStyle
   autoload :Package
@@ -65,7 +67,6 @@ module Packwerk
   autoload :ApplicationValidator
   autoload :AssociationInspector
   autoload :Cache
-  autoload :Configuration
   autoload :ConstantDiscovery
   autoload :ConstantNameInspector
   autoload :ConstNodeInspector
@@ -77,7 +78,6 @@ module Packwerk
   autoload :NodeProcessor
   autoload :NodeProcessorFactory
   autoload :NodeVisitor
-  autoload :OffenseCollection
   autoload :ParsedConstantDefinitions
   autoload :ParseRun
   autoload :ReferenceExtractor
