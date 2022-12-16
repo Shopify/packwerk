@@ -59,6 +59,14 @@ module Packwerk
       assert_match("Invalid 'dependencies' option: \"yes\"", result.error_value)
     end
 
+    test "returns success when enforce_dependencies is set to strict in the package.yml file" do
+      use_template(:minimal)
+      merge_into_app_yaml_file("components/sales/package.yml", { "enforce_dependencies" => "strict" })
+
+      result = dependency_validator.call(package_set, config)
+      assert result.ok?
+    end
+
     private
 
     def dependency_validator
