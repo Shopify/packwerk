@@ -34,10 +34,11 @@ module Packwerk
       def check_package_manifest_syntax(configuration)
         errors = []
 
+        valid_settings = [true, false, "strict"]
         package_manifests_settings_for(configuration, "enforce_dependencies").each do |config, setting|
           next if setting.nil?
 
-          unless [TrueClass, FalseClass, "strict"].include?(setting.class)
+          unless valid_settings.include?(setting)
             errors << "\tInvalid 'enforce_dependencies' option: #{setting.inspect} in #{config.inspect}"
           end
         end
