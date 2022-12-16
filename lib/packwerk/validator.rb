@@ -53,7 +53,7 @@ module Packwerk
 
     sig { params(configuration: Configuration).returns(T.any(T::Array[String], String)) }
     def package_glob(configuration)
-      configuration.package_paths || "**"
+      configuration.package_paths
     end
 
     sig do
