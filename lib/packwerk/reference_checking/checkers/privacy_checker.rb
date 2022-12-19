@@ -33,6 +33,10 @@ module Packwerk
           return false unless privacy_option == true ||
             explicitly_private_constant?(reference.constant, explicitly_private_constants: privacy_option)
 
+          return false if explicitly_public_constant?(
+            reference.constant, explicitly_public_constants: reference.constant.package.public_constants
+          )
+
           true
         end
 
@@ -55,6 +59,16 @@ module Packwerk
         end
 
         private
+
+        sig do
+          params(
+            constant: ConstantDiscovery::ConstantContext,
+            explicitly_public_constants: T::Array[String]
+          ).returns(T::Boolean)
+        end
+        def explicitly_public_constant?(constant, explicitly_public_constants:)
+          explicitly_public_constants.include?(constant.name)
+        end
 
         sig do
           params(

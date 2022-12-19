@@ -47,7 +47,7 @@ module Packwerk
 
         sig { returns(T::Array[String]) }
         def permitted_keys
-          ["public_path", "enforce_privacy"]
+          ["public_path", "enforce_privacy", "public_constants"]
         end
 
         private

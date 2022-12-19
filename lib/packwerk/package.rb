@@ -51,6 +51,11 @@ module Packwerk
       privacy_protected_package.enforce_privacy
     end
 
+    sig { returns(T::Array[String]) }
+    def public_constants
+      @config["public_constants"] || []
+    end
+
     sig { returns(String) }
     def public_path
       privacy_protected_package.public_path
