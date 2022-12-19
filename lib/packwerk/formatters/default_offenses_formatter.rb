@@ -55,7 +55,8 @@ module Packwerk
         reference_package = offense.reference.package
         defining_package = offense.reference.constant.package
         "#{reference_package} cannot have #{offense.violation_type} violations on #{defining_package} "\
-          "because strict mode is enabled for #{offense.violation_type} violations in #{reference_package}/package.yml"
+          "because strict mode is enabled for #{offense.violation_type} violations in "\
+          "the enforcing package's package.yml"
       end
 
       sig { params(offenses: T::Array[T.nilable(Offense)]).returns(String) }
