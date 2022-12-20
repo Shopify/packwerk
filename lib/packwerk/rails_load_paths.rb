@@ -2,21 +2,25 @@
 # frozen_string_literal: true
 
 require "bundler"
+gem "railties", ">= 6.0"
+require "rails/railtie"
 
 module Packwerk
   # Extracts the load paths from the analyzed application so that we can map constant names to paths.
-  module ApplicationLoadPaths
+  module RailsLoadPaths
     class << self
       extend T::Sig
 
       sig { params(root: String, environment: String).returns(T::Hash[String, Module]) }
-      def extract_relevant_paths(root, environment)
+      def for(root, environment:)
         require_application(root, environment)
         all_paths = extract_application_autoload_paths
         relevant_paths = filter_relevant_paths(all_paths)
         assert_load_paths_present(relevant_paths)
         relative_path_strings(relevant_paths)
       end
+
+      private
 
       sig { returns(T::Hash[String, Module]) }
       def extract_application_autoload_paths
@@ -43,8 +47,6 @@ module Packwerk
       def relative_path_strings(load_paths, rails_root: Rails.root)
         load_paths.transform_keys { |path| Pathname.new(path).relative_path_from(rails_root).to_s }
       end
-
-      private
 
       sig { params(root: String, environment: String).void }
       def require_application(root, environment)

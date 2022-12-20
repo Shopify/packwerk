@@ -61,7 +61,7 @@ module Packwerk
     end
 
     def load_paths
-      @load_paths ||= ApplicationLoadPaths.extract_relevant_paths(@root_path, "test")
+      @load_paths ||= RailsLoadPaths.for(@root_path, environment: "test")
     end
 
     def parallel?

@@ -14,7 +14,6 @@ module Packwerk
   extend ActiveSupport::Autoload
 
   # Public APIs
-  autoload :ApplicationLoadPaths
   autoload :Checker
   autoload :Cli
   autoload :Configuration
@@ -28,6 +27,7 @@ module Packwerk
   autoload :PackageSet
   autoload :PackageTodo
   autoload :Parsers
+  autoload :RailsLoadPaths
   autoload :Reference
   autoload :ReferenceOffense
   autoload :Validator
