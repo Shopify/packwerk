@@ -168,7 +168,7 @@ module Packwerk
     def package_set
       PackageSet.load_all_from(
         @configuration.root_path,
-        package_pathspec: @configuration.package_paths || "**"
+        package_pathspec: @configuration.package_paths
       )
     end
 

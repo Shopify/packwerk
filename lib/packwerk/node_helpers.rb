@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "parser"
@@ -59,11 +59,16 @@ module Packwerk
         end
       end
 
-      sig { params(node: AST::Node).returns(T.untyped) }
-      def each_child(node)
-        if block_given?
+      sig do
+        params(
+          node: AST::Node,
+          block: T.nilable(T.proc.params(arg0: Parser::AST::Node).void),
+        ).returns(T::Enumerable[AST::Node])
+      end
+      def each_child(node, &block)
+        if block
           node.children.each do |child|
-            yield child if child.is_a?(Parser::AST::Node)
+            yield(child) if child.is_a?(Parser::AST::Node)
           end
         else
           enum_for(:each_child, node)
@@ -181,9 +186,9 @@ module Packwerk
         end
       end
 
-      sig { params(node: Parser::AST::Node).returns(T.nilable(Node::Location)) }
+      sig { params(node: AST::Node).returns(T.nilable(Node::Location)) }
       def name_location(node)
-        location = node.location
+        location = T.cast(node, Parser::AST::Node).location
 
         if location.respond_to?(:name)
           name = location.name

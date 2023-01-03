@@ -60,7 +60,9 @@ module Packwerk
 
     test ".from_path falls back to empty config when existing config is an empty document" do
       use_template(:blank)
-      Configuration.expects(:new).with({}, config_path: to_app_path("packwerk.yml"))
+      empty_config = Configuration.new
+
+      Configuration.expects(:new).with({}, config_path: to_app_path("packwerk.yml")).returns(empty_config)
       Configuration.from_path
     end
 
