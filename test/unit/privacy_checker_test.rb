@@ -73,6 +73,17 @@ module Packwerk
       checker.invalid_reference?(reference)
     end
 
+    test "ignores explicitly configured public constant even if enforcing privacy for everything" do
+      destination_package = Package.new(
+        name: "destination_package",
+        config: { "enforce_privacy" => true, "public_constants" => ["::SomeName"] },
+      )
+      checker = privacy_checker
+      reference = build_reference(destination_package: destination_package, constant_name: "::SomeName")
+
+      refute checker.invalid_reference?(reference)
+    end
+
     private
 
     def privacy_checker
