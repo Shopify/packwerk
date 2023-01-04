@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require "disable_sorbet"
 require "packwerk"
 
 # Needs to be run in test environment in order to have test helper paths available in the autoload paths
