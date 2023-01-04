@@ -62,7 +62,7 @@ module Packwerk
 
     sig do
       params(
-        configs: T::Hash[T.untyped, T.untyped],
+        configs: T::Hash[String, T.untyped],
         config_path: T.nilable(String),
       ).void
     end

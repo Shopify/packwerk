@@ -20,10 +20,10 @@ module Packwerk
     sig { returns(T::Hash[T.untyped, T.untyped]) }
     attr_reader :config
 
-    sig { params(name: String, config: T.nilable(T::Hash[T.untyped, T.untyped])).void }
+    sig { params(name: String, config: T.nilable(T::Hash[String, T.untyped])).void }
     def initialize(name:, config: nil)
       @name = name
-      @config = T.let(config || {}, T::Hash[T.untyped, T.untyped])
+      @config = T.let(config || {}, T::Hash[String, T.untyped])
       @dependencies = T.let(Array(@config["dependencies"]).freeze, T::Array[String])
       @public_path = T.let(nil, T.nilable(String))
     end
