@@ -138,7 +138,7 @@ module Packwerk
         ignore_nested_packages: ignore_nested_packages,
         configuration: @configuration
       )
-      abort(<<~MSG.squish) if files_for_processing.files.empty?
+      @out.puts(<<~MSG.squish) if files_for_processing.files.empty?
         No files found or given.
         Specify files or check the include and exclude glob in the config file.
       MSG
