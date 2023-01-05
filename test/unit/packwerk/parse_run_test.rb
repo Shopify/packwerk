@@ -376,7 +376,7 @@ module Packwerk
       expected_message = <<~EOS
         No offenses detected
         No stale violations detected
-        components/source cannot have dependency violations on components/destination because strict mode is enabled for dependency violations in components/source/package.yml
+        components/source cannot have dependency violations on components/destination because strict mode is enabled for dependency violations in the enforcing package's package.yml
       EOS
       assert_equal expected_message, result.message
 
