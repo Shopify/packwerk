@@ -10,7 +10,9 @@ module Packwerk
     include ActiveSupport::Testing::Isolation
 
     test "registers command with Spring when loaded" do
-      require_command
+      capture_io do
+        require_command
+      end
 
       command = Spring.command("packwerk")
 
@@ -21,19 +23,20 @@ module Packwerk
     end
 
     test "disables Sorbet" do
-      error = assert_raises(RuntimeError) do
-        require_command(ignore_errors: false)
+      _stdout, stderr = capture_io do
+        require_command
       end
 
-      assert_match(/Set the default checked level earlier./, error.message)
+      assert_equal(
+        "Packwerk couldn't disable Sorbet. Please ensure it isn't being used before Packwerk is loaded.",
+        stderr.strip,
+      )
     end
 
     private
 
-    def require_command(ignore_errors: true)
+    def require_command
       require "packwerk/spring_command"
-    rescue => error
-      raise error unless ignore_errors
     end
   end
 end
