@@ -34,7 +34,7 @@ Watch a [1-minute video demo](https://www.youtube.com/watch?v=NwqlyBAxVpQ&featur
 1. Add this line to your application's Gemfile:
 
 ```ruby
-gem 'packwerk'
+gem "packwerk", require: false
 ```
 
 2. Install the gem
