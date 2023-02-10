@@ -83,6 +83,8 @@ module Packwerk
 
     sig { void }
     def dump
+      delete_old_deprecated_references
+
       if @new_entries.empty?
         delete_if_exists
       else
@@ -95,7 +97,9 @@ module Packwerk
           #
           # bin/packwerk update-todo #{@package.name}
         MESSAGE
-        File.open(@filepath, "w") do |f|
+        package_todo_filepath = File.join(File.dirname(@filepath), "package_todo.yml")
+
+        File.open(package_todo_filepath, "w") do |f|
           f.write(message)
           f.write(@new_entries.to_yaml)
         end
@@ -108,6 +112,12 @@ module Packwerk
     end
 
     private
+
+    sig { void }
+    def delete_old_deprecated_references
+      deprecated_references_filepath = File.join(File.dirname(@filepath), "deprecated_references.yml")
+      File.delete(deprecated_references_filepath) if File.exist?(deprecated_references_filepath)
+    end
 
     sig { returns(EntriesType) }
     def prepare_entries_for_dump

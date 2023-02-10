@@ -159,7 +159,9 @@ module Packwerk
           },
         }
 
-        assert_equal expected_output, YAML.load_file(file.path)
+        path = File.join(File.dirname(file.path), "package_todo.yml")
+
+        assert_equal expected_output, YAML.load_file(path)
       end
     end
 
@@ -218,7 +220,9 @@ module Packwerk
 
         package_todo.dump
 
-        assert_equal expected_output.to_a, YAML.load_file(file.path).to_a
+        path = File.join(File.dirname(file.path), "package_todo.yml")
+
+        assert_equal expected_output.to_a, YAML.load_file(path).to_a
       end
     end
 
@@ -228,6 +232,22 @@ module Packwerk
       package_todo.dump
 
       refute File.exist?(file.path)
+    end
+
+    test "#dump deletes old deprecated_references if they exist" do
+      file = Tempfile.new("package_todo.yml")
+      deprecated_file = File.new(
+        File.join(File.dirname(T.must(file.path)), "deprecated_references.yml"),
+        "w",
+      )
+
+      file.write("content: true")
+      deprecated_file.write("content: true")
+
+      package_todo = PackageTodo.new(destination_package, T.must(file.path))
+      package_todo.dump
+
+      refute File.exist?(deprecated_file.path)
     end
 
     private
