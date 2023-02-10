@@ -232,6 +232,22 @@ module Packwerk
       refute File.exist?(file.path)
     end
 
+    test "#dump deletes old deprecated_references if they exist" do
+      file = Tempfile.new("package_todo.yml")
+      deprecated_file = File.new(
+        File.join(File.dirname(T.must(file.path)), "deprecated_references.yml"),
+        "w",
+      )
+
+      file.write("content: true")
+      deprecated_file.write("content: true")
+
+      package_todo = PackageTodo.new(destination_package, T.must(file.path))
+      package_todo.dump
+
+      refute File.exist?(deprecated_file.path)
+    end
+
     private
 
     def destination_package
