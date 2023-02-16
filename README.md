@@ -1,10 +1,5 @@
 # Packwerk [![Build Status](https://github.com/Shopify/packwerk/workflows/CI/badge.svg)](https://github.com/Shopify/packwerk/actions?query=workflow%3ACI)
 
-### ⚠️ While Shopify is actively using `packwerk`, we consider it feature complete.
-We are keeping `packwerk` compatible with current versions of Ruby and Rails, but will accept feature requests only in rare cases. Please submit bug fixes though!
-
----
-
 > "I know who you are and because of that I know what you do."
 > This knowledge is a dependency that raises the cost of change.
 
