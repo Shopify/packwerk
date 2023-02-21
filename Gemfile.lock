@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    packwerk (2.2.1)
+    packwerk (3.0.0)
       activesupport (>= 6.0)
       ast
       better_html
@@ -198,4 +198,4 @@ DEPENDENCIES
   zeitwerk
 
 BUNDLED WITH
-   2.3.5
+   2.4.7
