@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    packwerk (2.2.2)
+    packwerk (2.3.0)
       activesupport (>= 5.2)
       ast
       better_html
