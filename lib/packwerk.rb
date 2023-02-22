@@ -31,7 +31,6 @@ module Packwerk
   autoload :Reference
   autoload :ReferenceOffense
   autoload :Validator
-  autoload :Version
 
   class Cli
     extend ActiveSupport::Autoload

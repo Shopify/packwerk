@@ -3,6 +3,8 @@
 
 ENV["RAILS_ENV"] = "test"
 
+require "pathname"
+
 $LOAD_PATH.unshift(File.expand_path("../lib", __dir__))
 ROOT = Pathname.new(__dir__).join("..").expand_path
 
