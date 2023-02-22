@@ -210,13 +210,7 @@ If so, you will want to stop the bleeding and prevent more violations from occur
 
     bin/packwerk update-todo
 
-Similar to `bin/packwerk check`, you may also run `bin/packwerk update-todo` on folders or packages:
-
-    bin/packwerk update-todo components/your_package
-
 ![](static/packwerk_update.gif)
-
-_Note: Changing dependencies or enabling dependencies will not require a full update of the codebase, only the package that changed. On the other hand, changing or enabling privacy will require a full update of the codebase._
 
 `bin/packwerk update-todo` should only be run to record existing violations and to remove violations that have been worked off. Running `bin/packwerk update-todo` to resolve a violation should be the very last resort.
 
