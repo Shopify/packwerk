@@ -130,6 +130,16 @@ module Packwerk
       assert_match(/Subcommands:/, @err_out.string)
     end
 
+    test "#execute_command with version subcommand returns the version" do
+      use_template(:blank)
+      string_io = StringIO.new
+      cli = ::Packwerk::Cli.new(out: string_io)
+
+      cli.execute_command(["version"])
+
+      assert_equal "#{Packwerk::VERSION}\n", string_io.string
+    end
+
     test "#execute_command with an invalid subcommand" do
       use_template(:blank)
       @cli.execute_command(["beep boop"])

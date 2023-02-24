@@ -56,6 +56,9 @@ module Packwerk
         output_result(parse_run(args).update_todo)
       when "validate"
         validate(args)
+      when "version"
+        @out.puts(Packwerk::VERSION)
+        true
       when nil, "help"
         usage
       else
@@ -114,6 +117,7 @@ module Packwerk
           check - run all checks
           update-todo - update package_todo.yml files
           validate - verify integrity of packwerk and package configuration
+          version - output packwerk version
           help  - display help information about packwerk
       USAGE
       true
