@@ -16,7 +16,7 @@ Packwerk can be used to:
 
 Packwerk needs [Zeitwerk](https://github.com/fxn/zeitwerk) enabled, which comes with Rails 6.
 
-Packwerk supports MRI versions 2.6 and above.
+Packwerk supports MRI versions 2.7 and above.
 
 ## Demo
 
