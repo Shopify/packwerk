@@ -144,7 +144,7 @@ Example:
 
 ## Types of boundary checks
 
-Packwerk ships with dependency boundary checking only. See [`packwerk-extensions`](https://github.com/rubyatscale/packwerk-extensions) to incorporate privacy checks into your use of `packwerk`.
+Packwerk ships with dependency boundary checking only. Other checking support may be added by extension gems.
 
 #### Enforcing dependency boundary
 
@@ -198,7 +198,7 @@ See: [TROUBLESHOOT.md - Sample violations](TROUBLESHOOT.md#Sample-violations)
 
 ### Understanding how to respond to new violations
 
-When you have a new dependency or privacy violation, what do you do?
+When you have a new dependency violation, what do you do?
 
 See: [RESOLVING_VIOLATIONS.md](RESOLVING_VIOLATIONS.md)
 
@@ -235,10 +235,10 @@ Above is an example of a constant violation entry in `package_todo.yml`.
 
 * `components/merchant` - package where the constant violation is found
 * `::Checkouts::Core::CheckoutId` - violated constant in question
-* `dependency` - type of violation, either dependency or privacy
+* `dependency` - type of violation, typically dependency
 * `components/merchant/app/public/merchant/generate_order.rb` - path to the file containing the violated constant
 
-Violations exist within the package that makes a violating reference. This means privacy violations of your package can be found listed in `package_todo.yml` files in the packages with the reference to a private constant.
+Violations exist within the package that makes a violating reference.
 
 # Loading Extensions
 
@@ -284,7 +284,7 @@ bin/packwerk check --offenses-formatter=my_offenses_formatter
 
 ### Custom Checkers
 
-Packwerk ships with a way to analyze dependencies and also supports custom checkers, such as the privacy checker listed below.
+Packwerk ships with a way to analyze dependencies and also supports custom checkers from extension gems.
 
 Custom checkers will allow references to constants to be analyzed in new ways, and for those invalid references to show up as violations in `package_todo.yml`.
 
@@ -325,14 +325,6 @@ Then, in the `require` directive described above, you'll want to tell `packwerk`
 ```yml
 require:
   - ./path/to/file.rb
-```
-
-#### Privacy Checker
-
-[`packwerk-extensions`](https://github.com/rubyatscale/packwerk-extensions) (originally extracted from `packwerk`) can be used to help define and enforce public API boundaries of a package. See the README.md for more details. To use this, add it to your `Gemfile` and then require it via `packwerk.yml`:
-```yml
-require:
-  - packwerk-extensions
 ```
 
 ### Custom Validators

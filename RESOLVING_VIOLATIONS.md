@@ -3,7 +3,7 @@
 Violations can be [recorded as a deprecation](#recording-violations) or (better!) [eliminated](#eliminating-violations).
 
 ## Recording Violations
-💡 New privacy and dependency violations are never hard-blocked. There are many very valid reasons to run `bin/packwerk update-todo`, adding new violations to `package_todo.yml` files. Even if you feel your reason might not be "valid," if your judgement says adding the violation and shipping your change will produce positive impact, trust your gut.
+💡 New dependency violations are never hard-blocked. There are many very valid reasons to run `bin/packwerk update-todo`, adding new violations to `package_todo.yml` files. Even if you feel your reason might not be "valid," if your judgement says adding the violation and shipping your change will produce positive impact, trust your gut.
 
 ### Emergency Fixes
 ❔ Is it a revert or is there a lot of urgency because you are fixing a production bug impacting customers?
@@ -31,7 +31,7 @@ Violations can be [recorded as a deprecation](#recording-violations) or (better!
 ➡️ Stay strong. Eliminate the violation. It is important to build a sustainable business that optimizes for the long-term. Look for advocates such as from mentors or within your team who can help you justify improving system design.
 
 ## Eliminating Violations
-💡 Dependency and privacy violations are Packwerk's signal that what we've stated about the desired system design (what
+💡 Dependency violations are Packwerk's signal that what we've stated about the desired system design (what
 packages exist and what lives in them, the dependencies in a package.yml, and the public interface in the package's public folder) doesn't match the reality of our system.
 If what we've stated about our system design doesn't feel right, then the violations won't make sense either! Make sure to think through system design before addressing a violation.
 
@@ -40,12 +40,7 @@ If what we've stated about our system design doesn't feel right, then the violat
 
 If not, find a better place for it to live.
 
-Otherwise, follow the guide for eliminating [Privacy Violations](#privacy-violations) or [Dependency Violations](#dependency-violations).
-
-### Privacy Violations
-💡  Packwerk thinks something is a privacy violation if you're referencing a constant, class, or module defined in the private implementation (i.e. not the public folder) of another package. We care about these because we want to make sure we only use parts of a package that have been exposed as public API.
-
-An explicit and implementation-hiding public API is a cornerstone of well-modularized code.
+Otherwise, follow the guide for eliminating [Dependency Violations](#dependency-violations).
 
 #### Use Existing Public Interface
 ❔ Does the package you're using expose public API in its public folder that supports your use case?
