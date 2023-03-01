@@ -91,8 +91,6 @@ module Packwerk
 
     sig { void }
     def dump
-      delete_old_deprecated_references
-
       if @new_entries.empty?
         delete_if_exists
       else
@@ -118,12 +116,6 @@ module Packwerk
     end
 
     private
-
-    sig { void }
-    def delete_old_deprecated_references
-      deprecated_references_filepath = File.join(File.dirname(@filepath), "deprecated_references.yml")
-      File.delete(deprecated_references_filepath) if File.exist?(deprecated_references_filepath)
-    end
 
     sig { returns(EntriesType) }
     def prepare_entries_for_dump
