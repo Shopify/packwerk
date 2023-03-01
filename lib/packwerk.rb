@@ -114,6 +114,8 @@ module Packwerk
   end
 end
 
+require "packwerk/version"
+
 # Required to register the DefaultOffensesFormatter
 # We put this at the *end* of the file to specify all autoloads first
 require "packwerk/formatters/default_offenses_formatter"
