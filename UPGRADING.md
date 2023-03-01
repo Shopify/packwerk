@@ -1,3 +1,15 @@
+# Upgrading from 2.x to 3.0
+
+In Packwerk 3.0, we've made two notable changes:
+
+## Renaming deprecated_references to package_todo
+
+The `update-deprecations` subcommand has been renamed to `update-todo`. Old `deprecated_references.yml` files will be automatically deleted and replaced with `package_todo.yml` files when you run `update-todo`. This behaviour has been in Packwerk [since 2.3.0](https://github.com/Shopify/packwerk/releases/tag/v2.3.0), and automatic deletion will be removed in the next release.
+
+### Removal of privacy checking
+
+Privacy checking via `enforce_privacy` has been removed. Developers are encouraged to focus on leveraging Packwerk for dependency checking. For those who still need privacy checks, please use [Gusto's extension gem](https://github.com/rubyatscale/packwerk-extensions).
+
 # Upgrading from 1.x to 2.0
 
 With Packwerk 2.0, we made a few changes to simplify the setup. Updating will require removing some previously necessary files and configuration.
