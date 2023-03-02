@@ -124,7 +124,8 @@ module Packwerk
         Subcommands:
           init - set up packwerk
           check - run all checks
-          update-deprecations - update deprecated_references.yml files
+          update-todo - update package_todo.yml files
+          update-deprecations - (deprecated) update package_todo.yml files
           validate - verify integrity of packwerk and package configuration
           help  - display help information about packwerk
       USAGE
