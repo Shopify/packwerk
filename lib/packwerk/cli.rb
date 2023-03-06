@@ -125,7 +125,7 @@ module Packwerk
           init - set up packwerk
           check - run all checks
           update-todo - update package_todo.yml files
-          update-deprecations - (deprecated) update package_todo.yml files
+          update-deprecations - update package_todo.yml files (deprecated, use update-todo instead)
           validate - verify integrity of packwerk and package configuration
           help  - display help information about packwerk
       USAGE
