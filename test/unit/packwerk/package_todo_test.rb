@@ -224,6 +224,33 @@ module Packwerk
       end
     end
 
+    test "#dump dumps package TODO comment" do
+      Tempfile.create("test_file.yml") do |file|
+        package_todo = PackageTodo.new(destination_package, file.path)
+        first_package = Package.new(name: "some_package", config: {})
+        first_package_reference = build_reference(
+          destination_package: first_package,
+          constant_name: "::Checkout::Wallet",
+          path: "some/violated/path.rb"
+        )
+
+        package_todo.add_entries(first_package_reference,
+          ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
+        package_todo.dump
+
+        assert_equal(<<~YAML, file.readlines.first(8).join)
+          # This file contains a list of dependencies that are not part of the long term plan for the
+          # 'buyers' package.
+          # We should generally work to reduce this list over time.
+          #
+          # You can regenerate this file using the following command:
+          #
+          # bin/packwerk update-todo
+          ---
+        YAML
+      end
+    end
+
     test "#dump deletes the package TODO if there are no entries" do
       file = Tempfile.new("empty_package_todo.yml")
       package_todo = PackageTodo.new(destination_package, T.must(file.path))

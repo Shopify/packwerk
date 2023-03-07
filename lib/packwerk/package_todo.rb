@@ -102,7 +102,7 @@ module Packwerk
           #
           # You can regenerate this file using the following command:
           #
-          # bin/packwerk update-todo #{@package.name}
+          # bin/packwerk update-todo
         MESSAGE
         File.open(@filepath, "w") do |f|
           f.write(message)
