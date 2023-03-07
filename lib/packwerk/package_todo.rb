@@ -96,8 +96,9 @@ module Packwerk
       else
         prepare_entries_for_dump
         message = <<~MESSAGE
-          # This file contains a list of dependencies that are not part of the long term plan for #{@package.name}.
-          # We should generally work to reduce this list, but not at the expense of actually getting work done.
+          # This file contains a list of dependencies that are not part of the long term plan for the
+          # '#{@package.name}' package.
+          # We should generally work to reduce this list over time.
           #
           # You can regenerate this file using the following command:
           #
