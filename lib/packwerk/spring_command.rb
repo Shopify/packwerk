@@ -33,5 +33,3 @@ module Packwerk
 
   Spring.register_command("packwerk", SpringCommand.new)
 end
-
-require "packwerk/disable_sorbet"
