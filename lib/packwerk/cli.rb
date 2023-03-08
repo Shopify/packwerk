@@ -194,25 +194,21 @@ module Packwerk
       ignore_nested_packages = nil
       formatter = @offenses_formatter
 
-      if args.any? { |arg| arg.include?("--packages") }
-        OptionParser.new do |parser|
-          parser.on("--packages=PACKAGESLIST", Array, "package names, comma separated") do |p|
-            relative_file_paths = p
-          end
-        end.parse!(args)
-        ignore_nested_packages = true
-      else
+      OptionParser.new do |parser|
+        parser.on("--packages=PACKAGESLIST", Array, "package names, comma separated") do |p|
+          relative_file_paths = p
+          ignore_nested_packages = true
+        end
+
+        parser.on("--offenses-formatter=FORMATTER", String,
+          "identifier of offenses formatter to use") do |formatter_identifier|
+          formatter = OffensesFormatter.find(formatter_identifier)
+        end
+      end.parse!(args)
+
+      if relative_file_paths.empty?
         relative_file_paths = args
         ignore_nested_packages = false
-      end
-
-      if args.any? { |arg| arg.include?("--offenses-formatter") }
-        OptionParser.new do |parser|
-          parser.on("--offenses-formatter=FORMATTER", String,
-            "identifier of offenses formatter to use") do |formatter_identifier|
-            formatter = OffensesFormatter.find(formatter_identifier)
-          end
-        end.parse!(args)
       end
 
       files_for_processing = fetch_files_to_process(relative_file_paths, ignore_nested_packages)
