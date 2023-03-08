@@ -191,7 +191,7 @@ module Packwerk
     sig { params(args: T::Array[String]).returns(ParseRun) }
     def parse_run(args)
       relative_file_paths = T.let([], T::Array[String])
-      ignore_nested_packages = nil
+      ignore_nested_packages = T.let(false, T::Boolean)
       formatter = @offenses_formatter
 
       OptionParser.new do |parser|
