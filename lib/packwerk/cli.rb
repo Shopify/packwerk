@@ -206,10 +206,7 @@ module Packwerk
         end
       end.parse!(args)
 
-      if relative_file_paths.empty?
-        relative_file_paths = args
-        ignore_nested_packages = false
-      end
+      relative_file_paths = args if relative_file_paths.empty?
 
       files_for_processing = fetch_files_to_process(relative_file_paths, ignore_nested_packages)
 
