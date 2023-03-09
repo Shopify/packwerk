@@ -275,5 +275,26 @@ module Packwerk
 
       remove_extensions
     end
+
+    test "#execute_command parses multiple options when passed together" do
+      use_template(:skeleton)
+      string_io = StringIO.new
+      cli = ::Packwerk::Cli.new(out: string_io)
+
+      dummy_files_for_processing = FilesForProcessing.fetch(
+        relative_file_paths: [],
+        ignore_nested_packages: false,
+        configuration: Configuration.new
+      )
+
+      FilesForProcessing.expects(:fetch).with(has_entries(
+        relative_file_paths: ["components/platform"],
+        ignore_nested_packages: true,
+      )).returns(dummy_files_for_processing)
+
+      OffensesFormatter.expects(:find).with("default").returns(Formatters::DefaultOffensesFormatter.new)
+
+      cli.execute_command(["check", "--offenses-formatter=default", "--packages=components/platform"])
+    end
   end
 end
