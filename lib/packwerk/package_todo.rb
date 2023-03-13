@@ -7,8 +7,9 @@ module Packwerk
   class PackageTodo
     extend T::Sig
 
+    EntryType = T.type_alias { T::Hash[String, T::Hash[String, T::Array[String]]] }
     EntriesType = T.type_alias do
-      T::Hash[String, T.untyped]
+      T::Hash[String, EntryType]
     end
 
     sig { params(package: Packwerk::Package, filepath: String).void }
@@ -41,10 +42,10 @@ module Packwerk
       entries_for_constant = package_violations[reference.constant.name] ||= {}
 
       entries_for_constant["violations"] ||= []
-      entries_for_constant["violations"] << violation_type
+      entries_for_constant.fetch("violations") << violation_type
 
       entries_for_constant["files"] ||= []
-      entries_for_constant["files"] << reference.relative_path.to_s
+      entries_for_constant.fetch("files") << reference.relative_path.to_s
 
       @new_entries[reference.constant.package.name] = package_violations
       listed?(reference, violation_type: violation_type)
@@ -55,9 +56,9 @@ module Packwerk
       prepare_entries_for_dump
 
       todo_list.any? do |package, package_violations|
-        package_violations_for_files = {}
+        package_violations_for_files = T.let({}, EntryType)
         package_violations.each do |constant_name, entries_for_constant|
-          entries_for_files = for_files & entries_for_constant["files"]
+          entries_for_files = for_files & entries_for_constant.fetch("files")
           next if entries_for_files.none?
 
           package_violations_for_files[constant_name] = {
@@ -78,9 +79,9 @@ module Packwerk
           # If this list is empty, we also must have stale violations.
           next true if new_entries_violation_types.nil?
 
-          if entries_for_constant["violations"].all? { |type| new_entries_violation_types.include?(type) }
+          if entries_for_constant.fetch("violations").all? { |type| new_entries_violation_types.include?(type) }
             stale_violations =
-              entries_for_constant["files"] - Array(@new_entries.dig(package, constant_name, "files"))
+              entries_for_constant.fetch("files") - Array(@new_entries.dig(package, constant_name, "files"))
             stale_violations.any?
           else
             return true
@@ -122,8 +123,8 @@ module Packwerk
     def prepare_entries_for_dump
       @new_entries.each do |package_name, package_violations|
         package_violations.each do |_, entries_for_constant|
-          entries_for_constant["violations"].sort!.uniq!
-          entries_for_constant["files"].sort!.uniq!
+          entries_for_constant.fetch("violations").sort!.uniq!
+          entries_for_constant.fetch("files").sort!.uniq!
         end
         @new_entries[package_name] = package_violations.sort.to_h
       end
