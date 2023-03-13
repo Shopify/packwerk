@@ -191,29 +191,22 @@ module Packwerk
     sig { params(args: T::Array[String]).returns(ParseRun) }
     def parse_run(args)
       relative_file_paths = T.let([], T::Array[String])
-      ignore_nested_packages = nil
+      ignore_nested_packages = T.let(false, T::Boolean)
       formatter = @offenses_formatter
 
-      if args.any? { |arg| arg.include?("--packages") }
-        OptionParser.new do |parser|
-          parser.on("--packages=PACKAGESLIST", Array, "package names, comma separated") do |p|
-            relative_file_paths = p
-          end
-        end.parse!(args)
-        ignore_nested_packages = true
-      else
-        relative_file_paths = args
-        ignore_nested_packages = false
-      end
+      OptionParser.new do |parser|
+        parser.on("--packages=PACKAGESLIST", Array, "package names, comma separated") do |p|
+          relative_file_paths = p
+          ignore_nested_packages = true
+        end
 
-      if args.any? { |arg| arg.include?("--offenses-formatter") }
-        OptionParser.new do |parser|
-          parser.on("--offenses-formatter=FORMATTER", String,
-            "identifier of offenses formatter to use") do |formatter_identifier|
-            formatter = OffensesFormatter.find(formatter_identifier)
-          end
-        end.parse!(args)
-      end
+        parser.on("--offenses-formatter=FORMATTER", String,
+          "identifier of offenses formatter to use") do |formatter_identifier|
+          formatter = OffensesFormatter.find(formatter_identifier)
+        end
+      end.parse!(args)
+
+      relative_file_paths = args if relative_file_paths.empty?
 
       files_for_processing = fetch_files_to_process(relative_file_paths, ignore_nested_packages)
 
