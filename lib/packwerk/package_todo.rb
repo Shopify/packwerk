@@ -55,38 +55,15 @@ module Packwerk
     def stale_violations?(for_files)
       prepare_entries_for_dump
 
-      todo_list.any? do |package, package_violations|
-        package_violations_for_files = T.let({}, EntryType)
-        package_violations.each do |constant_name, entries_for_constant|
-          entries_for_files = for_files & entries_for_constant.fetch("files")
-          next if entries_for_files.none?
-
-          package_violations_for_files[constant_name] = {
-            "violations" => entries_for_constant["violations"],
-            "files" => entries_for_files.to_a,
-          }
-        end
+      todo_list.any? do |package, violations|
+        violations_for_files = package_violations_for(violations, files: for_files)
 
         # We `next false` because if we cannot find existing violations for `for_files` within
         # the `package_todo.yml` file, then there are no violations that
         # can be considered stale.
-        next false if package_violations_for_files.empty?
+        next false if violations_for_files.empty?
 
-        package_violations_for_files.any? do |constant_name, entries_for_constant|
-          new_entries_violation_types = @new_entries.dig(package, constant_name, "violations")
-          # If there are no NEW entries that match the old entries `for_files`,
-          # @new_entries is from the list of violations we get when we check this file.
-          # If this list is empty, we also must have stale violations.
-          next true if new_entries_violation_types.nil?
-
-          if entries_for_constant.fetch("violations").all? { |type| new_entries_violation_types.include?(type) }
-            stale_violations =
-              entries_for_constant.fetch("files") - Array(@new_entries.dig(package, constant_name, "files"))
-            stale_violations.any?
-          else
-            return true
-          end
-        end
+        stale_violation_for_package?(package, violations: violations_for_files)
       end
     end
 
@@ -118,6 +95,45 @@ module Packwerk
     end
 
     private
+
+    sig { params(package: String, violations: EntryType).returns(T::Boolean) }
+    def stale_violation_for_package?(package, violations:)
+      violations.any? do |constant_name, entries_for_constant|
+        new_entries_violation_types = T.cast(
+          @new_entries.dig(package, constant_name, "violations"),
+          T.nilable(T::Array[String]),
+        )
+        # If there are no NEW entries that match the old entries `for_files`,
+        # @new_entries is from the list of violations we get when we check this file.
+        # If this list is empty, we also must have stale violations.
+        next true if new_entries_violation_types.nil?
+
+        if entries_for_constant.fetch("violations").all? { |type| new_entries_violation_types.include?(type) }
+          stale_violations =
+            entries_for_constant.fetch("files") - Array(@new_entries.dig(package, constant_name, "files"))
+          stale_violations.any?
+        else
+          return true
+        end
+      end
+    end
+
+    sig { params(package_violations: EntryType, files: T::Set[String]).returns(EntryType) }
+    def package_violations_for(package_violations, files:)
+      {}.tap do |package_violations_for_files|
+        package_violations_for_files = T.cast(package_violations_for_files, EntryType)
+
+        package_violations.each do |constant_name, entries_for_constant|
+          entries_for_files = files & entries_for_constant.fetch("files")
+          next if entries_for_files.none?
+
+          package_violations_for_files[constant_name] = {
+            "violations" => entries_for_constant["violations"],
+            "files" => entries_for_files.to_a,
+          }
+        end
+      end
+    end
 
     sig { returns(EntriesType) }
     def prepare_entries_for_dump
