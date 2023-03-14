@@ -41,7 +41,7 @@ module Packwerk
       params(reference: Packwerk::Reference, violation_type: String).returns(T::Boolean)
     end
     def add_entries(reference, violation_type)
-      package_violations = @new_entries.fetch(reference.constant.package.name, {})
+      package_violations = new_entries.fetch(reference.constant.package.name, {})
       entries_for_constant = package_violations[reference.constant.name] ||= {}
 
       entries_for_constant["violations"] ||= []
@@ -50,7 +50,7 @@ module Packwerk
       entries_for_constant["files"] ||= []
       entries_for_constant.fetch("files") << reference.relative_path.to_s
 
-      @new_entries[reference.constant.package.name] = package_violations
+      new_entries[reference.constant.package.name] = package_violations
       listed?(reference, violation_type: violation_type)
     end
 
@@ -73,7 +73,7 @@ module Packwerk
 
     sig { void }
     def dump
-      if @new_entries.empty?
+      if new_entries.empty?
         delete_if_exists
       else
         prepare_entries_for_dump
@@ -88,7 +88,7 @@ module Packwerk
         MESSAGE
         File.open(@filepath, "w") do |f|
           f.write(message)
-          f.write(@new_entries.to_yaml)
+          f.write(new_entries.to_yaml)
         end
       end
     end
@@ -100,10 +100,13 @@ module Packwerk
 
     private
 
+    sig { returns(Entries) }
+    attr_reader(:new_entries)
+
     sig { params(package: String).returns(T::Array[String]) }
     def deleted_files_for(package)
       old_files = old_entries.fetch(package, {}).values.flat_map { |violation| violation.fetch("files") }
-      new_files = @new_entries.fetch(package, {}).values.flat_map { |violation| violation.fetch("files") }
+      new_files = new_entries.fetch(package, {}).values.flat_map { |violation| violation.fetch("files") }
       old_files - new_files
     end
 
@@ -111,17 +114,17 @@ module Packwerk
     def stale_violation_for_package?(package, violations:)
       violations.any? do |constant_name, entries_for_constant|
         new_entries_violation_types = T.cast(
-          @new_entries.dig(package, constant_name, "violations"),
+          new_entries.dig(package, constant_name, "violations"),
           T.nilable(T::Array[String]),
         )
         # If there are no NEW entries that match the old entries `for_files`,
-        # @new_entries is from the list of violations we get when we check this file.
+        # new_entries is from the list of violations we get when we check this file.
         # If this list is empty, we also must have stale violations.
         next true if new_entries_violation_types.nil?
 
         if entries_for_constant.fetch("violations").all? { |type| new_entries_violation_types.include?(type) }
           stale_violations =
-            entries_for_constant.fetch("files") - Array(@new_entries.dig(package, constant_name, "files"))
+            entries_for_constant.fetch("files") - Array(new_entries.dig(package, constant_name, "files"))
           stale_violations.any?
         else
           return true
@@ -148,15 +151,15 @@ module Packwerk
 
     sig { returns(Entries) }
     def prepare_entries_for_dump
-      @new_entries.each do |package_name, package_violations|
+      new_entries.each do |package_name, package_violations|
         package_violations.each do |_, entries_for_constant|
           entries_for_constant.fetch("violations").sort!.uniq!
           entries_for_constant.fetch("files").sort!.uniq!
         end
-        @new_entries[package_name] = package_violations.sort.to_h
+        new_entries[package_name] = package_violations.sort.to_h
       end
 
-      @new_entries = @new_entries.sort.to_h
+      @new_entries = new_entries.sort.to_h
     end
 
     sig { returns(Entries) }
