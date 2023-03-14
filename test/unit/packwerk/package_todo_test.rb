@@ -123,6 +123,15 @@ module Packwerk
       )
     end
 
+    test "#stale_violations? returns true when deleted files are present" do
+      package = Package.new(name: "buyers", config: { "enforce_dependencies" => true })
+
+      package_todo = PackageTodo.new(package, "test/fixtures/package_todo.yml")
+      assert package_todo.stale_violations?(
+        Set.new(["orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb"])
+      )
+    end
+
     test "#listed? returns false if constant is not violated" do
       reference = build_reference(destination_package: destination_package)
       package_todo = PackageTodo.new(destination_package, "test/fixtures/package_todo.yml")

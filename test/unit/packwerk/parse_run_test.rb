@@ -328,11 +328,11 @@ module Packwerk
 
       expected_message = <<~EOS
         No offenses detected
-        No stale violations detected
+        There were stale violations found, please run `packwerk update-todo`
       EOS
       assert_equal expected_message, result.message
 
-      assert result.status
+      refute result.status
     end
 
     test "#check lists out violations of strict mode" do
@@ -435,7 +435,7 @@ module Packwerk
 
         1 offense detected
 
-        No stale violations detected
+        There were stale violations found, please run `packwerk update-todo`
       EOS
 
       assert_equal expected_message, result.message

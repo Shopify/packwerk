@@ -7,17 +7,20 @@ module Packwerk
   class PackageTodo
     extend T::Sig
 
-    EntryType = T.type_alias { T::Hash[String, T::Hash[String, T::Array[String]]] }
-    EntriesType = T.type_alias do
-      T::Hash[String, EntryType]
+    PackageName = T.type_alias { String }
+    ConstantName = T.type_alias { String }
+    FilePath = T.type_alias { String }
+    Entry = T.type_alias { T::Hash[ConstantName, T::Hash[ConstantName, T::Array[FilePath]]] }
+    Entries = T.type_alias do
+      T::Hash[PackageName, Entry]
     end
 
     sig { params(package: Packwerk::Package, filepath: String).void }
     def initialize(package, filepath)
       @package = package
       @filepath = filepath
-      @new_entries = T.let({}, EntriesType)
-      @todo_list = T.let(nil, T.nilable(EntriesType))
+      @new_entries = T.let({}, Entries)
+      @old_entries = T.let(nil, T.nilable(Entries))
     end
 
     sig do
@@ -25,7 +28,7 @@ module Packwerk
         .returns(T::Boolean)
     end
     def listed?(reference, violation_type:)
-      violated_constants_found = todo_list.dig(reference.constant.package.name, reference.constant.name)
+      violated_constants_found = old_entries.dig(reference.constant.package.name, reference.constant.name)
       return false unless violated_constants_found
 
       violated_constant_in_file = violated_constants_found.fetch("files", []).include?(reference.relative_path)
@@ -55,8 +58,9 @@ module Packwerk
     def stale_violations?(for_files)
       prepare_entries_for_dump
 
-      todo_list.any? do |package, violations|
-        violations_for_files = package_violations_for(violations, files: for_files)
+      old_entries.any? do |package, violations|
+        files = for_files + deleted_files_for(package)
+        violations_for_files = package_violations_for(violations, files: files)
 
         # We `next false` because if we cannot find existing violations for `for_files` within
         # the `package_todo.yml` file, then there are no violations that
@@ -96,7 +100,14 @@ module Packwerk
 
     private
 
-    sig { params(package: String, violations: EntryType).returns(T::Boolean) }
+    sig { params(package: String).returns(T::Array[String]) }
+    def deleted_files_for(package)
+      old_files = old_entries.fetch(package, {}).values.flat_map { |violation| violation.fetch("files") }
+      new_files = @new_entries.fetch(package, {}).values.flat_map { |violation| violation.fetch("files") }
+      old_files - new_files
+    end
+
+    sig { params(package: String, violations: Entry).returns(T::Boolean) }
     def stale_violation_for_package?(package, violations:)
       violations.any? do |constant_name, entries_for_constant|
         new_entries_violation_types = T.cast(
@@ -118,10 +129,10 @@ module Packwerk
       end
     end
 
-    sig { params(package_violations: EntryType, files: T::Set[String]).returns(EntryType) }
+    sig { params(package_violations: Entry, files: T::Set[String]).returns(Entry) }
     def package_violations_for(package_violations, files:)
       {}.tap do |package_violations_for_files|
-        package_violations_for_files = T.cast(package_violations_for_files, EntryType)
+        package_violations_for_files = T.cast(package_violations_for_files, Entry)
 
         package_violations.each do |constant_name, entries_for_constant|
           entries_for_files = files & entries_for_constant.fetch("files")
@@ -135,7 +146,7 @@ module Packwerk
       end
     end
 
-    sig { returns(EntriesType) }
+    sig { returns(Entries) }
     def prepare_entries_for_dump
       @new_entries.each do |package_name, package_violations|
         package_violations.each do |_, entries_for_constant|
@@ -148,16 +159,16 @@ module Packwerk
       @new_entries = @new_entries.sort.to_h
     end
 
-    sig { returns(EntriesType) }
-    def todo_list
-      @todo_list ||= if File.exist?(@filepath)
+    sig { returns(Entries) }
+    def old_entries
+      @old_entries ||= if File.exist?(@filepath)
         load_yaml(@filepath)
       else
         {}
       end
     end
 
-    sig { params(filepath: String).returns(EntriesType) }
+    sig { params(filepath: String).returns(Entries) }
     def load_yaml(filepath)
       YAML.load_file(filepath) || {}
     rescue Psych::Exception
