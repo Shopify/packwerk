@@ -15,10 +15,10 @@ module Packwerk
       T::Hash[PackageName, Entry]
     end
 
-    sig { params(package: Packwerk::Package, filepath: String).void }
-    def initialize(package, filepath)
+    sig { params(package: Packwerk::Package, path: String).void }
+    def initialize(package, path)
       @package = package
-      @filepath = filepath
+      @path = path
       @new_entries = T.let({}, Entries)
       @old_entries = T.let(nil, T.nilable(Entries))
     end
@@ -86,7 +86,7 @@ module Packwerk
           #
           # bin/packwerk update-todo
         MESSAGE
-        File.open(@filepath, "w") do |f|
+        File.open(@path, "w") do |f|
           f.write(message)
           f.write(new_entries.to_yaml)
         end
@@ -95,7 +95,7 @@ module Packwerk
 
     sig { void }
     def delete_if_exists
-      File.delete(@filepath) if File.exist?(@filepath)
+      File.delete(@path) if File.exist?(@path)
     end
 
     private
@@ -164,16 +164,12 @@ module Packwerk
 
     sig { returns(Entries) }
     def old_entries
-      @old_entries ||= if File.exist?(@filepath)
-        load_yaml(@filepath)
-      else
-        {}
-      end
+      @old_entries ||= load_yaml_file(@path)
     end
 
-    sig { params(filepath: String).returns(Entries) }
-    def load_yaml(filepath)
-      YAML.load_file(filepath) || {}
+    sig { params(path: String).returns(Entries) }
+    def load_yaml_file(path)
+      File.exist?(path) && YAML.load_file(path) || {}
     rescue Psych::Exception
       {}
     end
