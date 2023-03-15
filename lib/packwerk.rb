@@ -32,12 +32,6 @@ module Packwerk
   autoload :ReferenceOffense
   autoload :Validator
 
-  class Cli
-    extend ActiveSupport::Autoload
-
-    autoload :Result
-  end
-
   module OutputStyles
     extend ActiveSupport::Autoload
 
@@ -54,12 +48,6 @@ module Packwerk
 
     autoload :DefaultOffensesFormatter
     autoload :ProgressFormatter
-  end
-
-  module Validator
-    extend ActiveSupport::Autoload
-
-    autoload :Result
   end
 
   module Validators
@@ -112,12 +100,6 @@ module Packwerk
   end
 
   private_constant :ReferenceChecking
-
-  class ApplicationValidator
-    extend ActiveSupport::Autoload
-
-    autoload :Helpers
-  end
 end
 
 require "packwerk/version"

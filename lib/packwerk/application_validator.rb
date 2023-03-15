@@ -11,6 +11,9 @@ module Packwerk
   class ApplicationValidator
     include Validator
     extend T::Sig
+    extend ActiveSupport::Autoload
+
+    autoload :Helpers
 
     sig { params(package_set: PackageSet, configuration: Configuration).returns(Validator::Result) }
     def check_all(package_set, configuration)

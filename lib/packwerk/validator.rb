@@ -9,6 +9,9 @@ module Packwerk
   module Validator
     extend T::Sig
     extend T::Helpers
+    extend ActiveSupport::Autoload
+
+    autoload :Result
 
     abstract!
 
