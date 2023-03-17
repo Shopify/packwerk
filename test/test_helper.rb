@@ -1,12 +1,10 @@
 # typed: true
 # frozen_string_literal: true
 
-ENV["RAILS_ENV"] = "test"
-
 require "pathname"
 
-$LOAD_PATH.unshift(File.expand_path("../lib", __dir__))
 ROOT = Pathname.new(__dir__).join("..").expand_path
+ENV["RAILS_ENV"] = "test"
 
 require "packwerk"
 
