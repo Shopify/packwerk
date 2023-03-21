@@ -11,11 +11,13 @@ module Packwerk
     class << self
       extend T::Sig
 
+      # Returns path map of autoload directories and their autoload target
+      # (usually Object to denote loading under the root namespace).
       sig { params(root: String, environment: String).returns(T::Hash[String, Module]) }
       def for(root, environment:)
         require_application(root, environment)
-        all_paths = application_autoload_paths.merge(nil => application_lib_paths)
-        relevant_paths = filter_relevant_paths(all_paths)
+        all_paths = application_autoload_paths
+        relevant_paths = filter_relevant_paths(all_paths).merge(application_lib_paths)
         assert_load_paths_present(relevant_paths)
         relative_path_strings(relevant_paths)
       end
@@ -24,14 +26,16 @@ module Packwerk
 
       sig { returns(T::Hash[String, Module]) }
       def application_autoload_paths
-        Rails.autoloaders.inject({}) do |h, loader|
-          h.merge(loader.dirs(namespaces: true))
+        Rails.autoloaders.inject({}) do |paths_by_target, loader|
+          paths_by_target.merge(loader.dirs(namespaces: true))
         end
       end
 
+      sig { returns(T::Hash[Pathname, Module]) }
       def application_lib_paths
-        puts Rails::Engine.descendants.inspect
-        [Rails.application, *Rails::Engine.descendants].map { |engine| engine.root.join("lib") }.select { |lib| lib.exist? }
+        [Rails.application, *Rails::Engine.descendants].map do |engine|
+          engine.root.join("lib")
+        end.select { |lib| lib.exist? }.to_h { |path| [path, Object] }
       end
 
       sig do
@@ -66,7 +70,7 @@ module Packwerk
         end
       end
 
-      sig { params(paths: T::Hash[T.untyped, Module]).void }
+      sig { params(paths: T::Hash[Pathname, Module]).void }
       def assert_load_paths_present(paths)
         if paths.empty?
           raise <<~EOS
