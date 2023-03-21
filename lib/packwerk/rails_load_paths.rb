@@ -14,7 +14,7 @@ module Packwerk
       sig { params(root: String, environment: String).returns(T::Hash[String, Module]) }
       def for(root, environment:)
         require_application(root, environment)
-        all_paths = extract_application_autoload_paths
+        all_paths = application_autoload_paths.merge(nil => application_lib_paths)
         relevant_paths = filter_relevant_paths(all_paths)
         assert_load_paths_present(relevant_paths)
         relative_path_strings(relevant_paths)
@@ -23,10 +23,15 @@ module Packwerk
       private
 
       sig { returns(T::Hash[String, Module]) }
-      def extract_application_autoload_paths
+      def application_autoload_paths
         Rails.autoloaders.inject({}) do |h, loader|
           h.merge(loader.dirs(namespaces: true))
         end
+      end
+
+      def application_lib_paths
+        puts Rails::Engine.descendants.inspect
+        [Rails.application, *Rails::Engine.descendants].map { |engine| engine.root.join("lib") }.select { |lib| lib.exist? }
       end
 
       sig do
