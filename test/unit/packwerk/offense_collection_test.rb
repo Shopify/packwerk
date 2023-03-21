@@ -27,19 +27,23 @@ module Packwerk
 
     test "#stale_violations? returns true if there are stale violations" do
       @offense_collection.add_offense(@offense)
+      file_set = Set.new
 
       Packwerk::PackageTodo.any_instance
         .expects(:stale_violations?)
+        .with(file_set)
         .returns(true)
 
-      assert @offense_collection.stale_violations?(Set.new)
+      assert @offense_collection.stale_violations?(file_set)
     end
 
     test "#stale_violations? returns false if no stale violations" do
       @offense_collection.add_offense(@offense)
+      file_set = Set.new
 
       Packwerk::PackageTodo.any_instance
         .expects(:stale_violations?)
+        .with(file_set)
         .returns(false)
 
       refute @offense_collection.stale_violations?(Set.new)
