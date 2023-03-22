@@ -17,6 +17,15 @@ module Packwerk
       )
     end
 
+    test "running sig blocks does not load extra files" do
+      require "packwerk"
+      before_sig_files = loaded_packwerk_files
+
+      T::Utils.run_all_sig_blocks
+
+      assert_equal(before_sig_files, loaded_packwerk_files)
+    end
+
     private
 
     def loaded_packwerk_files

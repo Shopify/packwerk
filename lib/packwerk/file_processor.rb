@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "ast/node"
+require "parser/ast/node"
 
 module Packwerk
   class FileProcessor
