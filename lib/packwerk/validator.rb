@@ -9,6 +9,9 @@ module Packwerk
   module Validator
     extend T::Sig
     extend T::Helpers
+    extend ActiveSupport::Autoload
+
+    autoload :Result
 
     abstract!
 
@@ -17,14 +20,25 @@ module Packwerk
 
       sig { params(base: Class).void }
       def included(base)
-        @validators ||= T.let(@validators, T.nilable(T::Array[Class]))
-        @validators ||= []
-        @validators << base
+        validators << base
       end
 
       sig { returns(T::Array[Validator]) }
       def all
-        T.unsafe(@validators).map(&:new)
+        load_defaults
+        T.cast(validators.map(&:new), T::Array[Validator])
+      end
+
+      private
+
+      sig { void }
+      def load_defaults
+        require("packwerk/validators/dependency_validator")
+      end
+
+      sig { returns(T::Array[Class]) }
+      def validators
+        @validators ||= T.let([], T.nilable(T::Array[Class]))
       end
     end
 

@@ -22,14 +22,13 @@ module Packwerk
 
       sig { params(base: Class).void }
       def included(base)
-        @offenses_formatters ||= T.let(@offenses_formatters, T.nilable(T::Array[Class]))
-        @offenses_formatters ||= []
-        @offenses_formatters << base
+        offenses_formatters << base
       end
 
       sig { returns(T::Array[OffensesFormatter]) }
       def all
-        T.unsafe(@offenses_formatters).map(&:new)
+        load_defaults
+        T.cast(offenses_formatters.map(&:new), T::Array[OffensesFormatter])
       end
 
       sig { params(identifier: String).returns(OffensesFormatter) }
@@ -38,6 +37,16 @@ module Packwerk
       end
 
       private
+
+      sig { void }
+      def load_defaults
+        require("packwerk/formatters/default_offenses_formatter")
+      end
+
+      sig { returns(T::Array[Class]) }
+      def offenses_formatters
+        @offenses_formatters ||= T.let([], T.nilable(T::Array[Class]))
+      end
 
       sig { params(name: String).returns(OffensesFormatter) }
       def formatter_by_identifier(name)

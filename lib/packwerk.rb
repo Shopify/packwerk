@@ -32,12 +32,6 @@ module Packwerk
   autoload :ReferenceOffense
   autoload :Validator
 
-  class Cli
-    extend ActiveSupport::Autoload
-
-    autoload :Result
-  end
-
   module OutputStyles
     extend ActiveSupport::Autoload
 
@@ -52,13 +46,14 @@ module Packwerk
   module Formatters
     extend ActiveSupport::Autoload
 
+    autoload :DefaultOffensesFormatter
     autoload :ProgressFormatter
   end
 
-  module Validator
+  module Validators
     extend ActiveSupport::Autoload
 
-    autoload :Result
+    autoload :DependencyValidator
   end
 
   # Private APIs
@@ -101,26 +96,10 @@ module Packwerk
       extend ActiveSupport::Autoload
 
       autoload :DependencyChecker
-      autoload :PrivacyChecker
     end
   end
 
   private_constant :ReferenceChecking
-
-  class ApplicationValidator
-    extend ActiveSupport::Autoload
-
-    autoload :Helpers
-  end
 end
 
 require "packwerk/version"
-
-# Required to register the DefaultOffensesFormatter
-# We put this at the *end* of the file to specify all autoloads first
-require "packwerk/formatters/default_offenses_formatter"
-
-# Required to register the default DependencyChecker
-require "packwerk/reference_checking/checkers/dependency_checker"
-# Required to register the default DependencyValidator
-require "packwerk/validators/dependency_validator"

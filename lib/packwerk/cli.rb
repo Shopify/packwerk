@@ -7,6 +7,9 @@ module Packwerk
   # A command-line interface to Packwerk.
   class Cli
     extend T::Sig
+    extend ActiveSupport::Autoload
+
+    autoload :Result
 
     sig do
       params(

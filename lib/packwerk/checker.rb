@@ -13,14 +13,13 @@ module Packwerk
 
       sig { params(base: Class).void }
       def included(base)
-        @checkers ||= T.let(@checkers, T.nilable(T::Array[Class]))
-        @checkers ||= []
-        @checkers << base
+        checkers << base
       end
 
       sig { returns(T::Array[Checker]) }
       def all
-        T.unsafe(@checkers).map(&:new)
+        load_defaults
+        T.cast(checkers.map(&:new), T::Array[Checker])
       end
 
       sig { params(violation_type: String).returns(Checker) }
@@ -29,6 +28,16 @@ module Packwerk
       end
 
       private
+
+      sig { void }
+      def load_defaults
+        require("packwerk/reference_checking/checkers/dependency_checker")
+      end
+
+      sig { returns(T::Array[Class]) }
+      def checkers
+        @checkers ||= T.let([], T.nilable(T::Array[Class]))
+      end
 
       sig { params(name: String).returns(Checker) }
       def checker_by_violation_type(name)

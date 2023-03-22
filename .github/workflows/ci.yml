@@ -27,7 +27,30 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
       - name: Run tests
-        run: bin/rake
+        run: bin/rake test
+  loading-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        gemfile:
+          - Gemfile
+        ruby:
+          - 2.7
+          - 3.0
+          - 3.1
+          - 3.2
+    env:
+      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
+    name: "Loading Tests: Ruby ${{ matrix.ruby }} ${{ matrix.gemfile }}"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Ruby ${{ matrix.ruby }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Run tests
+        run: bin/rake test:loading
   lint:
     runs-on: ubuntu-latest
     name: Lint
