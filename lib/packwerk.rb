@@ -4,6 +4,7 @@
 require "sorbet-runtime"
 require "active_support"
 require "fileutils"
+require "thor"
 
 # Provides String#pluralize
 require "active_support/core_ext/string"
@@ -32,6 +33,16 @@ module Packwerk
   autoload :ReferenceOffense
   autoload :Validator
 
+  module Commands
+    extend ActiveSupport::Autoload
+
+    autoload :Command
+    autoload :Check
+    autoload :Init
+    autoload :UpdateTodo
+    autoload :Validate
+  end
+
   module OutputStyles
     extend ActiveSupport::Autoload
 
@@ -58,6 +69,8 @@ module Packwerk
 
   # Private APIs
   # Please submit an issue if you have a use-case for these
+  autoload :CommandLine
+  autoload :Shell
   autoload :ApplicationValidator
   autoload :AssociationInspector
   autoload :Cache

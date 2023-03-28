@@ -13,31 +13,31 @@ module Packwerk
       class << self
         extend T::Sig
 
-        sig { params(root: String, out: T.any(IO, StringIO)).returns(T::Boolean) }
-        def generate(root:, out:)
-          new(root: root, out: out).generate
+        sig { params(root: String, shell: Shell).returns(T::Boolean) }
+        def generate(root:, shell:)
+          new(root: root, shell: shell).generate
         end
       end
 
-      sig { params(root: String, out: T.any(StringIO, IO)).void }
-      def initialize(root:, out: $stdout)
+      sig { params(root: String, shell: Shell).void }
+      def initialize(root:, shell:)
         @root = root
-        @out = out
+        @shell = shell
       end
 
       sig { returns(T::Boolean) }
       def generate
-        @out.puts("📦 Generating Packwerk configuration file...")
+        @shell.say("📦 Generating Packwerk configuration file...")
         default_config_path = File.join(@root, Configuration::DEFAULT_CONFIG_PATH)
 
         if File.exist?(default_config_path)
-          @out.puts("⚠️  Packwerk configuration file already exists.")
+          @shell.say("⚠️  Packwerk configuration file already exists.")
           return true
         end
 
         File.write(default_config_path, render)
 
-        @out.puts("✅ Packwerk configuration file generated in #{default_config_path}")
+        @shell.say("✅ Packwerk configuration file generated in #{default_config_path}")
         true
       end
 

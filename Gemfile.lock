@@ -10,6 +10,7 @@ PATH
       parallel
       parser
       sorbet-runtime (>= 0.5.9914)
+      thor (>= 1.2.1)
       zeitwerk (>= 2.6.1)
 
 GEM
@@ -68,6 +69,8 @@ GEM
     netrc (0.11.0)
     nokogiri (1.13.8)
       mini_portile2 (~> 2.8.0)
+      racc (~> 1.4)
+    nokogiri (1.13.8-x86_64-darwin)
       racc (~> 1.4)
     parallel (1.22.1)
     parser (3.1.2.1)
@@ -198,4 +201,4 @@ DEPENDENCIES
   zeitwerk
 
 BUNDLED WITH
-   2.4.8
+   2.3.5

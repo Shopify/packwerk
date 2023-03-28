@@ -46,6 +46,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency("parallel")
   spec.add_dependency("sorbet-runtime", ">= 0.5.9914")
   spec.add_dependency("zeitwerk", ">= 2.6.1")
+  spec.add_dependency("thor", ">= 1.2.1")
 
   # For Ruby parsing
   spec.add_dependency("ast")
