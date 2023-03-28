@@ -25,7 +25,6 @@ module Packwerk
       @name = name
       @config = T.let(config || {}, T::Hash[String, T.untyped])
       @dependencies = T.let(Array(@config["dependencies"]).freeze, T::Array[String])
-      @public_path = T.let(nil, T.nilable(String))
     end
 
     sig { returns(T::Boolean) }
