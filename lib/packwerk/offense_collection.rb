@@ -11,12 +11,12 @@ module Packwerk
     sig do
       params(
         root_path: String,
-        package_todo: T::Hash[Packwerk::Package, Packwerk::PackageTodo]
+        package_todos: T::Hash[Packwerk::Package, Packwerk::PackageTodo]
       ).void
     end
-    def initialize(root_path, package_todo = {})
+    def initialize(root_path, package_todos = {})
       @root_path = root_path
-      @package_todo = T.let(package_todo, T::Hash[Packwerk::Package, Packwerk::PackageTodo])
+      @package_todos = T.let(package_todos, T::Hash[Packwerk::Package, Packwerk::PackageTodo])
       @new_violations = T.let([], T::Array[Packwerk::ReferenceOffense])
       @strict_mode_violations = T.let([], T::Array[Packwerk::ReferenceOffense])
       @errors = T.let([], T::Array[Packwerk::Offense])
@@ -60,7 +60,7 @@ module Packwerk
 
     sig { params(for_files: T::Set[String]).returns(T::Boolean) }
     def stale_violations?(for_files)
-      @package_todo.values.any? do |package_todo|
+      @package_todos.values.any? do |package_todo|
         package_todo.stale_violations?(for_files)
       end
     end
@@ -92,7 +92,7 @@ module Packwerk
 
     sig { params(package_set: Packwerk::PackageSet).void }
     def cleanup_extra_package_todo_files(package_set)
-      packages_without_todos = (package_set.packages.values - @package_todo.keys)
+      packages_without_todos = (package_set.packages.values - @package_todos.keys)
 
       packages_without_todos.each do |package|
         Packwerk::PackageTodo.new(
@@ -104,12 +104,12 @@ module Packwerk
 
     sig { void }
     def dump_package_todo_files
-      @package_todo.each_value(&:dump)
+      @package_todos.each_value(&:dump)
     end
 
     sig { params(package: Packwerk::Package).returns(Packwerk::PackageTodo) }
     def package_todo_for(package)
-      @package_todo[package] ||= Packwerk::PackageTodo.new(
+      @package_todos[package] ||= Packwerk::PackageTodo.new(
         package,
         package_todo_file_for(package),
       )
