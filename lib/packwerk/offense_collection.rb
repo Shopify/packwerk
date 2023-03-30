@@ -42,6 +42,11 @@ module Packwerk
       package_todo_for(reference.package).listed?(reference, violation_type: offense.violation_type)
     end
 
+    sig { params(offenses: T::Array[Offense]).void }
+    def add_offenses(offenses)
+      offenses.each { |offense| add_offense(offense) }
+    end
+
     sig do
       params(offense: Packwerk::Offense).void
     end
