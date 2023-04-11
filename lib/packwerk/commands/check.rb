@@ -6,6 +6,14 @@ module Packwerk
     class Check < Command
       extend T::Sig
 
+      class << self
+        extend T::Sig
+
+        sig { returns(String) }
+        def description
+          "run all checks"
+        end
+      end
 
       sig { returns(T::Boolean) }
       def check

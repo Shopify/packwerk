@@ -6,6 +6,14 @@ module Packwerk
     class Init < Command
       extend T::Sig
 
+      class << self
+        extend T::Sig
+
+        sig { returns(String) }
+        def description
+          "set up packwerk"
+        end
+      end
 
       sig { returns(T::Boolean) }
       def init

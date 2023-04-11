@@ -6,6 +6,15 @@ module Packwerk
     class Validate < Command
       extend T::Sig
 
+      class << self
+        extend T::Sig
+
+        sig { returns(String) }
+        def description
+          "verify integrity of packwerk and package configuration"
+        end
+      end
+
       sig { returns(T::Boolean) }
       def validate
         result = T.let(nil, T.nilable(Validator::Result))

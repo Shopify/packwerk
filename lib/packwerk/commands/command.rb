@@ -13,6 +13,22 @@ module Packwerk
         def exit_on_failure?
           false
         end
+
+        sig { returns(String) }
+        def usage
+          command_name
+        end
+
+        sig { returns(String) }
+        def description
+          ""
+        end
+
+        sig { returns(String) }
+        def command_name
+          name = T.must(self.name)
+          (name.split("::").last || "").underscore
+        end
       end
 
       sig do

@@ -13,12 +13,24 @@ module Packwerk
       def exit_on_failure?
         false
       end
+
+      private
+
+      sig { params(thor_group_class: T.class_of(Commands::Command)).void }
+      def register_group_as_command(thor_group_class)
+        register(
+          thor_group_class,
+          thor_group_class.command_name,
+          thor_group_class.usage,
+          thor_group_class.description,
+        )
+      end
     end
 
-    register(Commands::Check, :check, "", "")
-    register(Commands::UpdateTodo, :update_todo, "", "")
-    register(Commands::Init, :init, "", "")
-    register(Commands::Validate, :validate, "", "")
+    register_group_as_command Commands::Check
+    register_group_as_command Commands::UpdateTodo
+    register_group_as_command Commands::Init
+    register_group_as_command Commands::Validate
 
     sig { returns(T::Boolean) }
     def help
@@ -36,7 +48,7 @@ module Packwerk
       true
     end
 
-    desc "Hi", ""
+    desc "version", "output packwerk version"
     sig { returns(T::Boolean) }
     def version
       say(Packwerk::VERSION)
