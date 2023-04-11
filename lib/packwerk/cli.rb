@@ -43,7 +43,20 @@ module Packwerk
 
     sig { params(args: T::Array[String]).returns(T.noreturn) }
     def run(args)
-      CommandLine.start(args, shell: shell, packwerk: @configuration)
+      success = execute_command(args)
+      exit(success)
+    end
+
+    sig { params(args: T::Array[String]).returns(T::Boolean) }
+    def execute_command(args)
+      CommandLine.start(args, shell: shell, packwerk: @configuration, debug: true)
+      true
+    rescue Thor::UndefinedCommandError, Thor::UndefinedTaskError => e
+      shell.error("'#{e.command}' is not a packwerk command. See `packwerk help`.")
+      false
+    rescue Thor::Error
+      shell.error(e.message)
+      false
     end
 
     private

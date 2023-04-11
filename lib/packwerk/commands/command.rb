@@ -6,10 +6,21 @@ module Packwerk
     class Command < Thor::Group
       extend T::Sig
 
+      class << self
+        extend T::Sig
+
+        sig { returns(T::Boolean) }
+        def exit_on_failure?
+          false
+        end
+      end
+
       sig do
         params(
           args: T::Array[String],
-          local_options: T::Hash[T.untyped, T.untyped],
+          # local_options can either be a hash or an array:
+          # https://github.com/rails/thor/blob/376e141adb594f3146c57e98151b97a20c93c484/lib/thor/base.rb#L63
+          local_options: T.any(T::Hash[T.untyped, T.untyped], T::Array[String]),
           config: T::Hash[T.untyped, T.untyped],
         ).void
       end
@@ -18,7 +29,6 @@ module Packwerk
         @shell = T.let(config.fetch(:shell), Shell)
         super
       end
-
 
       private
 

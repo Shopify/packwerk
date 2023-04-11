@@ -6,6 +6,15 @@ module Packwerk
     extend T::Sig
     extend ActiveSupport::Autoload
 
+    class << self
+      extend T::Sig
+
+      sig { returns(T::Boolean) }
+      def exit_on_failure?
+        false
+      end
+    end
+
     register(Commands::Check, :check, "", "")
     register(Commands::UpdateTodo, :update_todo, "", "")
     register(Commands::Init, :init, "", "")
