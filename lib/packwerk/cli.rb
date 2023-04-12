@@ -77,7 +77,8 @@ module Packwerk
         result = VersionCommand.new(out: @out).run
         output_result(result)
       when nil, "help"
-        HelpCommand.new(out: @err_out).run
+        result = HelpCommand.new(out: @err_out).run
+        output_result(result)
       else
         @err_out.puts(
           "'#{subcommand}' is not a packwerk command. See `packwerk help`."

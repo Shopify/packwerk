@@ -11,9 +11,9 @@ module Packwerk
         @out = out
       end
 
-      sig { returns(T::Boolean) }
+      sig { returns(Result) }
       def run
-        @out.puts(<<~USAGE)
+        Result.new(status: true, message: <<~USAGE)
           Usage: #{$PROGRAM_NAME} <subcommand>
 
           Subcommands:
@@ -24,7 +24,6 @@ module Packwerk
             version - output packwerk version
             help  - display help information about packwerk
         USAGE
-        true
       end
     end
 

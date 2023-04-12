@@ -11,8 +11,9 @@ module Packwerk
 
     setup do
       setup_application_fixture
+      @out = StringIO.new
       @err_out = StringIO.new
-      @cli = ::Packwerk::Cli.new(err_out: @err_out)
+      @cli = ::Packwerk::Cli.new(out: @out, err_out: @err_out)
     end
 
     teardown do
@@ -86,7 +87,7 @@ module Packwerk
       use_template(:blank)
       @cli.execute_command(["help"])
 
-      assert_match(/Subcommands:/, @err_out.string)
+      assert_match(/Subcommands:/, @out.string)
     end
 
     test "#execute_command with validate subcommand runs application validator and succeeds if no errors" do
@@ -127,7 +128,7 @@ module Packwerk
       use_template(:blank)
       @cli.execute_command([])
 
-      assert_match(/Subcommands:/, @err_out.string)
+      assert_match(/Subcommands:/, @out.string)
     end
 
     test "#execute_command with version subcommand returns the version" do
