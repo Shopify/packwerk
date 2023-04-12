@@ -8,7 +8,7 @@ module Packwerk
 
       sig { override.returns(Result) }
       def run
-        Result.new(status: true, message: <<~USAGE)
+        Result.new(status: true, print_as_error: true, message: <<~USAGE)
           Usage: #{$PROGRAM_NAME} <subcommand>
 
           Subcommands:
