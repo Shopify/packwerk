@@ -9,6 +9,7 @@ module Packwerk
     extend T::Sig
     extend ActiveSupport::Autoload
 
+    autoload :CheckCommand
     autoload :HelpCommand
     autoload :InitCommand
     autoload :ValidateCommand
@@ -58,7 +59,8 @@ module Packwerk
       when "init"
         InitCommand.new(out: @out, configuration: @configuration).run
       when "check"
-        output_result(parse_run(args).check)
+        result = CheckCommand.new(parse_run: parse_run(args)).run
+        output_result(result)
       when "update-todo", "update"
         output_result(parse_run(args).update_todo)
       when "validate"
