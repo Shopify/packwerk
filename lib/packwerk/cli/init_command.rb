@@ -17,7 +17,7 @@ module Packwerk
         @configuration = configuration
       end
 
-      sig { returns(T::Boolean) }
+      sig { returns(Result) }
       def run
         @out.puts("📦 Initializing Packwerk...")
 
@@ -30,7 +30,7 @@ module Packwerk
 
         success = configuration_file && root_package
 
-        result = if success
+        message = if success
           <<~EOS
 
             🎉 Packwerk is ready to be used. You can start defining packages and run `bin/packwerk check`.
@@ -44,8 +44,7 @@ module Packwerk
           EOS
         end
 
-        @out.puts(result)
-        success
+        Result.new(message: message, status: success)
       end
     end
 

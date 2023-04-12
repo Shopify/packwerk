@@ -58,7 +58,8 @@ module Packwerk
       subcommand = args.shift
       case subcommand
       when "init"
-        InitCommand.new(out: @out, configuration: @configuration).run
+        result = InitCommand.new(out: @out, configuration: @configuration).run
+        output_result(result)
       when "check"
         result = CheckCommand.new(parse_run: parse_run(args)).run
         output_result(result)
