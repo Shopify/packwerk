@@ -10,6 +10,7 @@ module Packwerk
     extend ActiveSupport::Autoload
 
     autoload :HelpCommand
+    autoload :ValidateCommand
     autoload :VersionCommand
     autoload :Result
 
@@ -60,7 +61,11 @@ module Packwerk
       when "update-todo", "update"
         output_result(parse_run(args).update_todo)
       when "validate"
-        validate(args)
+        ValidateCommand.new(
+          out: @out,
+          configuration: @configuration,
+          progress_formatter: @progress_formatter,
+        ).run
       when "version"
         VersionCommand.new(out: @out).run
       when nil, "help"
@@ -138,43 +143,6 @@ module Packwerk
       files_for_processing
     end
 
-    sig { params(_paths: T::Array[String]).returns(T::Boolean) }
-    def validate(_paths)
-      result = T.let(nil, T.nilable(Validator::Result))
-
-      @progress_formatter.started_validation do
-        result = validator.check_all(package_set, @configuration)
-
-        list_validation_errors(result)
-      end
-
-      T.must(result).ok?
-    end
-
-    sig { returns(ApplicationValidator) }
-    def validator
-      ApplicationValidator.new
-    end
-
-    sig { returns(PackageSet) }
-    def package_set
-      PackageSet.load_all_from(
-        @configuration.root_path,
-        package_pathspec: @configuration.package_paths
-      )
-    end
-
-    sig { params(result: Validator::Result).void }
-    def list_validation_errors(result)
-      @out.puts
-      if result.ok?
-        @out.puts("Validation successful 🎉")
-      else
-        @out.puts("Validation failed ❗")
-        @out.puts
-        @out.puts(result.error_value)
-      end
-    end
 
     sig { params(args: T::Array[String]).returns(ParseRun) }
     def parse_run(args)
