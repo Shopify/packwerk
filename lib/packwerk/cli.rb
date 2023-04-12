@@ -74,7 +74,8 @@ module Packwerk
         ).run
         output_result(result)
       when "version"
-        VersionCommand.new(out: @out).run
+        result = VersionCommand.new(out: @out).run
+        output_result(result)
       when nil, "help"
         HelpCommand.new(out: @err_out).run
       else
@@ -89,7 +90,6 @@ module Packwerk
 
     sig { params(result: Result).returns(T::Boolean) }
     def output_result(result)
-      @out.puts
       @out.puts(result.message)
       result.status
     end

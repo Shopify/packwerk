@@ -44,6 +44,7 @@ module Packwerk
       def interrupted
         @out.puts
         @out.puts("Manually interrupted. Violations caught so far are listed below:")
+        @out.puts
       end
 
       private
@@ -52,6 +53,7 @@ module Packwerk
       def finished(execution_time)
         @out.puts
         @out.puts("📦 Finished in #{execution_time.round(2)} seconds")
+        @out.puts
       end
 
       sig { void }

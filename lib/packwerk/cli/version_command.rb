@@ -11,10 +11,9 @@ module Packwerk
         @out = out
       end
 
-      sig { returns(T::Boolean) }
+      sig { returns(Result) }
       def run
-        @out.puts(Packwerk::VERSION)
-        true
+        Result.new(message: Packwerk::VERSION, status: true)
       end
     end
 
