@@ -10,6 +10,7 @@ module Packwerk
     extend ActiveSupport::Autoload
 
     autoload :HelpCommand
+    autoload :InitCommand
     autoload :ValidateCommand
     autoload :VersionCommand
     autoload :Result
@@ -55,7 +56,7 @@ module Packwerk
       subcommand = args.shift
       case subcommand
       when "init"
-        init
+        InitCommand.new(out: @out, configuration: @configuration).run
       when "check"
         output_result(parse_run(args).check)
       when "update-todo", "update"
@@ -79,42 +80,6 @@ module Packwerk
     end
 
     private
-
-    sig { returns(T::Boolean) }
-    def init
-      @out.puts("📦 Initializing Packwerk...")
-
-      generate_configs
-    end
-
-    sig { returns(T::Boolean) }
-    def generate_configs
-      configuration_file = Generators::ConfigurationFile.generate(
-        root: @configuration.root_path,
-        out: @out
-      )
-
-      root_package = Generators::RootPackage.generate(root: @configuration.root_path, out: @out)
-
-      success = configuration_file && root_package
-
-      result = if success
-        <<~EOS
-
-          🎉 Packwerk is ready to be used. You can start defining packages and run `bin/packwerk check`.
-          For more information on how to use Packwerk, see: https://github.com/Shopify/packwerk/blob/main/USAGE.md
-        EOS
-      else
-        <<~EOS
-
-          ⚠️  Packwerk is not ready to be used.
-          Please check output and refer to https://github.com/Shopify/packwerk/blob/main/USAGE.md for more information.
-        EOS
-      end
-
-      @out.puts(result)
-      success
-    end
 
     sig { params(result: Result).returns(T::Boolean) }
     def output_result(result)
