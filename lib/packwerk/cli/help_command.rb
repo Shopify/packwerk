@@ -3,7 +3,7 @@
 
 module Packwerk
   class Cli
-    class HelpCommand
+    class HelpCommand < BaseCommand
       extend T::Sig
 
       sig { returns(Result) }

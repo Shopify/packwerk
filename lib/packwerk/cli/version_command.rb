@@ -3,7 +3,7 @@
 
 module Packwerk
   class Cli
-    class VersionCommand
+    class VersionCommand < BaseCommand
       extend T::Sig
 
       sig { returns(Result) }

@@ -3,14 +3,8 @@
 
 module Packwerk
   class Cli
-    class UpdateCommand
+    class UpdateCommand < BaseCommand
       extend T::Sig
-
-      sig { params(cli: Cli, args: T::Array[String]).void }
-      def initialize(cli, args)
-        @cli = cli
-        @args = args
-      end
 
       sig { returns(Result) }
       def run

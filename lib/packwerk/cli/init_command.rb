@@ -3,30 +3,19 @@
 
 module Packwerk
   class Cli
-    class InitCommand
+    class InitCommand < BaseCommand
       extend T::Sig
-
-      sig do
-        params(
-          out: T.any(StringIO, IO),
-          configuration: Configuration,
-        ).void
-      end
-      def initialize(out:, configuration:)
-        @out = out
-        @configuration = configuration
-      end
 
       sig { returns(Result) }
       def run
-        @out.puts("📦 Initializing Packwerk...")
+        @cli.out.puts("📦 Initializing Packwerk...")
 
         configuration_file = Generators::ConfigurationFile.generate(
-          root: @configuration.root_path,
-          out: @out
+          root: @cli.configuration.root_path,
+          out: @cli.out
         )
 
-        root_package = Generators::RootPackage.generate(root: @configuration.root_path, out: @out)
+        root_package = Generators::RootPackage.generate(root: @cli.configuration.root_path, out: @cli.out)
 
         success = configuration_file && root_package
 

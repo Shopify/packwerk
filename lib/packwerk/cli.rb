@@ -9,6 +9,7 @@ module Packwerk
     extend T::Sig
     extend ActiveSupport::Autoload
 
+    autoload :BaseCommand
     autoload :CheckCommand
     autoload :HelpCommand
     autoload :InitCommand
@@ -71,20 +72,17 @@ module Packwerk
 
       result = case subcommand
       when "init"
-        InitCommand.new(out: @out, configuration: @configuration).run
+        InitCommand.new(self, args).run
       when "check"
         CheckCommand.new(self, args).run
       when "update-todo", "update"
         UpdateCommand.new(self, args).run
       when "validate"
-        ValidateCommand.new(
-          configuration: @configuration,
-          progress_formatter: @progress_formatter,
-        ).run
+        ValidateCommand.new(self, args).run
       when "version"
-        VersionCommand.new.run
+        VersionCommand.new(self, args).run
       when "help"
-        HelpCommand.new.run
+        HelpCommand.new(self, args).run
       else
         Result.new(
           status: false,
