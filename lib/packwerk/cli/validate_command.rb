@@ -8,13 +8,11 @@ module Packwerk
 
       sig do
         params(
-          out: T.any(StringIO, IO),
           configuration: Configuration,
           progress_formatter: Formatters::ProgressFormatter,
         ).void
       end
-      def initialize(out:, configuration:, progress_formatter:)
-        @out = out
+      def initialize(configuration:, progress_formatter:)
         @configuration = configuration
         @progress_formatter = progress_formatter
       end

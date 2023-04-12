@@ -6,11 +6,6 @@ module Packwerk
     class HelpCommand
       extend T::Sig
 
-      sig { params(out: T.any(StringIO, IO)).void }
-      def initialize(out:)
-        @out = out
-      end
-
       sig { returns(Result) }
       def run
         Result.new(status: true, message: <<~USAGE)

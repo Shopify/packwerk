@@ -68,16 +68,15 @@ module Packwerk
         output_result(result)
       when "validate"
         result = ValidateCommand.new(
-          out: @out,
           configuration: @configuration,
           progress_formatter: @progress_formatter,
         ).run
         output_result(result)
       when "version"
-        result = VersionCommand.new(out: @out).run
+        result = VersionCommand.new.run
         output_result(result)
       when nil, "help"
-        result = HelpCommand.new(out: @err_out).run
+        result = HelpCommand.new.run
         output_result(result)
       else
         @err_out.puts(
