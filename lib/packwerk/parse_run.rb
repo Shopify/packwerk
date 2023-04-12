@@ -94,7 +94,27 @@ module Packwerk
     end
     def find_offenses(run_context, &block)
       offenses = T.let([], T::Array[Offense])
-      process_file = if block_given?
+      process_file_proc = process_file_proc(run_context, &block)
+
+      @progress_formatter.started_inspection(@relative_file_set) do
+        offenses = if @configuration.parallel?
+          Parallel.flat_map(@relative_file_set, &process_file_proc)
+        else
+          serial_find_offenses(&process_file_proc)
+        end
+      end
+
+      offenses
+    end
+
+    sig do
+      params(
+        run_context: RunContext,
+        block: T.nilable(T.proc.params(offenses: T::Array[Offense]).void)
+      ).returns(ProcessFileProc)
+    end
+    def process_file_proc(run_context, &block)
+      if block
         T.let(proc do |relative_file|
           run_context.process_file(relative_file: relative_file).tap(&block)
         end, ProcessFileProc)
@@ -103,16 +123,6 @@ module Packwerk
           run_context.process_file(relative_file: relative_file)
         end, ProcessFileProc)
       end
-
-      @progress_formatter.started_inspection(@relative_file_set) do
-        offenses = if @configuration.parallel?
-          Parallel.flat_map(@relative_file_set, &process_file)
-        else
-          serial_find_offenses(&process_file)
-        end
-      end
-
-      offenses
     end
 
     sig { params(block: ProcessFileProc).returns(T::Array[Offense]) }
