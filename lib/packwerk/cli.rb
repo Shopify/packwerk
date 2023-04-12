@@ -47,6 +47,18 @@ module Packwerk
       )
     end
 
+    sig { returns(Configuration) }
+    attr_reader :configuration
+
+    sig { returns(OffensesFormatter) }
+    attr_reader :offenses_formatter
+
+    sig { returns(Formatters::ProgressFormatter) }
+    attr_reader :progress_formatter
+
+    sig { returns(T.any(IO, StringIO)) }
+    attr_reader :out
+
     sig { params(args: T::Array[String]).returns(T.noreturn) }
     def run(args)
       success = execute_command(args)
@@ -61,7 +73,7 @@ module Packwerk
       when "init"
         InitCommand.new(out: @out, configuration: @configuration).run
       when "check"
-        CheckCommand.new(parse_run: parse_run(args)).run
+        CheckCommand.new(self, args).run
       when "update-todo", "update"
         UpdateCommand.new(parse_run: parse_run(args)).run
       when "validate"
