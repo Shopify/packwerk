@@ -12,6 +12,7 @@ module Packwerk
     autoload :CheckCommand
     autoload :HelpCommand
     autoload :InitCommand
+    autoload :UpdateCommand
     autoload :ValidateCommand
     autoload :VersionCommand
     autoload :Result
@@ -62,7 +63,8 @@ module Packwerk
         result = CheckCommand.new(parse_run: parse_run(args)).run
         output_result(result)
       when "update-todo", "update"
-        output_result(parse_run(args).update_todo)
+        result = UpdateCommand.new(parse_run: parse_run(args)).run
+        output_result(result)
       when "validate"
         ValidateCommand.new(
           out: @out,
