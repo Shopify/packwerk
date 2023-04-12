@@ -55,44 +55,41 @@ module Packwerk
 
     sig { params(args: T::Array[String]).returns(T::Boolean) }
     def execute_command(args)
-      subcommand = args.shift
-      case subcommand
+      subcommand = args.shift || "help"
+
+      result = case subcommand
       when "init"
-        result = InitCommand.new(out: @out, configuration: @configuration).run
-        output_result(result)
+        InitCommand.new(out: @out, configuration: @configuration).run
       when "check"
-        result = CheckCommand.new(parse_run: parse_run(args)).run
-        output_result(result)
+        CheckCommand.new(parse_run: parse_run(args)).run
       when "update-todo", "update"
-        result = UpdateCommand.new(parse_run: parse_run(args)).run
-        output_result(result)
+        UpdateCommand.new(parse_run: parse_run(args)).run
       when "validate"
-        result = ValidateCommand.new(
+        ValidateCommand.new(
           configuration: @configuration,
           progress_formatter: @progress_formatter,
         ).run
-        output_result(result)
       when "version"
-        result = VersionCommand.new.run
-        output_result(result)
-      when nil, "help"
-        result = HelpCommand.new.run
-        output_result(result)
+        VersionCommand.new.run
+      when "help"
+        HelpCommand.new.run
       else
-        @err_out.puts(
-          "'#{subcommand}' is not a packwerk command. See `packwerk help`."
+        Result.new(
+          status: false,
+          message: "'#{subcommand}' is not a packwerk command. See `packwerk help`.",
+          print_as_error: true
         )
-        false
       end
+
+      if result.print_as_error
+        @err_out.puts(result.message)
+      else
+        @out.puts(result.message)
+      end
+      result.status
     end
 
     private
-
-    sig { params(result: Result).returns(T::Boolean) }
-    def output_result(result)
-      @out.puts(result.message)
-      result.status
-    end
 
     sig do
       params(
@@ -113,7 +110,6 @@ module Packwerk
 
       files_for_processing
     end
-
 
     sig { params(args: T::Array[String]).returns(ParseRun) }
     def parse_run(args)
