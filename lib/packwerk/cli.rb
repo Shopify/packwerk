@@ -17,6 +17,7 @@ module Packwerk
     autoload :ValidateCommand
     autoload :VersionCommand
     autoload :Result
+    autoload :UsesParseRun
 
     sig do
       params(
