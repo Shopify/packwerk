@@ -6,7 +6,7 @@ module Packwerk
     class CheckCommand < BaseCommand
       extend T::Sig
 
-      sig { returns(Result) }
+      sig { override.returns(Result) }
       def run
         parse_run.check
       end

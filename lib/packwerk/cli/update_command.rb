@@ -6,7 +6,7 @@ module Packwerk
     class UpdateCommand < BaseCommand
       extend T::Sig
 
-      sig { returns(Result) }
+      sig { override.returns(Result) }
       def run
         parse_run.update_todo
       end

@@ -6,7 +6,7 @@ module Packwerk
     class HelpCommand < BaseCommand
       extend T::Sig
 
-      sig { returns(Result) }
+      sig { override.returns(Result) }
       def run
         Result.new(status: true, message: <<~USAGE)
           Usage: #{$PROGRAM_NAME} <subcommand>
