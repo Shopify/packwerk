@@ -10,6 +10,7 @@ module Packwerk
     extend ActiveSupport::Autoload
 
     autoload :HelpCommand
+    autoload :VersionCommand
     autoload :Result
 
     sig do
@@ -61,8 +62,7 @@ module Packwerk
       when "validate"
         validate(args)
       when "version"
-        @out.puts(Packwerk::VERSION)
-        true
+        VersionCommand.new(out: @out).run
       when nil, "help"
         HelpCommand.new(out: @err_out).run
       else
