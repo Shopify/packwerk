@@ -67,11 +67,12 @@ module Packwerk
         result = UpdateCommand.new(parse_run: parse_run(args)).run
         output_result(result)
       when "validate"
-        ValidateCommand.new(
+        result = ValidateCommand.new(
           out: @out,
           configuration: @configuration,
           progress_formatter: @progress_formatter,
         ).run
+        output_result(result)
       when "version"
         VersionCommand.new(out: @out).run
       when nil, "help"

@@ -19,17 +19,23 @@ module Packwerk
         @progress_formatter = progress_formatter
       end
 
-      sig { returns(T::Boolean) }
+      sig { returns(Result) }
       def run
-        result = T.let(nil, T.nilable(Validator::Result))
+        validator_result = T.let(nil, T.nilable(Validator::Result))
 
         @progress_formatter.started_validation do
-          result = validator.check_all(package_set, @configuration)
-
-          list_validation_errors(result)
+          validator_result = validator.check_all(package_set, @configuration)
         end
 
-        T.must(result).ok?
+        validator_result = T.must(validator_result)
+
+        message = if validator_result.ok?
+          "Validation successful 🎉"
+        else
+          "Validation failed ❗\n\n#{validator_result.error_value}"
+        end
+
+        Result.new(message: message, status: validator_result.ok?)
       end
 
       private
@@ -45,18 +51,6 @@ module Packwerk
           @configuration.root_path,
           package_pathspec: @configuration.package_paths
         )
-      end
-
-      sig { params(result: Validator::Result).void }
-      def list_validation_errors(result)
-        @out.puts
-        if result.ok?
-          @out.puts("Validation successful 🎉")
-        else
-          @out.puts("Validation failed ❗")
-          @out.puts
-          @out.puts(result.error_value)
-        end
       end
     end
 
