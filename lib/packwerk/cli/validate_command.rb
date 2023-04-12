@@ -10,8 +10,8 @@ module Packwerk
       def run
         validator_result = T.let(nil, T.nilable(Validator::Result))
 
-        @cli.progress_formatter.started_validation do
-          validator_result = validator.check_all(package_set, @cli.configuration)
+        cli.progress_formatter.started_validation do
+          validator_result = validator.check_all(package_set, cli.configuration)
         end
 
         validator_result = T.must(validator_result)
@@ -35,8 +35,8 @@ module Packwerk
       sig { returns(PackageSet) }
       def package_set
         PackageSet.load_all_from(
-          @cli.configuration.root_path,
-          package_pathspec: @cli.configuration.package_paths
+          cli.configuration.root_path,
+          package_pathspec: cli.configuration.package_paths
         )
       end
     end

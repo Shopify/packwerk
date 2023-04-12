@@ -16,6 +16,14 @@ module Packwerk
 
       sig { abstract.returns(Result) }
       def run; end
+
+      private
+
+      sig { returns(Cli) }
+      attr_reader :cli
+
+      sig { returns(T::Array[String]) }
+      attr_reader :args
     end
   end
 end
