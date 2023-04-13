@@ -7,6 +7,8 @@ module Packwerk
       extend T::Sig
       include UsesParseRun
 
+      register_cli_command "update", "update-todo"
+
       sig { override.returns(Result) }
       def run
         parse_run.update_todo

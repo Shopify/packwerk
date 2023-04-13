@@ -8,6 +8,15 @@ module Packwerk
       extend T::Helpers
       abstract!
 
+      class << self
+        extend T::Sig
+
+        sig { params(names: String).void }
+        def register_cli_command(*names)
+          Cli.register_command(self, names)
+        end
+      end
+
       sig { params(cli: Cli, args: T::Array[String]).void }
       def initialize(cli, args)
         @cli = cli

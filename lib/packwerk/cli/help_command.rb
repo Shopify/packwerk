@@ -6,6 +6,8 @@ module Packwerk
     class HelpCommand < BaseCommand
       extend T::Sig
 
+      register_cli_command "help"
+
       sig { override.returns(Result) }
       def run
         Result.new(status: true, print_as_error: true, message: <<~USAGE)

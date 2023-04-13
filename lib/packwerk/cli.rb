@@ -8,14 +8,26 @@ module Packwerk
     extend ActiveSupport::Autoload
 
     autoload :BaseCommand
-    autoload :CheckCommand
-    autoload :HelpCommand
-    autoload :InitCommand
-    autoload :UpdateCommand
-    autoload :ValidateCommand
-    autoload :VersionCommand
     autoload :Result
     autoload :UsesParseRun
+
+    @commands_registry = T.let({}, T::Hash[String, T.class_of(BaseCommand)])
+
+    class << self
+      extend T::Sig
+
+      sig { params(command_class: T.class_of(BaseCommand), names: T::Array[String]).void }
+      def register_command(command_class, names)
+        names.each do |name|
+          @commands_registry[name] = command_class
+        end
+      end
+
+      sig { params(command: String).returns(T.nilable(T.class_of(BaseCommand))) }
+      def command_class_for(command)
+        @commands_registry[command]
+      end
+    end
 
     sig do
       params(
@@ -67,25 +79,15 @@ module Packwerk
 
     sig { params(args: T::Array[String]).returns(T::Boolean) }
     def execute_command(args)
-      subcommand = args.shift || "help"
+      command = args.shift || "help"
+      command_class = self.class.command_class_for(command)
 
-      result = case subcommand
-      when "init"
-        InitCommand.new(self, args).run
-      when "check"
-        CheckCommand.new(self, args).run
-      when "update-todo", "update"
-        UpdateCommand.new(self, args).run
-      when "validate"
-        ValidateCommand.new(self, args).run
-      when "version"
-        VersionCommand.new(self, args).run
-      when "help"
-        HelpCommand.new(self, args).run
+      result = if command_class
+        command_class.new(self, args).run
       else
         Result.new(
           status: false,
-          message: "'#{subcommand}' is not a packwerk command. See `packwerk help`.",
+          message: "'#{command}' is not a packwerk command. See `packwerk help`.",
           print_as_error: true
         )
       end
@@ -99,3 +101,5 @@ module Packwerk
     end
   end
 end
+
+Dir[File.join(__dir__, "cli", "*_command.rb")].each { |file| require file }

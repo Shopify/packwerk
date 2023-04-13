@@ -6,6 +6,8 @@ module Packwerk
     class InitCommand < BaseCommand
       extend T::Sig
 
+      register_cli_command "init"
+
       sig { override.returns(Result) }
       def run
         cli.out.puts("📦 Initializing Packwerk...")

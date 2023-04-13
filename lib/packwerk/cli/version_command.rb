@@ -6,6 +6,8 @@ module Packwerk
     class VersionCommand < BaseCommand
       extend T::Sig
 
+      register_cli_command "version"
+
       sig { override.returns(Result) }
       def run
         Result.new(message: Packwerk::VERSION, status: true)
