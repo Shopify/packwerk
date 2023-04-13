@@ -1,8 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "optparse"
-
 module Packwerk
   # A command-line interface to Packwerk.
   class Cli

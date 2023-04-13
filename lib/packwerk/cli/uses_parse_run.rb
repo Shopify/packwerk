@@ -1,6 +1,8 @@
 # typed: strict
 # frozen_string_literal: true
 
+require "optparse"
+
 module Packwerk
   class Cli
     module UsesParseRun
