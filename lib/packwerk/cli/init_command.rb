@@ -10,14 +10,14 @@ module Packwerk
 
       sig { override.returns(Result) }
       def run
-        cli.out.puts("📦 Initializing Packwerk...")
+        out.puts("📦 Initializing Packwerk...")
 
         configuration_file = Generators::ConfigurationFile.generate(
-          root: cli.configuration.root_path,
-          out: cli.out
+          root: configuration.root_path,
+          out: out
         )
 
-        root_package = Generators::RootPackage.generate(root: cli.configuration.root_path, out: @cli.out)
+        root_package = Generators::RootPackage.generate(root: configuration.root_path, out: out)
 
         success = configuration_file && root_package
 

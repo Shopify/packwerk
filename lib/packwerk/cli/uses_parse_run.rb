@@ -11,13 +11,22 @@ module Packwerk
 
       requires_ancestor { BaseCommand }
 
-      sig { params(cli: Cli, args: T::Array[String]).void }
-      def initialize(cli, args)
+      sig do
+        params(
+          args: T::Array[String],
+          configuration: Configuration,
+          out: T.any(StringIO, IO),
+          progress_formatter: Formatters::ProgressFormatter,
+          offenses_formatter: OffensesFormatter,
+        ).void
+      end
+      def initialize(args, configuration:, out:, progress_formatter:, offenses_formatter:)
         super
         @parsed_options = T.let(parse_options, T::Hash[Symbol, T.untyped])
-        cli.configuration.parallel = @parsed_options[:parallel]
+        configuration.parallel = @parsed_options[:parallel]
         @files_for_processing = T.let(fetch_files_to_process, FilesForProcessing)
-        @offenses_formatter = T.let(find_offenses_formatter, OffensesFormatter)
+        @offenses_formatter = T.let(find_offenses_formatter || @offenses_formatter, OffensesFormatter)
+        configuration.parallel = parsed_options[:parallel]
       end
 
       private
@@ -28,17 +37,14 @@ module Packwerk
       sig { returns(FilesForProcessing) }
       attr_reader :files_for_processing
 
-      sig { returns(OffensesFormatter) }
-      attr_reader :offenses_formatter
-
       sig { returns(FilesForProcessing) }
       def fetch_files_to_process
         files_for_processing = FilesForProcessing.fetch(
           relative_file_paths: parsed_options[:relative_file_paths],
           ignore_nested_packages: parsed_options[:ignore_nested_packages],
-          configuration: cli.configuration
+          configuration: configuration
         )
-        cli.out.puts(<<~MSG.squish) if files_for_processing.files.empty?
+        out.puts(<<~MSG.squish) if files_for_processing.files.empty?
           No files found or given.
           Specify files or check the include and exclude glob in the config file.
         MSG
@@ -46,12 +52,10 @@ module Packwerk
         files_for_processing
       end
 
-      sig { returns(OffensesFormatter) }
+      sig { returns(T.nilable(OffensesFormatter)) }
       def find_offenses_formatter
         if parsed_options[:formatter_name]
           OffensesFormatter.find(parsed_options[:formatter_name])
-        else
-          cli.offenses_formatter
         end
       end
 
@@ -60,9 +64,9 @@ module Packwerk
         ParseRun.new(
           relative_file_set: files_for_processing.files,
           file_set_specified: files_for_processing.files_specified?,
-          configuration: cli.configuration,
-          progress_formatter: cli.progress_formatter,
-          offenses_formatter: offenses_formatter
+          configuration: configuration,
+          progress_formatter: progress_formatter,
+          offenses_formatter: offenses_formatter,
         )
       end
 
@@ -72,7 +76,7 @@ module Packwerk
           options[:relative_file_paths] = T.let([], T::Array[String])
           options[:ignore_nested_packages] = T.let(false, T::Boolean)
           options[:formatter_name] = T.let(nil, T.nilable(String))
-          options[:parallel] = T.let(cli.configuration.parallel?, T::Boolean)
+          options[:parallel] = T.let(configuration.parallel?, T::Boolean)
 
           OptionParser.new do |parser|
             parser.on("--packages=PACKAGESLIST", Array, "package names, comma separated") do |p|

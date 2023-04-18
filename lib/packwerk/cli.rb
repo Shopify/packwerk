@@ -59,18 +59,6 @@ module Packwerk
       )
     end
 
-    sig { returns(Configuration) }
-    attr_reader :configuration
-
-    sig { returns(OffensesFormatter) }
-    attr_reader :offenses_formatter
-
-    sig { returns(Formatters::ProgressFormatter) }
-    attr_reader :progress_formatter
-
-    sig { returns(T.any(IO, StringIO)) }
-    attr_reader :out
-
     sig { params(args: T::Array[String]).returns(T.noreturn) }
     def run(args)
       success = execute_command(args)
@@ -83,7 +71,13 @@ module Packwerk
       command_class = self.class.command_class_for(command)
 
       result = if command_class
-        command_class.new(self, args).run
+        command_class.new(
+          args,
+          configuration: @configuration,
+          out: @out,
+          progress_formatter: @progress_formatter,
+          offenses_formatter: @offenses_formatter,
+        ).run
       else
         Result.new(
           status: false,
