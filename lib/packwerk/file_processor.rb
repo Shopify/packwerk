@@ -53,6 +53,9 @@ module Packwerk
       ProcessedFile.new(unresolved_references: unresolved_references)
     rescue Parsers::ParseError => e
       ProcessedFile.new(offenses: [e.result])
+    rescue StandardError => e
+      offense = Parsers::ParseResult.new(file: relative_file, message: e.message)
+      ProcessedFile.new(offenses: [offense])
     end
 
     private
