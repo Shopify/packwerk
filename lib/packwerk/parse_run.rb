@@ -35,36 +35,6 @@ module Packwerk
       @file_set_specified = file_set_specified
     end
 
-    sig { returns(Cli::Result) }
-    def update_todo
-      if @file_set_specified
-        message = <<~MSG.squish
-          ⚠️ update-todo must be called without any file arguments.
-        MSG
-
-        return Cli::Result.new(message: message, status: false)
-      end
-
-      run_context = RunContext.from_configuration(@configuration)
-      offenses = T.let([], T::Array[Offense])
-      @progress_formatter.started_inspection(@relative_file_set) do
-        offenses = find_offenses(run_context, on_interrupt: -> { @progress_formatter.interrupted }) do
-          @progress_formatter.increment_progress
-        end
-      end
-
-      offense_collection = OffenseCollection.new(@configuration.root_path)
-      offense_collection.add_offenses(offenses)
-      offense_collection.persist_package_todo_files(run_context.package_set)
-
-      message = <<~EOS
-        #{@offenses_formatter.show_offenses(offense_collection.errors)}
-        ✅ `package_todo.yml` has been updated.
-      EOS
-
-      Cli::Result.new(message: message, status: offense_collection.errors.empty?)
-    end
-
     sig do
       params(
         run_context: RunContext,
