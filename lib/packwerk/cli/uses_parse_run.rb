@@ -39,17 +39,11 @@ module Packwerk
 
       sig { returns(FilesForProcessing) }
       def fetch_files_to_process
-        files_for_processing = FilesForProcessing.fetch(
+        FilesForProcessing.fetch(
           relative_file_paths: parsed_options[:relative_file_paths],
           ignore_nested_packages: parsed_options[:ignore_nested_packages],
           configuration: configuration
         )
-        out.puts(<<~MSG.squish) if files_for_processing.files.empty?
-          No files found or given.
-          Specify files or check the include and exclude glob in the config file.
-        MSG
-
-        files_for_processing
       end
 
       sig { returns(T.nilable(OffensesFormatter)) }

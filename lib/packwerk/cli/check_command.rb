@@ -11,6 +11,13 @@ module Packwerk
 
       sig { override.returns(Result) }
       def run
+        if files_for_processing.files.empty?
+          return Cli::Result.new(message: <<~MSG.squish, status: true)
+            No files found or given.
+            Specify files or check the include and exclude glob in the config file.
+          MSG
+        end
+
         run_context = RunContext.from_configuration(configuration)
         offense_collection = OffenseCollection.new(configuration.root_path)
         all_offenses = T.let([], T::Array[Offense])
