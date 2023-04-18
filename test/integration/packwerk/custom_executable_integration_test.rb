@@ -128,6 +128,29 @@ module Packwerk
       end
     end
 
+    test "'packwerk check' does not blow up when parsing files with syntax issues from a false positive association" do
+      open_app_file(TIMELINE_PATH.join("app", "models", "bad_file.rb")) do |file|
+        # This is an example of a file that has an object called `belongs_to` that accepts methods
+        content = <<~CONTENT
+          belongs_to.some_method
+        CONTENT
+
+        file.write(content)
+        file.flush
+
+        refute_successful_run("check")
+
+        assert_match(/Packwerk is inspecting 13 files/, captured_output)
+        assert_match(%r{components/timeline/app/models/bad_file.rb}, captured_output)
+        assert_match(/Packwerk encountered an internal error/, captured_output)
+        assert_match(/For now, you can add this file to `packwerk.yml` `exclude` list./, captured_output)
+        assert_match(/Please file an issue and include this error message and stacktrace:/, captured_output)
+        assert_match(/Passed `nil` into T.must/, captured_output)
+        assert_match(/1 offense detected/, captured_output)
+        assert_match(/No stale violations detected/, captured_output)
+      end
+    end
+
     private
 
     def assert_successful_run(command)

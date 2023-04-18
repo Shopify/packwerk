@@ -109,9 +109,14 @@ module Packwerk
         )
       )
 
-      tempfile(name: "foo", content: "def error") do |file_path|
+      processed_file = tempfile(name: "foo", content: "def error") do |file_path|
         file_processor.call(file_path)
       end
+
+      assert_equal 0, processed_file.unresolved_references.count
+      offenses = processed_file.offenses
+      assert_equal 1, offenses.length
+      assert_equal "Syntax error: unexpected token $end", offenses.first.message
     end
 
     test "#call with a path that can't be parsed outputs error message" do
