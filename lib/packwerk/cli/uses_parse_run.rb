@@ -17,7 +17,7 @@ module Packwerk
         @parsed_options = T.let(parse_options, T::Hash[Symbol, T.untyped])
         cli.configuration.parallel = @parsed_options[:parallel]
         @files_for_processing = T.let(fetch_files_to_process, FilesForProcessing)
-        @formatter = T.let(find_formatter, OffensesFormatter)
+        @offenses_formatter = T.let(find_offenses_formatter, OffensesFormatter)
       end
 
       private
@@ -29,7 +29,7 @@ module Packwerk
       attr_reader :files_for_processing
 
       sig { returns(OffensesFormatter) }
-      attr_reader :formatter
+      attr_reader :offenses_formatter
 
       sig { returns(FilesForProcessing) }
       def fetch_files_to_process
@@ -47,7 +47,7 @@ module Packwerk
       end
 
       sig { returns(OffensesFormatter) }
-      def find_formatter
+      def find_offenses_formatter
         if parsed_options[:formatter_name]
           OffensesFormatter.find(parsed_options[:formatter_name])
         else
@@ -62,7 +62,7 @@ module Packwerk
           file_set_specified: files_for_processing.files_specified?,
           configuration: cli.configuration,
           progress_formatter: cli.progress_formatter,
-          offenses_formatter: formatter
+          offenses_formatter: offenses_formatter
         )
       end
 

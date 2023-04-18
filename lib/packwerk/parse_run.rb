@@ -48,7 +48,9 @@ module Packwerk
       run_context = RunContext.from_configuration(@configuration)
       offenses = T.let([], T::Array[Offense])
       @progress_formatter.started_inspection(@relative_file_set) do
-        offenses = find_offenses(run_context, on_interrupt: -> { @progress_formatter.interrupted }) { update_progress }
+        offenses = find_offenses(run_context, on_interrupt: -> { @progress_formatter.interrupted }) do
+          @progress_formatter.increment_progress
+        end
       end
 
       offense_collection = OffenseCollection.new(@configuration.root_path)
@@ -72,7 +74,7 @@ module Packwerk
       @progress_formatter.started_inspection(@relative_file_set) do
         offenses = find_offenses(run_context, on_interrupt: -> { @progress_formatter.interrupted }) do |offenses|
           failed = offenses.any? { |offense| !offense_collection.listed?(offense) }
-          update_progress(failed: failed)
+          @progress_formatter.increment_progress(failed)
         end
       end
       offense_collection.add_offenses(offenses)
@@ -148,15 +150,6 @@ module Packwerk
         all_offenses
       end
       all_offenses
-    end
-
-    sig { params(failed: T::Boolean).void }
-    def update_progress(failed: false)
-      if failed
-        @progress_formatter.mark_as_failed
-      else
-        @progress_formatter.mark_as_inspected
-      end
     end
   end
 

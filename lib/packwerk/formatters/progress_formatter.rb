@@ -30,6 +30,15 @@ module Packwerk
         finished(execution_time)
       end
 
+      sig { params(failed: T::Boolean).void }
+      def increment_progress(failed = false)
+        if failed
+          mark_as_failed
+        else
+          mark_as_inspected
+        end
+      end
+
       sig { void }
       def mark_as_inspected
         @out.print(".")
