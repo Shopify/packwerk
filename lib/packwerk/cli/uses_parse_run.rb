@@ -63,10 +63,7 @@ module Packwerk
       def parse_run
         ParseRun.new(
           relative_file_set: files_for_processing.files,
-          file_set_specified: files_for_processing.files_specified?,
-          configuration: configuration,
-          progress_formatter: progress_formatter,
-          offenses_formatter: offenses_formatter,
+          parallel: configuration.parallel?,
         )
       end
 

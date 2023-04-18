@@ -14,25 +14,12 @@ module Packwerk
     sig do
       params(
         relative_file_set: FilesForProcessing::RelativeFileSet,
-        configuration: Configuration,
-        file_set_specified: T::Boolean,
-        offenses_formatter: T.nilable(OffensesFormatter),
-        progress_formatter: Formatters::ProgressFormatter,
+        parallel: T::Boolean,
       ).void
     end
-    def initialize(
-      relative_file_set:,
-      configuration:,
-      file_set_specified: false,
-      offenses_formatter: nil,
-      progress_formatter: Formatters::ProgressFormatter.new(StringIO.new)
-    )
-
-      @configuration = configuration
-      @progress_formatter = progress_formatter
-      @offenses_formatter = T.let(offenses_formatter || configuration.offenses_formatter, Packwerk::OffensesFormatter)
+    def initialize(relative_file_set:, parallel:)
       @relative_file_set = relative_file_set
-      @file_set_specified = file_set_specified
+      @parallel = parallel
     end
 
     sig do
@@ -47,7 +34,7 @@ module Packwerk
     def find_offenses(run_context, on_interrupt: nil, &block)
       process_file_proc = process_file_proc(run_context, &block)
 
-      offenses = if @configuration.parallel?
+      offenses = if @parallel
         Parallel.flat_map(@relative_file_set, &process_file_proc)
       else
         serial_find_offenses(on_interrupt: on_interrupt, &process_file_proc)
