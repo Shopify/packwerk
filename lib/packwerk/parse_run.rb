@@ -65,34 +65,6 @@ module Packwerk
       Cli::Result.new(message: message, status: offense_collection.errors.empty?)
     end
 
-    sig { returns(Cli::Result) }
-    def check
-      run_context = RunContext.from_configuration(@configuration)
-      offense_collection = OffenseCollection.new(@configuration.root_path)
-      offenses = T.let([], T::Array[Offense])
-
-      @progress_formatter.started_inspection(@relative_file_set) do
-        offenses = find_offenses(run_context, on_interrupt: -> { @progress_formatter.interrupted }) do |offenses|
-          failed = offenses.any? { |offense| !offense_collection.listed?(offense) }
-          @progress_formatter.increment_progress(failed)
-        end
-      end
-      offense_collection.add_offenses(offenses)
-
-      messages = [
-        @offenses_formatter.show_offenses(offense_collection.outstanding_offenses),
-        @offenses_formatter.show_stale_violations(offense_collection, @relative_file_set),
-        @offenses_formatter.show_strict_mode_violations(offense_collection.strict_mode_violations),
-      ]
-
-      result_status = offense_collection.outstanding_offenses.empty? &&
-        !offense_collection.stale_violations?(@relative_file_set) && offense_collection.strict_mode_violations.empty?
-
-      Cli::Result.new(message: messages.select(&:present?).join("\n") + "\n", status: result_status)
-    end
-
-    private
-
     sig do
       params(
         run_context: RunContext,
@@ -113,6 +85,8 @@ module Packwerk
 
       offenses
     end
+
+    private
 
     sig do
       params(
