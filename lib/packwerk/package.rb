@@ -25,6 +25,7 @@ module Packwerk
       @name = name
       @config = T.let(config || {}, T::Hash[String, T.untyped])
       @dependencies = T.let(Array(@config["dependencies"]).freeze, T::Array[String])
+      @ignored_dependencies = T.let(Array(@config["ignored_dependencies"]).freeze, T::Array[String])
       @public_path = T.let(nil, T.nilable(String))
     end
 
@@ -36,6 +37,11 @@ module Packwerk
     sig { params(package: Package).returns(T::Boolean) }
     def dependency?(package)
       @dependencies.include?(package.name)
+    end
+
+    sig { params(package: Package).returns(T::Boolean) }
+    def ignored_dependency?(package)
+      @ignored_dependencies.include?(package.name)
     end
 
     sig { params(path: String).returns(T::Boolean) }

@@ -25,6 +25,7 @@ module Packwerk
         [
           "enforce_dependencies",
           "dependencies",
+          "ignored_dependencies",
         ]
       end
 
@@ -48,6 +49,14 @@ module Packwerk
 
           unless setting.is_a?(Array)
             errors << "\tInvalid 'dependencies' option: #{setting.inspect} in #{config.inspect}"
+          end
+        end
+
+        package_manifests_settings_for(configuration, "ignored_dependencies").each do |config, setting|
+          next if setting.nil?
+
+          unless setting.is_a?(Array)
+            errors << "\tInvalid 'ignored_dependencies' option: #{setting.inspect} in #{config.inspect}"
           end
         end
 
@@ -91,8 +100,11 @@ module Packwerk
 
       sig { params(configuration: Configuration).returns(Validator::Result) }
       def check_valid_package_dependencies(configuration)
-        packages_dependencies = package_manifests_settings_for(configuration, "dependencies")
-          .delete_if { |_, deps| deps.nil? }
+        packages_dependencies = (package_manifests_settings_for(configuration,
+          "dependencies") + package_manifests_settings_for(configuration, "ignored_dependencies"))
+          .delete_if do |_, deps|
+          deps.nil?
+        end
 
         packages_with_invalid_dependencies =
           packages_dependencies.each_with_object([]) do |(package, dependencies), invalid_packages|

@@ -24,6 +24,7 @@ module Packwerk
         def invalid_reference?(reference)
           return false unless reference.package.enforce_dependencies?
           return false if reference.package.dependency?(reference.constant.package)
+          return false if reference.package.ignored_dependency?(reference.constant.package)
 
           true
         end
