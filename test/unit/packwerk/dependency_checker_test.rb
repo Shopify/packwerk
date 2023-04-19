@@ -15,6 +15,15 @@ module Packwerk
       assert checker.invalid_reference?(reference)
     end
 
+    test "ignores violations when dependency is ignored" do
+      source_package = Package.new(name: "components/sales",
+        config: { "ignored_dependencies" => ["components/destination"], "enforce_dependencies" => true })
+      checker = dependency_checker
+      reference = build_reference(source_package: source_package)
+
+      refute checker.invalid_reference?(reference)
+    end
+
     test "ignores violations when enforcement is disabled in that package" do
       source_package = Package.new(name: "components/sales", config: { "enforce_dependencies" => false })
       checker = dependency_checker

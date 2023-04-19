@@ -28,9 +28,30 @@ module Packwerk
       assert_match %r{components/sales → components/timeline → components/sales}, result.error_value
     end
 
+    test "does not return an error when package set contains circular dependencies in ignored_dependencies" do
+      use_template(:minimal)
+      merge_into_app_yaml_file("components/sales/package.yml", { "ignored_dependencies" => ["components/timeline"] })
+      merge_into_app_yaml_file("components/timeline/package.yml", { "ignored_dependencies" => ["components/sales"] })
+
+      result = dependency_validator.call(package_set, config)
+
+      assert result.ok?
+    end
+
     test "returns error when config contains invalid package dependency" do
       use_template(:minimal)
       merge_into_app_yaml_file("components/sales/package.yml", { "dependencies" => ["components/timeline"] })
+
+      result = dependency_validator.call(package_set, config)
+
+      refute result.ok?
+      assert_match(/These dependencies do not point to valid packages:/, result.error_value)
+      assert_match(%r{\n\n\tcomponents/sales/package.yml:\n\t  - components/timeline\n$}m, result.error_value)
+    end
+
+    test "returns error when config contains invalid package ignored dependency" do
+      use_template(:minimal)
+      merge_into_app_yaml_file("components/sales/package.yml", { "ignored_dependencies" => ["components/timeline"] })
 
       result = dependency_validator.call(package_set, config)
 
@@ -57,6 +78,16 @@ module Packwerk
       refute result.ok?
       assert_match("Malformed syntax in the following manifests:", result.error_value)
       assert_match("Invalid 'dependencies' option: \"yes\"", result.error_value)
+    end
+
+    test "returns error when invalid ignored_dependencies value is in the package.yml file" do
+      use_template(:minimal)
+      merge_into_app_yaml_file("components/sales/package.yml", { "ignored_dependencies" => "yes" })
+
+      result = dependency_validator.call(package_set, config)
+      refute result.ok?
+      assert_match("Malformed syntax in the following manifests:", result.error_value)
+      assert_match("Invalid 'ignored_dependencies' option: \"yes\"", result.error_value)
     end
 
     test "returns success when enforce_dependencies is set to strict in the package.yml file" do
