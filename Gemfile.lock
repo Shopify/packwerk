@@ -69,6 +69,8 @@ GEM
     nokogiri (1.13.8)
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
+    packs (0.0.6)
+      sorbet-runtime
     parallel (1.22.1)
     parser (3.1.2.1)
       ast (~> 2.4.1)
@@ -138,7 +140,6 @@ GEM
     sorbet-static (0.5.10313-universal-darwin-20)
     sorbet-static (0.5.10313-universal-darwin-21)
     sorbet-static (0.5.10313-universal-darwin-22)
-    sorbet-static (0.5.10313-x86_64-linux)
     sorbet-static-and-runtime (0.5.10313)
       sorbet (= 0.5.10313)
       sorbet-runtime (= 0.5.10313)
@@ -175,6 +176,7 @@ GEM
     zeitwerk (2.6.4)
 
 PLATFORMS
+  arm64-darwin-22
   ruby
   x86_64-darwin
   x86_64-darwin-20
@@ -185,6 +187,7 @@ DEPENDENCIES
   m
   minitest-focus
   mocha
+  packs
   packwerk!
   railties
   rake

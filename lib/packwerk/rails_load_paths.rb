@@ -1,9 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "bundler"
-gem "railties", ">= 6.0"
-require "rails/railtie"
+require 'packs'
 
 module Packwerk
   # Extracts the load paths from the analyzed application so that we can map constant names to paths.
@@ -13,7 +11,6 @@ module Packwerk
 
       sig { params(root: String, environment: String).returns(T::Hash[String, Module]) }
       def for(root, environment:)
-        require_application(root, environment)
         all_paths = extract_application_autoload_paths
         relevant_paths = filter_relevant_paths(all_paths)
         assert_load_paths_present(relevant_paths)
@@ -22,11 +19,20 @@ module Packwerk
 
       private
 
+      # {
+      #   "/Some/absolute/path/to/an/autoloaded/path/like/app/controllers" => Object,
+      #   "/Some/absolute/path/to/an/autoloaded/path/like/app/services" => Object,
+      #   "/Some/absolute/path/to/an/autoloaded/path/like/app/models" => Object,
+      # }
       sig { returns(T::Hash[String, Module]) }
       def extract_application_autoload_paths
-        Rails.autoloaders.inject({}) do |h, loader|
-          h.merge(loader.dirs(namespaces: true))
+        autoload_paths = Packs.all.flat_map do |pack|
+          base_pack_absolute_path = Pathname.pwd.join(pack.relative_path)
+          base_pack_absolute_path.glob("app/*") +
+            base_pack_absolute_path.glob("app/*/concerns")
         end
+
+        autoload_paths.map { |path| [path.to_s, Object] }.to_h
       end
 
       sig do
@@ -46,19 +52,6 @@ module Packwerk
       sig { params(load_paths: T::Hash[Pathname, Module], rails_root: Pathname).returns(T::Hash[String, Module]) }
       def relative_path_strings(load_paths, rails_root: Rails.root)
         load_paths.transform_keys { |path| Pathname.new(path).relative_path_from(rails_root).to_s }
-      end
-
-      sig { params(root: String, environment: String).void }
-      def require_application(root, environment)
-        environment_file = "#{root}/config/environment"
-
-        if File.file?("#{environment_file}.rb")
-          ENV["RAILS_ENV"] ||= environment
-
-          require environment_file
-        else
-          raise "A Rails application could not be found in #{root}"
-        end
       end
 
       sig { params(paths: T::Hash[T.untyped, Module]).void }
