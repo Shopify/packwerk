@@ -188,7 +188,7 @@ You can also specify packages for a shorter run time. When checking against pack
 
     bin/packwerk check --packages=components/your_package,components/your_other_package
 
-You cal also specify enable or disable parallel processing by a command line option that overrides the configuration file.
+Using the following command line option you can also enable or disable parallel processing. It is enabled by default.
 
     bin/packwerk check --[no-]-parallel
 
