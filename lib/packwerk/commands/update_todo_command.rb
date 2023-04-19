@@ -2,14 +2,12 @@
 # frozen_string_literal: true
 
 module Packwerk
-  class Cli
-    class UpdateCommand < BaseCommand
+  module Commands
+    class UpdateTodoCommand < BaseCommand
       extend T::Sig
       include UsesParseRun
 
-      register_cli_command "update", "update-todo"
-
-      sig { override.returns(Result) }
+      sig { override.returns(Cli::Result) }
       def run
         if files_for_processing.files_specified?
           message = <<~MSG.squish
@@ -46,6 +44,6 @@ module Packwerk
       end
     end
 
-    private_constant :UpdateCommand
+    UpdateCommand = UpdateTodoCommand
   end
 end

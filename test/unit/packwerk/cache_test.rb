@@ -45,7 +45,7 @@ module Packwerk
       configuration.stubs(cache_enabled?: true)
       out = StringIO.new
 
-      update_command = Packwerk::Cli.const_get(:UpdateCommand).new( # rubocop:disable Sorbet/ConstantsFromStrings
+      update_command = Commands::UpdateCommand.new(
         [],
         configuration: configuration,
         out: out,

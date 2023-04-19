@@ -2,20 +2,11 @@
 # frozen_string_literal: true
 
 module Packwerk
-  class Cli
+  module Commands
     class BaseCommand
       extend T::Sig
       extend T::Helpers
       abstract!
-
-      class << self
-        extend T::Sig
-
-        sig { params(names: String).void }
-        def register_cli_command(*names)
-          Cli.register_command(self, names)
-        end
-      end
 
       sig do
         params(
@@ -34,7 +25,7 @@ module Packwerk
         @offenses_formatter = offenses_formatter
       end
 
-      sig { abstract.returns(Result) }
+      sig { abstract.returns(Cli::Result) }
       def run; end
 
       private

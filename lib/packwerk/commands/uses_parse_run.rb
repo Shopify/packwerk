@@ -4,12 +4,12 @@
 require "optparse"
 
 module Packwerk
-  class Cli
+  module Commands
     module UsesParseRun
       extend T::Sig
       extend T::Helpers
 
-      requires_ancestor { BaseCommand }
+      requires_ancestor { Commands::BaseCommand }
 
       sig do
         params(
@@ -89,5 +89,7 @@ module Packwerk
         end
       end
     end
+
+    private_constant :UsesParseRun
   end
 end

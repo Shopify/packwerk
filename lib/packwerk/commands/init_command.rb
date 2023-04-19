@@ -2,13 +2,11 @@
 # frozen_string_literal: true
 
 module Packwerk
-  class Cli
+  module Commands
     class InitCommand < BaseCommand
       extend T::Sig
 
-      register_cli_command "init"
-
-      sig { override.returns(Result) }
+      sig { override.returns(Cli::Result) }
       def run
         out.puts("📦 Initializing Packwerk...")
 
@@ -35,10 +33,8 @@ module Packwerk
           EOS
         end
 
-        Result.new(message: message, status: success)
+        Cli::Result.new(message: message, status: success)
       end
     end
-
-    private_constant :InitCommand
   end
 end

@@ -2,13 +2,11 @@
 # frozen_string_literal: true
 
 module Packwerk
-  class Cli
+  module Commands
     class ValidateCommand < BaseCommand
       extend T::Sig
 
-      register_cli_command "validate"
-
-      sig { override.returns(Result) }
+      sig { override.returns(Cli::Result) }
       def run
         validator_result = T.let(nil, T.nilable(Validator::Result))
 
@@ -24,7 +22,7 @@ module Packwerk
           "Validation failed ❗\n\n#{validator_result.error_value}"
         end
 
-        Result.new(message: message, status: validator_result.ok?)
+        Cli::Result.new(message: message, status: validator_result.ok?)
       end
 
       private
@@ -42,7 +40,5 @@ module Packwerk
         )
       end
     end
-
-    private_constant :ValidateCommand
   end
 end

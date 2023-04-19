@@ -2,14 +2,12 @@
 # frozen_string_literal: true
 
 module Packwerk
-  class Cli
+  module Commands
     class CheckCommand < BaseCommand
       extend T::Sig
       include UsesParseRun
 
-      register_cli_command "check"
-
-      sig { override.returns(Result) }
+      sig { override.returns(Cli::Result) }
       def run
         if files_for_processing.files.empty?
           return Cli::Result.new(message: <<~MSG.squish, status: true)
@@ -44,7 +42,5 @@ module Packwerk
         Cli::Result.new(message: messages.select(&:present?).join("\n") + "\n", status: result_status)
       end
     end
-
-    private_constant :CheckCommand
   end
 end

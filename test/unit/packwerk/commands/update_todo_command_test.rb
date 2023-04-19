@@ -5,8 +5,8 @@ require "test_helper"
 require "support/rails_test_helper"
 
 module Packwerk
-  class Cli
-    class UpdateCommandTest < Minitest::Test
+  module Commands
+    class UpdateTodoCommandTest < Minitest::Test
       include FactoryHelper
       include ApplicationFixtureHelper
 
@@ -26,7 +26,7 @@ module Packwerk
         FilesForProcessing.any_instance.stubs(:files).returns(Set.new(["path/of/exile.rb"]))
         out = StringIO.new
         configuration = Configuration.from_path
-        update_command = UpdateCommand.new(
+        update_command = UpdateTodoCommand.new(
           [],
           configuration: configuration,
           out: out,
@@ -52,7 +52,7 @@ module Packwerk
         FilesForProcessing.any_instance.stubs(:files).returns(Set.new(["path/of/exile.rb"]))
         out = StringIO.new
         configuration = Configuration.from_path
-        update_command = UpdateCommand.new(
+        update_command = UpdateTodoCommand.new(
           [],
           configuration: configuration,
           out: out,
@@ -81,7 +81,7 @@ module Packwerk
         FilesForProcessing.any_instance.stubs(:files_specified?).returns(true)
         out = StringIO.new
         configuration = Configuration.from_path
-        update_command = UpdateCommand.new(
+        update_command = UpdateTodoCommand.new(
           [],
           configuration: configuration,
           out: out,
@@ -132,7 +132,7 @@ module Packwerk
           .returns(Set.new(["app/models/my_model.rb", "components/sales/app/models/order.rb"]))
         out = StringIO.new
         configuration = Configuration.from_path
-        update_command = UpdateCommand.new(
+        update_command = UpdateTodoCommand.new(
           [],
           configuration: configuration,
           out: out,

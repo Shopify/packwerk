@@ -2,15 +2,13 @@
 # frozen_string_literal: true
 
 module Packwerk
-  class Cli
+  module Commands
     class HelpCommand < BaseCommand
       extend T::Sig
 
-      register_cli_command "help"
-
-      sig { override.returns(Result) }
+      sig { override.returns(Cli::Result) }
       def run
-        Result.new(status: true, print_as_error: true, message: <<~USAGE)
+        Cli::Result.new(status: true, print_as_error: true, message: <<~USAGE)
           Usage: #{$PROGRAM_NAME} <subcommand>
 
           Subcommands:
@@ -23,7 +21,5 @@ module Packwerk
         USAGE
       end
     end
-
-    private_constant :HelpCommand
   end
 end

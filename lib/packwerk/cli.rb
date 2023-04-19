@@ -7,27 +7,7 @@ module Packwerk
     extend T::Sig
     extend ActiveSupport::Autoload
 
-    autoload :BaseCommand
     autoload :Result
-    autoload :UsesParseRun
-
-    @commands_registry = T.let({}, T::Hash[String, T.class_of(BaseCommand)])
-
-    class << self
-      extend T::Sig
-
-      sig { params(command_class: T.class_of(BaseCommand), names: T::Array[String]).void }
-      def register_command(command_class, names)
-        names.each do |name|
-          @commands_registry[name] = command_class
-        end
-      end
-
-      sig { params(command: String).returns(T.nilable(T.class_of(BaseCommand))) }
-      def command_class_for(command)
-        @commands_registry[command]
-      end
-    end
 
     sig do
       params(
@@ -68,7 +48,7 @@ module Packwerk
     sig { params(args: T::Array[String]).returns(T::Boolean) }
     def execute_command(args)
       command = args.shift || "help"
-      command_class = self.class.command_class_for(command)
+      command_class = Commands.class_for(command)
 
       result = if command_class
         command_class.new(
@@ -95,5 +75,3 @@ module Packwerk
     end
   end
 end
-
-Dir[File.join(__dir__, "cli", "*_command.rb")].each { |file| require file }

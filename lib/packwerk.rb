@@ -16,6 +16,7 @@ module Packwerk
   # Public APIs
   autoload :Checker
   autoload :Cli
+  autoload :Commands
   autoload :Configuration
   autoload :ConstantContext
   autoload :Node
