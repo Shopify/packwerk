@@ -21,11 +21,20 @@ module Packwerk
 
       private
 
+      # {
+      #   "/Some/absolute/path/to/an/autoloaded/path/like/app/controllers" => Object,
+      #   "/Some/absolute/path/to/an/autoloaded/path/like/app/services" => Object,
+      #   "/Some/absolute/path/to/an/autoloaded/path/like/app/models" => Object,
+      # }
       sig { returns(T::Hash[String, Module]) }
       def extract_application_autoload_paths
-        Rails.autoloaders.inject({}) do |h, loader|
-          h.merge(loader.dirs(namespaces: true))
+        autoload_paths = Packs.all.map do |pack|
+          base_pack_absolute_path = Pathname.pwd.join(pack.relative_path)
+          base_pack_absolute_path.glob("*/*") +
+            base_pack_absolute_path.glob("*/*/concerns")
         end
+
+        autoload_paths.map { |path| [path.to_s, Object] }.to_h
       end
 
       sig do
