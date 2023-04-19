@@ -163,6 +163,19 @@ dependencies:
 
 It will be a dependency violation when `components/shop_identity` tries to reference a constant that is not within `components/platform` or itself.
 
+If you'd like to enforce some, but not all, dependencies, you can use the `dependencies` key. For example, if we want to enforce dependencies from `components/shop_identity` onto `components/platform`, but not onto `components/admin`, we can do this:
+
+```yaml
+# components/shop_identity/package.yml
+enforce_dependencies: true
+dependencies:
+  - components/platform
+ignored_dependencies:
+  - components/admin
+```
+
+This is useful if you want to gradually adopt the dependency enforcement and stay focused on specific pack-to-pack connections.
+
 #### Using strict mode
 
 Once there are no more violations in a package, you can turn on `strict` mode, which will prevent new violations from being added to the package's `package_todo.yml`. To use this, simply change `enforce_dependencies: true` to `enforce_dependencies: strict` in your `package.yml`.
