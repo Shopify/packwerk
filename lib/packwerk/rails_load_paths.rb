@@ -13,7 +13,6 @@ module Packwerk
 
       sig { params(root: String, environment: String).returns(T::Hash[String, Module]) }
       def for(root, environment:)
-        require_application(root, environment)
         all_paths = extract_application_autoload_paths
         relevant_paths = filter_relevant_paths(all_paths)
         assert_load_paths_present(relevant_paths)
@@ -46,19 +45,6 @@ module Packwerk
       sig { params(load_paths: T::Hash[Pathname, Module], rails_root: Pathname).returns(T::Hash[String, Module]) }
       def relative_path_strings(load_paths, rails_root: Rails.root)
         load_paths.transform_keys { |path| Pathname.new(path).relative_path_from(rails_root).to_s }
-      end
-
-      sig { params(root: String, environment: String).void }
-      def require_application(root, environment)
-        environment_file = "#{root}/config/environment"
-
-        if File.file?("#{environment_file}.rb")
-          ENV["RAILS_ENV"] ||= environment
-
-          require environment_file
-        else
-          raise "A Rails application could not be found in #{root}"
-        end
       end
 
       sig { params(paths: T::Hash[T.untyped, Module]).void }
