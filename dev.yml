@@ -3,7 +3,7 @@ name: packwerk
 type: ruby
 
 up:
-  - ruby: 3.2.1
+  - ruby: 3.2.2
   - bundler
 
 commands:

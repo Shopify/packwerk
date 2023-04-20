@@ -70,7 +70,7 @@ GEM
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
     parallel (1.22.1)
-    parser (3.1.2.1)
+    parser (3.2.2.0)
       ast (~> 2.4.1)
     prettier_print (0.1.0)
     pry (0.14.1)
