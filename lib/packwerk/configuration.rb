@@ -60,8 +60,8 @@ module Packwerk
     sig { returns(Pathname) }
     attr_reader(:cache_directory)
 
-    sig { returns(T::Boolean) }
-    attr_accessor(:parallel)
+    sig { params(parallel: T::Boolean).returns(T::Boolean) }
+    attr_writer(:parallel)
 
     sig do
       params(
