@@ -7,20 +7,22 @@ module Packwerk
       extend T::Sig
       include UsesParseRun
 
-      sig { override.returns(Cli::Result) }
+      sig { override.returns(T::Boolean) }
       def run
         if files_for_processing.files_specified?
-          message = <<~MSG.squish
+          out.puts(<<~MSG.squish)
             ⚠️ update-todo must be called without any file arguments.
           MSG
 
-          return Cli::Result.new(message: message, status: false)
+          return false
         end
         if files_for_processing.files.empty?
-          return Cli::Result.new(message: <<~MSG.squish, status: true)
+          out.puts(<<~MSG.squish)
             No files found or given.
             Specify files or check the include and exclude glob in the config file.
           MSG
+
+          return true
         end
 
         run_context = RunContext.from_configuration(configuration)
@@ -35,12 +37,12 @@ module Packwerk
         offense_collection.add_offenses(offenses)
         offense_collection.persist_package_todo_files(run_context.package_set)
 
-        message = <<~EOS
+        out.puts(<<~EOS)
           #{offenses_formatter.show_offenses(offense_collection.errors)}
           ✅ `package_todo.yml` has been updated.
         EOS
 
-        Cli::Result.new(message: message, status: offense_collection.errors.empty?)
+        offense_collection.errors.empty?
       end
     end
 

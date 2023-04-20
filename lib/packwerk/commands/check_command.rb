@@ -7,13 +7,15 @@ module Packwerk
       extend T::Sig
       include UsesParseRun
 
-      sig { override.returns(Cli::Result) }
+      sig { override.returns(T::Boolean) }
       def run
         if files_for_processing.files.empty?
-          return Cli::Result.new(message: <<~MSG.squish, status: true)
+          out.puts(<<~MSG.squish)
             No files found or given.
             Specify files or check the include and exclude glob in the config file.
           MSG
+
+          true
         end
 
         run_context = RunContext.from_configuration(configuration)
@@ -35,11 +37,11 @@ module Packwerk
           offenses_formatter.show_strict_mode_violations(offense_collection.strict_mode_violations),
         ]
 
-        result_status = offense_collection.outstanding_offenses.empty? &&
+        out.puts(messages.select(&:present?).join("\n") + "\n")
+
+        offense_collection.outstanding_offenses.empty? &&
           !offense_collection.stale_violations?(files_for_processing.files) &&
           offense_collection.strict_mode_violations.empty?
-
-        Cli::Result.new(message: messages.select(&:present?).join("\n") + "\n", status: result_status)
       end
     end
   end

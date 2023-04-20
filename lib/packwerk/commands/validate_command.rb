@@ -6,7 +6,7 @@ module Packwerk
     class ValidateCommand < BaseCommand
       extend T::Sig
 
-      sig { override.returns(Cli::Result) }
+      sig { override.returns(T::Boolean) }
       def run
         validator_result = T.let(nil, T.nilable(Validator::Result))
 
@@ -16,13 +16,13 @@ module Packwerk
 
         validator_result = T.must(validator_result)
 
-        message = if validator_result.ok?
-          "Validation successful 🎉"
+        if validator_result.ok?
+          out.puts("Validation successful 🎉")
         else
-          "Validation failed ❗\n\n#{validator_result.error_value}"
+          out.puts("Validation failed ❗\n\n#{validator_result.error_value}")
         end
 
-        Cli::Result.new(message: message, status: validator_result.ok?)
+        validator_result.ok?
       end
 
       private

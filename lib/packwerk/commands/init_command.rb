@@ -6,7 +6,7 @@ module Packwerk
     class InitCommand < BaseCommand
       extend T::Sig
 
-      sig { override.returns(Cli::Result) }
+      sig { override.returns(T::Boolean) }
       def run
         out.puts("📦 Initializing Packwerk...")
 
@@ -19,21 +19,21 @@ module Packwerk
 
         success = configuration_file && root_package
 
-        message = if success
-          <<~EOS
+        if success
+          out.puts(<<~EOS)
 
             🎉 Packwerk is ready to be used. You can start defining packages and run `bin/packwerk check`.
             For more information on how to use Packwerk, see: https://github.com/Shopify/packwerk/blob/main/USAGE.md
           EOS
         else
-          <<~EOS
+          out.puts(<<~EOS)
 
             ⚠️  Packwerk is not ready to be used.
             Please check output and refer to https://github.com/Shopify/packwerk/blob/main/USAGE.md for more information.
           EOS
         end
 
-        Cli::Result.new(message: message, status: success)
+        success
       end
     end
   end

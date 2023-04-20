@@ -13,19 +13,21 @@ module Packwerk
           args: T::Array[String],
           configuration: Configuration,
           out: T.any(StringIO, IO),
+          err_out: T.any(StringIO, IO),
           progress_formatter: Formatters::ProgressFormatter,
           offenses_formatter: OffensesFormatter,
         ).void
       end
-      def initialize(args, configuration:, out:, progress_formatter:, offenses_formatter:)
+      def initialize(args, configuration:, out:, err_out:, progress_formatter:, offenses_formatter:)
         @args = args
         @configuration = configuration
         @out = out
+        @err_out = err_out
         @progress_formatter = progress_formatter
         @offenses_formatter = offenses_formatter
       end
 
-      sig { abstract.returns(Cli::Result) }
+      sig { abstract.returns(T::Boolean) }
       def run; end
 
       private
@@ -38,6 +40,9 @@ module Packwerk
 
       sig { returns(T.any(StringIO, IO)) }
       attr_reader :out
+
+      sig { returns(T.any(StringIO, IO)) }
+      attr_reader :err_out
 
       sig { returns(Formatters::ProgressFormatter) }
       attr_reader :progress_formatter

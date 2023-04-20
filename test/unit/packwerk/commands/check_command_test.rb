@@ -36,6 +36,7 @@ module Packwerk
           [],
           configuration: configuration,
           out: out,
+          err_out: StringIO.new,
           progress_formatter: Formatters::ProgressFormatter.new(out),
           offenses_formatter: configuration.offenses_formatter
         )
@@ -46,15 +47,13 @@ module Packwerk
           📦 Packwerk is inspecting 1 file
           \\.
           📦 Finished in \\d+\\.\\d+ seconds
-        EOS
-        assert_match(/#{expected_output}/, out.string)
 
-        assert result.status
-        expected_message = <<~EOS
           No offenses detected
           No stale violations detected
         EOS
-        assert_equal expected_message, result.message
+        assert_match(/#{expected_output}/, out.string)
+
+        assert result
       end
 
       test "#run lists stale violations when run on a single file with new violations when the containing package has violations" do
@@ -119,6 +118,7 @@ module Packwerk
           [],
           configuration: configuration,
           out: out,
+          err_out: StringIO.new,
           progress_formatter: Formatters::ProgressFormatter.new(out),
           offenses_formatter: configuration.offenses_formatter
         )
@@ -129,16 +129,13 @@ module Packwerk
           📦 Packwerk is inspecting 1 file
           \\.
           📦 Finished in \\d+\\.\\d+ seconds
-        EOS
-        assert_match(/#{expected_output}/, out.string)
 
-        expected_message = <<~EOS
           No offenses detected
           There were stale violations found, please run `packwerk update-todo`
         EOS
-        assert_equal expected_message, result.message
+        assert_match(/#{expected_output}/, out.string)
 
-        refute result.status
+        refute result
       end
 
       test "#run does not list stale violations when run on a single file with no violations, even if the containing package has violations" do
@@ -171,6 +168,7 @@ module Packwerk
           [],
           configuration: configuration,
           out: out,
+          err_out: StringIO.new,
           progress_formatter: Formatters::ProgressFormatter.new(out),
           offenses_formatter: configuration.offenses_formatter
         )
@@ -181,16 +179,13 @@ module Packwerk
           📦 Packwerk is inspecting 1 file
           \\.
           📦 Finished in \\d+\\.\\d+ seconds
-        EOS
-        assert_match(/#{expected_output}/, out.string)
 
-        expected_message = <<~EOS
           No offenses detected
           No stale violations detected
         EOS
-        assert_equal expected_message, result.message
+        assert_match(/#{expected_output}/, out.string)
 
-        assert result.status
+        assert result
       end
 
       test "#run does not list stale violations when run on a single file with violations, even if the containing package has violations" do
@@ -230,6 +225,7 @@ module Packwerk
           [],
           configuration: configuration,
           out: out,
+          err_out: StringIO.new,
           progress_formatter: Formatters::ProgressFormatter.new(out),
           offenses_formatter: configuration.offenses_formatter
         )
@@ -238,19 +234,15 @@ module Packwerk
 
         expected_output = <<~EOS
           📦 Packwerk is inspecting 1 file
-          .
+          \\.
           📦 Finished in \\d+\\.\\d+ seconds
-        EOS
 
-        assert_match(/#{expected_output}/, out.string)
-
-        expected_message = <<~EOS
           No offenses detected
           There were stale violations found, please run `packwerk update-todo`
         EOS
-        assert_equal expected_message, result.message
+        assert_match(/#{expected_output}/, out.string)
 
-        refute result.status
+        refute result
       end
 
       test "#run lists out violations of strict mode" do
@@ -285,6 +277,7 @@ module Packwerk
           [],
           configuration: configuration,
           out: out,
+          err_out: StringIO.new,
           progress_formatter: Formatters::ProgressFormatter.new(out),
           offenses_formatter: configuration.offenses_formatter
         )
@@ -293,20 +286,16 @@ module Packwerk
 
         expected_output = <<~EOS
           📦 Packwerk is inspecting 1 file
-          .
+          \\.
           📦 Finished in \\d+\\.\\d+ seconds
-        EOS
 
-        assert_match(/#{expected_output}/, out.string)
-
-        expected_message = <<~EOS
           No offenses detected
           No stale violations detected
           components/source cannot have dependency violations on components/destination because strict mode is enabled for dependency violations in the enforcing package's package.yml
         EOS
-        assert_equal expected_message, result.message
+        assert_match(/#{expected_output}/, out.string)
 
-        refute result.status
+        refute result
       end
 
       test "#run does not list stale violations when run on a single file with no exising violations, but one new violation" do
@@ -345,6 +334,7 @@ module Packwerk
           [],
           configuration: configuration,
           out: out,
+          err_out: StringIO.new,
           progress_formatter: Formatters::ProgressFormatter.new(out),
           offenses_formatter: configuration.offenses_formatter
         )
@@ -353,13 +343,9 @@ module Packwerk
 
         expected_output = <<~EOS
           📦 Packwerk is inspecting 1 file
-          .
+          E
           📦 Finished in \\d+\\.\\d+ seconds
-        EOS
 
-        assert_match(/#{expected_output}/, out.string)
-
-        expected_message = <<~EOS
           components/source/some/path.rb
           some message
 
@@ -367,10 +353,9 @@ module Packwerk
 
           There were stale violations found, please run `packwerk update-todo`
         EOS
+        assert_match(/#{expected_output}/, out.string)
 
-        assert_equal expected_message, result.message
-
-        refute result.status
+        refute result
       end
 
       test "#run result has failure status when stale violations exist" do
@@ -392,6 +377,7 @@ module Packwerk
           [],
           configuration: configuration,
           out: out,
+          err_out: StringIO.new,
           progress_formatter: Formatters::ProgressFormatter.new(out),
           offenses_formatter: configuration.offenses_formatter
         )
@@ -402,16 +388,13 @@ module Packwerk
           📦 Packwerk is inspecting 1 file
           \\.
           📦 Finished in \\d+\\.\\d+ seconds
-        EOS
-        assert_match(/#{expected_output}/, out.string)
 
-        expected_message = <<~EOS
           No offenses detected
           There were stale violations found, please run `packwerk update-todo`
         EOS
+        assert_match(/#{expected_output}/, out.string)
 
-        refute result.status
-        assert_equal expected_message, result.message
+        refute result
       end
 
       test "#run runs in parallel" do
@@ -431,18 +414,20 @@ module Packwerk
         RunContext.any_instance.stubs(:process_file).returns([offense]).returns([offense2])
         FilesForProcessing.any_instance.stubs(:files).returns(Set.new(["some/path.rb", "some/other_path.rb"]))
 
+        out = StringIO.new
         configuration = Configuration.new
         check_command = CheckCommand.new(
           [],
           configuration: configuration,
-          out: StringIO.new,
+          out: out,
+          err_out: StringIO.new,
           progress_formatter: Formatters::ProgressFormatter.new(StringIO.new),
           offenses_formatter: configuration.offenses_formatter
         )
 
         result = check_command.run
-        refute result.status
-        assert_match(/2 offenses detected/, result.message)
+        refute result
+        assert_match(/2 offenses detected/, out.string)
       end
     end
   end

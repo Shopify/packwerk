@@ -7,8 +7,6 @@ module Packwerk
     extend T::Sig
     extend ActiveSupport::Autoload
 
-    autoload :Result
-
     sig do
       params(
         configuration: T.nilable(Configuration),
@@ -50,28 +48,20 @@ module Packwerk
       command = args.shift || "help"
       command_class = Commands.class_for(command)
 
-      result = if command_class
+      if command_class
         command_class.new(
           args,
           configuration: @configuration,
           out: @out,
+          err_out: @err_out,
           progress_formatter: @progress_formatter,
           offenses_formatter: @offenses_formatter,
         ).run
       else
-        Result.new(
-          status: false,
-          message: "'#{command}' is not a packwerk command. See `packwerk help`.",
-          print_as_error: true
-        )
-      end
+        @err_out.puts("'#{command}' is not a packwerk command. See `packwerk help`.",)
 
-      if result.print_as_error
-        @err_out.puts(result.message)
-      else
-        @out.puts(result.message)
+        false
       end
-      result.status
     end
   end
 end

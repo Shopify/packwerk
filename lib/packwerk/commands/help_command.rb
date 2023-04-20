@@ -6,9 +6,9 @@ module Packwerk
     class HelpCommand < BaseCommand
       extend T::Sig
 
-      sig { override.returns(Cli::Result) }
+      sig { override.returns(T::Boolean) }
       def run
-        Cli::Result.new(status: true, print_as_error: true, message: <<~USAGE)
+        err_out.puts(<<~USAGE)
           Usage: #{$PROGRAM_NAME} <subcommand>
 
           Subcommands:
@@ -19,6 +19,8 @@ module Packwerk
             version - output packwerk version
             help  - display help information about packwerk
         USAGE
+
+        true
       end
     end
   end

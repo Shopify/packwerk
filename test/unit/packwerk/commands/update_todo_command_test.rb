@@ -30,17 +30,19 @@ module Packwerk
           [],
           configuration: configuration,
           out: out,
+          err_out: StringIO.new,
           progress_formatter: Formatters::ProgressFormatter.new(out),
           offenses_formatter: configuration.offenses_formatter
         )
 
         result = update_command.run
 
-        assert_equal result.message, <<~EOS
+        expected_output = <<~EOS
           No offenses detected
           ✅ `package_todo.yml` has been updated.
         EOS
-        assert result.status
+        assert_match(/#{expected_output}/, out.string)
+        assert result
       end
 
       test "#run returns exit code 1 when there are offenses" do
@@ -56,13 +58,14 @@ module Packwerk
           [],
           configuration: configuration,
           out: out,
+          err_out: StringIO.new,
           progress_formatter: Formatters::ProgressFormatter.new(out),
           offenses_formatter: configuration.offenses_formatter
         )
 
         result = update_command.run
 
-        expected = <<~EOS
+        expected_output = <<~EOS
           path/of/exile.rb
           something
 
@@ -70,8 +73,8 @@ module Packwerk
 
           ✅ `package_todo.yml` has been updated.
         EOS
-        assert_equal expected, result.message
-        refute result.status
+        assert_match(/#{expected_output}/, out.string)
+        refute result
       end
 
       test "#run returns exit code 1 when ran with file args" do
@@ -85,15 +88,16 @@ module Packwerk
           [],
           configuration: configuration,
           out: out,
+          err_out: StringIO.new,
           progress_formatter: Formatters::ProgressFormatter.new(out),
           offenses_formatter: configuration.offenses_formatter
         )
 
         result = update_command.run
 
-        expected = "⚠️ update-todo must be called without any file arguments."
-        assert_equal expected, result.message
-        refute result.status
+        expected_output = "⚠️ update-todo must be called without any file arguments."
+        assert_match(/#{expected_output}/, out.string)
+        refute result
       end
 
       test "#run cleans up old package_todo files" do
@@ -136,18 +140,19 @@ module Packwerk
           [],
           configuration: configuration,
           out: out,
+          err_out: StringIO.new,
           progress_formatter: Formatters::ProgressFormatter.new(out),
           offenses_formatter: configuration.offenses_formatter
         )
 
         result = update_command.run
 
-        expected = <<~EOS
+        expected_output = <<~EOS
           No offenses detected
           ✅ `package_todo.yml` has been updated.
         EOS
-        assert_equal expected, result.message
-        assert result.status
+        assert_match(/#{expected_output}/, out.string)
+        assert result
 
         assert File.exist?("package_todo.yml")
         refute File.exist?("components/sales/package_todo.yml")

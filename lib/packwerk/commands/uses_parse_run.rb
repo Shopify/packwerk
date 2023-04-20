@@ -16,11 +16,12 @@ module Packwerk
           args: T::Array[String],
           configuration: Configuration,
           out: T.any(StringIO, IO),
+          err_out: T.any(StringIO, IO),
           progress_formatter: Formatters::ProgressFormatter,
           offenses_formatter: OffensesFormatter,
         ).void
       end
-      def initialize(args, configuration:, out:, progress_formatter:, offenses_formatter:)
+      def initialize(args, configuration:, out:, err_out:, progress_formatter:, offenses_formatter:)
         super
         @parsed_options = T.let(parse_options, T::Hash[Symbol, T.untyped])
         configuration.parallel = @parsed_options[:parallel]
