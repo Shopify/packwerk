@@ -207,6 +207,10 @@ module Packwerk
           "identifier of offenses formatter to use") do |formatter_identifier|
           formatter = OffensesFormatter.find(formatter_identifier)
         end
+
+        parser.on("--[no-]parallel", TrueClass, "parallel processing") do |parallel|
+          @configuration.parallel = parallel
+        end
       end.parse!(args)
 
       relative_file_paths = args if relative_file_paths.empty?

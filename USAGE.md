@@ -188,6 +188,10 @@ You can also specify packages for a shorter run time. When checking against pack
 
     bin/packwerk check --packages=components/your_package,components/your_other_package
 
+Using the following command line option you can also enable or disable parallel processing. It is enabled by default.
+
+    bin/packwerk check --[no-]-parallel
+
 ![](static/packwerk_check.gif)
 
 In order to keep the package system valid at each version of the application, we recommend running `bin/packwerk check` in your CI pipeline.

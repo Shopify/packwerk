@@ -60,6 +60,9 @@ module Packwerk
     sig { returns(Pathname) }
     attr_reader(:cache_directory)
 
+    sig { params(parallel: T::Boolean).returns(T::Boolean) }
+    attr_writer(:parallel)
+
     sig do
       params(
         configs: T::Hash[String, T.untyped],
