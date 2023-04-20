@@ -39,10 +39,6 @@ module Packwerk
     autoload :Plain
   end
 
-  autoload_under "commands" do
-    autoload :OffenseProgressMarker
-  end
-
   module Formatters
     extend ActiveSupport::Autoload
 
