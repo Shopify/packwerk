@@ -8,7 +8,7 @@ module Packwerk
 
       sig { override.returns(T::Boolean) }
       def run
-        err_out.puts(<<~USAGE)
+        @err_out.puts(<<~USAGE)
           Usage: #{$PROGRAM_NAME} <subcommand>
 
           Subcommands:
