@@ -53,6 +53,17 @@ module Packwerk
       ProcessedFile.new(unresolved_references: unresolved_references)
     rescue Parsers::ParseError => e
       ProcessedFile.new(offenses: [e.result])
+    rescue StandardError => e
+      message = <<~MSG
+        Packwerk encountered an internal error.
+        For now, you can add this file to `packwerk.yml` `exclude` list.
+        Please file an issue and include this error message and stacktrace:
+
+        #{e.message} #{e.backtrace}"
+      MSG
+
+      offense = Parsers::ParseResult.new(file: relative_file, message: message)
+      ProcessedFile.new(offenses: [offense])
     end
 
     private
