@@ -301,16 +301,16 @@ module Packwerk
       use_template(:skeleton)
 
       config = Configuration.new({ "parallel" => false })
-      assert_equal false, config.parallel?
-      cli = ::Packwerk::Cli.new(configuration: config)
+      refute config.parallel?
+      cli = ::Packwerk::Cli.new(configuration: config, out: StringIO.new)
       cli.execute_command(["check", "--parallel"])
-      assert_equal true, config.parallel?
+      assert config.parallel?
 
       config = Configuration.new({ "parallel" => true })
-      assert_equal true, config.parallel?
-      cli = ::Packwerk::Cli.new(configuration: config)
+      assert config.parallel?
+      cli = ::Packwerk::Cli.new(configuration: config, out: StringIO.new)
       cli.execute_command(["check", "--no-parallel"])
-      assert_equal false, config.parallel?
+      refute config.parallel?
     end
   end
 end
