@@ -190,7 +190,7 @@ You can also specify packages for a shorter run time. When checking against pack
 
 Using the following command line option you can also enable or disable parallel processing. It is enabled by default.
 
-    bin/packwerk check --[no-]-parallel
+    bin/packwerk check --[no-]parallel
 
 ![](static/packwerk_check.gif)
 
