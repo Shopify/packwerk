@@ -16,7 +16,6 @@ module Packwerk
   # Public APIs
   autoload :Checker
   autoload :Cli
-  autoload :Commands
   autoload :Configuration
   autoload :ConstantContext
   autoload :Node
@@ -97,6 +96,13 @@ module Packwerk
   end
 
   private_constant :ReferenceChecking
+
+  Cli.register_command("init")
+  Cli.register_command("check")
+  Cli.register_command("update-todo", aliases: ["update"])
+  Cli.register_command("validate")
+  Cli.register_command("version")
+  Cli.register_command("help")
 end
 
 require "packwerk/version"

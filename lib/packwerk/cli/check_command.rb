@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 module Packwerk
-  module Commands
+  class Cli
     class CheckCommand < BaseCommand
       extend T::Sig
       include UsesParseRun

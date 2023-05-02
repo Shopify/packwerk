@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 module Packwerk
-  module Commands
+  class Cli
     class ValidateCommand < BaseCommand
       extend T::Sig
 

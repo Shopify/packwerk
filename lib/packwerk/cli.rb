@@ -7,6 +7,25 @@ module Packwerk
     extend T::Sig
     extend ActiveSupport::Autoload
 
+    autoload :CommandRegistry
+    autoload :BaseCommand
+    autoload :CheckCommand
+    autoload :HelpCommand
+    autoload :InitCommand
+    autoload :UpdateTodoCommand
+    autoload :UsesParseRun
+    autoload :ValidateCommand
+    autoload :VersionCommand
+
+    class << self
+      extend T::Sig
+
+      sig { params(name: String, aliases: T::Array[String]).void }
+      def register_command(name, aliases: [])
+        CommandRegistry.register(name, aliases: aliases)
+      end
+    end
+
     sig do
       params(
         configuration: T.nilable(Configuration),
@@ -46,7 +65,7 @@ module Packwerk
     sig { params(args: T::Array[String]).returns(T::Boolean) }
     def execute_command(args)
       command = args.shift || "help"
-      command_class = Commands.class_for(command)
+      command_class = CommandRegistry.class_for(command)
 
       if command_class
         command_class.new(

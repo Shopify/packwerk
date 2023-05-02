@@ -5,7 +5,7 @@ require "test_helper"
 require "support/rails_test_helper"
 
 module Packwerk
-  module Commands
+  class Cli
     class CheckCommandTest < Minitest::Test
       include FactoryHelper
       include ApplicationFixtureHelper

@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 module Packwerk
-  module Commands
+  class Cli
     class UpdateTodoCommand < BaseCommand
       extend T::Sig
       include UsesParseRun
@@ -45,7 +45,5 @@ module Packwerk
         offense_collection.errors.empty?
       end
     end
-
-    UpdateCommand = UpdateTodoCommand
   end
 end
