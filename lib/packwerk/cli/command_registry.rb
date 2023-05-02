@@ -9,9 +9,9 @@ module Packwerk
       class << self
         extend T::Sig
 
-        sig { params(name: String, aliases: T::Array[String]).void }
-        def register(name, aliases: [])
-          registry << new(name, aliases: aliases)
+        sig { params(name: String, help: String, aliases: T::Array[String]).void }
+        def register(name, help:, aliases: [])
+          registry << new(name, help: help, aliases: aliases)
         end
 
         sig { params(name_or_alias: String).returns(T.nilable(T.class_of(Cli::BaseCommand))) }
@@ -19,6 +19,11 @@ module Packwerk
           registry
             .find { |command| command.matches_command?(name_or_alias) }
             &.command_class
+        end
+
+        sig { returns(T::Array[CommandRegistry]) }
+        def all
+          registry.dup
         end
 
         private
@@ -29,9 +34,16 @@ module Packwerk
         end
       end
 
-      sig { params(name: String, aliases: T::Array[String]).void }
-      def initialize(name, aliases: [])
+      sig { returns(String) }
+      attr_reader :name
+
+      sig { returns(String) }
+      attr_reader :help
+
+      sig { params(name: String, help: String, aliases: T::Array[String]).void }
+      def initialize(name, help:, aliases: [])
         @name = name
+        @help = help
         @aliases = aliases
       end
 

@@ -12,15 +12,19 @@ module Packwerk
           Usage: #{$PROGRAM_NAME} <subcommand>
 
           Subcommands:
-            init - set up packwerk
-            check - run all checks
-            update-todo - update package_todo.yml files
-            validate - verify integrity of packwerk and package configuration
-            version - output packwerk version
-            help  - display help information about packwerk
+          #{command_help_lines}
         USAGE
 
         true
+      end
+
+      private
+
+      sig { returns(String) }
+      def command_help_lines
+        CommandRegistry.all.map do |command|
+          "  #{command.name} - #{command.help}"
+        end.join("\n")
       end
     end
   end

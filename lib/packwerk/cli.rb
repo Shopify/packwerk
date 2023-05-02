@@ -19,10 +19,9 @@ module Packwerk
 
     class << self
       extend T::Sig
-
-      sig { params(name: String, aliases: T::Array[String]).void }
-      def register_command(name, aliases: [])
-        CommandRegistry.register(name, aliases: aliases)
+      sig { params(name: String, help: String, aliases: T::Array[String]).void }
+      def register_command(name, help:, aliases: [])
+        CommandRegistry.register(name, help: help, aliases: aliases)
       end
     end
 

@@ -97,12 +97,12 @@ module Packwerk
 
   private_constant :ReferenceChecking
 
-  Cli.register_command("init")
-  Cli.register_command("check")
-  Cli.register_command("update-todo", aliases: ["update"])
-  Cli.register_command("validate")
-  Cli.register_command("version")
-  Cli.register_command("help")
+  Cli.register_command("init", help: "set up packwerk")
+  Cli.register_command("check", help: "run all checks")
+  Cli.register_command("update-todo", aliases: ["update"], help: "update package_todo.yml files")
+  Cli.register_command("validate", help: "verify integrity of packwerk and package configuration")
+  Cli.register_command("version", help: "output packwerk version")
+  Cli.register_command("help", help: "display help information about packwerk")
 end
 
 require "packwerk/version"
