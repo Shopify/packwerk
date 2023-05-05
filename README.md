@@ -58,8 +58,8 @@ Read [USAGE.md](USAGE.md) for usage once Packwerk is installed on your project.
 Various third parties have built tooling on top of packwerk. Here's a selection of some that might prove useful:
 
 - https://github.com/bellroy/graphwerk draws a graph of your package dependencies
-- https://github.com/Gusto/packwerk-vscode integrates packwerk into Visual Studio Code so you can see violations right in your editor
-- https://github.com/Gusto/stimpack sets up Rails autoloading, as well as `rspec` and `FactoryBot` integration, for packages arranged in a flat list. Stimpack is quite convenient, but for autoloading we recommend to use `Rails::Engine`s instead.
+- https://github.com/rubyatscale/packwerk-vscode integrates packwerk into Visual Studio Code so you can see violations right in your editor
+- https://github.com/rubyatscale/packs-rails sets up Rails autoloading, as well as `rspec` and `FactoryBot` integration, for packages arranged in a flat list. packs-rails is quite convenient, but for autoloading we recommend to use `Rails::Engine`s instead.
 - https://github.com/rubyatscale/danger-packwerk integrates packwerk with [danger.systems](https://danger.systems) to provide packwerk feedback as Github inline PR comments
 - https://github.com/rubyatscale/packwerk-extensions contains extensions for packwerk, including a checker for packwerk that allows you to enforce public API boundaries. This was originally extracted from `packwerk` itself.
 
