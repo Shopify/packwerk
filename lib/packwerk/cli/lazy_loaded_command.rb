@@ -3,7 +3,7 @@
 
 module Packwerk
   class Cli
-    class CommandRegistry
+    class LazyLoadedCommand
       extend T::Sig
 
       class << self
@@ -21,16 +21,16 @@ module Packwerk
             &.command_class
         end
 
-        sig { returns(T::Array[CommandRegistry]) }
+        sig { returns(T::Array[LazyLoadedCommand]) }
         def all
           registry.dup
         end
 
         private
 
-        sig { returns(T::Array[CommandRegistry]) }
+        sig { returns(T::Array[LazyLoadedCommand]) }
         def registry
-          @registry ||= T.let([], T.nilable(T::Array[CommandRegistry]))
+          @registry ||= T.let([], T.nilable(T::Array[LazyLoadedCommand]))
         end
       end
 
@@ -60,6 +60,6 @@ module Packwerk
       end
     end
 
-    private_constant :CommandRegistry
+    private_constant :LazyLoadedCommand
   end
 end

@@ -7,11 +7,11 @@ module Packwerk
     extend T::Sig
     extend ActiveSupport::Autoload
 
-    autoload :CommandRegistry
     autoload :BaseCommand
     autoload :CheckCommand
     autoload :HelpCommand
     autoload :InitCommand
+    autoload :LazyLoadedCommand
     autoload :UpdateTodoCommand
     autoload :UsesParseRun
     autoload :ValidateCommand
@@ -21,7 +21,7 @@ module Packwerk
       extend T::Sig
       sig { params(name: String, aliases: T::Array[String]).void }
       def register_command(name, aliases: [])
-        CommandRegistry.register(name, aliases: aliases)
+        LazyLoadedCommand.register(name, aliases: aliases)
       end
     end
 
@@ -64,7 +64,7 @@ module Packwerk
     sig { params(args: T::Array[String]).returns(T::Boolean) }
     def execute_command(args)
       command = args.shift || "help"
-      command_class = CommandRegistry.class_for(command)
+      command_class = LazyLoadedCommand.class_for(command)
 
       if command_class
         command_class.new(

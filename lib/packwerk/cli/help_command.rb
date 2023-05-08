@@ -24,7 +24,7 @@ module Packwerk
 
       sig { returns(String) }
       def command_help_lines
-        CommandRegistry.all.map do |command|
+        LazyLoadedCommand.all.map do |command|
           "  #{command.name} - #{command.description}"
         end.join("\n")
       end
