@@ -9,9 +9,9 @@ module Packwerk
       class << self
         extend T::Sig
 
-        sig { params(name: String, help: String, aliases: T::Array[String]).void }
-        def register(name, help:, aliases: [])
-          registry << new(name, help: help, aliases: aliases)
+        sig { params(name: String, aliases: T::Array[String]).void }
+        def register(name, aliases: [])
+          registry << new(name, aliases: aliases)
         end
 
         sig { params(name_or_alias: String).returns(T.nilable(T.class_of(Cli::BaseCommand))) }
@@ -37,13 +37,9 @@ module Packwerk
       sig { returns(String) }
       attr_reader :name
 
-      sig { returns(String) }
-      attr_reader :help
-
-      sig { params(name: String, help: String, aliases: T::Array[String]).void }
-      def initialize(name, help:, aliases: [])
+      sig { params(name: String, aliases: T::Array[String]).void }
+      def initialize(name, aliases: [])
         @name = name
-        @help = help
         @aliases = aliases
       end
 
@@ -51,6 +47,11 @@ module Packwerk
       def command_class
         classname = @name.sub(" ", "_").underscore.classify + "Command"
         Cli.const_get(classname) # rubocop:disable Sorbet/ConstantsFromStrings
+      end
+
+      sig { returns(String) }
+      def description
+        command_class.description
       end
 
       sig { params(name_or_alias: String).returns(T::Boolean) }

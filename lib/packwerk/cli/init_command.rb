@@ -6,6 +6,8 @@ module Packwerk
     class InitCommand < BaseCommand
       extend T::Sig
 
+      description "set up packwerk"
+
       sig { override.returns(T::Boolean) }
       def run
         @out.puts("📦 Initializing Packwerk...")

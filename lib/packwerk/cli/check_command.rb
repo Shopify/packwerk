@@ -7,6 +7,8 @@ module Packwerk
       extend T::Sig
       include UsesParseRun
 
+      description "run all checks"
+
       sig { override.returns(T::Boolean) }
       def run
         if @files_for_processing.files.empty?

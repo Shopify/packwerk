@@ -8,6 +8,21 @@ module Packwerk
       extend T::Helpers
       abstract!
 
+      @description = T.let("", String)
+
+      class << self
+        extend T::Sig
+
+        sig { params(description: T.nilable(String)).returns(String) }
+        def description(description = nil)
+          if description
+            @description = description
+          else
+            @description
+          end
+        end
+      end
+
       sig do
         params(
           args: T::Array[String],

@@ -6,6 +6,8 @@ module Packwerk
     class HelpCommand < BaseCommand
       extend T::Sig
 
+      description "display help information about packwerk"
+
       sig { override.returns(T::Boolean) }
       def run
         @err_out.puts(<<~USAGE)
@@ -23,7 +25,7 @@ module Packwerk
       sig { returns(String) }
       def command_help_lines
         CommandRegistry.all.map do |command|
-          "  #{command.name} - #{command.help}"
+          "  #{command.name} - #{command.description}"
         end.join("\n")
       end
     end

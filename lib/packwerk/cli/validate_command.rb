@@ -6,6 +6,8 @@ module Packwerk
     class ValidateCommand < BaseCommand
       extend T::Sig
 
+      description "verify integrity of packwerk and package configuration"
+
       sig { override.returns(T::Boolean) }
       def run
         validator_result = T.let(nil, T.nilable(Validator::Result))

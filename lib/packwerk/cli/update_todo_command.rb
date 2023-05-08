@@ -7,6 +7,8 @@ module Packwerk
       extend T::Sig
       include UsesParseRun
 
+      description "update package_todo.yml files"
+
       sig { override.returns(T::Boolean) }
       def run
         if @files_for_processing.files_specified?
