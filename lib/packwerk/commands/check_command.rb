@@ -20,8 +20,6 @@ module Packwerk
           true
         end
 
-        run_context = RunContext.from_configuration(@configuration)
-        offense_collection = OffenseCollection.new(@configuration.root_path)
         all_offenses = T.let([], T::Array[Offense])
         on_interrupt = T.let(-> { @progress_formatter.interrupted }, T.proc.void)
 
@@ -44,6 +42,18 @@ module Packwerk
         offense_collection.outstanding_offenses.empty? &&
           !offense_collection.stale_violations?(@files_for_processing.files) &&
           offense_collection.strict_mode_violations.empty?
+      end
+
+      private
+
+      sig { returns(RunContext) }
+      def run_context
+        @run_context ||= T.let(RunContext.from_configuration(@configuration), T.nilable(RunContext))
+      end
+
+      sig { returns(OffenseCollection) }
+      def offense_collection
+        @offense_collection ||= T.let(OffenseCollection.new(@configuration.root_path), T.nilable(OffenseCollection))
       end
     end
   end
