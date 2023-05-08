@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 module Packwerk
-  class Cli
+  module Commands
     class InitCommand < BaseCommand
       extend T::Sig
 

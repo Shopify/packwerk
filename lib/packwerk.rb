@@ -18,6 +18,7 @@ module Packwerk
   autoload :Cli
   autoload :Configuration
   autoload :ConstantContext
+  autoload :Commands
   autoload :Node
   autoload :Offense
   autoload :OffenseCollection

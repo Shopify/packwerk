@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 module Packwerk
-  class Cli
+  module Commands
     class HelpCommand < BaseCommand
       extend T::Sig
 
@@ -24,7 +24,7 @@ module Packwerk
 
       sig { returns(String) }
       def command_help_lines
-        LazyLoadedCommand.all.map do |command|
+        Commands.all.map do |command|
           "  #{command.name} - #{command.description}"
         end.join("\n")
       end

@@ -45,7 +45,7 @@ module Packwerk
       configuration.stubs(cache_enabled?: true)
       out = StringIO.new
 
-      update_command = Cli::UpdateTodoCommand.new(
+      update_command = Commands::UpdateTodoCommand.new(
         [],
         configuration: configuration,
         out: out,

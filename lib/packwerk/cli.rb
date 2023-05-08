@@ -5,25 +5,6 @@ module Packwerk
   # A command-line interface to Packwerk.
   class Cli
     extend T::Sig
-    extend ActiveSupport::Autoload
-
-    autoload :BaseCommand
-    autoload :CheckCommand
-    autoload :HelpCommand
-    autoload :InitCommand
-    autoload :LazyLoadedCommand
-    autoload :UpdateTodoCommand
-    autoload :UsesParseRun
-    autoload :ValidateCommand
-    autoload :VersionCommand
-
-    class << self
-      extend T::Sig
-      sig { params(name: String, aliases: T::Array[String]).void }
-      def register_command(name, aliases: [])
-        LazyLoadedCommand.register(name, aliases: aliases)
-      end
-    end
 
     sig do
       params(
@@ -64,7 +45,7 @@ module Packwerk
     sig { params(args: T::Array[String]).returns(T::Boolean) }
     def execute_command(args)
       command = args.shift || "help"
-      command_class = LazyLoadedCommand.class_for(command)
+      command_class = Commands.for(command)
 
       if command_class
         command_class.new(
@@ -82,11 +63,4 @@ module Packwerk
       end
     end
   end
-
-  Cli.register_command("init")
-  Cli.register_command("check")
-  Cli.register_command("update-todo", aliases: ["update"])
-  Cli.register_command("validate")
-  Cli.register_command("version")
-  Cli.register_command("help")
 end

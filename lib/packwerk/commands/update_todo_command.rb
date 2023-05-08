@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 module Packwerk
-  class Cli
+  module Commands
     class UpdateTodoCommand < BaseCommand
       extend T::Sig
       include UsesParseRun
