@@ -75,7 +75,7 @@ module Packwerk
       root = config_path ? File.dirname(config_path) : "."
       @root_path = T.let(File.expand_path(root), String)
       @package_paths = T.let(configs["package_paths"] || "**/", T.any(String, T::Array[String]))
-      @custom_associations = T.let(configs["custom_associations"] || [], T::Array[Symbol])
+      @custom_associations = T.let((configs["custom_associations"] || []).map(&:to_sym), T::Array[Symbol])
       @parallel = T.let(configs.key?("parallel") ? configs["parallel"] : true, T::Boolean)
       @cache_enabled = T.let(configs.key?("cache") ? configs["cache"] : false, T::Boolean)
       @cache_directory = T.let(Pathname.new(configs["cache_directory"] || "tmp/cache/packwerk"), Pathname)
