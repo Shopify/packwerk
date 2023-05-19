@@ -42,7 +42,7 @@ module Packwerk
       assert_equal ["{exclude_dir,bin,tmp}/**/*"], configuration.exclude
       assert_equal app_dir, configuration.root_path
       assert_equal "**/*/", configuration.package_paths
-      assert_equal ["custom_association"], configuration.custom_associations
+      assert_equal [:custom_association], configuration.custom_associations
     end
 
     test ".from_path falls back to some default config when no existing config exists" do
