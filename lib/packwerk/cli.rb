@@ -57,6 +57,8 @@ module Packwerk
         output_result(parse_run(args).check)
       when "update-todo", "update"
         output_result(parse_run(args).update_todo)
+      when "show-offenses", "show"
+        output_result(parse_run(args).show_offenses)
       when "validate"
         validate(args)
       when "version"
@@ -118,6 +120,7 @@ module Packwerk
         Subcommands:
           init - set up packwerk
           check - run all checks
+          show-offenses - displays all offenses
           update-todo - update package_todo.yml files
           validate - verify integrity of packwerk and package configuration
           version - output packwerk version

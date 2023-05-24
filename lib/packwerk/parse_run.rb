@@ -46,7 +46,10 @@ module Packwerk
       end
 
       run_context = RunContext.from_configuration(@configuration)
-      offense_collection = find_offenses(run_context)
+      offenses = find_offenses(run_context) { update_progress }
+
+      offense_collection = OffenseCollection.new(@configuration.root_path)
+      offense_collection.add_offenses(offenses)
       offense_collection.persist_package_todo_files(run_context.package_set)
 
       message = <<~EOS
@@ -58,9 +61,24 @@ module Packwerk
     end
 
     sig { returns(Cli::Result) }
+    def show_offenses
+      run_context = RunContext.from_configuration(@configuration)
+      all_offenses = find_offenses(run_context)
+
+      message = @offenses_formatter.show_offenses(all_offenses)
+
+      Cli::Result.new(message: message, status: true)
+    end
+
+    sig { returns(Cli::Result) }
     def check
       run_context = RunContext.from_configuration(@configuration)
-      offense_collection = find_offenses(run_context, show_errors: true)
+      offense_collection = OffenseCollection.new(@configuration.root_path)
+      offenses = find_offenses(run_context) do |offenses|
+        failed = offenses.any? { |offense| !offense_collection.listed?(offense) }
+        update_progress(failed: failed)
+      end
+      offense_collection.add_offenses(offenses)
 
       messages = [
         @offenses_formatter.show_offenses(offense_collection.outstanding_offenses),
@@ -76,16 +94,25 @@ module Packwerk
 
     private
 
-    sig { params(run_context: RunContext, show_errors: T::Boolean).returns(OffenseCollection) }
-    def find_offenses(run_context, show_errors: false)
-      offense_collection = OffenseCollection.new(@configuration.root_path)
+    sig do
+      params(
+        run_context: RunContext,
+        block: T.nilable(T.proc.params(
+          offenses: T::Array[Packwerk::Offense],
+        ).void)
+      ).returns(T::Array[Offense])
+    end
+    def find_offenses(run_context, &block)
       all_offenses = T.let([], T::Array[Offense])
-      process_file = T.let(->(relative_file) do
-        run_context.process_file(relative_file: relative_file).tap do |offenses|
-          failed = show_errors && offenses.any? { |offense| !offense_collection.listed?(offense) }
-          update_progress(failed: failed)
-        end
-      end, ProcessFileProc)
+      process_file = if block
+        T.let(proc do |relative_file|
+          run_context.process_file(relative_file: relative_file).tap(&block)
+        end, ProcessFileProc)
+      else
+        T.let(proc do |relative_file|
+          run_context.process_file(relative_file: relative_file)
+        end, ProcessFileProc)
+      end
 
       @progress_formatter.started_inspection(@relative_file_set) do
         all_offenses = if @configuration.parallel?
@@ -95,8 +122,7 @@ module Packwerk
         end
       end
 
-      all_offenses.each { |offense| offense_collection.add_offense(offense) }
-      offense_collection
+      all_offenses
     end
 
     sig { params(block: ProcessFileProc).returns(T::Array[Offense]) }
