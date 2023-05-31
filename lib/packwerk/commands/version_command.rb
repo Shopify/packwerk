@@ -10,7 +10,7 @@ module Packwerk
 
       sig { override.returns(T::Boolean) }
       def run
-        @out.puts(Packwerk::VERSION)
+        out.puts(Packwerk::VERSION)
         true
       end
     end

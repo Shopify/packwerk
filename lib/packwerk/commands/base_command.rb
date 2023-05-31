@@ -44,6 +44,26 @@ module Packwerk
 
       sig { abstract.returns(T::Boolean) }
       def run; end
+
+      private
+
+      sig { returns(T::Array[String]) }
+      attr_reader :args
+
+      sig { returns(Configuration) }
+      attr_reader :configuration
+
+      sig { returns(T.any(StringIO, IO)) }
+      attr_reader :out
+
+      sig { returns(T.any(StringIO, IO)) }
+      attr_reader :err_out
+
+      sig { returns(Formatters::ProgressFormatter) }
+      attr_reader :progress_formatter
+
+      sig { returns(OffensesFormatter) }
+      attr_reader :offenses_formatter
     end
   end
 end
