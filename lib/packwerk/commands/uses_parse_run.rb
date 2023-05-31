@@ -23,10 +23,10 @@ module Packwerk
       end
       def initialize(args, configuration:, out:, err_out:, progress_formatter:, offenses_formatter:)
         super
-        @parsed_options = T.let(parse_options, T::Hash[Symbol, T.untyped])
+        @_parsed_options = T.let(nil, T.nilable(T::Hash[Symbol, T.untyped]))
         @files_for_processing = T.let(fetch_files_to_process, FilesForProcessing)
         @offenses_formatter = T.let(find_offenses_formatter || @offenses_formatter, OffensesFormatter)
-        configuration.parallel = @parsed_options[:parallel]
+        configuration.parallel = parsed_options[:parallel]
       end
 
       private
@@ -34,16 +34,16 @@ module Packwerk
       sig { returns(FilesForProcessing) }
       def fetch_files_to_process
         FilesForProcessing.fetch(
-          relative_file_paths: @parsed_options[:relative_file_paths],
-          ignore_nested_packages: @parsed_options[:ignore_nested_packages],
+          relative_file_paths: parsed_options[:relative_file_paths],
+          ignore_nested_packages: parsed_options[:ignore_nested_packages],
           configuration: configuration
         )
       end
 
       sig { returns(T.nilable(OffensesFormatter)) }
       def find_offenses_formatter
-        if @parsed_options[:formatter_name]
-          OffensesFormatter.find(@parsed_options[:formatter_name])
+        if parsed_options[:formatter_name]
+          OffensesFormatter.find(parsed_options[:formatter_name])
         end
       end
 
@@ -56,31 +56,35 @@ module Packwerk
       end
 
       sig { returns(T::Hash[Symbol, T.untyped]) }
-      def parse_options
-        {}.tap do |options|
-          options[:relative_file_paths] = T.let([], T::Array[String])
-          options[:ignore_nested_packages] = T.let(false, T::Boolean)
-          options[:formatter_name] = T.let(nil, T.nilable(String))
-          options[:parallel] = T.let(configuration.parallel?, T::Boolean)
+      def parsed_options
+        return @_parsed_options if @_parsed_options
 
-          OptionParser.new do |parser|
-            parser.on("--packages=PACKAGESLIST", Array, "package names, comma separated") do |p|
-              options[:relative_file_paths] = p
-              options[:ignore_nested_packages] = true
-            end
+        @_parsed_options = {
+          relative_file_paths: T.let([], T::Array[String]),
+          ignore_nested_packages: T.let(false, T::Boolean),
+          formatter_name: T.let(nil, T.nilable(String)),
+          parallel: T.let(configuration.parallel?, T::Boolean),
+        }
 
-            parser.on("--offenses-formatter=FORMATTER", String,
-              "identifier of offenses formatter to use") do |formatter_name|
-              options[:formatter_name] = formatter_name
-            end
+        OptionParser.new do |parser|
+          parser.on("--packages=PACKAGESLIST", Array, "package names, comma separated") do |p|
+            @_parsed_options[:relative_file_paths] = p
+            @_parsed_options[:ignore_nested_packages] = true
+          end
 
-            parser.on("--[no-]parallel", TrueClass, "parallel processing") do |parallel|
-              options[:parallel] = parallel
-            end
-          end.parse!(args)
+          parser.on("--offenses-formatter=FORMATTER", String,
+            "identifier of offenses formatter to use") do |formatter_name|
+            @_parsed_options[:formatter_name] = formatter_name
+          end
 
-          options[:relative_file_paths] = args if options[:relative_file_paths].empty?
-        end
+          parser.on("--[no-]parallel", TrueClass, "parallel processing") do |parallel|
+            @_parsed_options[:parallel] = parallel
+          end
+        end.parse!(args)
+
+        @_parsed_options[:relative_file_paths] = args if @_parsed_options[:relative_file_paths].empty?
+
+        @_parsed_options
       end
     end
 
