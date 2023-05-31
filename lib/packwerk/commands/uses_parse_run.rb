@@ -25,7 +25,7 @@ module Packwerk
         super
         @_parsed_options = T.let(nil, T.nilable(T::Hash[Symbol, T.untyped]))
         @files_for_processing = T.let(fetch_files_to_process, FilesForProcessing)
-        @offenses_formatter = T.let(find_offenses_formatter || @offenses_formatter, OffensesFormatter)
+        @offenses_formatter = T.let(offenses_formatter_from_options || @offenses_formatter, OffensesFormatter)
         configuration.parallel = parsed_options[:parallel]
       end
 
@@ -41,10 +41,8 @@ module Packwerk
       end
 
       sig { returns(T.nilable(OffensesFormatter)) }
-      def find_offenses_formatter
-        if parsed_options[:formatter_name]
-          OffensesFormatter.find(parsed_options[:formatter_name])
-        end
+      def offenses_formatter_from_options
+        OffensesFormatter.find(parsed_options[:formatter_name]) if parsed_options[:formatter_name]
       end
 
       sig { returns(ParseRun) }
