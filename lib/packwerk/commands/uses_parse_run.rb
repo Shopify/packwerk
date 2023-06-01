@@ -23,7 +23,6 @@ module Packwerk
       end
       def initialize(args, configuration:, out:, err_out:, progress_formatter:, offenses_formatter:)
         super
-        @_parsed_options = T.let(nil, T.nilable(T::Hash[Symbol, T.untyped]))
         @files_for_processing = T.let(fetch_files_to_process, FilesForProcessing)
         @offenses_formatter = T.let(offenses_formatter_from_options || @offenses_formatter, OffensesFormatter)
         configuration.parallel = parsed_options[:parallel]
@@ -55,9 +54,11 @@ module Packwerk
 
       sig { returns(T::Hash[Symbol, T.untyped]) }
       def parsed_options
-        return @_parsed_options if @_parsed_options
+        return @parsed_options if @parsed_options
 
-        @_parsed_options = {
+        @parsed_options = T.let(nil, T.nilable(T::Hash[Symbol, T.untyped]))
+
+        @parsed_options = {
           relative_file_paths: T.let([], T::Array[String]),
           ignore_nested_packages: T.let(false, T::Boolean),
           formatter_name: T.let(nil, T.nilable(String)),
@@ -66,23 +67,23 @@ module Packwerk
 
         OptionParser.new do |parser|
           parser.on("--packages=PACKAGESLIST", Array, "package names, comma separated") do |p|
-            @_parsed_options[:relative_file_paths] = p
-            @_parsed_options[:ignore_nested_packages] = true
+            @parsed_options[:relative_file_paths] = p
+            @parsed_options[:ignore_nested_packages] = true
           end
 
           parser.on("--offenses-formatter=FORMATTER", String,
             "identifier of offenses formatter to use") do |formatter_name|
-            @_parsed_options[:formatter_name] = formatter_name
+            @parsed_options[:formatter_name] = formatter_name
           end
 
           parser.on("--[no-]parallel", TrueClass, "parallel processing") do |parallel|
-            @_parsed_options[:parallel] = parallel
+            @parsed_options[:parallel] = parallel
           end
         end.parse!(args)
 
-        @_parsed_options[:relative_file_paths] = args if @_parsed_options[:relative_file_paths].empty?
+        @parsed_options[:relative_file_paths] = args if @parsed_options[:relative_file_paths].empty?
 
-        @_parsed_options
+        @parsed_options
       end
     end
 
