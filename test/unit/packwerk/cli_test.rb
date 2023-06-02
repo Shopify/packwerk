@@ -86,7 +86,15 @@ module Packwerk
       use_template(:blank)
       @cli.execute_command(["help"])
 
-      assert_match(/Subcommands:/, @err_out.string)
+      assert_includes(@err_out.string, <<~OUTPUT)
+        Subcommands:
+          init - set up packwerk
+          check - run all checks
+          update-todo - update package_todo.yml files
+          validate - verify integrity of packwerk and package configuration
+          version - output packwerk version
+          help - display help information about packwerk
+      OUTPUT
     end
 
     test "#execute_command with validate subcommand runs application validator and succeeds if no errors" do

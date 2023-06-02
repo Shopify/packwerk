@@ -40,12 +40,22 @@ module Packwerk
       ]
 
       FileProcessor.any_instance.stubs(:references_from_ast).returns(unresolved_references)
+      FilesForProcessing.any_instance.stubs(:files).returns(Set.new([filepath.to_s]))
       configuration = Configuration.from_path
       configuration.stubs(cache_enabled?: true)
+      out = StringIO.new
 
-      parse_run = ParseRun.new(relative_file_set: Set.new([filepath.to_s]), configuration: configuration)
-      parse_run.update_todo
-      parse_run.update_todo
+      update_command = Commands::UpdateTodoCommand.new(
+        [],
+        configuration: configuration,
+        out: out,
+        err_out: StringIO.new,
+        progress_formatter: Formatters::ProgressFormatter.new(out),
+        offenses_formatter: configuration.offenses_formatter
+      )
+
+      update_command.run
+      update_command.run
 
       cache_files = Pathname.pwd.join(Pathname.new("tmp/cache/packwerk")).glob("**")
       assert_equal cache_files.count, 3

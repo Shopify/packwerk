@@ -18,6 +18,7 @@ module Packwerk
   autoload :Cli
   autoload :Configuration
   autoload :ConstantContext
+  autoload :Commands
   autoload :Node
   autoload :Offense
   autoload :OffenseCollection
@@ -37,10 +38,6 @@ module Packwerk
 
     autoload :Coloured
     autoload :Plain
-  end
-
-  autoload_under "commands" do
-    autoload :OffenseProgressMarker
   end
 
   module Formatters

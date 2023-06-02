@@ -30,6 +30,15 @@ module Packwerk
         finished(execution_time)
       end
 
+      sig { params(failed: T::Boolean).void }
+      def increment_progress(failed = false)
+        if failed
+          mark_as_failed
+        else
+          mark_as_inspected
+        end
+      end
+
       sig { void }
       def mark_as_inspected
         @out.print(".")
@@ -44,6 +53,7 @@ module Packwerk
       def interrupted
         @out.puts
         @out.puts("Manually interrupted. Violations caught so far are listed below:")
+        @out.puts
       end
 
       private
@@ -52,6 +62,7 @@ module Packwerk
       def finished(execution_time)
         @out.puts
         @out.puts("📦 Finished in #{execution_time.round(2)} seconds")
+        @out.puts
       end
 
       sig { void }
