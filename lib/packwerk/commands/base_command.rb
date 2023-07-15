@@ -31,15 +31,17 @@ module Packwerk
           err_out: T.any(StringIO, IO),
           progress_formatter: Formatters::ProgressFormatter,
           offenses_formatter: OffensesFormatter,
+          dependency_checker: Checker,
         ).void
       end
-      def initialize(args, configuration:, out:, err_out:, progress_formatter:, offenses_formatter:)
+      def initialize(args, configuration:, out:, err_out:, progress_formatter:, offenses_formatter:, dependency_checker:)
         @args = args
         @configuration = configuration
         @out = out
         @err_out = err_out
         @progress_formatter = progress_formatter
         @offenses_formatter = offenses_formatter
+        @dependency_checker = dependency_checker
       end
 
       sig { abstract.returns(T::Boolean) }
@@ -64,6 +66,9 @@ module Packwerk
 
       sig { returns(OffensesFormatter) }
       attr_reader :offenses_formatter
+
+      sig { returns(Checker) }
+      attr_reader :dependency_checker
     end
   end
 end

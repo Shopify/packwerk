@@ -85,6 +85,10 @@ module Packwerk
         configs["offenses_formatter"] || Formatters::DefaultOffensesFormatter::IDENTIFIER, String
       )
 
+      @dependency_checker_identifier = T.let(
+        configs["dependency_checker"] || ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE, String
+      )
+
       if configs.key?("require")
         configs["require"].each do |require_directive|
           ExtensionLoader.load(require_directive, @root_path)
@@ -108,6 +112,11 @@ module Packwerk
     sig { returns(OffensesFormatter) }
     def offenses_formatter
       OffensesFormatter.find(@offenses_formatter_identifier)
+    end
+
+    sig { returns(Checker) }
+    def dependency_checker
+      Checker.find(@dependency_checker_identifier)
     end
 
     sig { returns(T::Boolean) }

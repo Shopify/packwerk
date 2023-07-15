@@ -38,7 +38,8 @@ module Packwerk
           out: out,
           err_out: StringIO.new,
           progress_formatter: Formatters::ProgressFormatter.new(out),
-          offenses_formatter: configuration.offenses_formatter
+          offenses_formatter: configuration.offenses_formatter,
+          dependency_checker: configuration.dependency_checker
         )
 
         result = check_command.run
@@ -120,7 +121,8 @@ module Packwerk
           out: out,
           err_out: StringIO.new,
           progress_formatter: Formatters::ProgressFormatter.new(out),
-          offenses_formatter: configuration.offenses_formatter
+          offenses_formatter: configuration.offenses_formatter,
+          dependency_checker: configuration.dependency_checker
         )
 
         result = check_command.run
@@ -170,7 +172,8 @@ module Packwerk
           out: out,
           err_out: StringIO.new,
           progress_formatter: Formatters::ProgressFormatter.new(out),
-          offenses_formatter: configuration.offenses_formatter
+          offenses_formatter: configuration.offenses_formatter,
+          dependency_checker: configuration.dependency_checker
         )
 
         result = check_command.run
@@ -227,7 +230,8 @@ module Packwerk
           out: out,
           err_out: StringIO.new,
           progress_formatter: Formatters::ProgressFormatter.new(out),
-          offenses_formatter: configuration.offenses_formatter
+          offenses_formatter: configuration.offenses_formatter,
+          dependency_checker: configuration.dependency_checker
         )
 
         result = check_command.run
@@ -279,7 +283,8 @@ module Packwerk
           out: out,
           err_out: StringIO.new,
           progress_formatter: Formatters::ProgressFormatter.new(out),
-          offenses_formatter: configuration.offenses_formatter
+          offenses_formatter: configuration.offenses_formatter,
+          dependency_checker: configuration.dependency_checker
         )
 
         result = check_command.run
@@ -336,7 +341,8 @@ module Packwerk
           out: out,
           err_out: StringIO.new,
           progress_formatter: Formatters::ProgressFormatter.new(out),
-          offenses_formatter: configuration.offenses_formatter
+          offenses_formatter: configuration.offenses_formatter,
+          dependency_checker: configuration.dependency_checker
         )
 
         result = check_command.run
@@ -379,7 +385,8 @@ module Packwerk
           out: out,
           err_out: StringIO.new,
           progress_formatter: Formatters::ProgressFormatter.new(out),
-          offenses_formatter: configuration.offenses_formatter
+          offenses_formatter: configuration.offenses_formatter,
+          dependency_checker: configuration.dependency_checker
         )
 
         result = check_command.run
@@ -422,7 +429,8 @@ module Packwerk
           out: out,
           err_out: StringIO.new,
           progress_formatter: Formatters::ProgressFormatter.new(StringIO.new),
-          offenses_formatter: configuration.offenses_formatter
+          offenses_formatter: configuration.offenses_formatter,
+          dependency_checker: configuration.dependency_checker
         )
 
         result = check_command.run

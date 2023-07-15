@@ -13,7 +13,8 @@ module Packwerk
         err_out: T.any(StringIO, IO),
         environment: String,
         style: OutputStyle,
-        offenses_formatter: T.nilable(OffensesFormatter)
+        offenses_formatter: T.nilable(OffensesFormatter),
+        dependency_checker: T.nilable(Checker)
       ).void
     end
     def initialize(
@@ -22,7 +23,8 @@ module Packwerk
       err_out: $stderr,
       environment: "test",
       style: OutputStyles::Plain.new,
-      offenses_formatter: nil
+      offenses_formatter: nil,
+      dependency_checker: nil
     )
       @out = out
       @err_out = err_out
@@ -33,6 +35,10 @@ module Packwerk
       @offenses_formatter = T.let(
         offenses_formatter || @configuration.offenses_formatter,
         OffensesFormatter
+      )
+      @dependency_checker = T.let(
+        dependency_checker || @configuration.dependency_checker,
+        Checker
       )
     end
 
@@ -55,6 +61,7 @@ module Packwerk
           err_out: @err_out,
           progress_formatter: @progress_formatter,
           offenses_formatter: @offenses_formatter,
+          dependency_checker: @dependency_checker,
         ).run
       else
         @err_out.puts("'#{command}' is not a packwerk command. See `packwerk help`.",)
