@@ -35,7 +35,7 @@ module Packwerk
           end
         end
 
-        offense_collection = OffenseCollection.new(configuration.root_path)
+        offense_collection = OffenseCollection.new(configuration.root_path, {}, configuration.exclude_from_strict)
         offense_collection.add_offenses(offenses)
         offense_collection.persist_package_todo_files(run_context.package_set)
 

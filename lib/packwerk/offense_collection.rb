@@ -11,12 +11,14 @@ module Packwerk
     sig do
       params(
         root_path: String,
-        package_todos: T::Hash[Packwerk::Package, Packwerk::PackageTodo]
+        package_todos: T::Hash[Packwerk::Package, Packwerk::PackageTodo],
+        exclude_from_strict: T::Array[String]
       ).void
     end
-    def initialize(root_path, package_todos = {})
+    def initialize(root_path, package_todos = {}, exclude_from_strict = [])
       @root_path = root_path
       @package_todos = T.let(package_todos, T::Hash[Packwerk::Package, Packwerk::PackageTodo])
+      @exclude_from_strict = T.let(exclude_from_strict, T::Array[String])
       @new_violations = T.let([], T::Array[Packwerk::ReferenceOffense])
       @strict_mode_violations = T.let([], T::Array[Packwerk::ReferenceOffense])
       @errors = T.let([], T::Array[Packwerk::Offense])
@@ -91,8 +93,17 @@ module Packwerk
 
     sig { params(offense: ReferenceOffense).returns(T::Boolean) }
     def strict_mode_violation?(offense)
+      return false if exclude_from_strict?(@exclude_from_strict, Pathname.new(offense.file).cleanpath)
+
       checker = Checker.find(offense.violation_type)
       checker.strict_mode_violation?(offense)
+    end
+
+    sig { params(globs: T::Array[String], path: Pathname).returns(T::Boolean) }
+    def exclude_from_strict?(globs, path)
+      globs.any? do |glob|
+        path.fnmatch(glob, File::FNM_EXTGLOB)
+      end
     end
 
     sig { params(package_set: Packwerk::PackageSet).void }

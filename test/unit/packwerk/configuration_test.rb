@@ -31,6 +31,7 @@ module Packwerk
       configuration_hash = {
         "include" => ["xyz/*.rb"],
         "exclude" => ["{exclude_dir,bin,tmp}/**/*"],
+        "exclude_from_strict" => ["**/test/**"],
         "package_paths" => "**/*/",
         "custom_associations" => ["custom_association"],
       }
@@ -40,6 +41,7 @@ module Packwerk
 
       assert_equal ["xyz/*.rb"], configuration.include
       assert_equal ["{exclude_dir,bin,tmp}/**/*"], configuration.exclude
+      assert_equal ["**/test/**"], configuration.exclude_from_strict
       assert_equal app_dir, configuration.root_path
       assert_equal "**/*/", configuration.package_paths
       assert_equal [:custom_association], configuration.custom_associations
@@ -53,6 +55,7 @@ module Packwerk
 
       assert_equal ["**/*.{rb,rake,erb}"], configuration.include
       assert_equal ["{bin,node_modules,script,tmp,vendor}/**/*"], configuration.exclude
+      assert_equal [], configuration.exclude_from_strict
       assert_equal app_dir, configuration.root_path
       assert_equal "**/", configuration.package_paths
       assert_empty configuration.custom_associations

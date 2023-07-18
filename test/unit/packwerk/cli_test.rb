@@ -47,6 +47,34 @@ module Packwerk
       refute success
     end
 
+    test "#execute_command with the subcommand check starts processing files" do
+      use_template(:blank)
+
+      file_path = "path/of/exile.rb"
+      violation_message = "This is a violation of code health."
+      offense = Offense.new(file: file_path, message: violation_message)
+
+      configuration = Configuration.new({ "parallel" => false })
+      configuration.stubs(load_paths: {})
+      RunContext.any_instance.stubs(:process_file).at_least_once.returns([offense])
+
+      string_io = StringIO.new
+
+      cli = ::Packwerk::Cli.new(out: string_io, configuration: configuration)
+
+      # TODO: Dependency injection for a "target finder" (https://github.com/Shopify/packwerk/issues/164)
+      FilesForProcessing.any_instance.stubs(
+        files: Set.new([file_path])
+      )
+
+      success = cli.execute_command(["check", file_path])
+
+      assert_includes string_io.string, violation_message
+      assert_includes string_io.string, "1 offense detected"
+      assert_includes string_io.string, "E\n"
+      refute success
+    end
+
     test "#execute_command with the subcommand check traps the interrupt signal" do
       use_template(:blank)
 

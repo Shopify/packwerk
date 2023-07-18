@@ -22,7 +22,42 @@ module Packwerk
         .with(@offense.reference, @offense.violation_type)
         .returns(true)
 
-      @offense_collection.add_offense(@offense)
+      assert @offense_collection.add_offense(@offense)
+      assert @offense_collection.strict_mode_violations.empty?
+    end
+
+    test "#add_violation adds entry to strict violations" do
+      Packwerk::PackageTodo.any_instance
+         .expects(:add_entries)
+         .with(@offense.reference, @offense.violation_type)
+         .returns(true)
+
+      ReferenceChecking::Checkers::DependencyChecker.any_instance
+         .expects(:strict_mode_violation?)
+         .with(@offense)
+         .returns(true)
+
+      assert @offense_collection.add_offense(@offense)
+      assert @offense_collection.strict_mode_violations.any?
+    end
+
+    test "#add_violation adds entry to new violations if excluded from strict" do
+      @offense_collection = OffenseCollection.new(".", {}, ["some/**"])
+
+      Packwerk::PackageTodo.any_instance
+         .expects(:add_entries)
+         .with(@offense.reference, @offense.violation_type)
+         .returns(true)
+
+      ReferenceChecking::Checkers::DependencyChecker.any_instance
+        .expects(:strict_mode_violation?)
+        .with(@offense)
+        .never
+
+      assert @offense_collection.add_offense(@offense)
+      assert @offense_collection.strict_mode_violations.empty?
+
+      @offense_collection = OffenseCollection.new(".")
     end
 
     test "#stale_violations? returns true if there are stale violations" do

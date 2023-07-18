@@ -38,12 +38,16 @@ module Packwerk
     DEFAULT_CONFIG_PATH = "packwerk.yml"
     DEFAULT_INCLUDE_GLOBS = T.let(["**/*.{rb,rake,erb}"], T::Array[String])
     DEFAULT_EXCLUDE_GLOBS = T.let(["{bin,node_modules,script,tmp,vendor}/**/*"], T::Array[String])
+    DEFAULT_EXCLUDE_STRICT_GLOBS = T.let([], T::Array[String])
 
     sig { returns(T::Array[String]) }
     attr_reader(:include)
 
     sig { returns(T::Array[String]) }
     attr_reader(:exclude)
+
+    sig { returns(T::Array[String]) }
+    attr_reader(:exclude_from_strict)
 
     sig { returns(String) }
     attr_reader(:root_path)
@@ -72,6 +76,7 @@ module Packwerk
     def initialize(configs = {}, config_path: nil)
       @include = T.let(configs["include"] || DEFAULT_INCLUDE_GLOBS, T::Array[String])
       @exclude = T.let(configs["exclude"] || DEFAULT_EXCLUDE_GLOBS, T::Array[String])
+      @exclude_from_strict = T.let(configs["exclude_from_strict"] || DEFAULT_EXCLUDE_STRICT_GLOBS, T::Array[String])
       root = config_path ? File.dirname(config_path) : "."
       @root_path = T.let(File.expand_path(root), String)
       @package_paths = T.let(configs["package_paths"] || "**/", T.any(String, T::Array[String]))

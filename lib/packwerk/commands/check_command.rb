@@ -53,7 +53,10 @@ module Packwerk
 
       sig { returns(OffenseCollection) }
       def offense_collection
-        @offense_collection ||= T.let(OffenseCollection.new(configuration.root_path), T.nilable(OffenseCollection))
+        @offense_collection ||= T.let(
+          OffenseCollection.new(configuration.root_path, {}, configuration.exclude_from_strict),
+          T.nilable(OffenseCollection)
+        )
       end
     end
   end
