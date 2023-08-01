@@ -12,7 +12,7 @@ module Packwerk
 
       def initialize(custom_inflection_file = nil)
         if custom_inflection_file && File.exist?(custom_inflection_file)
-          @inflections = YAML.load_file(custom_inflection_file, permitted_classes: [Regexp]) || {}
+          @inflections = YAML.safe_load(custom_inflection_file, permitted_classes: [Regexp]) || {}
 
           invalid_inflections = @inflections.keys - SUPPORTED_INFLECTION_METHODS
           raise ArgumentError, "Unsupported inflection types: #{invalid_inflections}" if invalid_inflections.any?
