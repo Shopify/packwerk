@@ -80,5 +80,37 @@ module Packwerk
 
       refute @offense_collection.listed?(offense)
     end
+
+    test "adds the offense to the list of strict mode violations if decided by the checker" do
+      source_package = Packwerk::Package.new(
+        name: "components/source",
+        config: { "enforce_dependencies" => "strict" }
+      )
+
+      known_offense = Packwerk::ReferenceOffense.new(
+        reference: build_reference(source_package: source_package),
+        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE,
+        message: "some message"
+      )
+      unknown_offense = Packwerk::ReferenceOffense.new(
+        reference: build_reference(source_package: source_package),
+        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE,
+        message: "some message"
+      )
+
+      Packwerk::PackageTodo.any_instance
+        .expects(:add_entries)
+        .with(known_offense.reference, known_offense.violation_type)
+        .returns(true)
+      Packwerk::PackageTodo.any_instance
+        .expects(:add_entries)
+        .with(unknown_offense.reference, unknown_offense.violation_type)
+        .returns(false)
+
+      @offense_collection.add_offense(known_offense)
+      @offense_collection.add_offense(unknown_offense)
+
+      assert_equal [known_offense, unknown_offense], @offense_collection.strict_mode_violations
+    end
   end
 end

@@ -56,11 +56,8 @@ module Packwerk
         return
       end
 
-      if !already_listed?(offense)
-        new_violations << offense
-      elsif strict_mode_violation?(offense)
-        strict_mode_violations << offense
-      end
+      new_violations << offense unless already_listed?(offense)
+      strict_mode_violations << offense if strict_mode_violation?(offense)
     end
 
     sig { params(for_files: T::Set[String]).returns(T::Boolean) }
