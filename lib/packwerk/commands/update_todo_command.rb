@@ -37,14 +37,22 @@ module Packwerk
 
         offense_collection = OffenseCollection.new(configuration.root_path)
         offense_collection.add_offenses(offenses)
-        offense_collection.persist_package_todo_files(run_context.package_set)
 
-        out.puts(<<~EOS)
-          #{offenses_formatter.show_offenses(offense_collection.errors)}
-          ✅ `package_todo.yml` has been updated.
-        EOS
+        if offense_collection.strict_mode_violations.any?
+          out.puts(<<~EOS)
+            #{offenses_formatter.show_offenses(offense_collection.strict_mode_violations)}
+            ⚠️ `package_todo.yml` was not updated because of strict mode violations.
+          EOS
+        else
+          offense_collection.persist_package_todo_files(run_context.package_set)
 
-        offense_collection.errors.empty?
+          out.puts(<<~EOS)
+            #{offenses_formatter.show_offenses(offense_collection.errors)}
+            ✅ `package_todo.yml` has been updated.
+          EOS
+        end
+
+        offense_collection.strict_mode_violations.empty? && offense_collection.errors.empty?
       end
     end
   end
