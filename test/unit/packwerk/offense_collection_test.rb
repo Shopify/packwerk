@@ -99,12 +99,16 @@ module Packwerk
       )
 
       Packwerk::PackageTodo.any_instance
+        .expects(:listed?)
+        .with(known_offense.reference, violation_type: known_offense.violation_type)
+        .returns(true)
+      Packwerk::PackageTodo.any_instance
         .expects(:add_entries)
         .with(known_offense.reference, known_offense.violation_type)
         .returns(true)
       Packwerk::PackageTodo.any_instance
-        .expects(:add_entries)
-        .with(unknown_offense.reference, unknown_offense.violation_type)
+        .expects(:listed?)
+        .with(unknown_offense.reference, violation_type: unknown_offense.violation_type)
         .returns(false)
 
       @offense_collection.add_offense(known_offense)

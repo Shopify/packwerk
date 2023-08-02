@@ -56,8 +56,16 @@ module Packwerk
         return
       end
 
-      new_violations << offense unless already_listed?(offense)
-      strict_mode_violations << offense if strict_mode_violation?(offense)
+      already_listed = already_listed?(offense)
+
+      new_violations << offense unless already_listed
+
+      if strict_mode_violation?(offense)
+        add_to_package_todo(offense) if already_listed
+        strict_mode_violations << offense
+      else
+        add_to_package_todo(offense)
+      end
     end
 
     sig { params(for_files: T::Set[String]).returns(T::Boolean) }
@@ -82,6 +90,12 @@ module Packwerk
 
     sig { params(offense: ReferenceOffense).returns(T::Boolean) }
     def already_listed?(offense)
+      package_todo_for(offense.reference.package).listed?(offense.reference,
+        violation_type: offense.violation_type)
+    end
+
+    sig { params(offense: ReferenceOffense).returns(T::Boolean) }
+    def add_to_package_todo(offense)
       package_todo_for(offense.reference.package).add_entries(offense.reference,
         offense.violation_type)
     end

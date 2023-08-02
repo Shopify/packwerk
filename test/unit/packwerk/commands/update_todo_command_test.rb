@@ -134,7 +134,7 @@ module Packwerk
 
           2 offenses detected
 
-          ⚠️ `package_todo.yml` was not updated because of strict mode violations.
+          ✅ `package_todo.yml` has been updated.
         EOS
         assert_match(/#{expected_output}/, out.string)
 
