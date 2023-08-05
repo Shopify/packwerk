@@ -126,15 +126,12 @@ module Packwerk
 
           📦 Finished in \\d+\\.\\d+ seconds
 
-          components/source/some/path.rb
-          some message
-
           components/source/other/path.rb
           other message
 
-          2 offenses detected
+          1 offense detected
 
-          ✅ `package_todo.yml` has been updated.
+          ⚠️ `package_todo.yml` has been updated, but unlisted strict mode violations were not added.
         EOS
         assert_match(/#{expected_output}/, out.string)
 

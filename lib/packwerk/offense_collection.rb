@@ -38,8 +38,7 @@ module Packwerk
     def listed?(offense)
       return false unless offense.is_a?(ReferenceOffense)
 
-      reference = offense.reference
-      package_todo_for(reference.package).listed?(reference, violation_type: offense.violation_type)
+      already_listed?(offense)
     end
 
     sig { params(offenses: T::Array[Offense]).void }
@@ -84,6 +83,11 @@ module Packwerk
     sig { returns(T::Array[Packwerk::Offense]) }
     def outstanding_offenses
       errors + new_violations
+    end
+
+    sig { returns(T::Array[Packwerk::ReferenceOffense]) }
+    def unlisted_strict_mode_violations
+      strict_mode_violations.reject { |offense| already_listed?(offense) }
     end
 
     private

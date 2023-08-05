@@ -39,12 +39,21 @@ module Packwerk
         offense_collection.add_offenses(offenses)
         offense_collection.persist_package_todo_files(run_context.package_set)
 
-        out.puts(<<~EOS)
-          #{offenses_formatter.show_offenses(offense_collection.errors + offense_collection.strict_mode_violations)}
-          ✅ `package_todo.yml` has been updated.
-        EOS
+        unlisted_strict_mode_violations = offense_collection.unlisted_strict_mode_violations
 
-        offense_collection.strict_mode_violations.empty? && offense_collection.errors.empty?
+        messages = [
+          offenses_formatter.show_offenses(offense_collection.errors + unlisted_strict_mode_violations),
+        ]
+
+        messages << if unlisted_strict_mode_violations.any?
+          "⚠️ `package_todo.yml` has been updated, but unlisted strict mode violations were not added."
+        else
+          "✅ `package_todo.yml` has been updated."
+        end
+
+        out.puts(messages.select(&:present?).join("\n") + "\n")
+
+        unlisted_strict_mode_violations.empty? && offense_collection.errors.empty?
       end
     end
   end
