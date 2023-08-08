@@ -17,10 +17,10 @@ jobs:
           - gemfiles/Gemfile-rails-6-0
           - gemfiles/Gemfile-rails-6-1
         ruby:
-          - 2.7
-          - 3.0
-          - 3.1
-          - 3.2
+          - "2.7"
+          - "3.0"
+          - "3.1"
+          - "3.2"
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     name: "Tests: Ruby ${{ matrix.ruby }} ${{ matrix.gemfile }}"
@@ -40,10 +40,10 @@ jobs:
         gemfile:
           - Gemfile
         ruby:
-          - 2.7
-          - 3.0
-          - 3.1
-          - 3.2
+          - "2.7"
+          - "3.0"
+          - "3.1"
+          - "3.2"
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     name: "Loading Tests: Ruby ${{ matrix.ruby }} ${{ matrix.gemfile }}"
@@ -64,7 +64,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.1
+          ruby-version: "3.1"
           bundler-cache: true
       - name: Run style checks
         run: bin/rubocop
@@ -76,7 +76,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.1
+          ruby-version: "3.1"
           # bundler-cache: true
       - name: Run static type checks
         run: |
