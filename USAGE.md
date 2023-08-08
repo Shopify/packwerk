@@ -174,6 +174,12 @@ packs/referencing_package cannot have dependency violations on packs/defining_pa
 
 Once the `strict` mode is enabled on a package, running `bin/packwerk update-todo` will not add new violations in the package_todo.yml file and the command will return an error.
 
+#### Using strict_for_new mode
+
+If there are still violations that you cannot remove, you can turn on `strict_for_new` mode. It is similar to the strict mode except recorded violations in `package_todo.yml` will not result in a failure of the check command, only new violations will.
+
+To use this, set `enforce_dependencies: strict_for_new` in your `package.yml`.
+
 ## Checking for violations
 
 After enforcing the boundary checks for a package, you may execute:
