@@ -77,6 +77,71 @@ module Packwerk
         refute result
       end
 
+      test "#run returns exit code 1 when there are violations of strict mode" do
+        use_template(:minimal)
+
+        source_package = Packwerk::Package.new(
+          name: "components/source",
+          config: { "enforce_dependencies" => "strict" },
+        )
+        write_app_file("#{source_package.name}/package_todo.yml", <<~YML.strip)
+          ---
+          "components/destination":
+            "::SomeName":
+              violations:
+              - dependency
+              files:
+              - components/source/some/path.rb
+        YML
+
+        past_offense = ReferenceOffense.new(
+          reference: build_reference(path: "components/source/some/path.rb", source_package: source_package),
+          message: "some message",
+          violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
+        )
+        new_offense = ReferenceOffense.new(
+          reference: build_reference(path: "components/source/other/path.rb", source_package: source_package),
+          message: "other message",
+          violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
+        )
+
+        RunContext.any_instance.stubs(:process_file).returns([past_offense, new_offense])
+        FilesForProcessing.any_instance.stubs(:files).returns(Set.new(["components/source/some/path.rb"]))
+
+        out = StringIO.new
+        configuration = Configuration.from_path
+        update_command = UpdateTodoCommand.new(
+          [],
+          configuration: configuration,
+          out: out,
+          err_out: StringIO.new,
+          progress_formatter: Formatters::ProgressFormatter.new(out),
+          offenses_formatter: configuration.offenses_formatter
+        )
+
+        result = update_command.run
+
+        expected_output = <<~EOS
+          📦 Packwerk is inspecting 1 file
+
+          📦 Finished in \\d+\\.\\d+ seconds
+
+          components/source/other/path.rb
+          other message
+
+          1 offense detected
+
+          ⚠️ `package_todo.yml` has been updated, but unlisted strict mode violations were not added.
+        EOS
+        assert_match(/#{expected_output}/, out.string)
+
+        package_todo = PackageTodo.new(source_package, "#{source_package.name}/package_todo.yml")
+        assert package_todo.listed?(past_offense.reference, violation_type: past_offense.violation_type)
+        refute package_todo.listed?(new_offense.reference, violation_type: new_offense.violation_type)
+
+        refute result
+      end
+
       test "#run returns exit code 1 when ran with file args" do
         use_template(:minimal)
 

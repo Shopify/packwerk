@@ -172,6 +172,8 @@ Then, when you run `bin/packwerk check`, new violations will cause the following
 packs/referencing_package cannot have dependency violations on packs/defining_package because strict mode is enabled for dependency violations in packs/referencing_package/package.yml
 ```
 
+Once the `strict` mode is enabled on a package, running `bin/packwerk update-todo` will not add new violations in the package_todo.yml file and the command will return an error.
+
 ## Checking for violations
 
 After enforcing the boundary checks for a package, you may execute:
