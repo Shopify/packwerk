@@ -30,7 +30,7 @@ module Packwerk
 
     sig { returns(T::Boolean) }
     def enforce_dependencies?
-      [true, "strict"].include?(@config["enforce_dependencies"])
+      [true, "strict", "strict_for_new"].include?(@config["enforce_dependencies"])
     end
 
     sig { params(package: Package).returns(T::Boolean) }

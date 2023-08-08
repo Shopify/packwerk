@@ -47,10 +47,20 @@ module Packwerk
           EOS
         end
 
-        sig { override.params(listed_offense: ReferenceOffense).returns(T::Boolean) }
-        def strict_mode_violation?(listed_offense)
-          referencing_package = listed_offense.reference.package
-          referencing_package.config["enforce_dependencies"] == "strict"
+        sig { override.params(offense: ReferenceOffense, already_listed: T::Boolean).returns(T::Boolean) }
+        def strict_mode_violation?(offense, already_listed:)
+          referencing_package = offense.reference.package
+
+          case referencing_package.config["enforce_dependencies"]
+          when nil, false, true
+            false
+          when "strict"
+            true
+          when "strict_for_new"
+            !already_listed
+          else
+            raise "Unknown value for 'enforce_dependencies': #{referencing_package.config["enforce_dependencies"]}"
+          end
         end
 
         private
