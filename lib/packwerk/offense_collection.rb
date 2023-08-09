@@ -59,7 +59,7 @@ module Packwerk
 
       new_violations << offense unless already_listed
 
-      if strict_mode_violation?(offense, already_listed)
+      if strict_mode_violation?(offense)
         add_to_package_todo(offense) if already_listed
         strict_mode_violations << offense
       else
@@ -104,10 +104,10 @@ module Packwerk
         offense.violation_type)
     end
 
-    sig { params(offense: ReferenceOffense, already_listed: T::Boolean).returns(T::Boolean) }
-    def strict_mode_violation?(offense, already_listed)
+    sig { params(offense: ReferenceOffense).returns(T::Boolean) }
+    def strict_mode_violation?(offense)
       checker = Checker.find(offense.violation_type)
-      checker.strict_mode_violation?(offense, already_listed: already_listed)
+      checker.strict_mode_violation?(offense)
     end
 
     sig { params(package_set: Packwerk::PackageSet).void }

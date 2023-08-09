@@ -165,7 +165,7 @@ It will be a dependency violation when `components/shop_identity` tries to refer
 
 #### Using strict mode
 
-Once there are no more violations in a package, you can turn on `strict` mode, which will prevent new violations from being added to the package's `package_todo.yml`. To use this, simply change `enforce_dependencies: true` to `enforce_dependencies: strict` in your `package.yml`.
+You can turn on `strict` mode to prevent new violations from being added to the package's `package_todo.yml`. To use this, simply change `enforce_dependencies: true` to `enforce_dependencies: strict` in your `package.yml`.
 
 Then, when you run `bin/packwerk check`, new violations will cause the following error to be displayed:
 ```
@@ -173,12 +173,6 @@ packs/referencing_package cannot have dependency violations on packs/defining_pa
 ```
 
 Once the `strict` mode is enabled on a package, running `bin/packwerk update-todo` will not add new violations in the package_todo.yml file and the command will return an error.
-
-#### Using strict_for_new mode
-
-If there are still violations that you cannot remove, you can turn on `strict_for_new` mode. It is similar to the strict mode except recorded violations in `package_todo.yml` will not result in a failure of the check command, only new violations will.
-
-To use this, set `enforce_dependencies: strict_for_new` in your `package.yml`.
 
 ## Checking for violations
 

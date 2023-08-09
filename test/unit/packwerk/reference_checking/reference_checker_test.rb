@@ -29,7 +29,7 @@ module Packwerk
           @message
         end
 
-        def strict_mode_violation?(_offense, already_listed:)
+        def strict_mode_violation?(_offense)
           false
         end
       end

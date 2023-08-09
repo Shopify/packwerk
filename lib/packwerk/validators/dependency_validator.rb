@@ -34,7 +34,7 @@ module Packwerk
       def check_package_manifest_syntax(configuration)
         errors = []
 
-        valid_settings = [true, false, "strict", "strict_for_new"]
+        valid_settings = [true, false, "strict"]
         package_manifests_settings_for(configuration, "enforce_dependencies").each do |config, setting|
           next if setting.nil?
 

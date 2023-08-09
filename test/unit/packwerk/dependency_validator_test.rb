@@ -67,14 +67,6 @@ module Packwerk
       assert result.ok?
     end
 
-    test "returns success when enforce_dependencies is set to strict_for_new in the package.yml file" do
-      use_template(:minimal)
-      merge_into_app_yaml_file("components/sales/package.yml", { "enforce_dependencies" => "strict_for_new" })
-
-      result = dependency_validator.call(package_set, config)
-      assert result.ok?
-    end
-
     private
 
     def dependency_validator

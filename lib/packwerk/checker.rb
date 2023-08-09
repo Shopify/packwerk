@@ -51,8 +51,8 @@ module Packwerk
     sig { abstract.returns(String) }
     def violation_type; end
 
-    sig { abstract.params(offense: ReferenceOffense, already_listed: T::Boolean).returns(T::Boolean) }
-    def strict_mode_violation?(offense, already_listed:); end
+    sig { abstract.params(offense: ReferenceOffense).returns(T::Boolean) }
+    def strict_mode_violation?(offense); end
 
     sig { abstract.params(reference: Reference).returns(T::Boolean) }
     def invalid_reference?(reference); end

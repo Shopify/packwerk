@@ -34,51 +34,6 @@ module Packwerk
       refute checker.invalid_reference?(reference)
     end
 
-    test "does not report any violation as strict in non strict mode" do
-      source_package = Package.new(name: "components/sales", config: { "enforce_dependencies" => true })
-      checker = dependency_checker
-
-      offense = Packwerk::ReferenceOffense.new(
-        reference: build_reference(source_package: source_package),
-        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE,
-        message: "some message"
-      )
-
-      assert checker.invalid_reference?(offense.reference)
-      refute checker.strict_mode_violation?(offense, already_listed: true)
-      refute checker.strict_mode_violation?(offense, already_listed: false)
-    end
-
-    test "reports any violation as strict in strict mode" do
-      source_package = Package.new(name: "components/sales", config: { "enforce_dependencies" => "strict" })
-      checker = dependency_checker
-
-      offense = Packwerk::ReferenceOffense.new(
-        reference: build_reference(source_package: source_package),
-        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE,
-        message: "some message"
-      )
-
-      assert checker.invalid_reference?(offense.reference)
-      assert checker.strict_mode_violation?(offense, already_listed: true)
-      assert checker.strict_mode_violation?(offense, already_listed: false)
-    end
-
-    test "only reports unlisted violations as strict in strict_for_new mode" do
-      source_package = Package.new(name: "components/sales", config: { "enforce_dependencies" => "strict_for_new" })
-      checker = dependency_checker
-
-      offense = Packwerk::ReferenceOffense.new(
-        reference: build_reference(source_package: source_package),
-        violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE,
-        message: "some message"
-      )
-
-      assert checker.invalid_reference?(offense.reference)
-      refute checker.strict_mode_violation?(offense, already_listed: true)
-      assert checker.strict_mode_violation?(offense, already_listed: false)
-    end
-
     private
 
     def dependency_checker
