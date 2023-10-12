@@ -83,6 +83,26 @@ Packwerk reads from the `packwerk.yml` configuration file in the root directory.
 | cache                | false                                     | when true, caches the results of parsing files |
 | cache_directory      | tmp/cache/packwerk                        | the directory that will hold the packwerk cache |
 
+### Using custom parsers
+
+You can specify a custom parser to parse different file formats (e.g. slim or haml)
+
+```ruby
+class SlimParser
+  include Packwerk::FileParser
+
+  REGEX = /\.slim\Z/
+
+  def call
+    # Your parsing logic here
+  end
+
+  def match?(path)
+    REGEX.match?(path)
+  end
+end
+```
+
 ### Using a custom ERB parser
 
 You can specify a custom ERB parser if needed. For example, if you're using `<%graphql>` tags from https://github.com/github/graphql-client in your ERBs, you can use a custom parser subclass to comment them out so that Packwerk can parse the rest of the file:
@@ -102,7 +122,7 @@ class CustomParser < Packwerk::Parsers::Erb
   end
 end
 
-Packwerk::Parsers::Factory.instance.erb_parser_class = CustomParser
+Packwerk::Parsers::Factory.instance.parsers = [Packwerk::Parsers::Ruby, CustomParser]
 ```
 
 ## Using the cache

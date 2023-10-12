@@ -9,7 +9,15 @@ module Packwerk
     class Ruby
       extend T::Sig
 
-      include ParserInterface
+      include Packwerk::FileParser
+
+      RUBY_REGEX = %r{
+        # Although not important for regex, these are ordered from most likely to match to least likely.
+        \.(rb|rake|builder|gemspec|ru)\Z
+        |
+        (Gemfile|Rakefile)\Z
+      }x
+      private_constant :RUBY_REGEX
 
       class RaiseExceptionsParser < Parser::CurrentRuby
         extend T::Sig
@@ -48,6 +56,11 @@ module Packwerk
       rescue Parser::SyntaxError => e
         result = ParseResult.new(file: file_path, message: "Syntax error: #{e}")
         raise Parsers::ParseError, result
+      end
+
+      sig { override.params(path: String).returns(T::Boolean) }
+      def match?(path:)
+        RUBY_REGEX.match?(path)
       end
     end
   end
