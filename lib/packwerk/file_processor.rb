@@ -40,14 +40,16 @@ module Packwerk
       )
     end
     def call(absolute_file)
-      parser = parser_for(absolute_file)
-      return [UnknownFileTypeResult.new(file: absolute_file)] if T.unsafe(parser).nil?
+      parsers = parsers_for(absolute_file)
+      return [UnknownFileTypeResult.new(file: absolute_file)] if parsers.empty?
 
       @cache.with_cache(absolute_file) do
-        node = parse_into_ast(absolute_file, T.must(parser))
-        return [] unless node
+        parsers.flat_map do |parser|
+          node = parse_into_ast(absolute_file, parser)
+          return [] unless node
 
-        references_from_ast(node, absolute_file)
+          references_from_ast(node, absolute_file)
+        end
       end
     rescue Parsers::ParseError => e
       [e.result]
@@ -75,8 +77,8 @@ module Packwerk
       end
     end
 
-    sig { params(file_path: String).returns(T.nilable(Packwerk::FileParser)) }
-    def parser_for(file_path)
+    sig { params(file_path: String).returns(T::Array[Packwerk::FileParser]) }
+    def parsers_for(file_path)
       @parser_factory.for_path(file_path)
     end
   end

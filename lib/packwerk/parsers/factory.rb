@@ -9,9 +9,9 @@ module Packwerk
       extend T::Sig
       include Singleton
 
-      sig { params(path: String).returns(T.nilable(Packwerk::FileParser)) }
+      sig { params(path: String).returns(T::Array[Packwerk::FileParser]) }
       def for_path(path)
-        Packwerk::FileParser.all.find { |parser| parser.match?(path: path) }
+        Packwerk::FileParser.all.select { |parser| parser.match?(path: path) }
       end
     end
   end

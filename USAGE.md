@@ -98,8 +98,6 @@ class SlimParser
     REGEX.match?(path)
   end
 end
-
-Packwerk::Parsers::Factory.instance.parsers.append(SlimParser)
 ```
 
 ### Using a custom ERB parser
