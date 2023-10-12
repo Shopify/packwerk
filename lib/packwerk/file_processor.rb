@@ -68,14 +68,14 @@ module Packwerk
       references
     end
 
-    sig { params(absolute_file: String, parser: Packwerk::Parser).returns(T.untyped) }
+    sig { params(absolute_file: String, parser: Packwerk::FileParser).returns(T.untyped) }
     def parse_into_ast(absolute_file, parser)
       File.open(absolute_file, "r", nil, external_encoding: Encoding::UTF_8) do |file|
         parser.call(io: file, file_path: absolute_file)
       end
     end
 
-    sig { params(file_path: String).returns(T.nilable(Packwerk::Parser)) }
+    sig { params(file_path: String).returns(T.nilable(Packwerk::FileParser)) }
     def parser_for(file_path)
       @parser_factory.for_path(file_path)
     end

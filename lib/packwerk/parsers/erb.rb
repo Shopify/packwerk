@@ -9,7 +9,7 @@ require "parser/source/buffer"
 module Packwerk
   module Parsers
     class Erb
-      include Packwerk::Parser
+      include Packwerk::FileParser
 
       ERB_REGEX = /\.erb\Z/
       private_constant :ERB_REGEX

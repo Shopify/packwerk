@@ -86,7 +86,7 @@ You can specify a custom parser to parse different file formats (e.g. slim or ha
 
 ```ruby
 class SlimParser
-  include ParserInterface
+  include Packwerk::FileParser
 
   REGEX = /\.slim\Z/
 

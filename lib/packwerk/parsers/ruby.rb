@@ -7,7 +7,7 @@ require "parser/current"
 module Packwerk
   module Parsers
     class Ruby
-      include Packwerk::Parser
+      include Packwerk::FileParser
 
       RUBY_REGEX = %r{
         # Although not important for regex, these are ordered from most likely to match to least likely.

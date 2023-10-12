@@ -27,7 +27,7 @@ module Packwerk
 
       test "#for_path gives custom parser for matching paths" do
         fake_class = Class.new do
-          T.unsafe(self).include(Packwerk::Parser)
+          T.unsafe(self).include(Packwerk::FileParser)
 
           def match?(path:)
             /\.slim\Z/.match?(path)

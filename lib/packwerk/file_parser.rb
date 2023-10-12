@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 module Packwerk
-  module Parser
+  module FileParser
     extend T::Helpers
     extend T::Sig
 
@@ -17,7 +17,7 @@ module Packwerk
       @parsers << base
     end
 
-    sig { returns(T::Array[Parser]) }
+    sig { returns(T::Array[FileParser]) }
     def self.all
       T.unsafe(@parsers).map(&:new)
     end
