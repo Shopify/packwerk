@@ -27,7 +27,7 @@ module Packwerk
       @parsers.delete(base)
     end
 
-    sig { abstract.params(io: File, file_path: String).returns(T.untyped) }
+    sig { abstract.params(io: T.any(IO, StringIO), file_path: String).returns(T.untyped) }
     def call(io:, file_path:)
     end
 
