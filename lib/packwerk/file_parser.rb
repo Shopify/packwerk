@@ -12,19 +12,23 @@ module Packwerk
 
     @parsers = T.let([], T::Array[Class])
 
-    sig { params(base: Class).void }
-    def self.included(base)
-      @parsers << base
-    end
+    class << self
+      extend T::Sig
 
-    sig { returns(T::Array[FileParser]) }
-    def self.all
-      T.unsafe(@parsers).map(&:new)
-    end
+      sig { params(base: Class).void }
+      def included(base)
+        @parsers << base
+      end
 
-    sig { params(base: Class).void }
-    def self.remove(base)
-      @parsers.delete(base)
+      sig { returns(T::Array[FileParser]) }
+      def all
+        T.unsafe(@parsers).map(&:new)
+      end
+
+      sig { params(base: Class).void }
+      def remove(base)
+        @parsers.delete(base)
+      end
     end
 
     sig { abstract.params(io: T.any(IO, StringIO), file_path: String).returns(T.untyped) }
