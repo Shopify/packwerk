@@ -20,7 +20,6 @@
   * [Understanding how to respond to new violations](#understanding-how-to-respond-to-new-violations)
 * [Recording existing violations](#recording-existing-violations)
   * [Understanding the package todo file](#understanding-the-package-todo-file)
-  * [Understanding the list of deprecated references](#understanding-the-list-of-deprecated-references)
 * [Loading extensions](#loading-extensions)
 
 ## What problem does Packwerk solve?
