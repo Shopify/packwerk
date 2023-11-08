@@ -64,6 +64,7 @@ Various third parties have built tooling on top of packwerk. Here's a selection 
 - https://github.com/rubyatscale/danger-packwerk integrates packwerk with [danger.systems](https://danger.systems) to provide packwerk feedback as Github inline PR comments
 - https://github.com/rubyatscale/packwerk-extensions contains extensions for packwerk, including a checker for packwerk that allows you to enforce public API boundaries. This was originally extracted from `packwerk` itself.
 - https://github.com/alexevanczuk/packs is a Rust implementation of packwerk that has experimental support for non-Rails, non-Zeitwerk applications.
+- https://github.com/gap777/automatic_namespaces reduces the Zeitwerk clutter of module directories for namespaced packs.
 
 ## Development
 
