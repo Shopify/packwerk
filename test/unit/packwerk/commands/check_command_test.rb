@@ -131,7 +131,7 @@ module Packwerk
           📦 Finished in \\d+\\.\\d+ seconds
 
           No offenses detected
-          There were stale violations found, please run `bin/packwerk update-todo`
+          There were stale violations found, please run `packwerk update-todo`
         EOS
         assert_match(/#{expected_output}/, out.string)
 
@@ -238,7 +238,7 @@ module Packwerk
           📦 Finished in \\d+\\.\\d+ seconds
 
           No offenses detected
-          There were stale violations found, please run `bin/packwerk update-todo`
+          There were stale violations found, please run `packwerk update-todo`
         EOS
         assert_match(/#{expected_output}/, out.string)
 
@@ -351,7 +351,7 @@ module Packwerk
 
           1 offense detected
 
-          There were stale violations found, please run `bin/packwerk update-todo`
+          There were stale violations found, please run `packwerk update-todo`
         EOS
         assert_match(/#{expected_output}/, out.string)
 
@@ -390,7 +390,7 @@ module Packwerk
           📦 Finished in \\d+\\.\\d+ seconds
 
           No offenses detected
-          There were stale violations found, please run `bin/packwerk update-todo`
+          There were stale violations found, please run `packwerk update-todo`
         EOS
         assert_match(/#{expected_output}/, out.string)
 
