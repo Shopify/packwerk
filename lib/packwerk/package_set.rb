@@ -14,6 +14,7 @@ module Packwerk
 
     Elem = type_member { { fixed: Package } }
 
+    PACKAGE_CONFIG_FILENAME = "package.yml"
 
     class << self
       extend T::Sig

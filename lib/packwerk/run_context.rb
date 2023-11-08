@@ -27,7 +27,6 @@ module Packwerk
           cache_enabled: configuration.cache_enabled?,
           cache_directory: configuration.cache_directory,
           config_path: configuration.config_path,
-          packages_outside_of_app_dir_enabled: configuration.packages_outside_of_app_dir_enabled,
         )
       end
     end
@@ -81,10 +80,13 @@ module Packwerk
     def process_file(relative_file:)
       processed_file = file_processor.call(relative_file)
 
+      puts relative_file
+   
       references = ReferenceExtractor.get_fully_qualified_references_from(
         processed_file.unresolved_references,
         context_provider
       )
+      puts references
       reference_checker = ReferenceChecking::ReferenceChecker.new(@checkers)
 
       processed_file.offenses + references.flat_map { |reference| reference_checker.call(reference) }
@@ -96,7 +98,9 @@ module Packwerk
         @root_path,
         package_pathspec: @package_paths,
         scan_for_packages_outside_of_app_dir: @packages_outside_of_app_dir_enabled,
-      ) 
+      )
+      puts @package_set.packages
+      @package_set
     end
 
     private

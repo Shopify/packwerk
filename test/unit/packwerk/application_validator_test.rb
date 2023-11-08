@@ -42,7 +42,7 @@ module Packwerk
       merge_into_app_yaml_file("packwerk.yml", { "package_paths" => ["components/**/*", "."] })
       merge_into_app_yaml_file("packwerk.yml", { "exclude" => ["vendor/**/*"] })
 
-      package_paths = PackageSet.package_paths(".", "**")
+      package_paths = PackagePaths.new(".", "**").all_paths
       vendor_package_path = Pathname.new("vendor/cache/gems/example/package.yml")
       assert_includes(package_paths, vendor_package_path)
 

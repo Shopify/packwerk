@@ -62,10 +62,10 @@ module Packwerk
     def package_manifests(configuration, glob_pattern = nil)
       glob_pattern ||= package_glob(configuration)
       package_paths = PackagePaths.new(
-        @configuration.root_path,
+        configuration.root_path,
         glob_pattern,
-        @configuration.exclude,
-        @configuration.packages_outside_of_app_dir_enabled
+        configuration.exclude,
+        configuration.packages_outside_of_app_dir_enabled
       )
       package_paths.all_paths.map { |f| File.realpath(f) }
     end
