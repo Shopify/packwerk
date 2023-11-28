@@ -211,6 +211,21 @@ module Packwerk
       assert_equal "::Order", reference.constant.name
     end
 
+    test "constant name inspector without file name kwarg is deprecated but works" do
+      _, error_output = capture_io do
+        process(
+          ":orders",
+          "components/timeline/app/models/entry.rb",
+          [DeprecatedInspector.new],
+        )
+      end
+
+      assert_equal(<<~MSG.squish, error_output.chomp)
+        Packwerk::ReferenceExtractorTest::DeprecatedInspector#reference_from_node without
+        a relative_file: keyword argument is deprecated and will be required in Packwerk 3.1.1.
+      MSG
+    end
+
     private
 
     class DummyAssociationInspector
@@ -232,6 +247,14 @@ module Packwerk
         end
 
         @reference_name
+      end
+    end
+
+    class DeprecatedInspector
+      T.unsafe(self).include(ConstantNameInspector)
+
+      def constant_name_from_node(node, ancestors:)
+        "Something"
       end
     end
 
