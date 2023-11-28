@@ -77,6 +77,7 @@ Packwerk reads from the `packwerk.yml` configuration file in the root directory.
 |----------------------|-------------------------------------------|--------------|
 | include              | **/*.{rb,rake,erb}                        | list of patterns for folder paths to include |
 | exclude              | {bin,node_modules,script,tmp,vendor}/**/* | list of patterns for folder paths to exclude |
+| associations_exclude | N/A                                       | list of patterns for folder paths to exclude from association inspection |
 | package_paths        | **/                                       | a single pattern or a list of patterns to find package configuration files, see: [Defining packages](#Defining-packages) |
 | custom_associations  | N/A                                       | list of custom associations, if any |
 | parallel             | true                                      | when true, fork code parsing out to subprocesses |

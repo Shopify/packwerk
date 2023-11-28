@@ -222,7 +222,7 @@ module Packwerk
         @expected_args = expected_args
       end
 
-      def constant_name_from_node(node, ancestors:)
+      def constant_name_from_node(node, ancestors:, relative_file:)
         return nil unless @association
         return nil unless NodeHelpers.method_call?(node)
 

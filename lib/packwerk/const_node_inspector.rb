@@ -9,10 +9,10 @@ module Packwerk
 
     sig do
       override
-        .params(node: AST::Node, ancestors: T::Array[AST::Node])
+        .params(node: AST::Node, ancestors: T::Array[AST::Node], relative_file: String)
         .returns(T.nilable(String))
     end
-    def constant_name_from_node(node, ancestors:)
+    def constant_name_from_node(node, ancestors:, relative_file:)
       return nil unless NodeHelpers.constant?(node)
 
       parent = ancestors.first

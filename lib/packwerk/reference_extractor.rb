@@ -80,7 +80,11 @@ module Packwerk
       constant_name = T.let(nil, T.nilable(String))
 
       @constant_name_inspectors.each do |inspector|
-        constant_name = inspector.constant_name_from_node(node, ancestors: ancestors)
+        constant_name = inspector.constant_name_from_node(
+          node,
+          ancestors: ancestors,
+          relative_file: relative_file
+        )
 
         break if constant_name
       end
