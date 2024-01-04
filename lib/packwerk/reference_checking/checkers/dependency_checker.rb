@@ -47,9 +47,9 @@ module Packwerk
           EOS
         end
 
-        sig { override.params(listed_offense: ReferenceOffense).returns(T::Boolean) }
-        def strict_mode_violation?(listed_offense)
-          referencing_package = listed_offense.reference.package
+        sig { override.params(offense: ReferenceOffense).returns(T::Boolean) }
+        def strict_mode_violation?(offense)
+          referencing_package = offense.reference.package
           referencing_package.config["enforce_dependencies"] == "strict"
         end
 

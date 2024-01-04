@@ -245,7 +245,7 @@ module Packwerk
         refute result
       end
 
-      test "#run lists out violations of strict mode" do
+      test "#run does not list out violations of strict mode for listed offenses" do
         use_template(:minimal)
 
         source_package = Packwerk::Package.new(
@@ -291,8 +291,77 @@ module Packwerk
 
           No offenses detected
           No stale violations detected
+        EOS
+        assert_match(/#{expected_output}/, out.string)
+
+        assert result
+      end
+
+      test "#run lists out violations of strict mode" do
+        use_template(:minimal)
+
+        source_package = Packwerk::Package.new(
+          name: "components/source",
+          config: { "enforce_dependencies" => "strict" },
+        )
+        write_app_file("#{source_package.name}/package_todo.yml", <<~YML.strip)
+          ---
+          "components/destination":
+            "::SomeName":
+              violations:
+              - dependency
+              files:
+              - components/source/some/path.rb
+        YML
+
+        listed_offense = ReferenceOffense.new(
+          reference: build_reference(path: "components/source/some/path.rb", source_package: source_package),
+          message: "some message",
+          violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
+        )
+        unlisted_offense = ReferenceOffense.new(
+          reference: build_reference(path: "components/source/other/path.rb", source_package: source_package),
+          message: "some message",
+          violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
+        )
+
+        RunContext.any_instance.stubs(:process_file)
+          .with(relative_file: "components/source/some/path.rb")
+          .returns([listed_offense])
+        RunContext.any_instance.stubs(:process_file)
+          .with(relative_file: "components/source/other/path.rb")
+          .returns([unlisted_offense])
+        FilesForProcessing.any_instance.stubs(:files).returns(
+          Set.new(["components/source/some/path.rb", "components/source/other/path.rb"])
+        )
+
+        out = StringIO.new
+        configuration = Configuration.new({ "parallel" => false })
+        check_command = CheckCommand.new(
+          [],
+          configuration: configuration,
+          out: out,
+          err_out: StringIO.new,
+          progress_formatter: Formatters::ProgressFormatter.new(out),
+          offenses_formatter: configuration.offenses_formatter
+        )
+
+        result = check_command.run
+
+        expected_output = <<~EOS
+          📦 Packwerk is inspecting 2 files
+          \\.E
+          📦 Finished in \\d+\\.\\d+ seconds
+
+          \\e\\[36mcomponents/source/other/path.rb\\e\\[m
+          some message
+
+          1 offense detected
+
+          No stale violations detected
           components/source cannot have dependency violations on components/destination because strict mode is enabled for dependency violations in the enforcing package's package.yml
         EOS
+
         assert_match(/#{expected_output}/, out.string)
 
         refute result

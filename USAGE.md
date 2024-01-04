@@ -164,7 +164,7 @@ It will be a dependency violation when `components/shop_identity` tries to refer
 
 #### Using strict mode
 
-Once there are no more violations in a package, you can turn on `strict` mode, which will prevent new violations from being added to the package's `package_todo.yml`. To use this, simply change `enforce_dependencies: true` to `enforce_dependencies: strict` in your `package.yml`.
+You can turn on `strict` mode to prevent new violations from being added to the package's `package_todo.yml`. To use this, simply change `enforce_dependencies: true` to `enforce_dependencies: strict` in your `package.yml`.
 
 Then, when you run `bin/packwerk check`, new violations will cause the following error to be displayed:
 ```
