@@ -7,6 +7,9 @@ module Packwerk
     autoload :Factory, "packwerk/parsers/factory"
     autoload :Ruby, "packwerk/parsers/ruby"
 
+    # Require parsers so that they are registered with FileParser
+    Dir[File.join(__dir__, "parsers", "*.rb")].each { |file| require file }
+
     class ParseResult < Offense; end
 
     class ParseError < StandardError
