@@ -8,7 +8,7 @@
 * [Getting started](#getting-started)
   * [Setting up Spring](#setting-up-spring)
 * [Configuring Packwerk](#configuring-packwerk)
-  * [Using a custom ERB parser](#using-a-custom-erb-parser)
+  * [How to override a parser](#how-to-override-a-parser)
 * [Validating the package system](#validating-the-package-system)
 * [Defining packages](#defining-packages)
   * [Package metadata](#package-metadata)
@@ -97,18 +97,23 @@ class SlimParser
     # Your parsing logic here
   end
 
-  def match?(path)
+  def match?(path:)
     REGEX.match?(path)
   end
 end
 ```
 
-### Using a custom ERB parser
+### How to override a parser
 
-You can specify a custom ERB parser if needed. For example, if you're using `<%graphql>` tags from https://github.com/github/graphql-client in your ERBs, you can use a custom parser subclass to comment them out so that Packwerk can parse the rest of the file:
+You can override an existing parser if needed. For example, if you're using `<%graphql>` tags from https://github.com/github/graphql-client in your ERBs, you can use a custom parser subclass to comment them out so that Packwerk can parse the rest of the file:
 
 ```ruby
+# Remove `Packwerk::Parsers::Erb` from the registered parsers.
+Packwerk::FileParser.remove(Packwerk::Parsers::Erb)
+
 class CustomParser < Packwerk::Parsers::Erb
+  include Packwerk::FileParser
+
   def parse_buffer(buffer, file_path:)
     preprocessed_source = buffer.source
 
@@ -121,8 +126,6 @@ class CustomParser < Packwerk::Parsers::Erb
     super(preprocessed_buffer, file_path: file_path)
   end
 end
-
-Packwerk::Parsers::Factory.instance.parsers = [Packwerk::Parsers::Ruby, CustomParser]
 ```
 
 ## Using the cache
