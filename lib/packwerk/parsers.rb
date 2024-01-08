@@ -5,7 +5,6 @@ module Packwerk
   module Parsers
     autoload :Erb, "packwerk/parsers/erb"
     autoload :Factory, "packwerk/parsers/factory"
-    autoload :ParserInterface, "packwerk/parsers/parser_interface"
     autoload :Ruby, "packwerk/parsers/ruby"
 
     class ParseResult < Offense; end
