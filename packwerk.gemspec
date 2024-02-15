@@ -50,7 +50,7 @@ Gem::Specification.new do |spec|
   # For Ruby parsing
   spec.add_dependency("ast")
   spec.add_dependency("parser")
-  spec.add_dependency("prism", ">= 0.22.0") # 0.21.0 fixes numbered block params, 0.22.0 adds Ruby 2.7 compatibility
+  spec.add_dependency("prism", ">= 0.24.0") # 0.24.0 fixes a performance issue with the parser translator
 
   # For ERB parsing
   spec.add_dependency("better_html")

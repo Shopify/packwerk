@@ -9,7 +9,7 @@ PATH
       constant_resolver (>= 0.2.0)
       parallel
       parser
-      prism (>= 0.22.0)
+      prism (>= 0.24.0)
       sorbet-runtime (>= 0.5.9914)
       zeitwerk (>= 2.6.1)
 
@@ -74,7 +74,7 @@ GEM
     parser (3.2.2.0)
       ast (~> 2.4.1)
     prettier_print (0.1.0)
-    prism (0.22.0)
+    prism (0.24.0)
     pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
