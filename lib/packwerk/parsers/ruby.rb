@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require "parser"
-require "parser/current"
+require "prism"
 
 module Packwerk
   module Parsers
@@ -11,7 +11,7 @@ module Packwerk
 
       include ParserInterface
 
-      class RaiseExceptionsParser < Parser::CurrentRuby
+      class RaiseExceptionsParser < Prism::Translation::Parser
         extend T::Sig
 
         sig { params(builder: T.untyped).void }
