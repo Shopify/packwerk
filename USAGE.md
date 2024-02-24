@@ -41,7 +41,7 @@ A package is a folder containing autoloaded code. To decide whether code belongs
 
 Package principles help to guide the organization of classes in a large system. These principles can also be applied to packages in large and complex codebases.
 
-They are well described in Robert Martin's [Design Principles and Design Patterns](https://drive.google.com/file/d/0BwhCYaYDn8EgODUxZTJhOWEtMTZlMi00OWRiLTg0ZmEtZWQ5ODRlY2RmNDlk/view) (right after the SOLID principles).
+They are well described in Robert Martin's [Design Principles and Design Patterns](https://web.archive.org/web/20150906155800/http://www.objectmentor.com/resources/articles/Principles_and_Patterns.pdf) (right after the SOLID principles).
 
 ## Getting started
 
