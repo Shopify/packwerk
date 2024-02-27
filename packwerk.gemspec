@@ -33,9 +33,7 @@ Gem::Specification.new do |spec|
   spec.bindir = "exe"
   spec.executables << "packwerk"
 
-  spec.files = Dir.chdir(__dir__) do
-    %x(git ls-files -z).split("\x0").reject { |f| f.match(%r{^(test|spec|features|static)/}) }
-  end
+  spec.files = Dir["CHANGELOG.md", "LICENSE.md", "README.md", "lib/**/*", "sorbet/**/*"]
   spec.require_paths = ["lib"]
 
   spec.required_ruby_version = ">= 2.7"
