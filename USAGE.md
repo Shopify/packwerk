@@ -264,7 +264,7 @@ You can also reference the name of a gem.
 
 While `packwerk` ships with its own offense formatter, you may specify a custom one in your configuration file via the `offenses_formatter:` key.  Your custom formatter will be used when `bin/packwerk check` is run.
 
-Firstly, you'll need to create an `OffensesFormatter` class that includes `Packwerk::OffensesFormatter`. You can use [`Packwerk::Formatters::OffensesFormatter`](lib/packwerk/formatters/offenses_formatter.rb) as a point of reference for this. Then, in the `require` directive described above, you'll want to tell `packwerk` about it:
+Firstly, you'll need to create an `OffensesFormatter` class that includes `Packwerk::OffensesFormatter`. You can use [`Packwerk::Formatters::DefaultOffensesFormatter`](lib/packwerk/formatters/default_offenses_formatter.rb) as a point of reference for this. Then, in the `require` directive described above, you'll want to tell `packwerk` about it:
 ```ruby
 # ./path/to/file.rb
 class MyOffensesFormatter
