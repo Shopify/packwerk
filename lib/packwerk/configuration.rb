@@ -54,6 +54,9 @@ module Packwerk
     sig { returns(T::Array[Symbol]) }
     attr_reader(:custom_associations)
 
+    sig { returns(T::Array[String]) }
+    attr_reader(:associations_exclude)
+
     sig { returns(T.nilable(String)) }
     attr_reader(:config_path)
 
@@ -76,6 +79,7 @@ module Packwerk
       @root_path = T.let(File.expand_path(root), String)
       @package_paths = T.let(configs["package_paths"] || "**/", T.any(String, T::Array[String]))
       @custom_associations = T.let((configs["custom_associations"] || []).map(&:to_sym), T::Array[Symbol])
+      @associations_exclude = T.let(configs["associations_exclude"] || [], T::Array[String])
       @parallel = T.let(configs.key?("parallel") ? configs["parallel"] : true, T::Boolean)
       @cache_enabled = T.let(configs.key?("cache") ? configs["cache"] : false, T::Boolean)
       @cache_directory = T.let(Pathname.new(configs["cache_directory"] || "tmp/cache/packwerk"), Pathname)

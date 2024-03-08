@@ -13,10 +13,10 @@ module Packwerk
 
     sig do
       abstract
-        .params(node: ::AST::Node, ancestors: T::Array[::AST::Node])
+        .params(node: ::AST::Node, ancestors: T::Array[::AST::Node], relative_file: String)
         .returns(T.nilable(String))
     end
-    def constant_name_from_node(node, ancestors:); end
+    def constant_name_from_node(node, ancestors:, relative_file:); end
   end
 
   private_constant :ConstantNameInspector

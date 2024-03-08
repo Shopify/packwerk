@@ -13,7 +13,7 @@ module Packwerk
     test "#constant_name_from_node should ignore any non-const nodes" do
       node = parse("a = 1 + 1")
 
-      constant_name = @inspector.constant_name_from_node(node, ancestors: [])
+      constant_name = @inspector.constant_name_from_node(node, ancestors: [], relative_file: "")
 
       assert_nil constant_name
     end
@@ -21,7 +21,7 @@ module Packwerk
     test "#constant_name_from_node should return correct name for const node" do
       node = parse("Order")
 
-      constant_name = @inspector.constant_name_from_node(node, ancestors: [])
+      constant_name = @inspector.constant_name_from_node(node, ancestors: [], relative_file: "")
 
       assert_equal "Order", constant_name
     end
@@ -29,7 +29,7 @@ module Packwerk
     test "#constant_name_from_node should return correct name for fully-qualified const node" do
       node = parse("::Order")
 
-      constant_name = @inspector.constant_name_from_node(node, ancestors: [])
+      constant_name = @inspector.constant_name_from_node(node, ancestors: [], relative_file: "")
 
       assert_equal "::Order", constant_name
     end
@@ -37,7 +37,7 @@ module Packwerk
     test "#constant_name_from_node should return correct name for compact const node" do
       node = parse("Sales::Order")
 
-      constant_name = @inspector.constant_name_from_node(node, ancestors: [])
+      constant_name = @inspector.constant_name_from_node(node, ancestors: [], relative_file: "")
 
       assert_equal "Sales::Order", constant_name
     end
@@ -46,7 +46,7 @@ module Packwerk
       parent = parse("class Order; end")
       node = NodeHelpers.each_child(parent).entries[0]
 
-      constant_name = @inspector.constant_name_from_node(node, ancestors: [parent])
+      constant_name = @inspector.constant_name_from_node(node, ancestors: [parent], relative_file: "")
 
       assert_equal "::Order", constant_name
     end
@@ -58,7 +58,7 @@ module Packwerk
       ) # module node; second child is the body of the module
       node = NodeHelpers.each_child(parent).entries[0] # class node; first child is constant
 
-      constant_name = @inspector.constant_name_from_node(node, ancestors: [parent, grandparent])
+      constant_name = @inspector.constant_name_from_node(node, ancestors: [parent, grandparent], relative_file: "")
 
       assert_equal "::Foo::Bar::Sales::Order", constant_name
     end
@@ -68,7 +68,7 @@ module Packwerk
       parent = T.must(NodeHelpers.each_child(grandparent).entries[1]) # setup do self.class::HEADERS end
       node = NodeHelpers.each_child(parent).entries[2] # self.class::HEADERS
 
-      constant_name = @inspector.constant_name_from_node(node, ancestors: [parent, grandparent])
+      constant_name = @inspector.constant_name_from_node(node, ancestors: [parent, grandparent], relative_file: "")
 
       assert_nil constant_name
     end
