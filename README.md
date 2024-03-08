@@ -85,6 +85,10 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/Shopif
 
 Read and follow the guidelines in [CONTRIBUTING.md](https://github.com/Shopify/packwerk/blob/main/CONTRIBUTING.md).
 
+## Related Documentation
+
+[A Packwerk Retrospective](https://shopify.engineering/a-packwerk-retrospective) by Gannon McGibbon - 12 min read
+
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
