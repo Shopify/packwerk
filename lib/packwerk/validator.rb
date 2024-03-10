@@ -61,8 +61,13 @@ module Packwerk
     end
     def package_manifests(configuration, glob_pattern = nil)
       glob_pattern ||= package_glob(configuration)
-      PackageSet.package_paths(configuration.root_path, glob_pattern, configuration.exclude)
-        .map { |f| File.realpath(f) }
+      package_paths = PackagePaths.new(
+        configuration.root_path,
+        glob_pattern,
+        configuration.exclude,
+        configuration.packages_outside_of_app_dir_enabled
+      )
+      package_paths.all_paths.map { |f| File.realpath(f) }
     end
 
     sig { params(configuration: Configuration).returns(T.any(T::Array[String], String)) }

@@ -60,6 +60,9 @@ module Packwerk
     sig { returns(Pathname) }
     attr_reader(:cache_directory)
 
+    sig { returns(T::Boolean) }
+    attr_reader(:packages_outside_of_app_dir_enabled)
+    
     sig { params(parallel: T::Boolean).returns(T::Boolean) }
     attr_writer(:parallel)
 
@@ -80,6 +83,7 @@ module Packwerk
       @cache_enabled = T.let(configs.key?("cache") ? configs["cache"] : false, T::Boolean)
       @cache_directory = T.let(Pathname.new(configs["cache_directory"] || "tmp/cache/packwerk"), Pathname)
       @config_path = config_path
+      @packages_outside_of_app_dir_enabled = configs["packages_outside_of_app_dir_enabled"] || false
 
       @offenses_formatter_identifier = T.let(
         configs["offenses_formatter"] || Formatters::DefaultOffensesFormatter::IDENTIFIER, String

@@ -35,6 +35,10 @@ module Packwerk
       raise "use_template may only be called once per test" if using_template?
 
       copy_dir("test/fixtures/#{template}")
+      if template == :external_packages
+        @app_dir = File.join(app_dir, "./app")
+      end
+
       Dir.chdir(app_dir)
     end
 

@@ -21,6 +21,7 @@ module Packwerk
           root_path: configuration.root_path,
           load_paths: configuration.load_paths,
           package_paths: configuration.package_paths,
+          packages_outside_of_app_dir_enabled: configuration.packages_outside_of_app_dir_enabled,
           inflector: inflector,
           custom_associations: configuration.custom_associations,
           cache_enabled: configuration.cache_enabled?,
@@ -41,6 +42,7 @@ module Packwerk
         custom_associations: AssociationInspector::CustomAssociations,
         checkers: T::Array[Checker],
         cache_enabled: T::Boolean,
+        packages_outside_of_app_dir_enabled: T.nilable(T::Boolean),
       ).void
     end
     def initialize(
@@ -52,7 +54,8 @@ module Packwerk
       package_paths: nil,
       custom_associations: [],
       checkers: Checker.all,
-      cache_enabled: false
+      cache_enabled: false,
+      packages_outside_of_app_dir_enabled: false
     )
       @root_path = root_path
       @load_paths = load_paths
@@ -63,7 +66,7 @@ module Packwerk
       @cache_enabled = cache_enabled
       @cache_directory = cache_directory
       @config_path = config_path
-
+      @packages_outside_of_app_dir_enabled = packages_outside_of_app_dir_enabled
       @file_processor = T.let(nil, T.nilable(FileProcessor))
       @context_provider = T.let(nil, T.nilable(ConstantDiscovery))
       @package_set = T.let(nil, T.nilable(PackageSet))
@@ -77,10 +80,13 @@ module Packwerk
     def process_file(relative_file:)
       processed_file = file_processor.call(relative_file)
 
+      puts relative_file
+   
       references = ReferenceExtractor.get_fully_qualified_references_from(
         processed_file.unresolved_references,
         context_provider
       )
+      puts references
       reference_checker = ReferenceChecking::ReferenceChecker.new(@checkers)
 
       processed_file.offenses + references.flat_map { |reference| reference_checker.call(reference) }
@@ -88,7 +94,13 @@ module Packwerk
 
     sig { returns(PackageSet) }
     def package_set
-      @package_set ||= ::Packwerk::PackageSet.load_all_from(@root_path, package_pathspec: @package_paths)
+      @package_set ||= ::Packwerk::PackageSet.load_all_from(
+        @root_path,
+        package_pathspec: @package_paths,
+        scan_for_packages_outside_of_app_dir: @packages_outside_of_app_dir_enabled,
+      )
+      puts @package_set.packages
+      @package_set
     end
 
     private
@@ -123,7 +135,7 @@ module Packwerk
         inflector: @inflector,
       )
     end
-
+    
     sig { returns(T::Array[ConstantNameInspector]) }
     def constant_name_inspectors
       [

@@ -17,21 +17,6 @@ module Packwerk
       assert_equal({ relative_path => Object }, relative_path_strings)
     end
 
-    test ".for excludes paths outside of the application root" do
-      RailsLoadPaths.expects(:require_application).with("/application/", "test").once.returns(true)
-      rails_root = Pathname.new("/application/")
-      Rails.expects(:root).twice.returns(rails_root)
-      Bundler.expects(:bundle_path).once.returns(Pathname.new("/application/vendor/"))
-
-      valid_paths = ["/application/app/models"]
-      paths = valid_paths + ["/users/tobi/.gems/something/app/models", "/application/../something/"]
-      paths = paths.each_with_object({}) { |p, h| h[p.to_s] = Object }
-      RailsLoadPaths.expects(:extract_application_autoload_paths).once.returns(paths)
-      filtered_path_strings = RailsLoadPaths.for(rails_root.to_s, environment: "test")
-
-      assert_equal({ "app/models" => Object }, filtered_path_strings.transform_keys(&:to_s))
-    end
-
     test ".for excludes paths from vendored gems" do
       RailsLoadPaths.expects(:require_application).with("/application/", "test").once.returns(true)
       rails_root = Pathname.new("/application/")

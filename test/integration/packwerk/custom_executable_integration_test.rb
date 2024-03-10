@@ -6,14 +6,13 @@ require "support/rails_test_helper"
 
 module Packwerk
   class CustomExecutableIntegrationTest < Minitest::Test
-    include ApplicationFixtureHelper
+    include RailsApplicationFixtureHelper
 
     TIMELINE_PATH = Pathname.new("components/timeline")
 
     setup do
       reset_output
       setup_application_fixture
-      use_template(:skeleton)
     end
 
     teardown do
@@ -21,6 +20,7 @@ module Packwerk
     end
 
     test "'packwerk check' with no violations succeeds in all variants" do
+      use_template(:skeleton)
       assert_successful_run("check")
       assert_match(/No offenses detected/, captured_output)
 
@@ -34,6 +34,7 @@ module Packwerk
     end
 
     test "'packwerk check' with violations only in nested packages has different outcomes per variant" do
+      use_template(:skeleton)
       open_app_file(TIMELINE_PATH.join("nested", "timeline_comment.rb")) do |file|
         file.write("class TimelineComment; belongs_to :order, class_name: '::Order'; end")
         file.flush
@@ -54,6 +55,7 @@ module Packwerk
     end
 
     test "'packwerk check' with failures in different parts of the app has different outcomes per variant" do
+      use_template(:skeleton)
       open_app_file(TIMELINE_PATH.join("nested", "timeline_comment.rb")) do |file|
         file.write("class TimelineComment; belongs_to :order, class_name: '::Order'; end")
         file.flush
@@ -73,6 +75,7 @@ module Packwerk
     end
 
     test "'packwerk update-todo' with no violations succeeds and updates no files" do
+      use_template(:skeleton)
       package_todo_content = read_package_todo
 
       assert_successful_run("update-todo")
@@ -93,6 +96,7 @@ module Packwerk
     end
 
     test "'packwerk update-todo' with violations succeeds and updates relevant package_todo" do
+      use_template(:skeleton)
       package_todo_content = read_package_todo
       timeline_package_todo_path = to_app_path(File.join(TIMELINE_PATH, "package_todo.yml"))
 
@@ -129,6 +133,7 @@ module Packwerk
     end
 
     test "'packwerk check' does not blow up when parsing files with syntax issues from a false positive association" do
+      use_template(:skeleton)
       open_app_file(TIMELINE_PATH.join("app", "models", "bad_file.rb")) do |file|
         # This is an example of a file that has an object called `belongs_to` that accepts methods
         content = <<~CONTENT
@@ -149,6 +154,19 @@ module Packwerk
         assert_match(/1 offense detected/, captured_output)
         assert_match(/No stale violations detected/, captured_output)
       end
+    end
+
+    test "'packwerk check' for an app with external packages it detects a violation referencing a constant in the external package" do
+      use_template(:external_packages)
+
+      open_app_file(TIMELINE_PATH.join("nested", "timeline_comment.rb")) do |file|
+        file.write("class TimelineComment; belongs_to :order, class_name: '::Order'; end")
+        file.flush
+      end
+
+      refute_successful_run("check")
+      assert_match(/Dependency violation: ::Order/, captured_output)
+      assert_match(/1 offense detected/, captured_output)
     end
 
     private
