@@ -19,6 +19,7 @@ module Packwerk
   autoload :Configuration
   autoload :ConstantContext
   autoload :Commands
+  autoload :FileParser
   autoload :Node
   autoload :Offense
   autoload :OffenseCollection
