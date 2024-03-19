@@ -22,6 +22,10 @@ module Packwerk
       assert_equal(true, root_package.package_path?("components/unknown"))
     end
 
+    test "#package_path? returns false for different path with matching prefix" do
+      assert_equal(false, @package.package_path?("components/timeline_ui/something.rb"))
+    end
+
     test "#<=> compares against name" do
       assert_equal(-1, @package <=> Package.new(name: "components/xyz", config: {}))
       assert_equal(0, @package <=> Package.new(name: "components/timeline", config: {}))
