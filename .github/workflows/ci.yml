@@ -64,7 +64,6 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.1"
           bundler-cache: true
       - name: Run style checks
         run: bin/rubocop
@@ -75,9 +74,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "3.1"
-          # bundler-cache: true
+        # with:
+        #   bundler-cache: true
       - name: Run static type checks
         run: |
           bundle install --jobs 4 --retry 3
