@@ -6,7 +6,7 @@ require:
   - rubocop-sorbet
 
 AllCops:
-  TargetRubyVersion: 2.7
+  TargetRubyVersion: 2.7 # TODO: Remove once Rubocop is updated to >= 1.61
   NewCops: disable
   UseCache: true
   SuggestExtensions: false
