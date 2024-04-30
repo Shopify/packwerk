@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches:
+      - fix-erb-ci
       - main
       - '*-stable'
   pull_request:
