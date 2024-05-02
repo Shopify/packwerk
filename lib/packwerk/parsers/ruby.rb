@@ -19,6 +19,13 @@ module Packwerk
           super(builder)
           super.diagnostics.all_errors_are_fatal = true
         end
+
+        private
+
+        sig { params(error: Prism::ParseError).returns(T::Boolean) }
+        def valid_error?(error)
+          error.type != :invalid_yield
+        end
       end
 
       class TolerateInvalidUtf8Builder < Parser::Builders::Default
