@@ -18,7 +18,7 @@ module Packwerk
     class << self
       extend T::Sig
 
-      sig { params(base: Class).void }
+      sig { params(base: T::Class[T.anything]).void }
       def included(base)
         validators << base
       end
@@ -36,9 +36,9 @@ module Packwerk
         require("packwerk/validators/dependency_validator")
       end
 
-      sig { returns(T::Array[Class]) }
+      sig { returns(T::Array[T::Class[T.anything]]) }
       def validators
-        @validators ||= T.let([], T.nilable(T::Array[Class]))
+        @validators ||= T.let([], T.nilable(T::Array[T::Class[T.anything]]))
       end
     end
 

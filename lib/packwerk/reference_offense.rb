@@ -23,7 +23,7 @@ module Packwerk
         .void
     end
     def initialize(reference:, violation_type:, message:, location: nil)
-      super(file: reference.relative_path, message: message, location: location)
+      super(file: T.must(reference.relative_path), message: message, location: location)
       @reference = reference
       @violation_type = violation_type
     end
