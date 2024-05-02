@@ -23,6 +23,8 @@ jobs:
     name: "Tests: Ruby ${{ matrix.ruby }} ${{ matrix.gemfile }}"
     steps:
       - uses: actions/checkout@v2
+      - name: Deletes Gemfile.lock
+        run: rm Gemfile.lock
       - name: Set up Ruby ${{ matrix.ruby }}
         uses: ruby/setup-ruby@v1
         with:
@@ -44,6 +46,8 @@ jobs:
     name: "Loading Tests: Ruby ${{ matrix.ruby }} ${{ matrix.gemfile }}"
     steps:
       - uses: actions/checkout@v2
+      - name: Delete Gemfile.lock
+        run: rm Gemfile.lock
       - name: Set up Ruby ${{ matrix.ruby }}
         uses: ruby/setup-ruby@v1
         with:
