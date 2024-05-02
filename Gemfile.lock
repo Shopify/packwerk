@@ -66,6 +66,8 @@ GEM
       minitest (>= 4, < 6)
     mocha (1.14.0)
     netrc (0.11.0)
+    nokogiri (1.15.3-aarch64-linux)
+      racc (~> 1.4)
     nokogiri (1.15.3-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.15.3-x86_64-darwin)
@@ -130,22 +132,15 @@ GEM
       syntax_tree (>= 2.4)
     ruby-progressbar (1.11.0)
     smart_properties (1.17.0)
-    sorbet (0.5.10313)
-      sorbet-static (= 0.5.10313)
-    sorbet-runtime (0.5.10313)
-    sorbet-static (0.5.10313-universal-darwin-14)
-    sorbet-static (0.5.10313-universal-darwin-15)
-    sorbet-static (0.5.10313-universal-darwin-16)
-    sorbet-static (0.5.10313-universal-darwin-17)
-    sorbet-static (0.5.10313-universal-darwin-18)
-    sorbet-static (0.5.10313-universal-darwin-19)
-    sorbet-static (0.5.10313-universal-darwin-20)
-    sorbet-static (0.5.10313-universal-darwin-21)
-    sorbet-static (0.5.10313-universal-darwin-22)
-    sorbet-static (0.5.10313-x86_64-linux)
-    sorbet-static-and-runtime (0.5.10313)
-      sorbet (= 0.5.10313)
-      sorbet-runtime (= 0.5.10313)
+    sorbet (0.5.11367)
+      sorbet-static (= 0.5.11367)
+    sorbet-runtime (0.5.11367)
+    sorbet-static (0.5.11367-aarch64-linux)
+    sorbet-static (0.5.11367-universal-darwin)
+    sorbet-static (0.5.11367-x86_64-linux)
+    sorbet-static-and-runtime (0.5.11367)
+      sorbet (= 0.5.11367)
+      sorbet-runtime (= 0.5.11367)
     spoom (1.1.11)
       sorbet (>= 0.5.9204)
       sorbet-runtime (>= 0.5.9204)
@@ -179,6 +174,7 @@ GEM
     zeitwerk (2.6.4)
 
 PLATFORMS
+  aarch64-linux
   arm64-darwin-21
   x86_64-darwin
   x86_64-darwin-20
