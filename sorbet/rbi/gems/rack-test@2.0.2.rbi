@@ -6,212 +6,30 @@
 
 # :nocov:
 #
-# source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:6
+# source://rack-test//lib/rack/test/cookie_jar.rb#6
 module Rack
   class << self
-    # Return the Rack release as a dotted string.
-    #
-    # source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack/version.rb:26
+    # source://rack/2.2.4/lib/rack/version.rb#26
     def release; end
 
-    # Return the Rack protocol version as a dotted string.
-    #
-    # source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack/version.rb:19
+    # source://rack/2.2.4/lib/rack/version.rb#19
     def version; end
   end
 end
 
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:29
-Rack::CACHE_CONTROL = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:31
-Rack::CONTENT_LENGTH = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:32
-Rack::CONTENT_TYPE = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:43
-Rack::DELETE = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:36
-Rack::ETAG = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:30
-Rack::EXPIRES = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack/file.rb:6
-Rack::File = Rack::Files
-
-# HTTP method verbs
-#
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:39
-Rack::GET = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:44
-Rack::HEAD = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:20
-Rack::HTTPS = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:35
-Rack::HTTP_COOKIE = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:17
-Rack::HTTP_HOST = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:18
-Rack::HTTP_PORT = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:19
-Rack::HTTP_VERSION = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:46
-Rack::LINK = T.let(T.unsafe(nil), String)
-
 # For backwards compatibility with 1.1.0 and below
 #
-# source://rack-test-2.0.2/lib/rack/test.rb:413
+# source://rack-test//lib/rack/test.rb#413
 Rack::MockSession = Rack::Test::Session
 
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:45
-Rack::OPTIONS = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:42
-Rack::PATCH = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:21
-Rack::PATH_INFO = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:40
-Rack::POST = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:41
-Rack::PUT = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:25
-Rack::QUERY_STRING = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:53
-Rack::RACK_ERRORS = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:63
-Rack::RACK_HIJACK = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:65
-Rack::RACK_HIJACK_IO = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:55
-Rack::RACK_INPUT = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:64
-Rack::RACK_IS_HIJACK = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:54
-Rack::RACK_LOGGER = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:76
-Rack::RACK_METHODOVERRIDE_ORIGINAL_METHOD = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:67
-Rack::RACK_MULTIPART_BUFFER_SIZE = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:68
-Rack::RACK_MULTIPART_TEMPFILE_FACTORY = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:60
-Rack::RACK_MULTIPROCESS = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:59
-Rack::RACK_MULTITHREAD = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:66
-Rack::RACK_RECURSIVE_INCLUDE = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:72
-Rack::RACK_REQUEST_COOKIE_HASH = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:73
-Rack::RACK_REQUEST_COOKIE_STRING = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:70
-Rack::RACK_REQUEST_FORM_HASH = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:69
-Rack::RACK_REQUEST_FORM_INPUT = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:71
-Rack::RACK_REQUEST_FORM_VARS = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:74
-Rack::RACK_REQUEST_QUERY_HASH = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:75
-Rack::RACK_REQUEST_QUERY_STRING = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:61
-Rack::RACK_RUNONCE = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:56
-Rack::RACK_SESSION = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:57
-Rack::RACK_SESSION_OPTIONS = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:77
-Rack::RACK_SESSION_UNPACKED_COOKIE_DATA = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:58
-Rack::RACK_SHOWSTATUS_DETAIL = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:52
-Rack::RACK_TEMPFILES = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:62
-Rack::RACK_URL_SCHEME = T.let(T.unsafe(nil), String)
-
-# Rack environment variables
-#
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:51
-Rack::RACK_VERSION = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack/version.rb:23
-Rack::RELEASE = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:22
-Rack::REQUEST_METHOD = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:23
-Rack::REQUEST_PATH = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:24
-Rack::SCRIPT_NAME = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:27
-Rack::SERVER_NAME = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:28
-Rack::SERVER_PORT = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:26
-Rack::SERVER_PROTOCOL = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:33
-Rack::SET_COOKIE = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:48
-Rack::TRACE = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:34
-Rack::TRANSFER_ENCODING = T.let(T.unsafe(nil), String)
-
-# source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:7
+# source://rack-test//lib/rack/test/cookie_jar.rb#7
 module Rack::Test
   class << self
     # Whether the version of rack in use handles encodings.
     #
     # @return [Boolean]
     #
-    # source://rack-test-2.0.2/lib/rack/test.rb:407
+    # source://rack-test//lib/rack/test.rb#407
     def encoding_aware_strings?; end
   end
 end
@@ -219,42 +37,42 @@ end
 # Represents individual cookies in the cookie jar.  This is considered private
 # API and behavior of this class can change at any time.
 #
-# source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:10
+# source://rack-test//lib/rack/test/cookie_jar.rb#10
 class Rack::Test::Cookie
   include ::Rack::Utils
 
   # @return [Cookie] a new instance of Cookie
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:23
+  # source://rack-test//lib/rack/test/cookie_jar.rb#23
   def initialize(raw, uri = T.unsafe(nil), default_host = T.unsafe(nil)); end
 
   # Order cookies by name, path, and domain.
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:107
+  # source://rack-test//lib/rack/test/cookie_jar.rb#107
   def <=>(other); end
 
   # The explicit or implicit domain for the cookie.
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:58
+  # source://rack-test//lib/rack/test/cookie_jar.rb#58
   def domain; end
 
   # Whether the cookie has a value.
   #
   # @return [Boolean]
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:53
+  # source://rack-test//lib/rack/test/cookie_jar.rb#53
   def empty?; end
 
   # Whether the cookie is currently expired.
   #
   # @return [Boolean]
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:85
+  # source://rack-test//lib/rack/test/cookie_jar.rb#85
   def expired?; end
 
   # A Time value for when the cookie expires, if the expires option is set.
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:80
+  # source://rack-test//lib/rack/test/cookie_jar.rb#80
   def expires; end
 
   # Whether the cookie has the httponly flag, indicating it is not available via
@@ -262,37 +80,37 @@ class Rack::Test::Cookie
   #
   # @return [Boolean]
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:70
+  # source://rack-test//lib/rack/test/cookie_jar.rb#70
   def http_only?; end
 
   # Cookies that do not match the URI will not be sent in requests to the URI.
   #
   # @return [Boolean]
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:102
+  # source://rack-test//lib/rack/test/cookie_jar.rb#102
   def matches?(uri); end
 
   # The name of the cookie, will be a string
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:14
+  # source://rack-test//lib/rack/test/cookie_jar.rb#14
   def name; end
 
   # The explicit or implicit path for the cookie.
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:75
+  # source://rack-test//lib/rack/test/cookie_jar.rb#75
   def path; end
 
   # The raw string for the cookie, without options. Will generally be in
   # name=value format is name and value are provided.
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:21
+  # source://rack-test//lib/rack/test/cookie_jar.rb#21
   def raw; end
 
   # Wether the given cookie can replace the current cookie in the cookie jar.
   #
   # @return [Boolean]
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:48
+  # source://rack-test//lib/rack/test/cookie_jar.rb#48
   def replaces?(other); end
 
   # Whether the cookie has the secure flag, indicating it can only be sent over
@@ -300,36 +118,36 @@ class Rack::Test::Cookie
   #
   # @return [Boolean]
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:64
+  # source://rack-test//lib/rack/test/cookie_jar.rb#64
   def secure?; end
 
   # A hash of cookie options, including the cookie value, but excluding the cookie name.
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:112
+  # source://rack-test//lib/rack/test/cookie_jar.rb#112
   def to_h; end
 
   # A hash of cookie options, including the cookie value, but excluding the cookie name.
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:112
+  # source://rack-test//lib/rack/test/cookie_jar.rb#112
   def to_hash; end
 
   # Whether the cookie is valid for the given URI.
   #
   # @return [Boolean]
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:90
+  # source://rack-test//lib/rack/test/cookie_jar.rb#90
   def valid?(uri); end
 
   # The value of the cookie, will be a string or nil if there is no value.
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:17
+  # source://rack-test//lib/rack/test/cookie_jar.rb#17
   def value; end
 
   private
 
   # The default URI to use for the cookie, including just the host.
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:124
+  # source://rack-test//lib/rack/test/cookie_jar.rb#124
   def default_uri; end
 end
 
@@ -338,57 +156,57 @@ end
 # request.  This is considered private API and behavior of this
 # class can change at any time.
 #
-# source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:133
+# source://rack-test//lib/rack/test/cookie_jar.rb#133
 class Rack::Test::CookieJar
   # @return [CookieJar] a new instance of CookieJar
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:136
+  # source://rack-test//lib/rack/test/cookie_jar.rb#136
   def initialize(cookies = T.unsafe(nil), default_host = T.unsafe(nil)); end
 
   # Add a Cookie to the cookie jar.
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:192
+  # source://rack-test//lib/rack/test/cookie_jar.rb#192
   def <<(new_cookie); end
 
   # Return the value for first cookie with the given name, or nil
   # if no such cookie exists.
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:143
+  # source://rack-test//lib/rack/test/cookie_jar.rb#143
   def [](name); end
 
   # Set a cookie with the given name and value in the
   # cookie jar.
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:153
+  # source://rack-test//lib/rack/test/cookie_jar.rb#153
   def []=(name, value); end
 
   # Delete all cookies with the given name from the cookie jar.
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:167
+  # source://rack-test//lib/rack/test/cookie_jar.rb#167
   def delete(name); end
 
   # Return a raw cookie string for the cookie header to
   # use for the given URI.
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:203
+  # source://rack-test//lib/rack/test/cookie_jar.rb#203
   def for(uri); end
 
   # Return the first cookie with the given name, or nil if
   # no such cookie exists.
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:159
+  # source://rack-test//lib/rack/test/cookie_jar.rb#159
   def get_cookie(name); end
 
   # Add a string of raw cookie information to the cookie jar,
   # if the cookie is valid for the given URI.
   # Cookies should be separated with a newline.
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:177
+  # source://rack-test//lib/rack/test/cookie_jar.rb#177
   def merge(raw_cookies, uri = T.unsafe(nil)); end
 
   # Return a hash cookie names and cookie values for cookies in the jar.
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:220
+  # source://rack-test//lib/rack/test/cookie_jar.rb#220
   def to_hash; end
 
   private
@@ -401,32 +219,32 @@ class Rack::Test::CookieJar
   # so that when we are done, the cookies will be unique by name and
   # we'll have grabbed the most specific to the URI.
   #
-  # source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:239
+  # source://rack-test//lib/rack/test/cookie_jar.rb#239
   def each_cookie_for(uri); end
 end
 
-# source://rack-test-2.0.2/lib/rack/test/cookie_jar.rb:134
+# source://rack-test//lib/rack/test/cookie_jar.rb#134
 Rack::Test::CookieJar::DELIMITER = T.let(T.unsafe(nil), String)
 
 # The default host to use for requests, when a full URI is not
 # provided.
 #
-# source://rack-test-2.0.2/lib/rack/test.rb:33
+# source://rack-test//lib/rack/test.rb#33
 Rack::Test::DEFAULT_HOST = T.let(T.unsafe(nil), String)
 
 # The ending boundary in multipart requests
 #
-# source://rack-test-2.0.2/lib/rack/test.rb:42
+# source://rack-test//lib/rack/test.rb#42
 Rack::Test::END_BOUNDARY = T.let(T.unsafe(nil), String)
 
 # The common base class for exceptions raised by Rack::Test
 #
-# source://rack-test-2.0.2/lib/rack/test.rb:45
+# source://rack-test//lib/rack/test.rb#45
 class Rack::Test::Error < ::StandardError; end
 
 # The default multipart boundary to use for multipart request bodies
 #
-# source://rack-test-2.0.2/lib/rack/test.rb:36
+# source://rack-test//lib/rack/test.rb#36
 Rack::Test::MULTIPART_BOUNDARY = T.let(T.unsafe(nil), String)
 
 # This module serves as the primary integration point for using Rack::Test
@@ -447,113 +265,113 @@ Rack::Test::MULTIPART_BOUNDARY = T.let(T.unsafe(nil), String)
 #     end
 #   end
 #
-# source://rack-test-2.0.2/lib/rack/test/methods.rb:24
+# source://rack-test//lib/rack/test/methods.rb#24
 module Rack::Test::Methods
   extend ::Forwardable
 
   # Private accessor to avoid uninitialized instance variable warning in Ruby 2.*
   #
-  # source://rack-test-2.0.2/lib/rack/test/methods.rb:91
+  # source://rack-test//lib/rack/test/methods.rb#91
   def _rack_test_current_session=(_arg0); end
 
-  # source://RUBY_ROOT/forwardable.rb:226
-  def authorize(*args, &block); end
+  # source://forwardable/1.3.3/forwardable.rb#231
+  def authorize(*args, **_arg1, &block); end
 
-  # source://RUBY_ROOT/forwardable.rb:226
-  def basic_authorize(*args, &block); end
+  # source://forwardable/1.3.3/forwardable.rb#231
+  def basic_authorize(*args, **_arg1, &block); end
 
   # Create a new Rack::Test::Session for #app.
   #
-  # source://rack-test-2.0.2/lib/rack/test/methods.rb:40
+  # source://rack-test//lib/rack/test/methods.rb#40
   def build_rack_test_session(_name); end
 
-  # source://RUBY_ROOT/forwardable.rb:226
-  def clear_cookies(*args, &block); end
+  # source://forwardable/1.3.3/forwardable.rb#231
+  def clear_cookies(*args, **_arg1, &block); end
 
   # Return the currently actively session.  This is the session to
   # which the delegated methods are sent.
   #
-  # source://rack-test-2.0.2/lib/rack/test/methods.rb:51
+  # source://rack-test//lib/rack/test/methods.rb#51
   def current_session; end
 
-  # source://RUBY_ROOT/forwardable.rb:226
-  def custom_request(*args, &block); end
+  # source://forwardable/1.3.3/forwardable.rb#231
+  def custom_request(*args, **_arg1, &block); end
 
-  # source://RUBY_ROOT/forwardable.rb:226
-  def delete(*args, &block); end
+  # source://forwardable/1.3.3/forwardable.rb#231
+  def delete(*args, **_arg1, &block); end
 
-  # source://rack-test-2.0.2/lib/rack/test/methods.rb:64
+  # source://rack-test//lib/rack/test/methods.rb#64
   def digest_authorize(username, password); end
 
-  # source://RUBY_ROOT/forwardable.rb:226
-  def env(*args, &block); end
+  # source://forwardable/1.3.3/forwardable.rb#231
+  def env(*args, **_arg1, &block); end
 
-  # source://RUBY_ROOT/forwardable.rb:226
-  def follow_redirect!(*args, &block); end
+  # source://forwardable/1.3.3/forwardable.rb#231
+  def follow_redirect!(*args, **_arg1, &block); end
 
-  # source://RUBY_ROOT/forwardable.rb:226
-  def get(*args, &block); end
+  # source://forwardable/1.3.3/forwardable.rb#231
+  def get(*args, **_arg1, &block); end
 
-  # source://RUBY_ROOT/forwardable.rb:226
-  def head(*args, &block); end
+  # source://forwardable/1.3.3/forwardable.rb#231
+  def head(*args, **_arg1, &block); end
 
-  # source://RUBY_ROOT/forwardable.rb:226
-  def header(*args, &block); end
+  # source://forwardable/1.3.3/forwardable.rb#231
+  def header(*args, **_arg1, &block); end
 
-  # source://RUBY_ROOT/forwardable.rb:226
-  def last_request(*args, &block); end
+  # source://forwardable/1.3.3/forwardable.rb#231
+  def last_request(*args, **_arg1, &block); end
 
-  # source://RUBY_ROOT/forwardable.rb:226
-  def last_response(*args, &block); end
+  # source://forwardable/1.3.3/forwardable.rb#231
+  def last_response(*args, **_arg1, &block); end
 
-  # source://RUBY_ROOT/forwardable.rb:226
-  def options(*args, &block); end
+  # source://forwardable/1.3.3/forwardable.rb#231
+  def options(*args, **_arg1, &block); end
 
-  # source://RUBY_ROOT/forwardable.rb:226
-  def patch(*args, &block); end
+  # source://forwardable/1.3.3/forwardable.rb#231
+  def patch(*args, **_arg1, &block); end
 
-  # source://RUBY_ROOT/forwardable.rb:226
-  def post(*args, &block); end
+  # source://forwardable/1.3.3/forwardable.rb#231
+  def post(*args, **_arg1, &block); end
 
-  # source://RUBY_ROOT/forwardable.rb:226
-  def put(*args, &block); end
+  # source://forwardable/1.3.3/forwardable.rb#231
+  def put(*args, **_arg1, &block); end
 
   # Return the existing session with the given name, or a new
   # rack session.  Always use a new session if name is nil.
   # For backwards compatibility with older rack-test versions.
   #
-  # source://rack-test-2.0.2/lib/rack/test/methods.rb:29
+  # source://rack-test//lib/rack/test/methods.rb#29
   def rack_mock_session(name = T.unsafe(nil)); end
 
   # Return the existing session with the given name, or a new
   # rack session.  Always use a new session if name is nil.
   #
-  # source://rack-test-2.0.2/lib/rack/test/methods.rb:29
+  # source://rack-test//lib/rack/test/methods.rb#29
   def rack_test_session(name = T.unsafe(nil)); end
 
-  # source://RUBY_ROOT/forwardable.rb:226
-  def request(*args, &block); end
+  # source://forwardable/1.3.3/forwardable.rb#231
+  def request(*args, **_arg1, &block); end
 
-  # source://RUBY_ROOT/forwardable.rb:226
-  def set_cookie(*args, &block); end
+  # source://forwardable/1.3.3/forwardable.rb#231
+  def set_cookie(*args, **_arg1, &block); end
 
   # Create a new session (or reuse an existing session with the given name),
   # and make it the current session for the given block.
   #
-  # source://rack-test-2.0.2/lib/rack/test/methods.rb:57
+  # source://rack-test//lib/rack/test/methods.rb#57
   def with_session(name); end
 
   private
 
   # Private accessor to avoid uninitialized instance variable warning in Ruby 2.*
   #
-  # source://rack-test-2.0.2/lib/rack/test/methods.rb:91
+  # source://rack-test//lib/rack/test/methods.rb#91
   def _rack_test_current_session; end
 end
 
 # The starting boundary in multipart requests
 #
-# source://rack-test-2.0.2/lib/rack/test.rb:39
+# source://rack-test//lib/rack/test.rb#39
 Rack::Test::START_BOUNDARY = T.let(T.unsafe(nil), String)
 
 # Rack::Test::Session handles a series of requests issued to a Rack app.
@@ -563,7 +381,7 @@ Rack::Test::START_BOUNDARY = T.let(T.unsafe(nil), String)
 # Rack::Test::Session's methods are most often called through Rack::Test::Methods,
 # which will automatically build a session when it's first used.
 #
-# source://rack-test-2.0.2/lib/rack/test.rb:53
+# source://rack-test//lib/rack/test.rb#53
 class Rack::Test::Session
   include ::Rack::Utils
   include ::Rack::Test::Utils
@@ -599,15 +417,15 @@ class Rack::Test::Session
   #
   # @return [Session] a new instance of Session
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:99
+  # source://rack-test//lib/rack/test.rb#99
   def initialize(app, default_host = T.unsafe(nil)); end
 
-  # source://rack-test-2.0.2/lib/rack/test.rb:217
+  # source://rack-test//lib/rack/test.rb#217
   def _digest_authorize(username, password); end
 
   # Run a block after the each request completes.
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:120
+  # source://rack-test//lib/rack/test.rb#120
   def after_request(&block); end
 
   # Set the username and password for HTTP Basic authorization, to be
@@ -616,7 +434,7 @@ class Rack::Test::Session
   # Example:
   #   basic_authorize "bryan", "secret"
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:200
+  # source://rack-test//lib/rack/test.rb#200
   def authorize(username, password); end
 
   # Set the username and password for HTTP Basic authorization, to be
@@ -625,22 +443,22 @@ class Rack::Test::Session
   # Example:
   #   basic_authorize "bryan", "secret"
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:200
+  # source://rack-test//lib/rack/test.rb#200
   def basic_authorize(username, password); end
 
   # Replace the current cookie jar with an empty cookie jar.
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:125
+  # source://rack-test//lib/rack/test.rb#125
   def clear_cookies; end
 
   # The Rack::Test::CookieJar for the cookies for the current session.
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:67
+  # source://rack-test//lib/rack/test.rb#67
   def cookie_jar; end
 
   # The Rack::Test::CookieJar for the cookies for the current session.
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:67
+  # source://rack-test//lib/rack/test.rb#67
   def cookie_jar=(_arg0); end
 
   # Issue a request using the given HTTP verb for the given URI, with optional
@@ -648,15 +466,15 @@ class Rack::Test::Session
   #
   #   custom_request "LINK", "/"
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:162
+  # source://rack-test//lib/rack/test.rb#162
   def custom_request(verb, uri, params = T.unsafe(nil), env = T.unsafe(nil), &block); end
 
   # The default host used for the session for when using paths for URIs.
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:70
+  # source://rack-test//lib/rack/test.rb#70
   def default_host; end
 
-  # source://rack-test-2.0.2/lib/rack/test.rb:113
+  # source://rack-test//lib/rack/test.rb#113
   def delete(uri, params = T.unsafe(nil), env = T.unsafe(nil), &block); end
 
   # Set the username and password for HTTP Digest authorization, to be
@@ -666,7 +484,7 @@ class Rack::Test::Session
   # Example:
   #   digest_authorize "bryan", "secret"
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:213
+  # source://rack-test//lib/rack/test.rb#213
   def digest_authorize(username, password); end
 
   # Set an entry in the rack environment to be included on all subsequent
@@ -675,7 +493,7 @@ class Rack::Test::Session
   #
   #   env "rack.session", {:csrf => 'token'}
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:187
+  # source://rack-test//lib/rack/test.rb#187
   def env(name, value); end
 
   # Rack::Test will not follow any redirects automatically. This method
@@ -683,13 +501,13 @@ class Rack::Test::Session
   # on the new request) in the last response. If the last response was not
   # a redirect, an error will be raised.
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:226
+  # source://rack-test//lib/rack/test.rb#226
   def follow_redirect!; end
 
-  # source://rack-test-2.0.2/lib/rack/test.rb:113
+  # source://rack-test//lib/rack/test.rb#113
   def get(uri, params = T.unsafe(nil), env = T.unsafe(nil), &block); end
 
-  # source://rack-test-2.0.2/lib/rack/test.rb:113
+  # source://rack-test//lib/rack/test.rb#113
   def head(uri, params = T.unsafe(nil), env = T.unsafe(nil), &block); end
 
   # Set a header to be included on all subsequent requests through the
@@ -700,7 +518,7 @@ class Rack::Test::Session
   #
   #   header "user-agent", "Firefox"
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:175
+  # source://rack-test//lib/rack/test.rb#175
   def header(name, value); end
 
   # Return the last request issued in the session. Raises an error if no
@@ -708,7 +526,7 @@ class Rack::Test::Session
   #
   # @raise [Error]
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:136
+  # source://rack-test//lib/rack/test.rb#136
   def last_request; end
 
   # Return the last response received in the session. Raises an error if
@@ -716,19 +534,19 @@ class Rack::Test::Session
   #
   # @raise [Error]
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:143
+  # source://rack-test//lib/rack/test.rb#143
   def last_response; end
 
-  # source://rack-test-2.0.2/lib/rack/test.rb:113
+  # source://rack-test//lib/rack/test.rb#113
   def options(uri, params = T.unsafe(nil), env = T.unsafe(nil), &block); end
 
-  # source://rack-test-2.0.2/lib/rack/test.rb:113
+  # source://rack-test//lib/rack/test.rb#113
   def patch(uri, params = T.unsafe(nil), env = T.unsafe(nil), &block); end
 
-  # source://rack-test-2.0.2/lib/rack/test.rb:113
+  # source://rack-test//lib/rack/test.rb#113
   def post(uri, params = T.unsafe(nil), env = T.unsafe(nil), &block); end
 
-  # source://rack-test-2.0.2/lib/rack/test.rb:113
+  # source://rack-test//lib/rack/test.rb#113
   def put(uri, params = T.unsafe(nil), env = T.unsafe(nil), &block); end
 
   # Issue a request to the Rack app for the given URI and optional Rack
@@ -736,67 +554,67 @@ class Rack::Test::Session
   #
   #   request "/"
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:152
+  # source://rack-test//lib/rack/test.rb#152
   def request(uri, env = T.unsafe(nil), &block); end
 
   # Set a cookie in the current cookie jar.
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:130
+  # source://rack-test//lib/rack/test.rb#130
   def set_cookie(cookie, uri = T.unsafe(nil)); end
 
   private
 
   # Append a string version of the query params to the array of query params.
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:338
+  # source://rack-test//lib/rack/test.rb#338
   def append_query_params(query_array, query_params); end
 
   # close() gets called automatically in newer Rack versions.
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:264
+  # source://rack-test//lib/rack/test.rb#264
   def close_body(body); end
 
   # @return [Boolean]
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:401
+  # source://rack-test//lib/rack/test.rb#401
   def digest_auth_configured?; end
 
-  # source://rack-test-2.0.2/lib/rack/test.rb:378
+  # source://rack-test//lib/rack/test.rb#378
   def digest_auth_header; end
 
   # Update environment to use based on given URI.
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:291
+  # source://rack-test//lib/rack/test.rb#291
   def env_for(uri, env); end
 
   # Return the multipart content type to use based on the environment.
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:344
+  # source://rack-test//lib/rack/test.rb#344
   def multipart_content_type(env); end
 
   # Normalize URI based on given URI/path and environment.
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:269
+  # source://rack-test//lib/rack/test.rb#269
   def parse_uri(path, env); end
 
   # Submit the request with the given URI and rack environment to
   # the mock session.  Returns and potentially yields the last response.
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:355
+  # source://rack-test//lib/rack/test.rb#355
   def process_request(uri, env); end
 
   # @return [Boolean]
   #
-  # source://rack-test-2.0.2/lib/rack/test.rb:395
+  # source://rack-test//lib/rack/test.rb#395
   def retry_with_digest_auth?(env); end
 
   class << self
-    # source://rack-test-2.0.2/lib/rack/test.rb:57
+    # source://rack-test//lib/rack/test.rb#57
     def new(app, default_host = T.unsafe(nil)); end
   end
 end
 
-# source://rack-test-2.0.2/lib/rack/test.rb:277
+# source://rack-test//lib/rack/test.rb#277
 Rack::Test::Session::DEFAULT_ENV = T.let(T.unsafe(nil), Hash)
 
 # Wraps a Tempfile with a content type. Including one or more UploadedFile's
@@ -805,7 +623,7 @@ Rack::Test::Session::DEFAULT_ENV = T.let(T.unsafe(nil), Hash)
 # Example:
 #   post "/photos", "file" => Rack::Test::UploadedFile.new("me.jpg", "image/jpeg")
 #
-# source://rack-test-2.0.2/lib/rack/test/uploaded_file.rb:14
+# source://rack-test//lib/rack/test/uploaded_file.rb#14
 class Rack::Test::UploadedFile
   # Creates a new UploadedFile instance.
   #
@@ -817,7 +635,7 @@ class Rack::Test::UploadedFile
   #
   # @return [UploadedFile] a new instance of UploadedFile
   #
-  # source://rack-test-2.0.2/lib/rack/test/uploaded_file.rb:31
+  # source://rack-test//lib/rack/test/uploaded_file.rb#31
   def initialize(content, content_type = T.unsafe(nil), binary = T.unsafe(nil), original_filename: T.unsafe(nil)); end
 
   # Append to given buffer in 64K chunks to avoid multiple large
@@ -825,76 +643,76 @@ class Rack::Test::UploadedFile
   # after to make sure all data in tempfile is appended to the
   # buffer.
   #
-  # source://rack-test-2.0.2/lib/rack/test/uploaded_file.rb:58
+  # source://rack-test//lib/rack/test/uploaded_file.rb#58
   def append_to(buffer); end
 
   # The content type of the "uploaded" file
   #
-  # source://rack-test-2.0.2/lib/rack/test/uploaded_file.rb:22
+  # source://rack-test//lib/rack/test/uploaded_file.rb#22
   def content_type; end
 
   # The content type of the "uploaded" file
   #
-  # source://rack-test-2.0.2/lib/rack/test/uploaded_file.rb:22
+  # source://rack-test//lib/rack/test/uploaded_file.rb#22
   def content_type=(_arg0); end
 
   # The path to the tempfile. Will not work if the receiver's content is from a StringIO.
   #
-  # source://rack-test-2.0.2/lib/rack/test/uploaded_file.rb:44
+  # source://rack-test//lib/rack/test/uploaded_file.rb#44
   def local_path; end
 
   # Delegate all methods not handled to the tempfile.
   #
-  # source://rack-test-2.0.2/lib/rack/test/uploaded_file.rb:50
+  # source://rack-test//lib/rack/test/uploaded_file.rb#50
   def method_missing(method_name, *args, &block); end
 
   # The filename, *not* including the path, of the "uploaded" file
   #
-  # source://rack-test-2.0.2/lib/rack/test/uploaded_file.rb:16
+  # source://rack-test//lib/rack/test/uploaded_file.rb#16
   def original_filename; end
 
   # The path to the tempfile. Will not work if the receiver's content is from a StringIO.
   #
-  # source://rack-test-2.0.2/lib/rack/test/uploaded_file.rb:44
+  # source://rack-test//lib/rack/test/uploaded_file.rb#44
   def path; end
 
   # The tempfile
   #
-  # source://rack-test-2.0.2/lib/rack/test/uploaded_file.rb:19
+  # source://rack-test//lib/rack/test/uploaded_file.rb#19
   def tempfile; end
 
   private
 
   # Create a tempfile and copy the content from the given path into the tempfile.
   #
-  # source://rack-test-2.0.2/lib/rack/test/uploaded_file.rb:94
+  # source://rack-test//lib/rack/test/uploaded_file.rb#94
   def initialize_from_file_path(path); end
 
   # Use the StringIO as the tempfile.
   #
-  # source://rack-test-2.0.2/lib/rack/test/uploaded_file.rb:88
+  # source://rack-test//lib/rack/test/uploaded_file.rb#88
   def initialize_from_stringio(stringio, original_filename); end
 
   # @return [Boolean]
   #
-  # source://rack-test-2.0.2/lib/rack/test/uploaded_file.rb:69
+  # source://rack-test//lib/rack/test/uploaded_file.rb#69
   def respond_to_missing?(method_name, include_private = T.unsafe(nil)); end
 
   class << self
     # Close and unlink the given file, used as a finalizer for the tempfile,
     # if the tempfile is backed by a file in the filesystem.
     #
-    # source://rack-test-2.0.2/lib/rack/test/uploaded_file.rb:80
+    # source://rack-test//lib/rack/test/uploaded_file.rb#80
     def actually_finalize(file); end
 
     # A proc that can be used as a finalizer to close and unlink the tempfile.
     #
-    # source://rack-test-2.0.2/lib/rack/test/uploaded_file.rb:74
+    # source://rack-test//lib/rack/test/uploaded_file.rb#74
     def finalize(file); end
   end
 end
 
-# source://rack-test-2.0.2/lib/rack/test/utils.rb:5
+# source://rack-test//lib/rack/test/utils.rb#5
 module Rack::Test::Utils
   include ::Rack::Utils
   extend ::Rack::Utils
@@ -904,50 +722,42 @@ module Rack::Test::Utils
   #
   # @raise [ArgumentError]
   #
-  # source://rack-test-2.0.2/lib/rack/test/utils.rb:34
+  # source://rack-test//lib/rack/test/utils.rb#34
   def build_multipart(params, _first = T.unsafe(nil), multipart = T.unsafe(nil)); end
 
   # Build a query string for the given value and prefix. The value
   # can be an array or hash of parameters.
   #
-  # source://rack-test-2.0.2/lib/rack/test/utils.rb:11
+  # source://rack-test//lib/rack/test/utils.rb#11
   def build_nested_query(value, prefix = T.unsafe(nil)); end
 
   private
 
   # Append each multipart parameter value to the buffer.
   #
-  # source://rack-test-2.0.2/lib/rack/test/utils.rb:100
+  # source://rack-test//lib/rack/test/utils.rb#100
   def _build_parts(buffer, parameters); end
 
   # Append the multipart fragment for a parameter that is a file upload to the buffer.
   #
-  # source://rack-test-2.0.2/lib/rack/test/utils.rb:133
+  # source://rack-test//lib/rack/test/utils.rb#133
   def build_file_part(buffer, parameter_name, uploaded_file); end
 
   # Build the multipart content for uploading.
   #
-  # source://rack-test-2.0.2/lib/rack/test/utils.rb:94
+  # source://rack-test//lib/rack/test/utils.rb#94
   def build_parts(buffer, parameters); end
 
   # Append the multipart fragment for a parameter that isn't a file upload to the buffer.
   #
-  # source://rack-test-2.0.2/lib/rack/test/utils.rb:121
+  # source://rack-test//lib/rack/test/utils.rb#121
   def build_primitive_part(buffer, parameter_name, value); end
 
   # Return a flattened hash of parameter values based on the given params.
   #
-  # source://rack-test-2.0.2/lib/rack/test/utils.rb:62
+  # source://rack-test//lib/rack/test/utils.rb#62
   def normalize_multipart_params(params, first = T.unsafe(nil)); end
 end
 
-# source://rack-test-2.0.2/lib/rack/test/version.rb:3
+# source://rack-test//lib/rack/test/version.rb#3
 Rack::Test::VERSION = T.let(T.unsafe(nil), String)
-
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack.rb:47
-Rack::UNLINK = T.let(T.unsafe(nil), String)
-
-# The Rack protocol version number implemented.
-#
-# source:///opt/rubies/ruby-2.7.6/lib/ruby/gems/2.7.0/gems/rack-2.2.4/lib/rack/version.rb:16
-Rack::VERSION = T.let(T.unsafe(nil), Array)
