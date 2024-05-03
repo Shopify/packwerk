@@ -18,7 +18,6 @@ gem("tapioca", require: false)
 group :development do
   gem("byebug", require: false)
   gem("minitest-focus", require: false)
-  gem("ruby-lsp", "~> 0.2.1")
 
   gem("m")
   gem("rake")
