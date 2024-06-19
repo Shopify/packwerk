@@ -1,3 +1,4 @@
 --dir
 .
 --enable-experimental-requires-ancestor
+--ignore=/vendor/bundle
