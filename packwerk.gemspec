@@ -36,7 +36,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir["CHANGELOG.md", "LICENSE.md", "README.md", "lib/**/*", "sorbet/**/*"]
   spec.require_paths = ["lib"]
 
-  spec.required_ruby_version = ">= 2.7"
+  spec.required_ruby_version = ">= 3.1"
 
   spec.add_dependency("activesupport", ">= 6.0")
   spec.add_dependency("bundler")
@@ -52,6 +52,4 @@ Gem::Specification.new do |spec|
 
   # For ERB parsing
   spec.add_dependency("better_html")
-
-  spec.add_development_dependency("railties")
 end
