@@ -6,7 +6,6 @@ require:
   - rubocop-sorbet
 
 AllCops:
-  TargetRubyVersion: 3.1
   NewCops: disable
   UseCache: true
   SuggestExtensions: false
