@@ -6,11 +6,11 @@ require "test_helper"
 module Packwerk
   class ReferencesFromFileTest < Minitest::Test
     setup do
-      config = Configuration.new
-      config.stubs(:load_paths).returns({})
-      @run_context = RunContext.from_configuration(config)
-      RunContext.stubs(:from_configuration).with(config).returns(@run_context)
-      @referencer = ReferencesFromFile.new(config)
+      @config = Configuration.new
+      @config.stubs(:load_paths).returns({})
+      @run_context = RunContext.from_configuration(@config)
+      RunContext.stubs(:from_configuration).with(@config).returns(@run_context)
+      @referencer = ReferencesFromFile.new(@config)
     end
 
     test "raises on parser error" do
@@ -20,7 +20,7 @@ module Packwerk
       )
 
       assert_raises ReferencesFromFile::FileParserError do
-        @referencer.list("lib/something.rb")
+        @referencer.list_for_file("lib/something.rb")
       end
     end
 
@@ -33,7 +33,9 @@ module Packwerk
           make_fake_reference,
         ],
       }
-      @referencer.stubs(:files).returns(references.keys)
+      ffp_mock = mock("FilesForProcessing instance")
+      ffp_mock.stubs(:files).returns(references.keys)
+      FilesForProcessing.stubs(:fetch).with(relative_file_paths: [], configuration: @config).returns(ffp_mock)
 
       references.each do |file, references|
         @run_context.stubs(:references_from_file).with(relative_file: file).returns(
@@ -41,7 +43,7 @@ module Packwerk
         )
       end
 
-      assert_equal Set.new(references.values.flatten), Set.new(@referencer.list_all)
+      assert_equal Set.new(references.values.flatten), Set.new(@referencer.list_for_all)
     end
 
     private
