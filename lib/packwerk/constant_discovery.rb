@@ -17,6 +17,23 @@ module Packwerk
   class ConstantDiscovery
     extend T::Sig
 
+    class << self
+      extend T::Sig
+
+      sig do
+        params(
+          packages:   PackageSet,
+          root_path:  String,
+          load_paths: T::Hash[String, Module],
+          inflector:  T.class_of(ActiveSupport::Inflector)
+        ).returns(ConstantDiscovery)
+      end
+      def for(packages, root_path:, load_paths:, inflector: ActiveSupport::Inflector)
+        resolver = ConstantResolver.new(root_path: root_path, load_paths: load_paths, inflector: inflector)
+        new(constant_resolver: resolver, packages: packages)
+      end
+    end
+
     # @param constant_resolver [ConstantResolver]
     # @param packages [Packwerk::PackageSet]
     sig do
@@ -70,6 +87,13 @@ module Packwerk
         constant.location,
         package,
       )
+    end
+
+    sig do
+      returns(ConstantDiscovery)
+    end
+    def validate_constants
+      tap { @resolver.file_map }
     end
   end
 

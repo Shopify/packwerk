@@ -1,0 +1,4 @@
+include:
+  - "**/*.rb"
+
+offenses_formatter: plain

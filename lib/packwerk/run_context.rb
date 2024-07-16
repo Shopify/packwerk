@@ -1,8 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "constant_resolver"
-
 module Packwerk
   # Holds the context of a Packwerk run across multiple files.
   class RunContext
@@ -111,18 +109,11 @@ module Packwerk
 
     sig { returns(ConstantDiscovery) }
     def context_provider
-      @context_provider ||= ConstantDiscovery.new(
-        constant_resolver: resolver,
-        packages: package_set
-      )
-    end
-
-    sig { returns(ConstantResolver) }
-    def resolver
-      ConstantResolver.new(
+      @context_provider ||= ConstantDiscovery.for(
+        package_set,
         root_path: @root_path,
         load_paths: @load_paths,
-        inflector: @inflector,
+        inflector: @inflector
       )
     end
 
