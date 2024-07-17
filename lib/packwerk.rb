@@ -59,6 +59,7 @@ module Packwerk
   autoload :AssociationInspector
   autoload :Cache
   autoload :ConstantDiscovery
+  autoload :ZeitwerkConstantDiscovery
   autoload :ConstantNameInspector
   autoload :ConstNodeInspector
   autoload :ExtensionLoader
