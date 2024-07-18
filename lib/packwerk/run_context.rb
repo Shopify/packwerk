@@ -1,8 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "constant_resolver"
-
 module Packwerk
   # Holds the context of a Packwerk run across multiple files.
   class RunContext
@@ -17,7 +15,6 @@ module Packwerk
       def from_configuration(configuration)
         new(
           root_path: configuration.root_path,
-          load_paths: configuration.load_paths,
           package_paths: configuration.package_paths,
           inflector: ActiveSupport::Inflector,
           custom_associations: configuration.custom_associations,
@@ -25,6 +22,7 @@ module Packwerk
           cache_enabled: configuration.cache_enabled?,
           cache_directory: configuration.cache_directory,
           config_path: configuration.config_path,
+          loaders: configuration.loaders
         )
       end
     end
@@ -32,7 +30,6 @@ module Packwerk
     sig do
       params(
         root_path: String,
-        load_paths: T::Hash[String, Module],
         inflector: T.class_of(ActiveSupport::Inflector),
         cache_directory: Pathname,
         config_path: T.nilable(String),
@@ -41,11 +38,11 @@ module Packwerk
         associations_exclude: T::Array[String],
         checkers: T::Array[Checker],
         cache_enabled: T::Boolean,
+        loaders: T::Enumerable[Zeitwerk::Loader]
       ).void
     end
     def initialize(
       root_path:,
-      load_paths:,
       inflector:,
       cache_directory:,
       config_path: nil,
@@ -53,10 +50,11 @@ module Packwerk
       custom_associations: [],
       associations_exclude: [],
       checkers: Checker.all,
-      cache_enabled: false
+      cache_enabled: false,
+      loaders: []
     )
       @root_path = root_path
-      @load_paths = load_paths
+      @loaders = loaders
       @package_paths = package_paths
       @inflector = inflector
       @custom_associations = custom_associations
@@ -112,17 +110,9 @@ module Packwerk
     sig { returns(ConstantDiscovery) }
     def context_provider
       @context_provider ||= ConstantDiscovery.new(
-        constant_resolver: resolver,
-        packages: package_set
-      )
-    end
-
-    sig { returns(ConstantResolver) }
-    def resolver
-      ConstantResolver.new(
+        package_set,
         root_path: @root_path,
-        load_paths: @load_paths,
-        inflector: @inflector,
+        loaders:   @loaders
       )
     end
 

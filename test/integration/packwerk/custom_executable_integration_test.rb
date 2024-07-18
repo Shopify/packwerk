@@ -6,7 +6,7 @@ require "support/rails_test_helper"
 
 module Packwerk
   class CustomExecutableIntegrationTest < Minitest::Test
-    include ApplicationFixtureHelper
+    include RailsApplicationFixtureHelper
 
     TIMELINE_PATH = Pathname.new("components/timeline")
 

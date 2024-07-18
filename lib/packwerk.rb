@@ -4,6 +4,7 @@
 require "sorbet-runtime"
 require "active_support"
 require "fileutils"
+require "zeitwerk"
 
 # Provides String#pluralize
 require "active_support/core_ext/string"

@@ -37,6 +37,9 @@ module RailsApplicationFixtureHelper
       set_load_paths_for_minimal_template
     when :skeleton
       set_load_paths_for_skeleton_template
+    when :ambiguous
+      set_load_paths_for_ambiguous_template
+    when :blank, :extended
     else
       raise "Unknown fixture template #{template}"
     end
@@ -53,10 +56,16 @@ module RailsApplicationFixtureHelper
 
   def set_load_paths_for_skeleton_template
     Rails.autoloaders.main.push_dir(*to_app_paths("/components/sales/app/models"))
+    Rails.autoloaders.main.push_dir(*to_app_paths("/components/sales/app/public"))
     Rails.autoloaders.main.push_dir(*to_app_paths("components/platform/app/models"))
 
     Rails.autoloaders.once.push_dir(*to_app_paths("components/timeline/app/models"))
     Rails.autoloaders.once.push_dir(*to_app_paths("components/timeline/app/models/concerns"))
     Rails.autoloaders.once.push_dir(*to_app_paths("vendor/cache/gems/example/models"))
+  end
+
+  def set_load_paths_for_ambiguous_template
+    Rails.autoloaders.main.push_dir(*to_app_paths("/components/sales/app/models"))
+    Rails.autoloaders.main.push_dir(*to_app_paths("/components/sales/app/services"))
   end
 end

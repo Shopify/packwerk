@@ -1,7 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "constant_resolver"
 require "pathname"
 require "yaml"
 
@@ -25,7 +24,7 @@ module Packwerk
     def call(package_set, configuration)
       results = [
         check_package_manifest_syntax(configuration),
-        check_application_structure(configuration),
+        check_application_structure(configuration, packages: package_set),
         check_package_manifest_paths(configuration),
         check_root_package_exists(configuration),
       ]
@@ -68,15 +67,16 @@ module Packwerk
       end
     end
 
-    sig { params(configuration: Configuration).returns(Validator::Result) }
-    def check_application_structure(configuration)
-      resolver = ConstantResolver.new(
+    sig { params(configuration: Configuration, packages: PackageSet).returns(Validator::Result) }
+    def check_application_structure(configuration, packages:)
+      constant_discovery = ConstantDiscovery.new(
+        packages,
         root_path: configuration.root_path.to_s,
-        load_paths: configuration.load_paths
+        loaders:   configuration.loaders
       )
 
       begin
-        resolver.file_map
+        constant_discovery.validate_constants
         Validator::Result.new(ok: true)
       rescue => e
         Validator::Result.new(ok: false, error_value: e.message)
