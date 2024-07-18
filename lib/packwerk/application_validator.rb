@@ -69,10 +69,10 @@ module Packwerk
 
     sig { params(configuration: Configuration, packages: PackageSet).returns(Validator::Result) }
     def check_application_structure(configuration, packages:)
-      constant_discovery = ConstantDiscovery.for(
+      constant_discovery = ConstantDiscovery.new(
         packages,
-        root_path:  configuration.root_path.to_s,
-        load_paths: configuration.load_paths
+        root_path: configuration.root_path.to_s,
+        loaders:   configuration.loaders
       )
 
       begin

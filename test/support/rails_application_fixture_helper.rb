@@ -39,6 +39,7 @@ module RailsApplicationFixtureHelper
       set_load_paths_for_skeleton_template
     when :ambiguous
       set_load_paths_for_ambiguous_template
+    when :blank, :extended
     else
       raise "Unknown fixture template #{template}"
     end

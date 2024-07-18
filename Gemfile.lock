@@ -6,7 +6,6 @@ PATH
       ast
       better_html
       bundler
-      constant_resolver (>= 0.2.0)
       parallel
       parser
       prism (>= 0.25.0)
@@ -45,7 +44,6 @@ GEM
     builder (3.2.4)
     byebug (11.1.3)
     concurrent-ruby (1.1.10)
-    constant_resolver (0.2.0)
     crass (1.0.6)
     erubi (1.11.0)
     i18n (1.12.0)
@@ -169,7 +167,6 @@ PLATFORMS
 
 DEPENDENCIES
   byebug
-  constant_resolver
   m
   minitest-focus
   mocha

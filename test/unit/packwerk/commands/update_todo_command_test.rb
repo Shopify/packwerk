@@ -8,7 +8,7 @@ module Packwerk
   module Commands
     class UpdateTodoCommandTest < Minitest::Test
       include FactoryHelper
-      include ApplicationFixtureHelper
+      include RailsApplicationFixtureHelper
 
       setup do
         setup_application_fixture

@@ -8,7 +8,6 @@ gemspec
 # Specify the same dependency sources as the application Gemfile
 
 gem("spring")
-gem("constant_resolver", require: false)
 gem("rubocop-performance", require: false)
 gem("rubocop-sorbet", require: false)
 gem("mocha", require: false)

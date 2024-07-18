@@ -4,6 +4,7 @@
 require "sorbet-runtime"
 require "active_support"
 require "fileutils"
+require "zeitwerk"
 
 # Provides String#pluralize
 require "active_support/core_ext/string"
@@ -59,7 +60,6 @@ module Packwerk
   autoload :AssociationInspector
   autoload :Cache
   autoload :ConstantDiscovery
-  autoload :ZeitwerkConstantDiscovery
   autoload :ConstantNameInspector
   autoload :ConstNodeInspector
   autoload :ExtensionLoader

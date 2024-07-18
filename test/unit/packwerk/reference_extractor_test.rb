@@ -6,20 +6,14 @@ require "support/packwerk/parser_test_helper"
 
 module Packwerk
   class ReferenceExtractorTest < Minitest::Test
-    include ApplicationFixtureHelper
+    include RailsApplicationFixtureHelper
 
     def setup
       setup_application_fixture
       use_template(:skeleton)
 
-      load_paths =
-        Dir.glob(to_app_path("components/*/{app,test}/*{/concerns,}"))
-          .map { |p| Pathname.new(p).relative_path_from(app_dir).to_s }
-          .each_with_object({}) { |p, h| h[p] = Object }
-
       packages = ::Packwerk::PackageSet.load_all_from(app_dir)
-
-      @context_provider = ConstantDiscovery.for(packages, root_path: app_dir, load_paths: load_paths)
+      @context_provider = ConstantDiscovery.new(packages, root_path: app_dir, loaders: Rails.autoloaders)
     end
 
     def teardown
