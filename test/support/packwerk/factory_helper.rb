@@ -22,5 +22,17 @@ module Packwerk
         source_location: source_location,
       )
     end
+
+    def build_files_for_processing(
+      relative_file_paths: [],
+      configuration: Configuration.new(),
+      ignore_nested_packages: false
+    )
+      FilesForProcessing.new(
+        relative_file_paths,
+        configuration,
+        ignore_nested_packages
+      )
+    end
   end
 end

@@ -20,9 +20,9 @@ module Packwerk
         EOS
       end
 
-      sig { override.params(offense_collection: OffenseCollection, file_set: T::Set[String]).returns(String) }
-      def show_stale_violations(offense_collection, file_set)
-        if offense_collection.stale_violations?(file_set)
+      sig { override.params(offense_collection: OffenseCollection, files_for_processing: FilesForProcessing).returns(String) }
+      def show_stale_violations(offense_collection, files_for_processing)
+        if offense_collection.stale_violations?(files_for_processing)
           "There were stale violations found, please run `packwerk update-todo`"
         else
           "No stale violations detected"

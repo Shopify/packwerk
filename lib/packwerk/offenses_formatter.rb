@@ -70,8 +70,8 @@ module Packwerk
     def show_offenses(offenses)
     end
 
-    sig { abstract.params(offense_collection: OffenseCollection, for_files: T::Set[String]).returns(String) }
-    def show_stale_violations(offense_collection, for_files)
+    sig { abstract.params(offense_collection: OffenseCollection, files_for_processing: FilesForProcessing).returns(String) }
+    def show_stale_violations(offense_collection, files_for_processing)
     end
 
     sig { abstract.returns(String) }

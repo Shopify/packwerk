@@ -35,14 +35,14 @@ module Packwerk
 
         messages = [
           offenses_formatter.show_offenses(offense_collection.outstanding_offenses),
-          offenses_formatter.show_stale_violations(offense_collection, @files_for_processing.files),
+          offenses_formatter.show_stale_violations(offense_collection, @files_for_processing),
           offenses_formatter.show_strict_mode_violations(unlisted_strict_mode_violations),
         ]
 
         out.puts(messages.select(&:present?).join("\n") + "\n")
 
         offense_collection.outstanding_offenses.empty? &&
-          !offense_collection.stale_violations?(@files_for_processing.files) &&
+          !offense_collection.stale_violations?(@files_for_processing) &&
           unlisted_strict_mode_violations.empty?
       end
 

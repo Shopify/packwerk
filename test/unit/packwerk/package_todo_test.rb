@@ -39,20 +39,31 @@ module Packwerk
     end
 
     test "#stale_violations? returns true if package TODO exist but no violations can be found in code" do
-      package_todo = PackageTodo.new(destination_package, "test/fixtures/package_todo.yml")
-      assert package_todo.stale_violations?(Set.new([
+      files_to_check = [
         "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
         "orders/app/models/orders/services/adjustment_engine.rb",
-      ]))
+      ]
+      FilesForProcessing.any_instance.stubs(:files).returns(Set.new(files_to_check))
+
+      package_todo = PackageTodo.new(destination_package, "test/fixtures/package_todo.yml")
+      assert package_todo.stale_violations?(build_files_for_processing)
     end
 
     test "#stale_violations? returns false if package TODO does not exist but violations are found in code" do
+      FilesForProcessing.any_instance.stubs(:files).returns(Set.new)
+
       package_todo = PackageTodo.new(destination_package, "nonexistant_file_path")
       package_todo.add_entries(build_reference, ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
-      refute package_todo.stale_violations?(Set.new)
+      refute package_todo.stale_violations?(build_files_for_processing())
     end
 
     test "#stale_violations? returns false if package TODO violation match violations found in code" do
+      files_to_check = [
+        "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
+        "orders/app/models/orders/services/adjustment_engine.rb",
+      ]
+      FilesForProcessing.any_instance.stubs(:files).returns(Set.new(files_to_check))
+
       package = Package.new(name: "buyers", config: { "enforce_dependencies" => true })
 
       first_violated_reference = build_reference(
@@ -69,13 +80,15 @@ module Packwerk
       package_todo = PackageTodo.new(package, "test/fixtures/package_todo.yml")
       package_todo.add_entries(first_violated_reference, "some_checker_type")
       package_todo.add_entries(second_violated_reference, "some_checker_type")
-      refute package_todo.stale_violations?(Set.new([
-        "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
-        "orders/app/models/orders/services/adjustment_engine.rb",
-      ]))
+      refute package_todo.stale_violations?(build_files_for_processing)
     end
 
     test "#stale_violations? returns true if one type of violation turns into a different type of violation" do
+      files_to_check = [
+        "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
+        "orders/app/models/orders/services/adjustment_engine.rb",
+      ]
+      FilesForProcessing.any_instance.stubs(:files).returns(Set.new(files_to_check))
       package = Package.new(name: "buyers", config: { "enforce_dependencies" => true })
 
       first_violated_reference = build_reference(
@@ -94,21 +107,22 @@ module Packwerk
         ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
       package_todo.add_entries(second_violated_reference,
         ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE)
-      assert package_todo.stale_violations?(Set.new([
-        "orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb",
-        "orders/app/models/orders/services/adjustment_engine.rb",
-      ]))
+      assert package_todo.stale_violations?(build_files_for_processing)
     end
 
     test "#stale_violations? returns true if violations in package_todo.yml exist but are not found when checking for violations" do
+      files_to_check = ["orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb"]
+      FilesForProcessing.any_instance.stubs(:files).returns(Set.new(files_to_check))
+
       package = Package.new(name: "buyers", config: { "enforce_dependencies" => true })
       package_todo = PackageTodo.new(package, "test/fixtures/package_todo.yml")
-      assert package_todo.stale_violations?(
-        Set.new(["orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb"])
-      )
+      assert package_todo.stale_violations?(build_files_for_processing)
     end
 
     test "#stale_violations? returns false if violations in package_todo.yml exist but are found when checking for violations" do
+      files_to_check = ["orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb"]
+      FilesForProcessing.any_instance.stubs(:files).returns(Set.new(files_to_check))
+
       package = Package.new(name: "buyers", config: { "enforce_dependencies" => true })
 
       violated_reference = build_reference(
@@ -118,18 +132,17 @@ module Packwerk
       )
       package_todo = PackageTodo.new(package, "test/fixtures/package_todo.yml")
       package_todo.add_entries(violated_reference, "some_checker_type")
-      refute package_todo.stale_violations?(
-        Set.new(["orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb"])
-      )
+      refute package_todo.stale_violations?(build_files_for_processing)
     end
 
     test "#stale_violations? returns true when deleted files are present" do
+      files_to_check = ["orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb"]
+      FilesForProcessing.any_instance.stubs(:files).returns(Set.new(files_to_check))
+
       package = Package.new(name: "buyers", config: { "enforce_dependencies" => true })
 
       package_todo = PackageTodo.new(package, "test/fixtures/package_todo.yml")
-      assert package_todo.stale_violations?(
-        Set.new(["orders/app/jobs/orders/sweepers/purge_old_document_rows_task.rb"])
-      )
+      assert package_todo.stale_violations?(build_files_for_processing)
     end
 
     test "#listed? returns false if constant is not violated" do
