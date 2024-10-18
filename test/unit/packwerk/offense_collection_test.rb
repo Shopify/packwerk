@@ -28,25 +28,29 @@ module Packwerk
     test "#stale_violations? returns true if there are stale violations" do
       @offense_collection.add_offense(@offense)
       file_set = Set.new
+      FilesForProcessing.any_instance.stubs(:files).returns(file_set)
+      files_for_processing = build_files_for_processing
 
       Packwerk::PackageTodo.any_instance
         .expects(:stale_violations?)
-        .with(file_set)
+        .with(files_for_processing)
         .returns(true)
 
-      assert @offense_collection.stale_violations?(file_set)
+      assert @offense_collection.stale_violations?(files_for_processing)
     end
 
     test "#stale_violations? returns false if no stale violations" do
       @offense_collection.add_offense(@offense)
       file_set = Set.new
+      FilesForProcessing.any_instance.stubs(:files).returns(file_set)
+      files_for_processing = build_files_for_processing
 
       Packwerk::PackageTodo.any_instance
         .expects(:stale_violations?)
-        .with(file_set)
+        .with(files_for_processing)
         .returns(false)
 
-      refute @offense_collection.stale_violations?(Set.new)
+      refute @offense_collection.stale_violations?(files_for_processing)
     end
 
     test "#listed? returns true if constant is listed in file" do

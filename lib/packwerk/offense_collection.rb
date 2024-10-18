@@ -67,10 +67,10 @@ module Packwerk
       end
     end
 
-    sig { params(for_files: T::Set[String]).returns(T::Boolean) }
-    def stale_violations?(for_files)
+    sig { params(files_for_processing: FilesForProcessing).returns(T::Boolean) }
+    def stale_violations?(files_for_processing)
       @package_todos.values.any? do |package_todo|
-        package_todo.stale_violations?(for_files)
+        package_todo.stale_violations?(files_for_processing)
       end
     end
 

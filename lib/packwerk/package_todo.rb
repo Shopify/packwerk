@@ -54,12 +54,16 @@ module Packwerk
       listed?(reference, violation_type: violation_type)
     end
 
-    sig { params(for_files: T::Set[String]).returns(T::Boolean) }
-    def stale_violations?(for_files)
+    sig { params(files_for_processing: FilesForProcessing).returns(T::Boolean) }
+    def stale_violations?(files_for_processing)
       prepare_entries_for_dump
 
+      for_files = files_for_processing.files
+
       old_entries.any? do |package, violations|
-        files = for_files + deleted_files_for(package)
+        # We don't try to detect deleted files when files were specified on the CLI because
+        # we don't know if the file was deleted or just not specified
+        files = files_for_processing.files_specified? ? for_files : for_files + deleted_files_for(package)
         violations_for_files = package_violations_for(violations, files: files)
 
         # We `next false` because if we cannot find existing violations for `for_files` within
