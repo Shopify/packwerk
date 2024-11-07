@@ -65,10 +65,11 @@ module Packwerk
 
       sig { params(package_set: PackageSet).returns(Validator::Result) }
       def check_acyclic_graph(package_set)
-        edges = package_set.flat_map do |package|
-          package.dependencies.map do |dependency|
-            [package.name, package_set.fetch(dependency)&.name]
-          end
+        edges = package_set.to_h do |package|
+          [
+            package.name,
+            package.dependencies.map { |dependency| package_set.fetch(dependency)&.name },
+          ]
         end
 
         dependency_graph = Graph.new(edges)
