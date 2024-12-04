@@ -33,6 +33,7 @@ module Packwerk
   autoload :Reference
   autoload :ReferenceOffense
   autoload :Validator
+  autoload :ReferencesFromFile
 
   module OutputStyles
     extend ActiveSupport::Autoload
