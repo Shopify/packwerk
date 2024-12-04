@@ -1,82 +1,41 @@
 # typed: true
 # frozen_string_literal: true
 
+require "tsort"
+
 module Packwerk
   # A general implementation of a graph data structure with the ability to check for - and list - cycles.
   class Graph
+    include TSort
+
     extend T::Sig
     sig do
       params(
-        # The edges of the graph; An edge being represented as an Array of two nodes.
-        edges: T::Array[T::Array[T.any(String, Integer, NilClass)]]
+        # The edges of the graph; represented as an Hash of Arrays.
+        edges: T::Hash[T.any(String, Integer, NilClass), T::Array[T.any(String, Integer, NilClass)]]
       ).void
     end
     def initialize(edges)
-      @edges = edges.uniq
-      @cycles = Set.new
-      process
+      @edges = edges
     end
 
     def cycles
-      @cycles.dup
+      @cycles ||= strongly_connected_components.reject { _1.size == 1 }
     end
 
     def acyclic?
-      @cycles.empty?
+      cycles.empty?
     end
 
-    private
-
-    def nodes
-      @edges.flatten.uniq
+    private def tsort_each_node(&block)
+      @edges.each_key(&block)
     end
 
-    def process
-      # See https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
-      @processed ||= begin
-        nodes.each { |node| visit(node) }
-        true
-      end
-    end
+    EMPTY_ARRAY = [].freeze
+    private_constant :EMPTY_ARRAY
 
-    def visit(node, visited_nodes: Set.new, path: [])
-      # Already visited, short circuit to avoid unnecessary processing
-      return if visited_nodes.include?(node)
-
-      # We've returned to a node that we've already visited, so we've found a cycle!
-      if path.include?(node)
-        # Filter out the part of the path that isn't a cycle. For example, with the following path:
-        #
-        #   a -> b -> c -> d -> b
-        #
-        # "a" isn't part of the cycle. The cycle should only appear once in the path, so we reject
-        # everything from the beginning to the first instance of the current node.
-        add_cycle(path.drop_while { |n| n != node })
-        return
-      end
-
-      path << node
-      neighbours(node).each do |neighbour|
-        visit(neighbour, visited_nodes: visited_nodes, path: path)
-      end
-      path.pop
-    ensure
-      visited_nodes << node
-    end
-
-    def neighbours(node)
-      @edges
-        .lazy
-        .select { |src, _dst| src == node }
-        .map { |_src, dst| dst }
-    end
-
-    def add_cycle(cycle)
-      # Ensure that the lexicographically smallest item is the first one labeled in a cycle
-      min_node = cycle.min
-      cycle.rotate! until cycle.first == min_node
-
-      @cycles << cycle
+    private def tsort_each_child(node, &block)
+      (@edges[node] || EMPTY_ARRAY).each(&block)
     end
   end
 
