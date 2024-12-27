@@ -23,7 +23,7 @@
 #   :required => true
 # @see ClassMethods#property More information on how to configure properties
 #
-# source://smart_properties-1.17.0/lib/smart_properties.rb:23
+# source://smart_properties//lib/smart_properties.rb#23
 module SmartProperties
   mixes_in_class_methods ::SmartProperties::ClassMethods
 
@@ -36,13 +36,13 @@ module SmartProperties
   # @raise [SmartProperties::ConstructorArgumentForwardingError] when unknown arguments were supplied that could not be processed by the super class initializer either.
   # @raise [SmartProperties::InitializationError] when incorrect values were supplied or required values weren't been supplied.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties.rb:127
+  # source://smart_properties//lib/smart_properties.rb#127
   def initialize(*args, &block); end
 
-  # source://smart_properties-1.17.0/lib/smart_properties.rb:165
+  # source://smart_properties//lib/smart_properties.rb#165
   def [](name); end
 
-  # source://smart_properties-1.17.0/lib/smart_properties.rb:172
+  # source://smart_properties//lib/smart_properties.rb#172
   def []=(name, value); end
 
   class << self
@@ -53,51 +53,51 @@ module SmartProperties
     #
     # @param base [Class] the class this module is included in
     #
-    # source://smart_properties-1.17.0/lib/smart_properties.rb:110
+    # source://smart_properties//lib/smart_properties.rb#110
     def included(base); end
   end
 end
 
-# source://smart_properties-1.17.0/lib/smart_properties/errors.rb:5
+# source://smart_properties//lib/smart_properties/errors.rb#5
 class SmartProperties::AssignmentError < ::SmartProperties::Error
   # @return [AssignmentError] a new instance of AssignmentError
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/errors.rb:9
+  # source://smart_properties//lib/smart_properties/errors.rb#9
   def initialize(sender, property, message); end
 
   # Returns the value of attribute property.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/errors.rb:7
+  # source://smart_properties//lib/smart_properties/errors.rb#7
   def property; end
 
   # Sets the attribute property
   #
   # @param value the value to set the attribute property to.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/errors.rb:7
+  # source://smart_properties//lib/smart_properties/errors.rb#7
   def property=(_arg0); end
 
   # Returns the value of attribute sender.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/errors.rb:6
+  # source://smart_properties//lib/smart_properties/errors.rb#6
   def sender; end
 
   # Sets the attribute sender
   #
   # @param value the value to set the attribute sender to.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/errors.rb:6
+  # source://smart_properties//lib/smart_properties/errors.rb#6
   def sender=(_arg0); end
 end
 
-# source://smart_properties-1.17.0/lib/smart_properties.rb:24
+# source://smart_properties//lib/smart_properties.rb#24
 module SmartProperties::ClassMethods
   # Returns a class's smart properties. This includes the properties that
   # have been defined in the parent classes.
   #
   # @return [Hash<String, Property>] A map of property names to property instances.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties.rb:31
+  # source://smart_properties//lib/smart_properties.rb#31
   def properties; end
 
   protected
@@ -140,332 +140,332 @@ module SmartProperties::ClassMethods
   # @param options [Hash] the list of options used to configure the property
   # @return [Property] The defined property.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties.rb:82
+  # source://smart_properties//lib/smart_properties.rb#82
   def property(name, **options); end
 
-  # source://smart_properties-1.17.0/lib/smart_properties.rb:87
+  # source://smart_properties//lib/smart_properties.rb#87
   def property!(name, **options); end
 end
 
-# source://smart_properties-1.17.0/lib/smart_properties/errors.rb:3
+# source://smart_properties//lib/smart_properties/errors.rb#3
 class SmartProperties::ConfigurationError < ::SmartProperties::Error; end
 
-# source://smart_properties-1.17.0/lib/smart_properties/errors.rb:16
+# source://smart_properties//lib/smart_properties/errors.rb#16
 class SmartProperties::ConstructorArgumentForwardingError < ::SmartProperties::Error
   # @return [ConstructorArgumentForwardingError] a new instance of ConstructorArgumentForwardingError
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/errors.rb:17
+  # source://smart_properties//lib/smart_properties/errors.rb#17
   def initialize(positional_arguments, keyword_arguments); end
 
   private
 
-  # source://smart_properties-1.17.0/lib/smart_properties/errors.rb:33
+  # source://smart_properties//lib/smart_properties/errors.rb#33
   def generate_description(argument_type, argument_number); end
 end
 
-# source://smart_properties-1.17.0/lib/smart_properties/errors.rb:2
+# source://smart_properties//lib/smart_properties/errors.rb#2
 class SmartProperties::Error < ::ArgumentError; end
 
-# source://smart_properties-1.17.0/lib/smart_properties/errors.rb:95
+# source://smart_properties//lib/smart_properties/errors.rb#95
 class SmartProperties::InitializationError < ::SmartProperties::Error
   # @return [InitializationError] a new instance of InitializationError
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/errors.rb:99
+  # source://smart_properties//lib/smart_properties/errors.rb#99
   def initialize(sender, properties); end
 
   # Returns the value of attribute properties.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/errors.rb:97
+  # source://smart_properties//lib/smart_properties/errors.rb#97
   def properties; end
 
   # Sets the attribute properties
   #
   # @param value the value to set the attribute properties to.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/errors.rb:97
+  # source://smart_properties//lib/smart_properties/errors.rb#97
   def properties=(_arg0); end
 
   # Returns the value of attribute sender.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/errors.rb:96
+  # source://smart_properties//lib/smart_properties/errors.rb#96
   def sender; end
 
   # Sets the attribute sender
   #
   # @param value the value to set the attribute sender to.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/errors.rb:96
+  # source://smart_properties//lib/smart_properties/errors.rb#96
   def sender=(_arg0); end
 
-  # source://smart_properties-1.17.0/lib/smart_properties/errors.rb:110
+  # source://smart_properties//lib/smart_properties/errors.rb#110
   def to_hash; end
 end
 
-# source://smart_properties-1.17.0/lib/smart_properties/errors.rb:62
+# source://smart_properties//lib/smart_properties/errors.rb#62
 class SmartProperties::InvalidValueError < ::SmartProperties::AssignmentError
   # @return [InvalidValueError] a new instance of InvalidValueError
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/errors.rb:65
+  # source://smart_properties//lib/smart_properties/errors.rb#65
   def initialize(sender, property, value); end
 
-  # source://smart_properties-1.17.0/lib/smart_properties/errors.rb:80
+  # source://smart_properties//lib/smart_properties/errors.rb#80
   def to_hash; end
 
   # Returns the value of attribute value.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/errors.rb:63
+  # source://smart_properties//lib/smart_properties/errors.rb#63
   def value; end
 
   # Sets the attribute value
   #
   # @param value the value to set the attribute value to.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/errors.rb:63
+  # source://smart_properties//lib/smart_properties/errors.rb#63
   def value=(_arg0); end
 
   private
 
-  # source://smart_properties-1.17.0/lib/smart_properties/errors.rb:86
+  # source://smart_properties//lib/smart_properties/errors.rb#86
   def accepter_message(sender, property); end
 end
 
-# source://smart_properties-1.17.0/lib/smart_properties/errors.rb:45
+# source://smart_properties//lib/smart_properties/errors.rb#45
 class SmartProperties::MissingValueError < ::SmartProperties::AssignmentError
   # @return [MissingValueError] a new instance of MissingValueError
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/errors.rb:46
+  # source://smart_properties//lib/smart_properties/errors.rb#46
   def initialize(sender, property); end
 
-  # source://smart_properties-1.17.0/lib/smart_properties/errors.rb:57
+  # source://smart_properties//lib/smart_properties/errors.rb#57
   def to_hash; end
 end
 
-# source://smart_properties-1.17.0/lib/smart_properties.rb:94
+# source://smart_properties//lib/smart_properties.rb#94
 module SmartProperties::ModuleMethods
-  # source://smart_properties-1.17.0/lib/smart_properties.rb:95
+  # source://smart_properties//lib/smart_properties.rb#95
   def included(target); end
 end
 
-# source://smart_properties-1.17.0/lib/smart_properties/property.rb:2
+# source://smart_properties//lib/smart_properties/property.rb#2
 class SmartProperties::Property
   # @return [Property] a new instance of Property
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:17
+  # source://smart_properties//lib/smart_properties/property.rb#17
   def initialize(name, **attrs); end
 
   # Returns the value of attribute accepter.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:8
+  # source://smart_properties//lib/smart_properties/property.rb#8
   def accepter; end
 
   # @return [Boolean]
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:78
+  # source://smart_properties//lib/smart_properties/property.rb#78
   def accepts?(value, scope); end
 
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:62
+  # source://smart_properties//lib/smart_properties/property.rb#62
   def convert(scope, value); end
 
   # Returns the value of attribute converter.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:7
+  # source://smart_properties//lib/smart_properties/property.rb#7
   def converter; end
 
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:74
+  # source://smart_properties//lib/smart_properties/property.rb#74
   def default(scope); end
 
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:98
+  # source://smart_properties//lib/smart_properties/property.rb#98
   def define(klass); end
 
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:136
+  # source://smart_properties//lib/smart_properties/property.rb#136
   def get(scope); end
 
   # Returns the value of attribute instance_variable_name.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:10
+  # source://smart_properties//lib/smart_properties/property.rb#10
   def instance_variable_name; end
 
   # @return [Boolean]
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:49
+  # source://smart_properties//lib/smart_properties/property.rb#49
   def missing?(scope); end
 
   # Returns the value of attribute name.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:6
+  # source://smart_properties//lib/smart_properties/property.rb#6
   def name; end
 
   # @return [Boolean]
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:45
+  # source://smart_properties//lib/smart_properties/property.rb#45
   def optional?(scope); end
 
   # @raise [MissingValueError]
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:89
+  # source://smart_properties//lib/smart_properties/property.rb#89
   def prepare(scope, value); end
 
   # @return [Boolean]
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:53
+  # source://smart_properties//lib/smart_properties/property.rb#53
   def present?(scope); end
 
   # Returns the value of attribute reader.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:9
+  # source://smart_properties//lib/smart_properties/property.rb#9
   def reader; end
 
   # @return [Boolean]
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:41
+  # source://smart_properties//lib/smart_properties/property.rb#41
   def required?(scope); end
 
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:122
+  # source://smart_properties//lib/smart_properties/property.rb#122
   def set(scope, value); end
 
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:126
+  # source://smart_properties//lib/smart_properties/property.rb#126
   def set_default(scope); end
 
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:141
+  # source://smart_properties//lib/smart_properties/property.rb#141
   def to_h; end
 
   # Returns the value of attribute writable.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:11
+  # source://smart_properties//lib/smart_properties/property.rb#11
   def writable; end
 
   # @return [Boolean]
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:57
+  # source://smart_properties//lib/smart_properties/property.rb#57
   def writable?; end
 
   private
 
   # @return [Boolean]
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property.rb:155
+  # source://smart_properties//lib/smart_properties/property.rb#155
   def null_object?(object); end
 
   class << self
-    # source://smart_properties-1.17.0/lib/smart_properties/property.rb:13
+    # source://smart_properties//lib/smart_properties/property.rb#13
     def define(scope, name, **options); end
   end
 end
 
-# source://smart_properties-1.17.0/lib/smart_properties/property.rb:4
+# source://smart_properties//lib/smart_properties/property.rb#4
 SmartProperties::Property::ALLOWED_DEFAULT_CLASSES = T.let(T.unsafe(nil), Array)
 
-# source://smart_properties-1.17.0/lib/smart_properties/property.rb:3
+# source://smart_properties//lib/smart_properties/property.rb#3
 SmartProperties::Property::MODULE_REFERENCE = T.let(T.unsafe(nil), Symbol)
 
-# source://smart_properties-1.17.0/lib/smart_properties/property_collection.rb:2
+# source://smart_properties//lib/smart_properties/property_collection.rb#2
 class SmartProperties::PropertyCollection
   include ::Enumerable
 
   # @return [PropertyCollection] a new instance of PropertyCollection
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property_collection.rb:23
+  # source://smart_properties//lib/smart_properties/property_collection.rb#23
   def initialize; end
 
-  # source://smart_properties-1.17.0/lib/smart_properties/property_collection.rb:37
+  # source://smart_properties//lib/smart_properties/property_collection.rb#37
   def [](name); end
 
-  # source://smart_properties-1.17.0/lib/smart_properties/property_collection.rb:29
+  # source://smart_properties//lib/smart_properties/property_collection.rb#29
   def []=(name, value); end
 
-  # source://smart_properties-1.17.0/lib/smart_properties/property_collection.rb:53
+  # source://smart_properties//lib/smart_properties/property_collection.rb#53
   def each(&block); end
 
   # @return [Boolean]
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property_collection.rb:41
+  # source://smart_properties//lib/smart_properties/property_collection.rb#41
   def key?(name); end
 
-  # source://smart_properties-1.17.0/lib/smart_properties/property_collection.rb:45
+  # source://smart_properties//lib/smart_properties/property_collection.rb#45
   def keys; end
 
   # Returns the value of attribute parent.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property_collection.rb:5
+  # source://smart_properties//lib/smart_properties/property_collection.rb#5
   def parent; end
 
-  # source://smart_properties-1.17.0/lib/smart_properties/property_collection.rb:62
+  # source://smart_properties//lib/smart_properties/property_collection.rb#62
   def register(child); end
 
-  # source://smart_properties-1.17.0/lib/smart_properties/property_collection.rb:58
+  # source://smart_properties//lib/smart_properties/property_collection.rb#58
   def to_hash; end
 
-  # source://smart_properties-1.17.0/lib/smart_properties/property_collection.rb:49
+  # source://smart_properties//lib/smart_properties/property_collection.rb#49
   def values; end
 
   protected
 
   # Returns the value of attribute children.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property_collection.rb:70
+  # source://smart_properties//lib/smart_properties/property_collection.rb#70
   def children; end
 
   # Sets the attribute children
   #
   # @param value the value to set the attribute children to.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property_collection.rb:70
+  # source://smart_properties//lib/smart_properties/property_collection.rb#70
   def children=(_arg0); end
 
   # Returns the value of attribute collection.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property_collection.rb:71
+  # source://smart_properties//lib/smart_properties/property_collection.rb#71
   def collection; end
 
   # Sets the attribute collection
   #
   # @param value the value to set the attribute collection to.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property_collection.rb:71
+  # source://smart_properties//lib/smart_properties/property_collection.rb#71
   def collection=(_arg0); end
 
   # Returns the value of attribute collection_with_parent_collection.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property_collection.rb:72
+  # source://smart_properties//lib/smart_properties/property_collection.rb#72
   def collection_with_parent_collection; end
 
   # Sets the attribute collection_with_parent_collection
   #
   # @param value the value to set the attribute collection_with_parent_collection to.
   #
-  # source://smart_properties-1.17.0/lib/smart_properties/property_collection.rb:72
+  # source://smart_properties//lib/smart_properties/property_collection.rb#72
   def collection_with_parent_collection=(_arg0); end
 
-  # source://smart_properties-1.17.0/lib/smart_properties/property_collection.rb:74
+  # source://smart_properties//lib/smart_properties/property_collection.rb#74
   def notify_children; end
 
-  # source://smart_properties-1.17.0/lib/smart_properties/property_collection.rb:78
+  # source://smart_properties//lib/smart_properties/property_collection.rb#78
   def refresh(parent_collection); end
 
   class << self
-    # source://smart_properties-1.17.0/lib/smart_properties/property_collection.rb:7
+    # source://smart_properties//lib/smart_properties/property_collection.rb#7
     def for(scope); end
   end
 end
 
-# source://smart_properties-1.17.0/lib/smart_properties/version.rb:2
+# source://smart_properties//lib/smart_properties/version.rb#2
 SmartProperties::VERSION = T.let(T.unsafe(nil), String)
 
-# source://smart_properties-1.17.0/lib/smart_properties/validations.rb:4
+# source://smart_properties//lib/smart_properties/validations.rb#4
 module SmartProperties::Validations; end
 
-# source://smart_properties-1.17.0/lib/smart_properties/validations/ancestor.rb:4
+# source://smart_properties//lib/smart_properties/validations/ancestor.rb#4
 class SmartProperties::Validations::Ancestor
   include ::SmartProperties
   extend ::SmartProperties::ClassMethods
 
-  # source://smart_properties-1.17.0/lib/smart_properties/validations/ancestor.rb:13
+  # source://smart_properties//lib/smart_properties/validations/ancestor.rb#13
   def to_proc; end
 
-  # source://smart_properties-1.17.0/lib/smart_properties/validations/ancestor.rb:18
+  # source://smart_properties//lib/smart_properties/validations/ancestor.rb#18
   def to_s; end
 
-  # source://smart_properties-1.17.0/lib/smart_properties/validations/ancestor.rb:9
+  # source://smart_properties//lib/smart_properties/validations/ancestor.rb#9
   def validate(klass); end
 
   class << self

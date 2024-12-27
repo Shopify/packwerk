@@ -42,7 +42,7 @@ module Packwerk
     def package_path?(path)
       return true if root?
 
-      path.start_with?(@name)
+      path.start_with?(@name + "/")
     end
 
     sig { params(other: T.untyped).returns(T.nilable(Integer)) }

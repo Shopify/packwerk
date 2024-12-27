@@ -20,7 +20,7 @@ module Packwerk
     class << self
       extend T::Sig
 
-      sig { params(base: Class).void }
+      sig { params(base: T::Class[T.anything]).void }
       def included(base)
         offenses_formatters << base
       end
@@ -43,9 +43,9 @@ module Packwerk
         require("packwerk/formatters/default_offenses_formatter")
       end
 
-      sig { returns(T::Array[Class]) }
+      sig { returns(T::Array[T::Class[T.anything]]) }
       def offenses_formatters
-        @offenses_formatters ||= T.let([], T.nilable(T::Array[Class]))
+        @offenses_formatters ||= T.let([], T.nilable(T::Array[T::Class[T.anything]]))
       end
 
       sig { params(name: String).returns(OffensesFormatter) }

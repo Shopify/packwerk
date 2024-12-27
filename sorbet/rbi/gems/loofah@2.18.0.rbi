@@ -12,56 +12,56 @@
 # +close+. Which makes it particularly easy to sanitize mass
 # quantities of docs.
 #
-# source://loofah-2.18.0/lib/loofah/version.rb:2
+# source://loofah//lib/loofah/version.rb#2
 module Loofah
   class << self
     # Shortcut for Loofah::HTML::Document.parse
     # This method accepts the same parameters as Nokogiri::HTML::Document.parse
     #
-    # source://loofah-2.18.0/lib/loofah.rb:35
+    # source://loofah//lib/loofah.rb#35
     def document(*args, &block); end
 
     # Shortcut for Loofah::HTML::DocumentFragment.parse
     # This method accepts the same parameters as Nokogiri::HTML::DocumentFragment.parse
     #
-    # source://loofah-2.18.0/lib/loofah.rb:41
+    # source://loofah//lib/loofah.rb#41
     def fragment(*args, &block); end
 
     # A helper to remove extraneous whitespace from text-ified HTML
     #
-    # source://loofah-2.18.0/lib/loofah.rb:78
+    # source://loofah//lib/loofah.rb#78
     def remove_extraneous_whitespace(string); end
 
     # Shortcut for Loofah.document(string_or_io).scrub!(method)
     #
-    # source://loofah-2.18.0/lib/loofah.rb:51
+    # source://loofah//lib/loofah.rb#51
     def scrub_document(string_or_io, method); end
 
     # Shortcut for Loofah.fragment(string_or_io).scrub!(method)
     #
-    # source://loofah-2.18.0/lib/loofah.rb:46
+    # source://loofah//lib/loofah.rb#46
     def scrub_fragment(string_or_io, method); end
 
     # Shortcut for Loofah.xml_document(string_or_io).scrub!(method)
     #
-    # source://loofah-2.18.0/lib/loofah.rb:73
+    # source://loofah//lib/loofah.rb#73
     def scrub_xml_document(string_or_io, method); end
 
     # Shortcut for Loofah.xml_fragment(string_or_io).scrub!(method)
     #
-    # source://loofah-2.18.0/lib/loofah.rb:68
+    # source://loofah//lib/loofah.rb#68
     def scrub_xml_fragment(string_or_io, method); end
 
     # Shortcut for Loofah::XML::Document.parse
     # This method accepts the same parameters as Nokogiri::XML::Document.parse
     #
-    # source://loofah-2.18.0/lib/loofah.rb:57
+    # source://loofah//lib/loofah.rb#57
     def xml_document(*args, &block); end
 
     # Shortcut for Loofah::XML::DocumentFragment.parse
     # This method accepts the same parameters as Nokogiri::XML::DocumentFragment.parse
     #
-    # source://loofah-2.18.0/lib/loofah.rb:63
+    # source://loofah//lib/loofah.rb#63
     def xml_fragment(*args, &block); end
 
     private
@@ -76,214 +76,214 @@ module Loofah
     # the contract that scrubbers expect of a node (e.g., it can be
     # replaced, sibling and children nodes can be created).
     #
-    # source://loofah-2.18.0/lib/loofah.rb:93
+    # source://loofah//lib/loofah.rb#93
     def remove_comments_before_html_element(doc); end
   end
 end
 
-# source://loofah-2.18.0/lib/loofah/instance_methods.rb:126
+# source://loofah//lib/loofah/instance_methods.rb#126
 module Loofah::DocumentDecorator
-  # source://loofah-2.18.0/lib/loofah/instance_methods.rb:127
+  # source://loofah//lib/loofah/instance_methods.rb#127
   def initialize(*args, &block); end
 end
 
-# source://loofah-2.18.0/lib/loofah/elements.rb:5
+# source://loofah//lib/loofah/elements.rb#5
 module Loofah::Elements; end
 
-# source://loofah-2.18.0/lib/loofah/elements.rb:91
+# source://loofah//lib/loofah/elements.rb#91
 Loofah::Elements::BLOCK_LEVEL = T.let(T.unsafe(nil), Set)
 
 # Elements that aren't block but should generate a newline in #to_text
 #
-# source://loofah-2.18.0/lib/loofah/elements.rb:88
+# source://loofah//lib/loofah/elements.rb#88
 Loofah::Elements::INLINE_LINE_BREAK = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/elements.rb:92
+# source://loofah//lib/loofah/elements.rb#92
 Loofah::Elements::LINEBREAKERS = T.let(T.unsafe(nil), Set)
 
 # The following elements may also be considered block-level
 # elements since they may contain block-level elements
 #
-# source://loofah-2.18.0/lib/loofah/elements.rb:75
+# source://loofah//lib/loofah/elements.rb#75
 Loofah::Elements::LOOSE_BLOCK_LEVEL = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/elements.rb:90
+# source://loofah//lib/loofah/elements.rb#90
 Loofah::Elements::STRICT_BLOCK_LEVEL = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/elements.rb:6
+# source://loofah//lib/loofah/elements.rb#6
 Loofah::Elements::STRICT_BLOCK_LEVEL_HTML4 = T.let(T.unsafe(nil), Set)
 
 # https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements
 #
-# source://loofah-2.18.0/lib/loofah/elements.rb:34
+# source://loofah//lib/loofah/elements.rb#34
 Loofah::Elements::STRICT_BLOCK_LEVEL_HTML5 = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html/document.rb:3
+# source://loofah//lib/loofah/html/document.rb#3
 module Loofah::HTML; end
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:5
+# source://loofah//lib/loofah/html5/safelist.rb#5
 module Loofah::HTML5; end
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:48
+# source://loofah//lib/loofah/html5/safelist.rb#48
 module Loofah::HTML5::SafeList; end
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:226
+# source://loofah//lib/loofah/html5/safelist.rb#226
 Loofah::HTML5::SafeList::ACCEPTABLE_ATTRIBUTES = T.let(T.unsafe(nil), Set)
 
 # see https://www.quackit.com/css/functions/
 # omit `url` and `image` from that list
 #
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:742
+# source://loofah//lib/loofah/html5/safelist.rb#742
 Loofah::HTML5::SafeList::ACCEPTABLE_CSS_FUNCTIONS = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:685
+# source://loofah//lib/loofah/html5/safelist.rb#685
 Loofah::HTML5::SafeList::ACCEPTABLE_CSS_KEYWORDS = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:615
+# source://loofah//lib/loofah/html5/safelist.rb#615
 Loofah::HTML5::SafeList::ACCEPTABLE_CSS_PROPERTIES = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:49
+# source://loofah//lib/loofah/html5/safelist.rb#49
 Loofah::HTML5::SafeList::ACCEPTABLE_ELEMENTS = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:815
+# source://loofah//lib/loofah/html5/safelist.rb#815
 Loofah::HTML5::SafeList::ACCEPTABLE_PROTOCOLS = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:802
+# source://loofah//lib/loofah/html5/safelist.rb#802
 Loofah::HTML5::SafeList::ACCEPTABLE_SVG_PROPERTIES = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:844
+# source://loofah//lib/loofah/html5/safelist.rb#844
 Loofah::HTML5::SafeList::ACCEPTABLE_URI_DATA_MEDIATYPES = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:855
+# source://loofah//lib/loofah/html5/safelist.rb#855
 Loofah::HTML5::SafeList::ALLOWED_ATTRIBUTES = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:858
+# source://loofah//lib/loofah/html5/safelist.rb#858
 Loofah::HTML5::SafeList::ALLOWED_CSS_FUNCTIONS = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:857
+# source://loofah//lib/loofah/html5/safelist.rb#857
 Loofah::HTML5::SafeList::ALLOWED_CSS_KEYWORDS = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:856
+# source://loofah//lib/loofah/html5/safelist.rb#856
 Loofah::HTML5::SafeList::ALLOWED_CSS_PROPERTIES = T.let(T.unsafe(nil), Set)
 
 # subclasses may define their own versions of these constants
 #
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:854
+# source://loofah//lib/loofah/html5/safelist.rb#854
 Loofah::HTML5::SafeList::ALLOWED_ELEMENTS = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:879
+# source://loofah//lib/loofah/html5/safelist.rb#879
 Loofah::HTML5::SafeList::ALLOWED_ELEMENTS_WITH_LIBXML2 = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:860
+# source://loofah//lib/loofah/html5/safelist.rb#860
 Loofah::HTML5::SafeList::ALLOWED_PROTOCOLS = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:859
+# source://loofah//lib/loofah/html5/safelist.rb#859
 Loofah::HTML5::SafeList::ALLOWED_SVG_PROPERTIES = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:861
+# source://loofah//lib/loofah/html5/safelist.rb#861
 Loofah::HTML5::SafeList::ALLOWED_URI_DATA_MEDIATYPES = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:515
+# source://loofah//lib/loofah/html5/safelist.rb#515
 Loofah::HTML5::SafeList::ARIA_ATTRIBUTES = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:571
+# source://loofah//lib/loofah/html5/safelist.rb#571
 Loofah::HTML5::SafeList::ATTR_VAL_IS_URI = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:309
+# source://loofah//lib/loofah/html5/safelist.rb#309
 Loofah::HTML5::SafeList::MATHML_ATTRIBUTES = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:146
+# source://loofah//lib/loofah/html5/safelist.rb#146
 Loofah::HTML5::SafeList::MATHML_ELEMENTS = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:813
+# source://loofah//lib/loofah/html5/safelist.rb#813
 Loofah::HTML5::SafeList::PROTOCOL_SEPARATOR = T.let(T.unsafe(nil), Regexp)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:795
+# source://loofah//lib/loofah/html5/safelist.rb#795
 Loofah::HTML5::SafeList::SHORTHAND_CSS_PROPERTIES = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:597
+# source://loofah//lib/loofah/html5/safelist.rb#597
 Loofah::HTML5::SafeList::SVG_ALLOW_LOCAL_HREF = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:361
+# source://loofah//lib/loofah/html5/safelist.rb#361
 Loofah::HTML5::SafeList::SVG_ATTRIBUTES = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:583
+# source://loofah//lib/loofah/html5/safelist.rb#583
 Loofah::HTML5::SafeList::SVG_ATTR_VAL_ALLOWS_REF = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:182
+# source://loofah//lib/loofah/html5/safelist.rb#182
 Loofah::HTML5::SafeList::SVG_ELEMENTS = T.let(T.unsafe(nil), Set)
 
 # additional tags we should consider safe since we have libxml2 fixing up our documents.
 #
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:874
+# source://loofah//lib/loofah/html5/safelist.rb#874
 Loofah::HTML5::SafeList::TAGS_SAFE_WITH_LIBXML2 = T.let(T.unsafe(nil), Set)
 
 # TODO: remove VOID_ELEMENTS in a future major release
 # and put it in the tests (it is used only for testing, not for functional behavior)
 #
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:865
+# source://loofah//lib/loofah/html5/safelist.rb#865
 Loofah::HTML5::SafeList::VOID_ELEMENTS = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/scrub.rb:7
+# source://loofah//lib/loofah/html5/scrub.rb#7
 module Loofah::HTML5::Scrub
   class << self
     # @return [Boolean]
     #
-    # source://loofah-2.18.0/lib/loofah/html5/scrub.rb:16
+    # source://loofah//lib/loofah/html5/scrub.rb#16
     def allowed_element?(element_name); end
 
     # libxml2 >= 2.9.2 fails to escape comments within some attributes.
     #
     #  see comments about CVE-2018-8048 within the tests for more information
     #
-    # source://loofah-2.18.0/lib/loofah/html5/scrub.rb:135
+    # source://loofah//lib/loofah/html5/scrub.rb#135
     def force_correct_attribute_escaping!(node); end
 
     # alternative implementation of the html5lib attribute scrubbing algorithm
     #
-    # source://loofah-2.18.0/lib/loofah/html5/scrub.rb:21
+    # source://loofah//lib/loofah/html5/scrub.rb#21
     def scrub_attributes(node); end
 
-    # source://loofah-2.18.0/lib/loofah/html5/scrub.rb:79
+    # source://loofah//lib/loofah/html5/scrub.rb#79
     def scrub_css(style); end
 
-    # source://loofah-2.18.0/lib/loofah/html5/scrub.rb:74
+    # source://loofah//lib/loofah/html5/scrub.rb#74
     def scrub_css_attribute(node); end
   end
 end
 
-# source://loofah-2.18.0/lib/loofah/html5/scrub.rb:8
+# source://loofah//lib/loofah/html5/scrub.rb#8
 Loofah::HTML5::Scrub::CONTROL_CHARACTERS = T.let(T.unsafe(nil), Regexp)
 
-# source://loofah-2.18.0/lib/loofah/html5/scrub.rb:10
+# source://loofah//lib/loofah/html5/scrub.rb#10
 Loofah::HTML5::Scrub::CRASS_SEMICOLON = T.let(T.unsafe(nil), Hash)
 
-# source://loofah-2.18.0/lib/loofah/html5/scrub.rb:11
+# source://loofah//lib/loofah/html5/scrub.rb#11
 Loofah::HTML5::Scrub::CSS_IMPORTANT = T.let(T.unsafe(nil), String)
 
-# source://loofah-2.18.0/lib/loofah/html5/scrub.rb:9
+# source://loofah//lib/loofah/html5/scrub.rb#9
 Loofah::HTML5::Scrub::CSS_KEYWORDISH = T.let(T.unsafe(nil), Regexp)
 
-# source://loofah-2.18.0/lib/loofah/html5/scrub.rb:12
+# source://loofah//lib/loofah/html5/scrub.rb#12
 Loofah::HTML5::Scrub::CSS_PROPERTY_STRING_WITHOUT_EMBEDDED_QUOTES = T.let(T.unsafe(nil), Regexp)
 
-# source://loofah-2.18.0/lib/loofah/html5/scrub.rb:13
+# source://loofah//lib/loofah/html5/scrub.rb#13
 Loofah::HTML5::Scrub::DATA_ATTRIBUTE_NAME = T.let(T.unsafe(nil), Regexp)
 
-# source://loofah-2.18.0/lib/loofah/html5/safelist.rb:882
+# source://loofah//lib/loofah/html5/safelist.rb#882
 Loofah::HTML5::WhiteList = Loofah::HTML5::SafeList
 
 # Subclass of Nokogiri::HTML::Document.
 #
 #  See Loofah::ScrubBehavior and Loofah::TextBehavior for additional methods.
 #
-# source://loofah-2.18.0/lib/loofah/html/document.rb:9
+# source://loofah//lib/loofah/html/document.rb#9
 class Loofah::HTML::Document < ::Nokogiri::HTML4::Document
   include ::Loofah::ScrubBehavior::Node
   include ::Loofah::DocumentDecorator
   include ::Loofah::TextBehavior
 
-  # source://loofah-2.18.0/lib/loofah/html/document.rb:14
+  # source://loofah//lib/loofah/html/document.rb#14
   def serialize_root; end
 end
 
@@ -291,21 +291,21 @@ end
 #
 #  See Loofah::ScrubBehavior and Loofah::TextBehavior for additional methods.
 #
-# source://loofah-2.18.0/lib/loofah/html/document_fragment.rb:9
+# source://loofah//lib/loofah/html/document_fragment.rb#9
 class Loofah::HTML::DocumentFragment < ::Nokogiri::HTML4::DocumentFragment
   include ::Loofah::TextBehavior
 
   # Returns the HTML markup contained by the fragment
   #
-  # source://loofah-2.18.0/lib/loofah/html/document_fragment.rb:31
+  # source://loofah//lib/loofah/html/document_fragment.rb#31
   def serialize; end
 
-  # source://loofah-2.18.0/lib/loofah/html/document_fragment.rb:37
+  # source://loofah//lib/loofah/html/document_fragment.rb#37
   def serialize_root; end
 
   # Returns the HTML markup contained by the fragment
   #
-  # source://loofah-2.18.0/lib/loofah/html/document_fragment.rb:31
+  # source://loofah//lib/loofah/html/document_fragment.rb#31
   def to_s; end
 
   class << self
@@ -313,7 +313,7 @@ class Loofah::HTML::DocumentFragment < ::Nokogiri::HTML4::DocumentFragment
     #  constructor. Applications should use Loofah.fragment to
     #  parse a fragment.
     #
-    # source://loofah-2.18.0/lib/loofah/html/document_fragment.rb:18
+    # source://loofah//lib/loofah/html/document_fragment.rb#18
     def parse(tags, encoding = T.unsafe(nil)); end
   end
 end
@@ -322,7 +322,7 @@ end
 #
 #  ಠ_ಠ
 #
-# source://loofah-2.18.0/lib/loofah/html5/libxml2_workarounds.rb:11
+# source://loofah//lib/loofah/html5/libxml2_workarounds.rb#11
 module Loofah::LibxmlWorkarounds; end
 
 # these attributes and qualifying parent tags are determined by the code at:
@@ -331,16 +331,16 @@ module Loofah::LibxmlWorkarounds; end
 #
 #  see comments about CVE-2018-8048 within the tests for more information
 #
-# source://loofah-2.18.0/lib/loofah/html5/libxml2_workarounds.rb:19
+# source://loofah//lib/loofah/html5/libxml2_workarounds.rb#19
 Loofah::LibxmlWorkarounds::BROKEN_ESCAPING_ATTRIBUTES = T.let(T.unsafe(nil), Set)
 
-# source://loofah-2.18.0/lib/loofah/html5/libxml2_workarounds.rb:25
+# source://loofah//lib/loofah/html5/libxml2_workarounds.rb#25
 Loofah::LibxmlWorkarounds::BROKEN_ESCAPING_ATTRIBUTES_QUALIFYING_TAG = T.let(T.unsafe(nil), Hash)
 
-# source://loofah-2.18.0/lib/loofah/metahelpers.rb:3
+# source://loofah//lib/loofah/metahelpers.rb#3
 module Loofah::MetaHelpers
   class << self
-    # source://loofah-2.18.0/lib/loofah/metahelpers.rb:4
+    # source://loofah//lib/loofah/metahelpers.rb#4
     def add_downcased_set_members_to_all_set_constants(mojule); end
   end
 end
@@ -371,23 +371,23 @@ end
 #  Please see Scrubber for more information on implementation and traversal, and
 #  README.rdoc for more example usage.
 #
-# source://loofah-2.18.0/lib/loofah/instance_methods.rb:30
+# source://loofah//lib/loofah/instance_methods.rb#30
 module Loofah::ScrubBehavior
   class << self
-    # source://loofah-2.18.0/lib/loofah/instance_methods.rb:60
+    # source://loofah//lib/loofah/instance_methods.rb#60
     def resolve_scrubber(scrubber); end
   end
 end
 
-# source://loofah-2.18.0/lib/loofah/instance_methods.rb:31
+# source://loofah//lib/loofah/instance_methods.rb#31
 module Loofah::ScrubBehavior::Node
-  # source://loofah-2.18.0/lib/loofah/instance_methods.rb:32
+  # source://loofah//lib/loofah/instance_methods.rb#32
   def scrub!(scrubber); end
 end
 
-# source://loofah-2.18.0/lib/loofah/instance_methods.rb:53
+# source://loofah//lib/loofah/instance_methods.rb#53
 module Loofah::ScrubBehavior::NodeSet
-  # source://loofah-2.18.0/lib/loofah/instance_methods.rb:54
+  # source://loofah//lib/loofah/instance_methods.rb#54
   def scrub!(scrubber); end
 end
 
@@ -416,7 +416,7 @@ end
 #  default) or bottom-up. Top-down scrubbers can optionally return
 #  Scrubber::STOP to terminate the traversal of a subtree.
 #
-# source://loofah-2.18.0/lib/loofah/scrubber.rb:34
+# source://loofah//lib/loofah/scrubber.rb#34
 class Loofah::Scrubber
   # Options may include
   #    :direction => :top_down (the default)
@@ -433,26 +433,26 @@ class Loofah::Scrubber
   #
   # @return [Scrubber] a new instance of Scrubber
   #
-  # source://loofah-2.18.0/lib/loofah/scrubber.rb:65
+  # source://loofah//lib/loofah/scrubber.rb#65
   def initialize(options = T.unsafe(nil), &block); end
 
   # If the attribute is not set, add it
   # If the attribute is set, don't overwrite the existing value
   #
-  # source://loofah-2.18.0/lib/loofah/scrubber.rb:94
+  # source://loofah//lib/loofah/scrubber.rb#94
   def append_attribute(node, attribute, value); end
 
   # When a scrubber is initialized, the optional block is saved as
   # :block. Note that, if no block is passed, then the +scrub+
   # method is assumed to have been implemented.
   #
-  # source://loofah-2.18.0/lib/loofah/scrubber.rb:49
+  # source://loofah//lib/loofah/scrubber.rb#49
   def block; end
 
   # When a scrubber is initialized, the :direction may be specified
   # as :top_down (the default) or :bottom_up.
   #
-  # source://loofah-2.18.0/lib/loofah/scrubber.rb:44
+  # source://loofah//lib/loofah/scrubber.rb#44
   def direction; end
 
   # When +new+ is not passed a block, the class may implement
@@ -460,41 +460,41 @@ class Loofah::Scrubber
   #
   # @raise [ScrubberNotFound]
   #
-  # source://loofah-2.18.0/lib/loofah/scrubber.rb:86
+  # source://loofah//lib/loofah/scrubber.rb#86
   def scrub(node); end
 
   # Calling +traverse+ will cause the document to be traversed by
   #  either the lambda passed to the initializer or the +scrub+
   #  method, in the direction specified at +new+ time.
   #
-  # source://loofah-2.18.0/lib/loofah/scrubber.rb:78
+  # source://loofah//lib/loofah/scrubber.rb#78
   def traverse(node); end
 
   private
 
-  # source://loofah-2.18.0/lib/loofah/scrubber.rb:103
+  # source://loofah//lib/loofah/scrubber.rb#103
   def html5lib_sanitize(node); end
 
-  # source://loofah-2.18.0/lib/loofah/scrubber.rb:125
+  # source://loofah//lib/loofah/scrubber.rb#125
   def traverse_conditionally_bottom_up(node); end
 
-  # source://loofah-2.18.0/lib/loofah/scrubber.rb:116
+  # source://loofah//lib/loofah/scrubber.rb#116
   def traverse_conditionally_top_down(node); end
 end
 
 # Top-down Scrubbers may return CONTINUE to indicate that the subtree should be traversed.
 #
-# source://loofah-2.18.0/lib/loofah/scrubber.rb:37
+# source://loofah//lib/loofah/scrubber.rb#37
 Loofah::Scrubber::CONTINUE = T.let(T.unsafe(nil), Object)
 
 # Top-down Scrubbers may return STOP to indicate that the subtree should not be traversed.
 #
-# source://loofah-2.18.0/lib/loofah/scrubber.rb:40
+# source://loofah//lib/loofah/scrubber.rb#40
 Loofah::Scrubber::STOP = T.let(T.unsafe(nil), Object)
 
 # A RuntimeError raised when Loofah could not find an appropriate scrubber.
 #
-# source://loofah-2.18.0/lib/loofah/scrubber.rb:6
+# source://loofah//lib/loofah/scrubber.rb#6
 class Loofah::ScrubberNotFound < ::RuntimeError; end
 
 # Loofah provides some built-in scrubbers for sanitizing with
@@ -579,12 +579,12 @@ class Loofah::ScrubberNotFound < ::RuntimeError; end
 #
 #     http://timelessrepo.com/json-isnt-a-javascript-subset
 #
-# source://loofah-2.18.0/lib/loofah/scrubbers.rb:86
+# source://loofah//lib/loofah/scrubbers.rb#86
 module Loofah::Scrubbers
   class << self
     # Returns an array of symbols representing the built-in scrubbers
     #
-    # source://loofah-2.18.0/lib/loofah/scrubbers.rb:299
+    # source://loofah//lib/loofah/scrubbers.rb#299
     def scrubber_symbols; end
   end
 end
@@ -597,32 +597,32 @@ end
 #     Loofah.fragment(unsafe_html).scrub!(:escape)
 #     => "ohai! <div>div is safe</div> &lt;foo&gt;but foo is &lt;b&gt;not&lt;/b&gt;&lt;/foo&gt;"
 #
-# source://loofah-2.18.0/lib/loofah/scrubbers.rb:143
+# source://loofah//lib/loofah/scrubbers.rb#143
 class Loofah::Scrubbers::Escape < ::Loofah::Scrubber
   # @return [Escape] a new instance of Escape
   #
-  # source://loofah-2.18.0/lib/loofah/scrubbers.rb:144
+  # source://loofah//lib/loofah/scrubbers.rb#144
   def initialize; end
 
-  # source://loofah-2.18.0/lib/loofah/scrubbers.rb:148
+  # source://loofah//lib/loofah/scrubbers.rb#148
   def scrub(node); end
 end
 
 # A hash that maps a symbol (like +:prune+) to the appropriate Scrubber (Loofah::Scrubbers::Prune).
 #
-# source://loofah-2.18.0/lib/loofah/scrubbers.rb:285
+# source://loofah//lib/loofah/scrubbers.rb#285
 Loofah::Scrubbers::MAP = T.let(T.unsafe(nil), Hash)
 
 # This class probably isn't useful publicly, but is used for #to_text's current implemention
 #
-# source://loofah-2.18.0/lib/loofah/scrubbers.rb:237
+# source://loofah//lib/loofah/scrubbers.rb#237
 class Loofah::Scrubbers::NewlineBlockElements < ::Loofah::Scrubber
   # @return [NewlineBlockElements] a new instance of NewlineBlockElements
   #
-  # source://loofah-2.18.0/lib/loofah/scrubbers.rb:238
+  # source://loofah//lib/loofah/scrubbers.rb#238
   def initialize; end
 
-  # source://loofah-2.18.0/lib/loofah/scrubbers.rb:242
+  # source://loofah//lib/loofah/scrubbers.rb#242
   def scrub(node); end
 end
 
@@ -634,14 +634,14 @@ end
 #     Loofah.fragment(link_farmers_markup).scrub!(:nofollow)
 #     => "ohai! <a href='http://www.myswarmysite.com/' rel="nofollow">I like your blog post</a>"
 #
-# source://loofah-2.18.0/lib/loofah/scrubbers.rb:203
+# source://loofah//lib/loofah/scrubbers.rb#203
 class Loofah::Scrubbers::NoFollow < ::Loofah::Scrubber
   # @return [NoFollow] a new instance of NoFollow
   #
-  # source://loofah-2.18.0/lib/loofah/scrubbers.rb:204
+  # source://loofah//lib/loofah/scrubbers.rb#204
   def initialize; end
 
-  # source://loofah-2.18.0/lib/loofah/scrubbers.rb:208
+  # source://loofah//lib/loofah/scrubbers.rb#208
   def scrub(node); end
 end
 
@@ -653,14 +653,14 @@ end
 #     Loofah.fragment(link_farmers_markup).scrub!(:noopener)
 #     => "ohai! <a href='http://www.myswarmysite.com/' rel="noopener">I like your blog post</a>"
 #
-# source://loofah-2.18.0/lib/loofah/scrubbers.rb:224
+# source://loofah//lib/loofah/scrubbers.rb#224
 class Loofah::Scrubbers::NoOpener < ::Loofah::Scrubber
   # @return [NoOpener] a new instance of NoOpener
   #
-  # source://loofah-2.18.0/lib/loofah/scrubbers.rb:225
+  # source://loofah//lib/loofah/scrubbers.rb#225
   def initialize; end
 
-  # source://loofah-2.18.0/lib/loofah/scrubbers.rb:229
+  # source://loofah//lib/loofah/scrubbers.rb#229
   def scrub(node); end
 end
 
@@ -672,14 +672,14 @@ end
 #     Loofah.fragment(unsafe_html).scrub!(:prune)
 #     => "ohai! <div>div is safe</div> "
 #
-# source://loofah-2.18.0/lib/loofah/scrubbers.rb:122
+# source://loofah//lib/loofah/scrubbers.rb#122
 class Loofah::Scrubbers::Prune < ::Loofah::Scrubber
   # @return [Prune] a new instance of Prune
   #
-  # source://loofah-2.18.0/lib/loofah/scrubbers.rb:123
+  # source://loofah//lib/loofah/scrubbers.rb#123
   def initialize; end
 
-  # source://loofah-2.18.0/lib/loofah/scrubbers.rb:127
+  # source://loofah//lib/loofah/scrubbers.rb#127
   def scrub(node); end
 end
 
@@ -691,14 +691,14 @@ end
 #     Loofah.fragment(unsafe_html).scrub!(:strip)
 #     => "ohai! <div>div is safe</div> but foo is <b>not</b>"
 #
-# source://loofah-2.18.0/lib/loofah/scrubbers.rb:96
+# source://loofah//lib/loofah/scrubbers.rb#96
 class Loofah::Scrubbers::Strip < ::Loofah::Scrubber
   # @return [Strip] a new instance of Strip
   #
-  # source://loofah-2.18.0/lib/loofah/scrubbers.rb:97
+  # source://loofah//lib/loofah/scrubbers.rb#97
   def initialize; end
 
-  # source://loofah-2.18.0/lib/loofah/scrubbers.rb:101
+  # source://loofah//lib/loofah/scrubbers.rb#101
   def scrub(node); end
 end
 
@@ -716,14 +716,14 @@ end
 #
 #     http://timelessrepo.com/json-isnt-a-javascript-subset
 #
-# source://loofah-2.18.0/lib/loofah/scrubbers.rb:269
+# source://loofah//lib/loofah/scrubbers.rb#269
 class Loofah::Scrubbers::Unprintable < ::Loofah::Scrubber
   # @return [Unprintable] a new instance of Unprintable
   #
-  # source://loofah-2.18.0/lib/loofah/scrubbers.rb:270
+  # source://loofah//lib/loofah/scrubbers.rb#270
   def initialize; end
 
-  # source://loofah-2.18.0/lib/loofah/scrubbers.rb:274
+  # source://loofah//lib/loofah/scrubbers.rb#274
   def scrub(node); end
 end
 
@@ -744,21 +744,21 @@ end
 #  all kinds of cruft into its HTML output. Who needs that crap?
 #  Certainly not me.
 #
-# source://loofah-2.18.0/lib/loofah/scrubbers.rb:174
+# source://loofah//lib/loofah/scrubbers.rb#174
 class Loofah::Scrubbers::Whitewash < ::Loofah::Scrubber
   # @return [Whitewash] a new instance of Whitewash
   #
-  # source://loofah-2.18.0/lib/loofah/scrubbers.rb:175
+  # source://loofah//lib/loofah/scrubbers.rb#175
   def initialize; end
 
-  # source://loofah-2.18.0/lib/loofah/scrubbers.rb:179
+  # source://loofah//lib/loofah/scrubbers.rb#179
   def scrub(node); end
 end
 
 # Overrides +text+ in HTML::Document and HTML::DocumentFragment,
 #  and mixes in +to_text+.
 #
-# source://loofah-2.18.0/lib/loofah/instance_methods.rb:73
+# source://loofah//lib/loofah/instance_methods.rb#73
 module Loofah::TextBehavior
   # Returns a plain-text version of the markup contained by the document,
   #  with HTML entities encoded.
@@ -780,7 +780,7 @@ module Loofah::TextBehavior
   #    # decidedly not ok for browser:
   #    frag.text(:encode_special_chars => false) # => "<script>alert('EVIL');</script>"
   #
-  # source://loofah-2.18.0/lib/loofah/instance_methods.rb:95
+  # source://loofah//lib/loofah/instance_methods.rb#95
   def inner_text(options = T.unsafe(nil)); end
 
   # Returns a plain-text version of the markup contained by the document,
@@ -803,7 +803,7 @@ module Loofah::TextBehavior
   #    # decidedly not ok for browser:
   #    frag.text(:encode_special_chars => false) # => "<script>alert('EVIL');</script>"
   #
-  # source://loofah-2.18.0/lib/loofah/instance_methods.rb:95
+  # source://loofah//lib/loofah/instance_methods.rb#95
   def text(options = T.unsafe(nil)); end
 
   # Returns a plain-text version of the markup contained by the document,
@@ -826,7 +826,7 @@ module Loofah::TextBehavior
   #    # decidedly not ok for browser:
   #    frag.text(:encode_special_chars => false) # => "<script>alert('EVIL');</script>"
   #
-  # source://loofah-2.18.0/lib/loofah/instance_methods.rb:95
+  # source://loofah//lib/loofah/instance_methods.rb#95
   def to_str(options = T.unsafe(nil)); end
 
   # Returns a plain-text version of the markup contained by the
@@ -838,23 +838,23 @@ module Loofah::TextBehavior
   #    Loofah.document("<h1>Title</h1><div>Content<br>Next line</div>").to_text
   #    # => "\nTitle\n\nContent\nNext line\n"
   #
-  # source://loofah-2.18.0/lib/loofah/instance_methods.rb:121
+  # source://loofah//lib/loofah/instance_methods.rb#121
   def to_text(options = T.unsafe(nil)); end
 end
 
 # The version of Loofah you are using
 #
-# source://loofah-2.18.0/lib/loofah/version.rb:4
+# source://loofah//lib/loofah/version.rb#4
 Loofah::VERSION = T.let(T.unsafe(nil), String)
 
-# source://loofah-2.18.0/lib/loofah/xml/document.rb:3
+# source://loofah//lib/loofah/xml/document.rb#3
 module Loofah::XML; end
 
 # Subclass of Nokogiri::XML::Document.
 #
 #  See Loofah::ScrubBehavior and Loofah::DocumentDecorator for additional methods.
 #
-# source://loofah-2.18.0/lib/loofah/xml/document.rb:9
+# source://loofah//lib/loofah/xml/document.rb#9
 class Loofah::XML::Document < ::Nokogiri::XML::Document
   include ::Loofah::ScrubBehavior::Node
   include ::Loofah::DocumentDecorator
@@ -864,14 +864,14 @@ end
 #
 #  See Loofah::ScrubBehavior for additional methods.
 #
-# source://loofah-2.18.0/lib/loofah/xml/document_fragment.rb:9
+# source://loofah//lib/loofah/xml/document_fragment.rb#9
 class Loofah::XML::DocumentFragment < ::Nokogiri::XML::DocumentFragment
   class << self
     # Overridden Nokogiri::XML::DocumentFragment
     #  constructor. Applications should use Loofah.fragment to
     #  parse a fragment.
     #
-    # source://loofah-2.18.0/lib/loofah/xml/document_fragment.rb:16
+    # source://loofah//lib/loofah/xml/document_fragment.rb#16
     def parse(tags); end
   end
 end

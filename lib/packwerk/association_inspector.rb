@@ -19,19 +19,27 @@ module Packwerk
       CustomAssociations
     )
 
-    sig { params(inflector: T.class_of(ActiveSupport::Inflector), custom_associations: CustomAssociations).void }
-    def initialize(inflector:, custom_associations: Set.new)
+    sig do
+      params(
+        inflector: T.class_of(ActiveSupport::Inflector),
+        custom_associations: CustomAssociations,
+        excluded_files: T::Set[String]
+      ).void
+    end
+    def initialize(inflector:, custom_associations: Set.new, excluded_files: Set.new)
       @inflector = inflector
       @associations = T.let(RAILS_ASSOCIATIONS + custom_associations, CustomAssociations)
+      @excluded_files = T.let(excluded_files, T::Set[String])
     end
 
     sig do
       override
-        .params(node: AST::Node, ancestors: T::Array[AST::Node])
+        .params(node: AST::Node, ancestors: T::Array[AST::Node], relative_file: String)
         .returns(T.nilable(String))
     end
-    def constant_name_from_node(node, ancestors:)
+    def constant_name_from_node(node, ancestors:, relative_file:)
       return unless NodeHelpers.method_call?(node)
+      return if excluded?(relative_file)
       return unless association?(node)
 
       arguments = NodeHelpers.method_arguments(node)
@@ -47,6 +55,11 @@ module Packwerk
     end
 
     private
+
+    sig { params(relative_file: String).returns(T::Boolean) }
+    def excluded?(relative_file)
+      @excluded_files.include?(relative_file)
+    end
 
     sig { params(node: AST::Node).returns(T::Boolean) }
     def association?(node)

@@ -116,7 +116,7 @@ module Packwerk
       assert_equal 0, processed_file.unresolved_references.count
       offenses = processed_file.offenses
       assert_equal 1, offenses.length
-      assert_equal "Syntax error: unexpected token $end", offenses.first.message
+      assert_equal "Syntax error: expected a delimiter to close the parameters", offenses.first.message
     end
 
     test "#call with a path that can't be parsed outputs error message" do

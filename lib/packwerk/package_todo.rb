@@ -113,10 +113,7 @@ module Packwerk
     sig { params(package: String, violations: Entry).returns(T::Boolean) }
     def stale_violation_for_package?(package, violations:)
       violations.any? do |constant_name, entries_for_constant|
-        new_entries_violation_types = T.cast(
-          new_entries.dig(package, constant_name, "violations"),
-          T.nilable(T::Array[String]),
-        )
+        new_entries_violation_types = new_entries.dig(package, constant_name, "violations")
         # If there are no NEW entries that match the old entries `for_files`,
         # new_entries is from the list of violations we get when we check this file.
         # If this list is empty, we also must have stale violations.

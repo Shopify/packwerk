@@ -20,7 +20,6 @@
   * [Understanding how to respond to new violations](#understanding-how-to-respond-to-new-violations)
 * [Recording existing violations](#recording-existing-violations)
   * [Understanding the package todo file](#understanding-the-package-todo-file)
-  * [Understanding the list of deprecated references](#understanding-the-list-of-deprecated-references)
 * [Loading extensions](#loading-extensions)
 
 ## What problem does Packwerk solve?
@@ -42,7 +41,7 @@ A package is a folder containing autoloaded code. To decide whether code belongs
 
 Package principles help to guide the organization of classes in a large system. These principles can also be applied to packages in large and complex codebases.
 
-The [package principles](https://en.wikipedia.org/wiki/Package_principles) page on Wikipedia does a good job explaining what well designed packages look like.
+They are well described in Robert Martin's [Design Principles and Design Patterns](https://web.archive.org/web/20150906155800/http://www.objectmentor.com/resources/articles/Principles_and_Patterns.pdf) (right after the SOLID principles).
 
 ## Getting started
 
@@ -77,6 +76,7 @@ Packwerk reads from the `packwerk.yml` configuration file in the root directory.
 |----------------------|-------------------------------------------|--------------|
 | include              | **/*.{rb,rake,erb}                        | list of patterns for folder paths to include |
 | exclude              | {bin,node_modules,script,tmp,vendor}/**/* | list of patterns for folder paths to exclude |
+| associations_exclude | N/A                                       | list of patterns for folder paths to exclude from association inspection |
 | package_paths        | **/                                       | a single pattern or a list of patterns to find package configuration files, see: [Defining packages](#Defining-packages) |
 | custom_associations  | N/A                                       | list of custom associations, if any |
 | parallel             | true                                      | when true, fork code parsing out to subprocesses |
@@ -188,7 +188,7 @@ It will be a dependency violation when `components/shop_identity` tries to refer
 
 #### Using strict mode
 
-Once there are no more violations in a package, you can turn on `strict` mode, which will prevent new violations from being added to the package's `package_todo.yml`. To use this, simply change `enforce_dependencies: true` to `enforce_dependencies: strict` in your `package.yml`.
+You can turn on `strict` mode to prevent new violations from being added to the package's `package_todo.yml`. To use this, simply change `enforce_dependencies: true` to `enforce_dependencies: strict` in your `package.yml`.
 
 Then, when you run `bin/packwerk check`, new violations will cause the following error to be displayed:
 ```
@@ -288,7 +288,7 @@ You can also reference the name of a gem.
 
 While `packwerk` ships with its own offense formatter, you may specify a custom one in your configuration file via the `offenses_formatter:` key.  Your custom formatter will be used when `bin/packwerk check` is run.
 
-Firstly, you'll need to create an `OffensesFormatter` class that includes `Packwerk::OffensesFormatter`. You can use [`Packwerk::Formatters::OffensesFormatter`](lib/packwerk/formatters/offenses_formatter.rb) as a point of reference for this. Then, in the `require` directive described above, you'll want to tell `packwerk` about it:
+Firstly, you'll need to create an `OffensesFormatter` class that includes `Packwerk::OffensesFormatter`. You can use [`Packwerk::Formatters::DefaultOffensesFormatter`](lib/packwerk/formatters/default_offenses_formatter.rb) as a point of reference for this. Then, in the `require` directive described above, you'll want to tell `packwerk` about it:
 ```ruby
 # ./path/to/file.rb
 class MyOffensesFormatter

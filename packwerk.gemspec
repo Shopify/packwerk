@@ -33,12 +33,10 @@ Gem::Specification.new do |spec|
   spec.bindir = "exe"
   spec.executables << "packwerk"
 
-  spec.files = Dir.chdir(__dir__) do
-    %x(git ls-files -z).split("\x0").reject { |f| f.match(%r{^(test|spec|features|static)/}) }
-  end
+  spec.files = Dir["CHANGELOG.md", "LICENSE.md", "README.md", "lib/**/*", "sorbet/**/*"]
   spec.require_paths = ["lib"]
 
-  spec.required_ruby_version = ">= 2.7"
+  spec.required_ruby_version = ">= 3.1"
 
   spec.add_dependency("activesupport", ">= 6.0")
   spec.add_dependency("bundler")
@@ -50,9 +48,8 @@ Gem::Specification.new do |spec|
   # For Ruby parsing
   spec.add_dependency("ast")
   spec.add_dependency("parser")
+  spec.add_dependency("prism", ">= 0.25.0")
 
   # For ERB parsing
   spec.add_dependency("better_html")
-
-  spec.add_development_dependency("railties")
 end

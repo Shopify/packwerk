@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 require "parser"
-require "parser/current"
+require "prism"
 
 module Packwerk
   module Parsers
@@ -19,13 +19,20 @@ module Packwerk
       }x
       private_constant :RUBY_REGEX
 
-      class RaiseExceptionsParser < Parser::CurrentRuby
+      class RaiseExceptionsParser < Prism::Translation::Parser
         extend T::Sig
 
         sig { params(builder: T.untyped).void }
         def initialize(builder)
           super(builder)
           super.diagnostics.all_errors_are_fatal = true
+        end
+
+        private
+
+        sig { params(error: Prism::ParseError).returns(T::Boolean) }
+        def valid_error?(error)
+          error.type != :invalid_yield
         end
       end
 

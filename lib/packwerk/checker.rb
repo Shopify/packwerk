@@ -11,7 +11,7 @@ module Packwerk
     class << self
       extend T::Sig
 
-      sig { params(base: Class).void }
+      sig { params(base: T::Class[T.anything]).void }
       def included(base)
         checkers << base
       end
@@ -34,9 +34,9 @@ module Packwerk
         require("packwerk/reference_checking/checkers/dependency_checker")
       end
 
-      sig { returns(T::Array[Class]) }
+      sig { returns(T::Array[T::Class[T.anything]]) }
       def checkers
-        @checkers ||= T.let([], T.nilable(T::Array[Class]))
+        @checkers ||= T.let([], T.nilable(T::Array[T::Class[T.anything]]))
       end
 
       sig { params(name: String).returns(Checker) }
@@ -51,8 +51,8 @@ module Packwerk
     sig { abstract.returns(String) }
     def violation_type; end
 
-    sig { abstract.params(listed_offense: ReferenceOffense).returns(T::Boolean) }
-    def strict_mode_violation?(listed_offense); end
+    sig { abstract.params(offense: ReferenceOffense).returns(T::Boolean) }
+    def strict_mode_violation?(offense); end
 
     sig { abstract.params(reference: Reference).returns(T::Boolean) }
     def invalid_reference?(reference); end
