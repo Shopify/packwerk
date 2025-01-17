@@ -29,8 +29,7 @@ module Packwerk
 
       expected = <<~EXPECTED
         Dependency violation: ::SomeName belongs to 'destination_package', but 'components/source' does not specify a dependency on 'destination_package'.
-        Are we missing an abstraction?
-        Is the code making the reference, and the referenced constant, in the right packages?
+        Are the constant and its references in the right packages?
 
         Inference details: this is a reference to ::SomeName which seems to be defined in some/location.rb.
         To receive help interpreting or resolving this error message, see: https://github.com/Shopify/packwerk/blob/main/TROUBLESHOOT.md#Troubleshooting-violations
