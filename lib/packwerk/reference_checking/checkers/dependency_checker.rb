@@ -40,8 +40,7 @@ module Packwerk
 
           <<~EOS
             Dependency violation: #{const_name} belongs to '#{const_package}', but '#{ref_package}' does not specify a dependency on '#{const_package}'.
-            Are we missing an abstraction?
-            Is the code making the reference, and the referenced constant, in the right packages?
+            Are the constant and its references in the right packages?
 
             #{standard_help_message(reference)}
           EOS
