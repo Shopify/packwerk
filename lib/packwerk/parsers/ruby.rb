@@ -28,7 +28,13 @@ module Packwerk
         end
       end
 
-      class TolerateInvalidUtf8Builder < Parser::Builders::Default
+      # Remove when prism > 1.4.0 is required
+      builder_class = if defined?(Prism::Translation::Parser::Builder)
+        Prism::Translation::Parser::Builder
+      else
+        Parser::Builders::Default
+      end
+      class TolerateInvalidUtf8Builder < builder_class
         extend T::Sig
 
         sig { params(token: T.untyped).returns(T.untyped) }
