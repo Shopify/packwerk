@@ -11,7 +11,7 @@ module Packwerk
 
       include ParserInterface
 
-      class RaiseExceptionsParser < Prism::Translation::Parser
+      class RaiseExceptionsParser < Prism::Translation::Parser34
         extend T::Sig
 
         sig { params(builder: T.untyped).void }
