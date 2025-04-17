@@ -10,43 +10,57 @@ module Packwerk
   module Parsers
     class FactoryTest < Minitest::Test
       test "#for_path gives ruby parser for common Ruby paths" do
-        assert_instance_of(Parsers::Ruby, factory.for_path("foo.rb"))
-        assert_instance_of(Parsers::Ruby, factory.for_path("relative/path/to/foo.ru"))
-        assert_instance_of(Parsers::Ruby, factory.for_path("foo.rake"))
-        assert_instance_of(Parsers::Ruby, factory.for_path("foo.builder"))
-        assert_instance_of(Parsers::Ruby, factory.for_path("in/repo/gem/foo.gemspec"))
-        assert_instance_of(Parsers::Ruby, factory.for_path("Gemfile"))
-        assert_instance_of(Parsers::Ruby, factory.for_path("some/path/Rakefile"))
+        assert_instance_of(Parsers::Ruby, factory.for_path("foo.rb").first)
+        assert_instance_of(Parsers::Ruby, factory.for_path("relative/path/to/foo.ru").first)
+        assert_instance_of(Parsers::Ruby, factory.for_path("foo.rake").first)
+        assert_instance_of(Parsers::Ruby, factory.for_path("foo.builder").first)
+        assert_instance_of(Parsers::Ruby, factory.for_path("in/repo/gem/foo.gemspec").first)
+        assert_instance_of(Parsers::Ruby, factory.for_path("Gemfile").first)
+        assert_instance_of(Parsers::Ruby, factory.for_path("some/path/Rakefile").first)
       end
 
       test "#for_path gives ERB parser for common ERB paths" do
-        assert_instance_of(Parsers::Erb, factory.for_path("foo.html.erb"))
-        assert_instance_of(Parsers::Erb, factory.for_path("foo.md.erb"))
-        assert_instance_of(Parsers::Erb, factory.for_path("/sub/directory/foo.erb"))
-
-        fake_class = Class.new do
-          T.unsafe(self).include(ParserInterface)
-        end
-
-        with_erb_parser_class(fake_class) do
-          assert_instance_of(fake_class, factory.for_path("foo.html.erb"))
-        end
+        assert_instance_of(Parsers::Erb, factory.for_path("foo.html.erb").first)
+        assert_instance_of(Parsers::Erb, factory.for_path("foo.md.erb").first)
+        assert_instance_of(Parsers::Erb, factory.for_path("/sub/directory/foo.erb").first)
       end
 
-      test "#for_path gives nil for unknown path" do
-        assert_nil(factory.for_path("not_a_ruby.rb.txt"))
-        assert_nil(factory.for_path("some/path/rb"))
-        assert_nil(factory.for_path("compoennts/foo/body.erb.html"))
+      test "#for_path gives multiple parsers for matching paths" do
+        fake_class_1 = Class.new do
+          T.unsafe(self).include(Packwerk::FileParser)
+
+          def match?(path:)
+            /\.haml\Z/.match?(path)
+          end
+        end
+
+        fake_class_2 = Class.new do
+          T.unsafe(self).include(Packwerk::FileParser)
+
+          def match?(path:)
+            /\.haml\Z/.match?(path)
+          end
+        end
+
+        factories = factory.for_path("foo.haml")
+        assert_equal(2, factories.size)
+        assert_instance_of(fake_class_1, factories[0])
+        assert_instance_of(fake_class_2, factories[1])
+
+        Packwerk::FileParser.remove(fake_class_1)
+        Packwerk::FileParser.remove(fake_class_2)
+
+        factories = factory.for_path("foo.haml")
+        assert_equal(0, factories.size)
+      end
+
+      test "#for_path gives empty array for unknown path" do
+        assert_empty(factory.for_path("not_a_ruby.rb.txt"))
+        assert_empty(factory.for_path("some/path/rb"))
+        assert_empty(factory.for_path("compoennts/foo/body.erb.html"))
       end
 
       private
-
-      def with_erb_parser_class(klass)
-        factory.erb_parser_class = klass
-        yield
-      ensure
-        factory.erb_parser_class = nil
-      end
 
       def factory
         Parsers::Factory.instance
