@@ -34,7 +34,7 @@ module Packwerk
 
     test "#<=> does not compare against different class" do
       assert_nil(@package <=> "boop")
-      assert_nil(@package <=> Hash.new(name: "boop"))
+      assert_nil(@package <=> Hash.new({ name: "boop" }))
     end
 
     test "logical object equality is respected" do
