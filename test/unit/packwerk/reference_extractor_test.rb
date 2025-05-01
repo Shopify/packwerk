@@ -3,27 +3,17 @@
 
 require "test_helper"
 require "support/packwerk/parser_test_helper"
-require "constant_resolver"
 
 module Packwerk
   class ReferenceExtractorTest < Minitest::Test
-    include ApplicationFixtureHelper
+    include RailsApplicationFixtureHelper
 
     def setup
       setup_application_fixture
       use_template(:skeleton)
 
-      load_paths =
-        Dir.glob(to_app_path("components/*/{app,test}/*{/concerns,}"))
-          .map { |p| Pathname.new(p).relative_path_from(app_dir).to_s }
-
-      resolver = ConstantResolver.new(root_path: app_dir, load_paths: load_paths)
       packages = ::Packwerk::PackageSet.load_all_from(app_dir)
-
-      @context_provider = ConstantDiscovery.new(
-        constant_resolver: resolver,
-        packages: packages
-      )
+      @context_provider = ConstantDiscovery.new(packages, root_path: app_dir, loaders: Rails.autoloaders)
     end
 
     def teardown

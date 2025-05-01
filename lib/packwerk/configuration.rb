@@ -96,12 +96,9 @@ module Packwerk
       end
     end
 
-    sig { returns(T::Hash[String, Module]) }
-    def load_paths
-      @load_paths ||= T.let(
-        RailsLoadPaths.for(@root_path, environment: "test"),
-        T.nilable(T::Hash[String, Module]),
-      )
+    sig { returns(T::Enumerable[Zeitwerk::Loader]) }
+    def loaders
+      @loaders ||= RailsLoadPaths.loaders_for(@root_path, environment: "test")
     end
 
     sig { returns(T::Boolean) }

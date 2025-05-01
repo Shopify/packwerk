@@ -40,10 +40,9 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency("activesupport", ">= 6.0")
   spec.add_dependency("bundler")
-  spec.add_dependency("constant_resolver", ">= 0.2.0")
   spec.add_dependency("parallel")
   spec.add_dependency("sorbet-runtime", ">= 0.5.9914")
-  spec.add_dependency("zeitwerk", ">= 2.6.1")
+  spec.add_dependency("zeitwerk", ">= 2.6.14")
 
   # For Ruby parsing
   spec.add_dependency("ast")
