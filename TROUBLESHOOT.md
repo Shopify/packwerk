@@ -28,8 +28,7 @@ See: [USAGE.md - Enforcing dependency boundary](USAGE.md#Enforcing-dependency-bo
 
 > /Users/JaneDoe/src/github.com/sample-project/billing/app/jobs/document_processing_job.rb:48:6
 > Dependency violation: ::Edi::Source belongs to 'edi', but 'billing' does not specify a dependency on 'edi'.
-> Are we missing an abstraction?
-> Is the code making the reference, and the referenced constant, in the right packages?
+> Are the constant and its references in the right packages?
 >
 > Inference details: 'Edi::Source' refers to ::Edi::Source which seems to be defined in edi/app/models/edi/source.rb.
 

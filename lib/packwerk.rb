@@ -5,6 +5,7 @@ require "sorbet-runtime"
 require "active_support"
 require "fileutils"
 require "zeitwerk"
+require "stringio"
 
 # Provides String#pluralize
 require "active_support/core_ext/string"

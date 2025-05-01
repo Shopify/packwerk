@@ -25,7 +25,7 @@ module Packwerk
 
       refute result.ok?
       assert_match(/Expected the package dependency graph to be acyclic/, result.error_value)
-      assert_match %r{components/sales → components/timeline → components/sales}, result.error_value
+      assert_match %r{components/timeline → components/sales → components/timeline}, result.error_value
     end
 
     test "returns error when config contains invalid package dependency" do
