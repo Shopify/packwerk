@@ -22,11 +22,11 @@ jobs:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     name: "Tests: Ruby ${{ matrix.ruby }} ${{ matrix.gemfile }}"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
       - name: Deletes Gemfile.lock
         run: rm Gemfile.lock
       - name: Set up Ruby ${{ matrix.ruby }}
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@e34163cd15f4bb403dcd72d98e295997e6a55798 # v1.238.0
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
@@ -45,11 +45,11 @@ jobs:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     name: "Loading Tests: Ruby ${{ matrix.ruby }} ${{ matrix.gemfile }}"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
       - name: Delete Gemfile.lock
         run: rm Gemfile.lock
       - name: Set up Ruby ${{ matrix.ruby }}
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@e34163cd15f4bb403dcd72d98e295997e6a55798 # v1.238.0
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
@@ -59,9 +59,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Lint
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@e34163cd15f4bb403dcd72d98e295997e6a55798 # v1.238.0
         with:
           bundler-cache: true
       - name: Run style checks
@@ -70,9 +70,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Type Checking
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@e34163cd15f4bb403dcd72d98e295997e6a55798 # v1.238.0
         with:
           bundler-cache: true
       - name: Run static type checks
