@@ -72,7 +72,8 @@ module Packwerk
     def check_application_structure(configuration)
       resolver = ConstantResolver.new(
         root_path: configuration.root_path.to_s,
-        load_paths: configuration.load_paths
+        load_paths: configuration.load_paths,
+        exclude: configuration.exclude,
       )
 
       begin

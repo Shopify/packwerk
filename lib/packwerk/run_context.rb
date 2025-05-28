@@ -22,6 +22,7 @@ module Packwerk
           inflector: ActiveSupport::Inflector,
           custom_associations: configuration.custom_associations,
           associations_exclude: configuration.associations_exclude,
+          exclude: configuration.exclude,
           cache_enabled: configuration.cache_enabled?,
           cache_directory: configuration.cache_directory,
           config_path: configuration.config_path,
@@ -39,6 +40,7 @@ module Packwerk
         package_paths: T.nilable(T.any(T::Array[String], String)),
         custom_associations: AssociationInspector::CustomAssociations,
         associations_exclude: T::Array[String],
+        exclude: T::Array[String],
         checkers: T::Array[Checker],
         cache_enabled: T::Boolean,
       ).void
@@ -52,6 +54,7 @@ module Packwerk
       package_paths: nil,
       custom_associations: [],
       associations_exclude: [],
+      exclude: [],
       checkers: Checker.all,
       cache_enabled: false
     )
@@ -65,6 +68,7 @@ module Packwerk
       @cache_enabled = cache_enabled
       @cache_directory = cache_directory
       @config_path = config_path
+      @exclude = exclude
 
       @file_processor = T.let(nil, T.nilable(FileProcessor))
       @context_provider = T.let(nil, T.nilable(ConstantDiscovery))
@@ -123,6 +127,7 @@ module Packwerk
         root_path: @root_path,
         load_paths: @load_paths,
         inflector: @inflector,
+        exclude: @exclude,
       )
     end
 
