@@ -6,13 +6,16 @@
 
 # source://erubi//lib/erubi.rb#3
 module Erubi
+  private
+
+  def h(_arg0); end
+
   class << self
-    # source://erubi//lib/erubi.rb#28
-    def h(value); end
+    def h(_arg0); end
   end
 end
 
-# source://erubi//lib/erubi.rb#46
+# source://erubi//lib/erubi.rb#51
 class Erubi::Engine
   # Initialize a new Erubi::Engine.  Options:
   # +:bufval+ :: The value to use for the buffer variable, as a string (default <tt>'::String.new'</tt>).
@@ -43,64 +46,69 @@ class Erubi::Engine
   #
   # @return [Engine] a new instance of Engine
   #
-  # source://erubi//lib/erubi.rb#86
+  # source://erubi//lib/erubi.rb#91
   def initialize(input, properties = T.unsafe(nil)); end
 
   # The variable name used for the buffer variable.
   #
-  # source://erubi//lib/erubi.rb#57
+  # source://erubi//lib/erubi.rb#62
   def bufvar; end
 
   # The filename of the template, if one was given.
   #
-  # source://erubi//lib/erubi.rb#54
+  # source://erubi//lib/erubi.rb#59
   def filename; end
 
   # The frozen ruby source code generated from the template, which can be evaled.
   #
-  # source://erubi//lib/erubi.rb#51
+  # source://erubi//lib/erubi.rb#56
   def src; end
 
   private
 
+  # :nocov:
+  #
+  # source://erubi//lib/erubi.rb#209
+  def _dup_string_if_frozen(string); end
+
   # Add ruby code to the template
   #
-  # source://erubi//lib/erubi.rb#218
+  # source://erubi//lib/erubi.rb#232
   def add_code(code); end
 
   # Add the given ruby expression result to the template,
   # escaping it based on the indicator given and escape flag.
   #
-  # source://erubi//lib/erubi.rb#227
+  # source://erubi//lib/erubi.rb#241
   def add_expression(indicator, code); end
 
   # Add the result of Ruby expression to the template
   #
-  # source://erubi//lib/erubi.rb#236
+  # source://erubi//lib/erubi.rb#250
   def add_expression_result(code); end
 
   # Add the escaped result of Ruby expression to the template
   #
-  # source://erubi//lib/erubi.rb#241
+  # source://erubi//lib/erubi.rb#255
   def add_expression_result_escaped(code); end
 
   # Add the given postamble to the src.  Can be overridden in subclasses
   # to make additional changes to src that depend on the current state.
   #
-  # source://erubi//lib/erubi.rb#247
+  # source://erubi//lib/erubi.rb#261
   def add_postamble(postamble); end
 
   # Add raw text to the template.  Modifies argument if argument is mutable as a memory optimization.
   # Must be called with a string, cannot be called with nil (Rails's subclass depends on it).
   #
-  # source://erubi//lib/erubi.rb#205
+  # source://erubi//lib/erubi.rb#222
   def add_text(text); end
 
   # Raise an exception, as the base engine class does not support handling other indicators.
   #
   # @raise [ArgumentError]
   #
-  # source://erubi//lib/erubi.rb#253
+  # source://erubi//lib/erubi.rb#267
   def handle(indicator, code, tailch, rspace, lspace); end
 
   # Make sure that any current expression has been terminated.
@@ -108,7 +116,7 @@ class Erubi::Engine
   # the chain_appends option is used, expressions may not be
   # terminated.
   #
-  # source://erubi//lib/erubi.rb#281
+  # source://erubi//lib/erubi.rb#295
   def terminate_expression; end
 
   # Make sure the buffer variable is the target of the next append
@@ -118,14 +126,17 @@ class Erubi::Engine
   # This method should only be called if the block will result in
   # code where << will append to the bufvar.
   #
-  # source://erubi//lib/erubi.rb#263
+  # source://erubi//lib/erubi.rb#277
   def with_buffer; end
 end
 
 # The default regular expression used for scanning.
 #
-# source://erubi//lib/erubi.rb#48
+# source://erubi//lib/erubi.rb#53
 Erubi::Engine::DEFAULT_REGEXP = T.let(T.unsafe(nil), Regexp)
+
+# source://erubi//lib/erubi.rb#17
+Erubi::FREEZE_TEMPLATE_LITERALS = T.let(T.unsafe(nil), TrueClass)
 
 # source://erubi//lib/erubi.rb#15
 Erubi::MATCH_METHOD = T.let(T.unsafe(nil), Symbol)
