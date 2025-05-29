@@ -22,7 +22,7 @@ module Packwerk
         parser = stub
         parser.stubs(:parse).raises(err)
 
-        parser_class_stub = typed_mock(new: parser, "<=": true)
+        parser_class_stub = typed_mock(new: parser)
 
         parser = Ruby.new(parser_class: parser_class_stub)
         file_path = fixture_path("invalid.rb")
@@ -43,7 +43,7 @@ module Packwerk
         parser = stub
         parser.stubs(:parse).raises(err)
 
-        parser_class_stub = typed_mock(new: parser, "<=": true)
+        parser_class_stub = typed_mock(new: parser)
 
         parser = Ruby.new(parser_class: parser_class_stub)
         file_path = fixture_path("invalid.rb")

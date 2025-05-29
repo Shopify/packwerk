@@ -67,17 +67,17 @@ class BetterHtml::Config
 
   # @return [Boolean]
   #
-  # source://better_html//lib/better_html/config.rb#19
+  # source://better_html//lib/better_html/config.rb#20
   def javascript_attribute_name?(name); end
 
   # @return [Boolean]
   #
-  # source://better_html//lib/better_html/config.rb#27
+  # source://better_html//lib/better_html/config.rb#28
   def javascript_safe_method?(name); end
 
   # @return [Boolean]
   #
-  # source://better_html//lib/better_html/config.rb#23
+  # source://better_html//lib/better_html/config.rb#24
   def lodash_safe_javascript_expression?(code); end
 end
 
@@ -160,12 +160,12 @@ class BetterHtml::Parser
   # source://better_html//lib/better_html/parser.rb#91
   def build_erb_node(tokens); end
 
-  # source://better_html//lib/better_html/parser.rb#245
+  # source://better_html//lib/better_html/parser.rb#249
   def build_interpolation_node(tokens); end
 
   # @raise [ArgumentError]
   #
-  # source://better_html//lib/better_html/parser.rb#206
+  # source://better_html//lib/better_html/parser.rb#210
   def build_location(enumerable); end
 
   # source://better_html//lib/better_html/parser.rb#104
@@ -174,7 +174,7 @@ class BetterHtml::Parser
   # source://better_html//lib/better_html/parser.rb#165
   def build_nameless_attribute_node(tokens); end
 
-  # source://better_html//lib/better_html/parser.rb#198
+  # source://better_html//lib/better_html/parser.rb#202
   def build_node(type, tokens, pre: T.unsafe(nil), post: T.unsafe(nil)); end
 
   # source://better_html//lib/better_html/parser.rb#145
@@ -186,37 +186,37 @@ class BetterHtml::Parser
   # source://better_html//lib/better_html/parser.rb#125
   def build_tag_node(tokens); end
 
-  # source://better_html//lib/better_html/parser.rb#193
+  # source://better_html//lib/better_html/parser.rb#197
   def build_text_node(tokens); end
 
-  # source://better_html//lib/better_html/parser.rb#213
+  # source://better_html//lib/better_html/parser.rb#217
   def empty_location; end
 
-  # source://better_html//lib/better_html/parser.rb#217
+  # source://better_html//lib/better_html/parser.rb#221
   def shift_all(tokens, *types); end
 
-  # source://better_html//lib/better_html/parser.rb#255
+  # source://better_html//lib/better_html/parser.rb#259
   def shift_all_with_interpolation(tokens, *types); end
 
-  # source://better_html//lib/better_html/parser.rb#280
+  # source://better_html//lib/better_html/parser.rb#284
   def shift_between(tokens, start_type, end_type); end
 
-  # source://better_html//lib/better_html/parser.rb#288
+  # source://better_html//lib/better_html/parser.rb#292
   def shift_between_with_interpolation(tokens, start_type, end_type); end
 
-  # source://better_html//lib/better_html/parser.rb#229
+  # source://better_html//lib/better_html/parser.rb#233
   def shift_single(tokens, *types); end
 
-  # source://better_html//lib/better_html/parser.rb#233
+  # source://better_html//lib/better_html/parser.rb#237
   def shift_until(tokens, *types); end
 
-  # source://better_html//lib/better_html/parser.rb#268
+  # source://better_html//lib/better_html/parser.rb#272
   def shift_until_with_interpolation(tokens, *types); end
 
-  # source://better_html//lib/better_html/parser.rb#296
+  # source://better_html//lib/better_html/parser.rb#300
   def wrap_token(object); end
 
-  # source://better_html//lib/better_html/parser.rb#313
+  # source://better_html//lib/better_html/parser.rb#322
   def wrap_tokens(enumerable); end
 end
 
@@ -449,16 +449,16 @@ class BetterHtml::Tokenizer::Location < ::Parser::Source::Range
   # source://better_html//lib/better_html/tokenizer/location.rb#54
   def resize(new_size); end
 
-  # source://parser/3.3.1.0/lib/parser/source/range.rb#92
+  # source://parser/3.3.3.0/lib/parser/source/range.rb#92
   def start_column; end
 
-  # source://parser/3.3.1.0/lib/parser/source/range.rb#83
+  # source://parser/3.3.3.0/lib/parser/source/range.rb#83
   def start_line; end
 
-  # source://parser/3.3.1.0/lib/parser/source/range.rb#106
+  # source://parser/3.3.3.0/lib/parser/source/range.rb#106
   def stop_column; end
 
-  # source://parser/3.3.1.0/lib/parser/source/range.rb#99
+  # source://parser/3.3.3.0/lib/parser/source/range.rb#99
   def stop_line; end
 
   # source://better_html//lib/better_html/tokenizer/location.rb#46

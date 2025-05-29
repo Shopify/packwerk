@@ -27,22 +27,23 @@ class ConstantResolver
   #   )
   # @param root_path [String] The root path of the application to analyze
   # @param load_paths [Array<String>] The autoload paths of the application.
+  # @param exclude [Array<String>] Paths to exclude to scan for constants.
   # @param inflector [Object] Any object that implements a `camelize` function.
   # @return [ConstantResolver] a new instance of ConstantResolver
   #
-  # source://constant_resolver//lib/constant_resolver.rb#42
-  def initialize(root_path:, load_paths:, inflector: T.unsafe(nil)); end
+  # source://constant_resolver//lib/constant_resolver.rb#46
+  def initialize(root_path:, load_paths:, exclude: T.unsafe(nil), inflector: T.unsafe(nil)); end
 
   # @api private
   #
-  # source://constant_resolver//lib/constant_resolver.rb#113
+  # source://constant_resolver//lib/constant_resolver.rb#122
   def config; end
 
   # Maps constant names to file paths.
   #
   # @return [Hash<String, String>]
   #
-  # source://constant_resolver//lib/constant_resolver.rb#73
+  # source://constant_resolver//lib/constant_resolver.rb#78
   def file_map; end
 
   # Resolve a constant via its name.
@@ -53,38 +54,46 @@ class ConstantResolver
   #   used, e.g. ["Apps", "Models"] for `Apps::Models`. Defaults to [] which means top level.
   # @return [ConstantResolver::ConstantContext]
   #
-  # source://constant_resolver//lib/constant_resolver.rb#58
+  # source://constant_resolver//lib/constant_resolver.rb#63
   def resolve(const_name, current_namespace_path: T.unsafe(nil)); end
 
   private
 
+  # @return [Boolean]
+  #
   # source://constant_resolver//lib/constant_resolver.rb#131
+  def allowed?(path); end
+
+  # source://constant_resolver//lib/constant_resolver.rb#144
   def ambiguous_constant_message(const_name, paths); end
 
-  # source://constant_resolver//lib/constant_resolver.rb#122
+  # source://constant_resolver//lib/constant_resolver.rb#135
   def coerce_load_paths(load_paths); end
 
-  # source://constant_resolver//lib/constant_resolver.rb#138
+  # source://constant_resolver//lib/constant_resolver.rb#151
   def glob_path(path); end
 
-  # source://constant_resolver//lib/constant_resolver.rb#142
+  # source://constant_resolver//lib/constant_resolver.rb#155
   def resolve_constant(const_name, current_namespace_path, original_name: T.unsafe(nil)); end
 
-  # source://constant_resolver//lib/constant_resolver.rb#155
+  # source://constant_resolver//lib/constant_resolver.rb#168
   def resolve_traversing_namespace_path(const_name, current_namespace_path); end
 end
 
-# source://constant_resolver//lib/constant_resolver.rb#17
+# source://constant_resolver//lib/constant_resolver.rb#19
 class ConstantResolver::ConstantContext < ::Struct; end
 
-# source://constant_resolver//lib/constant_resolver.rb#19
+# source://constant_resolver//lib/constant_resolver.rb#21
 class ConstantResolver::DefaultInflector
-  # source://constant_resolver//lib/constant_resolver.rb#20
+  # source://constant_resolver//lib/constant_resolver.rb#22
   def camelize(string); end
 end
 
-# source://constant_resolver//lib/constant_resolver.rb#16
+# source://constant_resolver//lib/constant_resolver.rb#18
 class ConstantResolver::Error < ::StandardError; end
+
+# source://constant_resolver//lib/constant_resolver.rb#16
+ConstantResolver::RUBY_FILES_GLOB = T.let(T.unsafe(nil), String)
 
 # source://constant_resolver//lib/constant_resolver/version.rb#4
 ConstantResolver::VERSION = T.let(T.unsafe(nil), String)
