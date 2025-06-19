@@ -107,7 +107,6 @@ module Packwerk
     sig { returns(NodeProcessorFactory) }
     def node_processor_factory
       NodeProcessorFactory.new(
-        context_provider: context_provider,
         root_path: @root_path,
         constant_name_inspectors: constant_name_inspectors
       )
