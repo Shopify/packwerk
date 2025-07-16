@@ -6,7 +6,6 @@ module Packwerk
     extend T::Sig
 
     const :root_path, String
-    const :context_provider, ConstantDiscovery
     const :constant_name_inspectors, T::Array[ConstantNameInspector]
 
     sig { params(relative_file: String, node: AST::Node).returns(NodeProcessor) }
