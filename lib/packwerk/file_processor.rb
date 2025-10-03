@@ -38,16 +38,18 @@ module Packwerk
       params(relative_file: String).returns(ProcessedFile)
     end
     def call(relative_file)
-      parser = parser_for(relative_file)
-      if parser.nil?
+      parsers = parsers_for(relative_file)
+      if parsers.empty?
         return ProcessedFile.new(offenses: [UnknownFileTypeResult.new(file: relative_file)])
       end
 
       unresolved_references = @cache.with_cache(relative_file) do
-        node = parse_into_ast(relative_file, parser)
-        return ProcessedFile.new unless node
+        parsers.flat_map do |parser|
+          node = parse_into_ast(relative_file, parser)
+          return ProcessedFile.new unless node
 
-        references_from_ast(node, relative_file)
+          references_from_ast(node, relative_file)
+        end
       end
 
       ProcessedFile.new(unresolved_references: unresolved_references)
@@ -81,15 +83,15 @@ module Packwerk
       references
     end
 
-    sig { params(relative_file: String, parser: Parsers::ParserInterface).returns(T.untyped) }
+    sig { params(relative_file: String, parser: FileParser).returns(T.untyped) }
     def parse_into_ast(relative_file, parser)
       File.open(relative_file, "r", nil, external_encoding: Encoding::UTF_8) do |file|
         parser.call(io: file, file_path: relative_file)
       end
     end
 
-    sig { params(file_path: String).returns(T.nilable(Parsers::ParserInterface)) }
-    def parser_for(file_path)
+    sig { params(file_path: String).returns(T::Array[FileParser]) }
+    def parsers_for(file_path)
       @parser_factory.for_path(file_path)
     end
   end
