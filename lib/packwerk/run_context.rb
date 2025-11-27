@@ -81,15 +81,29 @@ module Packwerk
 
     sig { params(relative_file: String).returns(T::Array[Packwerk::Offense]) }
     def process_file(relative_file:)
+      reference_checker = ReferenceChecking::ReferenceChecker.new(@checkers)
+
+      references_result = references_from_file(relative_file: relative_file)
+
+      references_result.file_offenses +
+        references_result.references.flat_map { |reference| reference_checker.call(reference) }
+    end
+
+    class FileReferencesResult < T::Struct
+      const :references, T::Array[Packwerk::Reference]
+      const :file_offenses, T::Array[Packwerk::Offense]
+    end
+
+    sig { params(relative_file: String).returns(FileReferencesResult) }
+    def references_from_file(relative_file:)
       processed_file = file_processor.call(relative_file)
 
       references = ReferenceExtractor.get_fully_qualified_references_from(
         processed_file.unresolved_references,
         context_provider
       )
-      reference_checker = ReferenceChecking::ReferenceChecker.new(@checkers)
 
-      processed_file.offenses + references.flat_map { |reference| reference_checker.call(reference) }
+      FileReferencesResult.new(references: references, file_offenses: processed_file.offenses)
     end
 
     sig { returns(PackageSet) }
