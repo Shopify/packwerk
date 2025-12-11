@@ -11,7 +11,10 @@ module Packwerk
     class Erb
       extend T::Sig
 
-      include ParserInterface
+      include Packwerk::FileParser
+
+      ERB_REGEX = /\.erb\Z/
+      private_constant :ERB_REGEX
 
       sig { params(parser_class: T.untyped, ruby_parser: Ruby).void }
       def initialize(parser_class: BetterHtml::Parser, ruby_parser: Ruby.new)
@@ -36,6 +39,11 @@ module Packwerk
       rescue Parser::SyntaxError => e
         result = ParseResult.new(file: file_path, message: "Syntax error: #{e}")
         raise Parsers::ParseError, result
+      end
+
+      sig { override.params(path: String).returns(T::Boolean) }
+      def match?(path:)
+        ERB_REGEX.match?(path)
       end
 
       private

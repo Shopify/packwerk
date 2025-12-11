@@ -5,8 +5,10 @@ module Packwerk
   module Parsers
     autoload :Erb, "packwerk/parsers/erb"
     autoload :Factory, "packwerk/parsers/factory"
-    autoload :ParserInterface, "packwerk/parsers/parser_interface"
     autoload :Ruby, "packwerk/parsers/ruby"
+
+    # Require parsers so that they are registered with FileParser
+    Dir[File.join(__dir__, "parsers", "*.rb")].each { |file| require file }
 
     class ParseResult < Offense; end
 
