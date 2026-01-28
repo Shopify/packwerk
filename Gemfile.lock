@@ -4,6 +4,7 @@ PATH
     packwerk (3.2.3)
       activesupport (>= 6.0)
       ast
+      benchmark
       better_html
       bundler
       constant_resolver (>= 0.3)
