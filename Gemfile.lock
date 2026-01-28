@@ -88,6 +88,7 @@ GEM
     minitest (5.25.5)
     minitest-focus (1.3.1)
       minitest (>= 4, < 6)
+    minitest-mock (5.27.0)
     mocha (2.5.0)
       ruby2_keywords (>= 0.0.5)
     netrc (0.11.0)
@@ -223,6 +224,7 @@ DEPENDENCIES
   constant_resolver
   m
   minitest-focus
+  minitest-mock
   mocha
   packwerk!
   railties
