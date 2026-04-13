@@ -108,7 +108,8 @@ module Packwerk
         )
 
         RunContext.any_instance.stubs(:index_and_resolve)
-        RunContext.any_instance.stubs(:find_offenses).yields([past_offense, new_offense]).returns([past_offense, new_offense])
+        RunContext.any_instance.stubs(:find_offenses).yields([past_offense,
+                                                              new_offense,]).returns([past_offense, new_offense])
         FilesForProcessing.any_instance.stubs(:files).returns(Set.new(["components/source/some/path.rb"]))
 
         out = StringIO.new

@@ -107,7 +107,7 @@ module Packwerk
 
         timeline_package_todo_content = File.read(timeline_package_todo_path)
         assert_match(
-          /components\/sales:\n\s+"?(::|)Order"?:\n\s+violations:\n\s+- dependency/,
+          %r{components/sales:\n\s+"?(::|)Order"?:\n\s+violations:\n\s+- dependency},
           timeline_package_todo_content
         )
 

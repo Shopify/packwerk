@@ -331,7 +331,8 @@ module Packwerk
         )
 
         RunContext.any_instance.stubs(:index_and_resolve)
-        RunContext.any_instance.stubs(:find_offenses).multiple_yields([[listed_offense]], [[unlisted_offense]]).returns([listed_offense, unlisted_offense])
+        RunContext.any_instance.stubs(:find_offenses).multiple_yields([[listed_offense]],
+          [[unlisted_offense]]).returns([listed_offense, unlisted_offense])
         FilesForProcessing.any_instance.stubs(:files).returns(
           Set.new(["components/source/some/path.rb", "components/source/other/path.rb"])
         )

@@ -11,7 +11,7 @@ module Packwerk
     extend T::Sig
 
     RAILS_ASSOCIATIONS = T.let(
-      %i[belongs_to has_many has_one has_and_belongs_to_many].to_set.freeze,
+      [:belongs_to, :has_many, :has_one, :has_and_belongs_to_many].to_set.freeze,
       T::Set[Symbol],
     )
 
@@ -138,7 +138,7 @@ module Packwerk
       relative_file_set.each do |file|
         file_offenses = offenses_by_file.fetch(file, [])
         all_offenses.concat(file_offenses)
-        yield(file_offenses) if block_given?
+        yield(file_offenses) if block
       end
 
       all_offenses
