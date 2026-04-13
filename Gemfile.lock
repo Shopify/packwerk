@@ -93,10 +93,12 @@ GEM
       minitest (> 5.0)
     mocha (2.5.0)
       ruby2_keywords (>= 0.0.5)
+    mutex_m (0.3.0)
     netrc (0.11.0)
     nokogiri (1.18.9)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
+    ostruct (0.6.3)
     parallel (1.25.1)
     parser (3.3.3.0)
       ast (~> 2.4.1)
@@ -216,8 +218,11 @@ PLATFORMS
 DEPENDENCIES
   byebug
   m
+  minitest (~> 5.0)
   minitest-focus
   mocha
+  mutex_m
+  ostruct
   packwerk!
   railties
   rake

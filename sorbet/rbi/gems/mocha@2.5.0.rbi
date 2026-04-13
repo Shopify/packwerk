@@ -3631,7 +3631,7 @@ end
 Mocha::RUBY_V27_PLUS = T.let(T.unsafe(nil), TrueClass)
 
 # source://mocha//lib/mocha/ruby_version.rb#3
-Mocha::RUBY_V34_PLUS = T.let(T.unsafe(nil), FalseClass)
+Mocha::RUBY_V34_PLUS = T.let(T.unsafe(nil), TrueClass)
 
 # source://mocha//lib/mocha/raised_exception.rb#2
 class Mocha::RaisedException
@@ -3894,7 +3894,6 @@ class Mocha::StubbedMethod
   def use_prepended_module_for_stub_method; end
 end
 
-# source://mocha//lib/mocha/stubbed_method.rb#6
 class Mocha::StubbedMethod::PrependedModule < ::Module; end
 
 # Exception raised when stubbing a particular method is not allowed.

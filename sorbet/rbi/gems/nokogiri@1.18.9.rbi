@@ -2362,7 +2362,7 @@ Nokogiri::LIBXSLT_LOADED_VERSION = T.let(T.unsafe(nil), String)
 Nokogiri::LIBXSLT_PATCHES = T.let(T.unsafe(nil), Array)
 Nokogiri::OTHER_LIBRARY_VERSIONS = T.let(T.unsafe(nil), String)
 Nokogiri::PACKAGED_LIBRARIES = T.let(T.unsafe(nil), TrueClass)
-Nokogiri::PRECOMPILED_LIBRARIES = T.let(T.unsafe(nil), TrueClass)
+Nokogiri::PRECOMPILED_LIBRARIES = T.let(T.unsafe(nil), FalseClass)
 
 # source://nokogiri//lib/nokogiri/syntax_error.rb#4
 class Nokogiri::SyntaxError < ::StandardError; end
@@ -2385,6 +2385,7 @@ Nokogiri::VERSION_INFO = T.let(T.unsafe(nil), Hash)
 
 # source://nokogiri//lib/nokogiri/version/info.rb#7
 class Nokogiri::VersionInfo
+  include ::Singleton::SingletonInstanceMethods
   include ::Singleton
   extend ::Singleton::SingletonClassMethods
 

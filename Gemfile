@@ -19,8 +19,13 @@ gem("railties")
 
 gem("byebug")
 gem("minitest-focus")
+gem("minitest", "~> 5.0")
 
 gem("m")
 gem("rake")
 gem("sorbet-static-and-runtime")
 gem("zeitwerk")
+
+# Ruby 4.0 removed ostruct from stdlib; yard/tapioca need it
+gem("ostruct")
+gem("mutex_m")

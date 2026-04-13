@@ -36,7 +36,7 @@ class Thor
   extend ::Thor::Base::ClassMethods
   extend ::Thor::Invocation::ClassMethods
 
-  # source://thor//lib/thor.rb#652
+  # source://thor//lib/thor.rb#663
   def help(command = T.unsafe(nil), subcommand = T.unsafe(nil)); end
 
   class << self
@@ -94,6 +94,19 @@ class Thor
     #
     # source://thor//lib/thor.rb#363
     def check_unknown_options?(config); end
+
+    # Checks if a specified command exists.
+    #
+    # ==== Parameters
+    # command_name<String>:: The name of the command to check for existence.
+    #
+    # ==== Returns
+    # Boolean:: +true+ if the command exists, +false+ otherwise.
+    #
+    # @return [Boolean]
+    #
+    # source://thor//lib/thor.rb#449
+    def command_exists?(command_name); end
 
     # Prints help information for the given command.
     #
@@ -470,48 +483,48 @@ class Thor
     # the command that is going to be invoked and a boolean which indicates if
     # the namespace should be displayed as arguments.
     #
-    # source://thor//lib/thor.rb#535
+    # source://thor//lib/thor.rb#546
     def banner(command, namespace = T.unsafe(nil), subcommand = T.unsafe(nil)); end
 
-    # source://thor//lib/thor.rb#541
+    # source://thor//lib/thor.rb#552
     def baseclass; end
 
-    # source://thor//lib/thor.rb#549
+    # source://thor//lib/thor.rb#560
     def create_command(meth); end
 
-    # source://thor//lib/thor.rb#549
+    # source://thor//lib/thor.rb#560
     def create_task(meth); end
 
     # help command has the required check disabled by default.
     #
-    # source://thor//lib/thor.rb#467
+    # source://thor//lib/thor.rb#478
     def disable_required_check; end
 
     # The method responsible for dispatching given the args.
     #
     # @yield [instance]
     #
-    # source://thor//lib/thor.rb#494
+    # source://thor//lib/thor.rb#505
     def dispatch(meth, given_args, given_opts, config); end
 
-    # source://thor//lib/thor.rb#545
+    # source://thor//lib/thor.rb#556
     def dynamic_command_class; end
 
     # this is the logic that takes the command name passed in by the user
     # and determines whether it is an unambiguous substrings of a command or
     # alias name.
     #
-    # source://thor//lib/thor.rb#615
+    # source://thor//lib/thor.rb#626
     def find_command_possibilities(meth); end
 
     # this is the logic that takes the command name passed in by the user
     # and determines whether it is an unambiguous substrings of a command or
     # alias name.
     #
-    # source://thor//lib/thor.rb#615
+    # source://thor//lib/thor.rb#626
     def find_task_possibilities(meth); end
 
-    # source://thor//lib/thor.rb#575
+    # source://thor//lib/thor.rb#586
     def initialize_added; end
 
     # Returns this class at least one of required options array set.
@@ -519,7 +532,7 @@ class Thor
     # ==== Returns
     # Array[Array[Thor::Option.name]]
     #
-    # source://thor//lib/thor.rb#458
+    # source://thor//lib/thor.rb#469
     def method_at_least_one_option_names; end
 
     # Returns this class exclusive options array set.
@@ -527,7 +540,7 @@ class Thor
     # ==== Returns
     # Array[Array[Thor::Option.name]]
     #
-    # source://thor//lib/thor.rb#449
+    # source://thor//lib/thor.rb#460
     def method_exclusive_option_names; end
 
     # receives a (possibly nil) command name and returns a name that is in
@@ -540,7 +553,7 @@ class Thor
     #
     # @raise [AmbiguousTaskError]
     #
-    # source://thor//lib/thor.rb#594
+    # source://thor//lib/thor.rb#605
     def normalize_command_name(meth); end
 
     # receives a (possibly nil) command name and returns a name that is in
@@ -553,23 +566,23 @@ class Thor
     #
     # @raise [AmbiguousTaskError]
     #
-    # source://thor//lib/thor.rb#594
+    # source://thor//lib/thor.rb#605
     def normalize_task_name(meth); end
 
-    # source://thor//lib/thor.rb#482
+    # source://thor//lib/thor.rb#493
     def print_at_least_one_required_options(shell, command = T.unsafe(nil)); end
 
-    # source://thor//lib/thor.rb#471
+    # source://thor//lib/thor.rb#482
     def print_exclusive_options(shell, command = T.unsafe(nil)); end
 
     # Retrieve the command name from given args.
     #
-    # source://thor//lib/thor.rb#581
+    # source://thor//lib/thor.rb#592
     def retrieve_command_name(args); end
 
     # Retrieve the command name from given args.
     #
-    # source://thor//lib/thor.rb#581
+    # source://thor//lib/thor.rb#592
     def retrieve_task_name(args); end
 
     # Sort the commands, lexicographically by default.
@@ -577,16 +590,16 @@ class Thor
     # Can be overridden in the subclass to change the display order of the
     # commands.
     #
-    # source://thor//lib/thor.rb#642
+    # source://thor//lib/thor.rb#653
     def sort_commands!(list); end
 
-    # source://thor//lib/thor.rb#462
+    # source://thor//lib/thor.rb#473
     def stop_on_unknown_option; end
 
-    # source://thor//lib/thor.rb#630
+    # source://thor//lib/thor.rb#641
     def subcommand_help(cmd); end
 
-    # source://thor//lib/thor.rb#630
+    # source://thor//lib/thor.rb#641
     def subtask_help(cmd); end
   end
 end
@@ -737,7 +750,7 @@ module Thor::Actions
   #
   #   comment_lines 'config/initializers/session_store.rb', /cookie_store/
   #
-  # source://thor//lib/thor/actions/file_manipulation.rb#308
+  # source://thor//lib/thor/actions/file_manipulation.rb#333
   def comment_lines(path, flag, *args); end
 
   # Copies the file from the relative source to the relative destination. If
@@ -914,8 +927,29 @@ module Thor::Actions
   #     match << " no more. Use thor!"
   #   end
   #
-  # source://thor//lib/thor/actions/file_manipulation.rb#262
+  # source://thor//lib/thor/actions/file_manipulation.rb#291
   def gsub_file(path, flag, *args, &block); end
+
+  # Run a regular expression replacement on a file, raising an error if the
+  # contents of the file are not changed.
+  #
+  # ==== Parameters
+  # path<String>:: path of the file to be changed
+  # flag<Regexp|String>:: the regexp or string to be replaced
+  # replacement<String>:: the replacement, can be also given as a block
+  # config<Hash>:: give :verbose => false to not log the status, and
+  #                :force => true, to force the replacement regardless of runner behavior.
+  #
+  # ==== Example
+  #
+  #   gsub_file! 'app/controllers/application_controller.rb', /#\s*(filter_parameter_logging :password)/, '\1'
+  #
+  #   gsub_file! 'README', /rake/, :green do |match|
+  #     match << " no more. Use thor!"
+  #   end
+  #
+  # source://thor//lib/thor/actions/file_manipulation.rb#263
+  def gsub_file!(path, flag, *args, &block); end
 
   # Goes to the root and execute the given block.
   #
@@ -1052,7 +1086,7 @@ module Thor::Actions
   #   remove_file 'README'
   #   remove_file 'app/controllers/application_controller.rb'
   #
-  # source://thor//lib/thor/actions/file_manipulation.rb#325
+  # source://thor//lib/thor/actions/file_manipulation.rb#350
   def remove_dir(path, config = T.unsafe(nil)); end
 
   # Removes a file at the given location.
@@ -1066,7 +1100,7 @@ module Thor::Actions
   #   remove_file 'README'
   #   remove_file 'app/controllers/application_controller.rb'
   #
-  # source://thor//lib/thor/actions/file_manipulation.rb#325
+  # source://thor//lib/thor/actions/file_manipulation.rb#350
   def remove_file(path, config = T.unsafe(nil)); end
 
   # Executes a command returning the contents of the command.
@@ -1150,7 +1184,7 @@ module Thor::Actions
   #
   #   uncomment_lines 'config/initializers/session_store.rb', /active_record/
   #
-  # source://thor//lib/thor/actions/file_manipulation.rb#289
+  # source://thor//lib/thor/actions/file_manipulation.rb#314
   def uncomment_lines(path, flag, *args); end
 
   protected
@@ -1165,25 +1199,28 @@ module Thor::Actions
 
   private
 
-  # source://thor//lib/thor/actions/file_manipulation.rb#346
+  # source://thor//lib/thor/actions/file_manipulation.rb#385
+  def actually_gsub_file(path, flag, args, error_on_no_change, &block); end
+
+  # source://thor//lib/thor/actions/file_manipulation.rb#371
   def capture(*args); end
 
-  # source://thor//lib/thor/actions/file_manipulation.rb#342
+  # source://thor//lib/thor/actions/file_manipulation.rb#367
   def concat(string); end
 
   # Returns the value of attribute output_buffer.
   #
-  # source://thor//lib/thor/actions/file_manipulation.rb#337
+  # source://thor//lib/thor/actions/file_manipulation.rb#362
   def output_buffer; end
 
   # Sets the attribute output_buffer
   #
   # @param value the value to set the attribute output_buffer to.
   #
-  # source://thor//lib/thor/actions/file_manipulation.rb#337
+  # source://thor//lib/thor/actions/file_manipulation.rb#362
   def output_buffer=(_arg0); end
 
-  # source://thor//lib/thor/actions/file_manipulation.rb#350
+  # source://thor//lib/thor/actions/file_manipulation.rb#375
   def with_output_buffer(buf = T.unsafe(nil)); end
 
   class << self
@@ -1195,9 +1232,9 @@ end
 # Thor::Actions#capture depends on what kind of buffer is used in ERB.
 # Thus CapturableERB fixes ERB to use String buffer.
 #
-# source://thor//lib/thor/actions/file_manipulation.rb#362
+# source://thor//lib/thor/actions/file_manipulation.rb#398
 class Thor::Actions::CapturableERB < ::ERB
-  # source://thor//lib/thor/actions/file_manipulation.rb#363
+  # source://thor//lib/thor/actions/file_manipulation.rb#399
   def set_eoutvar(compiler, eoutvar = T.unsafe(nil)); end
 end
 
@@ -2629,7 +2666,7 @@ class Thor::Group
   # Shortcut to invoke with padding and block handling. Use internally by
   # invoke and invoke_from_option class methods.
   #
-  # source://thor//lib/thor/group.rb#265
+  # source://thor//lib/thor/group.rb#276
   def _invoke_for_class_method(klass, command = T.unsafe(nil), *args, &block); end
 
   class << self
@@ -2638,6 +2675,19 @@ class Thor::Group
     #
     # source://thor//lib/thor/group.rb#161
     def class_options_help(shell, groups = T.unsafe(nil)); end
+
+    # Checks if a specified command exists.
+    #
+    # ==== Parameters
+    # command_name<String>:: The name of the command to check for existence.
+    #
+    # ==== Returns
+    # Boolean:: +true+ if the command exists, +false+ otherwise.
+    #
+    # @return [Boolean]
+    #
+    # source://thor//lib/thor/group.rb#221
+    def command_exists?(command_name); end
 
     # The description for this Thor::Group. If none is provided, but a source root
     # exists, tries to find the USAGE one folder above it, otherwise searches
@@ -2746,33 +2796,33 @@ class Thor::Group
     # The banner for this class. You can customize it if you are invoking the
     # thor class by another ways which is not the Thor::Runner.
     #
-    # source://thor//lib/thor/group.rb#238
+    # source://thor//lib/thor/group.rb#249
     def banner; end
 
-    # source://thor//lib/thor/group.rb#248
+    # source://thor//lib/thor/group.rb#259
     def baseclass; end
 
-    # source://thor//lib/thor/group.rb#252
+    # source://thor//lib/thor/group.rb#263
     def create_command(meth); end
 
-    # source://thor//lib/thor/group.rb#252
+    # source://thor//lib/thor/group.rb#263
     def create_task(meth); end
 
     # The method responsible for dispatching given the args.
     #
     # @yield [instance]
     #
-    # source://thor//lib/thor/group.rb#217
+    # source://thor//lib/thor/group.rb#228
     def dispatch(command, given_args, given_opts, config); end
 
     # Represents the whole class as a command.
     #
-    # source://thor//lib/thor/group.rb#243
+    # source://thor//lib/thor/group.rb#254
     def self_command; end
 
     # Represents the whole class as a command.
     #
-    # source://thor//lib/thor/group.rb#243
+    # source://thor//lib/thor/group.rb#254
     def self_task; end
   end
 end
@@ -3660,9 +3710,6 @@ class Thor::Shell::Basic
 
   # source://thor//lib/thor/shell/basic.rb#296
   def file_collision_help(block_given); end
-
-  # source://thor//lib/thor/shell/basic.rb#383
-  def git_merge_tool; end
 
   # @return [Boolean]
   #
