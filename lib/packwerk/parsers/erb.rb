@@ -11,54 +11,29 @@ module Packwerk
     class Erb
       extend T::Sig
 
-      include ParserInterface
-
-      sig { params(parser_class: T.untyped, ruby_parser: Ruby).void }
-      def initialize(parser_class: BetterHtml::Parser, ruby_parser: Ruby.new)
+      sig { params(parser_class: T.untyped).void }
+      def initialize(parser_class: BetterHtml::Parser)
         @parser_class = T.let(parser_class, T.class_of(BetterHtml::Parser))
-        @ruby_parser = ruby_parser
       end
 
-      sig { override.params(io: T.any(IO, StringIO), file_path: String).returns(T.untyped) }
-      def call(io:, file_path: "<unknown>")
+      # Extract the Ruby source code embedded in an ERB file.
+      # Used by RunContext to feed ERB-embedded Ruby into Rubydex via index_source.
+      sig { params(file_path: String).returns(T.nilable(String)) }
+      def extract_ruby_source(file_path:)
+        source = File.read(file_path, encoding: Encoding::UTF_8)
         buffer = Parser::Source::Buffer.new(file_path)
-        buffer.source = io.read
-        parse_buffer(buffer, file_path: file_path)
-      end
-
-      sig { params(buffer: Parser::Source::Buffer, file_path: String).returns(T.nilable(AST::Node)) }
-      def parse_buffer(buffer, file_path:)
+        buffer.source = source
         parser = @parser_class.new(buffer, template_language: :html)
-        to_ruby_ast(parser.ast, file_path)
-      rescue EncodingError => e
-        result = ParseResult.new(file: file_path, message: e.message)
-        raise Parsers::ParseError, result
-      rescue Parser::SyntaxError => e
-        result = ParseResult.new(file: file_path, message: "Syntax error: #{e}")
-        raise Parsers::ParseError, result
+        code_pieces = T.must(code_nodes(parser.ast)).map do |node|
+          T.cast(node, ::AST::Node).children.first
+        end
+        ruby_source = code_pieces.join("\n")
+        ruby_source.empty? ? nil : ruby_source
+      rescue EncodingError, Parser::SyntaxError
+        nil
       end
 
       private
-
-      sig do
-        params(
-          erb_ast: T.all(::AST::Node, Object),
-          file_path: String
-        ).returns(T.nilable(::AST::Node))
-      end
-      def to_ruby_ast(erb_ast, file_path)
-        # Note that we're not using the source location (line/column) at the moment, but if we did
-        # care about that, we'd need to tweak this to insert empty lines and spaces so that things
-        # line up with the ERB file
-        code_pieces = T.must(code_nodes(erb_ast)).map do |node|
-          T.cast(node, ::AST::Node).children.first
-        end
-
-        @ruby_parser.call(
-          io: StringIO.new(code_pieces.join("\n")),
-          file_path: file_path,
-        )
-      end
 
       sig do
         params(

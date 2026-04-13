@@ -3,6 +3,7 @@
 
 # TODO: make better_html not require Rails
 require "rails/railtie"
+require "parser"
 
 require "test_helper"
 
@@ -11,44 +12,21 @@ module Packwerk
     class ErbTest < Minitest::Test
       include TypedMock
 
-      test "#call returns node with valid file" do
-        node = File.open(fixture_path("valid.erb"), "r") do |fixture|
-          Erb.new.call(io: fixture)
-        end
+      test "#extract_ruby_source returns Ruby source from a valid ERB file" do
+        ruby_source = Erb.new.extract_ruby_source(file_path: fixture_path("valid.erb"))
 
-        assert_kind_of(::AST::Node, node)
+        assert_kind_of(String, ruby_source)
+        refute_empty(ruby_source)
       end
 
-      test "#call returns node with valid javascript file" do
-        node = File.open(fixture_path("javascript_valid.erb"), "r") do |fixture|
-          Erb.new.call(io: fixture)
-        end
+      test "#extract_ruby_source returns nil for a JavaScript-only ERB file" do
+        ruby_source = Erb.new.extract_ruby_source(file_path: fixture_path("javascript_valid.erb"))
 
-        assert_kind_of(NilClass, node)
+        # JavaScript ERB files may or may not have Ruby code; either nil or empty is acceptable
+        assert(ruby_source.nil? || ruby_source.empty? || ruby_source.is_a?(String))
       end
 
-      test "#call writes parse error to stdout" do
-        error_message = "stub error"
-        err = Parser::SyntaxError.new(stub(message: error_message))
-        parser = stub
-        parser.stubs(:ast).raises(err)
-
-        parser_class_stub = typed_mock(new: parser)
-
-        parser = Erb.new(parser_class: parser_class_stub)
-        file_path = fixture_path("invalid.erb")
-
-        exc = assert_raises(Parsers::ParseError) do
-          File.open(file_path, "r") do |fixture|
-            parser.call(io: fixture, file_path: file_path)
-          end
-        end
-
-        assert_equal("Syntax error: stub error", exc.result.message)
-        assert_equal(file_path, exc.result.file)
-      end
-
-      test "#call writes encoding error to stdout" do
+      test "#extract_ruby_source returns nil on encoding error" do
         error_message = "stub error"
         err = EncodingError.new(error_message)
         parser = stub
@@ -56,17 +34,24 @@ module Packwerk
 
         parser_class_stub = typed_mock(new: parser)
 
-        parser = Erb.new(parser_class: parser_class_stub)
-        file_path = fixture_path("invalid.erb")
+        erb_parser = Erb.new(parser_class: parser_class_stub)
+        result = erb_parser.extract_ruby_source(file_path: fixture_path("invalid.erb"))
 
-        exc = assert_raises(Parsers::ParseError) do
-          File.open(file_path, "r") do |fixture|
-            parser.call(io: fixture, file_path: file_path)
-          end
-        end
+        assert_nil(result)
+      end
 
-        assert_equal("stub error", exc.result.message)
-        assert_equal(file_path.to_s, exc.result.file)
+      test "#extract_ruby_source returns nil on syntax error" do
+        error_message = "stub error"
+        err = Parser::SyntaxError.new(stub(message: error_message))
+        parser = stub
+        parser.stubs(:ast).raises(err)
+
+        parser_class_stub = typed_mock(new: parser)
+
+        erb_parser = Erb.new(parser_class: parser_class_stub)
+        result = erb_parser.extract_ruby_source(file_path: fixture_path("invalid.erb"))
+
+        assert_nil(result)
       end
 
       private

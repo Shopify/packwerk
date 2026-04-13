@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "constant_resolver"
+require "rubydex"
 require "pathname"
 require "yaml"
 
@@ -70,18 +70,23 @@ module Packwerk
 
     sig { params(configuration: Configuration).returns(Validator::Result) }
     def check_application_structure(configuration)
-      resolver = ConstantResolver.new(
-        root_path: configuration.root_path.to_s,
-        load_paths: configuration.load_paths,
-        exclude: configuration.exclude,
-      )
+      graph = Rubydex::Graph.new(workspace_path: configuration.root_path)
+      files = FilesForProcessing.fetch(
+        relative_file_paths: [],
+        configuration: configuration,
+      ).files.to_a
+      graph.index_all(files)
+      graph.resolve
 
-      begin
-        resolver.file_map
+      diagnostics = graph.diagnostics
+      if diagnostics.empty?
         Validator::Result.new(ok: true)
-      rescue => e
-        Validator::Result.new(ok: false, error_value: e.message)
+      else
+        messages = diagnostics.map(&:message).join("\n")
+        Validator::Result.new(ok: false, error_value: messages)
       end
+    rescue => e
+      Validator::Result.new(ok: false, error_value: e.message)
     end
 
     sig { params(configuration: Configuration).returns(Validator::Result) }

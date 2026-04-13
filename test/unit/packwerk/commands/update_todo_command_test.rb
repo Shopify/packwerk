@@ -20,7 +20,8 @@ module Packwerk
 
       test "#run returns success when there are no offenses" do
         use_template(:minimal)
-        RunContext.any_instance.stubs(:process_file).returns([])
+        RunContext.any_instance.stubs(:index_and_resolve)
+        RunContext.any_instance.stubs(:find_offenses).yields([]).returns([])
         OffenseCollection.any_instance.expects(:dump_package_todo_files).once
 
         FilesForProcessing.any_instance.stubs(:files).returns(Set.new(["path/of/exile.rb"]))
@@ -48,7 +49,8 @@ module Packwerk
       test "#run returns exit code 1 when there are offenses" do
         use_template(:minimal)
         offense = Offense.new(file: "path/of/exile.rb", message: "something")
-        RunContext.any_instance.stubs(:process_file).returns([offense])
+        RunContext.any_instance.stubs(:index_and_resolve)
+        RunContext.any_instance.stubs(:find_offenses).yields([offense]).returns([offense])
         OffenseCollection.any_instance.expects(:dump_package_todo_files).once
 
         FilesForProcessing.any_instance.stubs(:files).returns(Set.new(["path/of/exile.rb"]))
@@ -105,7 +107,8 @@ module Packwerk
           violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
         )
 
-        RunContext.any_instance.stubs(:process_file).returns([past_offense, new_offense])
+        RunContext.any_instance.stubs(:index_and_resolve)
+        RunContext.any_instance.stubs(:find_offenses).yields([past_offense, new_offense]).returns([past_offense, new_offense])
         FilesForProcessing.any_instance.stubs(:files).returns(Set.new(["components/source/some/path.rb"]))
 
         out = StringIO.new
@@ -123,7 +126,7 @@ module Packwerk
 
         expected_output = <<~EOS
           📦 Packwerk is inspecting 1 file
-
+          \\.
           📦 Finished in \\d+\\.\\d+ seconds
 
           components/source/other/path.rb
