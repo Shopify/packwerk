@@ -132,7 +132,7 @@ module Packwerk
       ).returns(T::Array[Offense])
     end
     def find_offenses(relative_file_set, parallel: true, &block)
-      offenses_by_file = collect_constant_reference_offenses(relative_file_set)
+      offenses_by_file = collect_constant_reference_offenses(relative_file_set, parallel: parallel)
       merge_association_offenses!(offenses_by_file, relative_file_set, parallel: parallel)
 
       all_offenses = T.let([], T::Array[Offense])
@@ -152,17 +152,50 @@ module Packwerk
 
     private
 
-    # Iterate all resolved constant references from Rubydex, map them to packages,
-    # and check for dependency violations.
+    # Extract constant references from Rubydex, then check for dependency violations.
+    #
+    # This is split into two phases:
+    # 1. Extract: iterate Rubydex's resolved references and pull all needed data into
+    #    plain Ruby values (source path, constant name, target path, location). This
+    #    must be sequential since it crosses the Rust FFI boundary.
+    # 2. Check: group extracted references by source file and check for violations
+    #    in parallel across forked workers. Only plain Ruby objects cross the fork.
     sig do
       params(
         relative_file_set: FilesForProcessing::RelativeFileSet,
+        parallel: T::Boolean,
       ).returns(T::Hash[String, T::Array[Offense]])
     end
-    def collect_constant_reference_offenses(relative_file_set)
-      offenses_by_file = T.let(
+    def collect_constant_reference_offenses(relative_file_set, parallel: true)
+      # Phase 1: Extract data from Rubydex into plain Ruby (sequential)
+      refs_by_file = extract_refs_by_file(relative_file_set)
+
+      # Phase 2: Check violations per file (parallelizable)
+      check_refs_for_violations(refs_by_file, parallel: parallel)
+    end
+
+    # A plain Ruby representation of a resolved constant reference,
+    # safe to pass across fork boundaries.
+    ExtractedRef = T.type_alias do
+      {
+        const_name: String,
+        target_path: String,
+        line: Integer,
+        column: Integer,
+      }
+    end
+
+    # Iterate all resolved constant references from Rubydex and extract the data
+    # needed for violation checking into plain Ruby hashes, grouped by source file.
+    sig do
+      params(
+        relative_file_set: FilesForProcessing::RelativeFileSet,
+      ).returns(T::Hash[String, T::Array[ExtractedRef]])
+    end
+    def extract_refs_by_file(relative_file_set)
+      refs_by_file = T.let(
         Hash.new { |h, k| h[k] = [] },
-        T::Hash[String, T::Array[Offense]],
+        T::Hash[String, T::Array[ExtractedRef]],
       )
 
       @graph.constant_references.each do |ref|
@@ -179,22 +212,73 @@ module Packwerk
         target_path = location_to_relative_path(target_def.location)
         next unless target_path
 
-        source_package = package_set.package_from_path(source_path)
-        target_package = package_set.package_from_path(target_path)
+        refs_by_file[source_path] << {
+          const_name: declaration.name,
+          target_path: target_path,
+          line: ref.location.start_line,
+          column: ref.location.start_column,
+        }
+      end
+
+      refs_by_file
+    end
+
+    # Check extracted references for dependency violations, optionally in parallel.
+    sig do
+      params(
+        refs_by_file: T::Hash[String, T::Array[ExtractedRef]],
+        parallel: T::Boolean,
+      ).returns(T::Hash[String, T::Array[Offense]])
+    end
+    def check_refs_for_violations(refs_by_file, parallel: true)
+      file_list = refs_by_file.keys
+
+      results = if parallel
+        Parallel.map(file_list) do |source_path|
+          [source_path, check_file_refs(source_path, T.must(refs_by_file[source_path]))]
+        end
+      else
+        file_list.map do |source_path|
+          [source_path, check_file_refs(source_path, T.must(refs_by_file[source_path]))]
+        end
+      end
+
+      offenses_by_file = T.let(
+        Hash.new { |h, k| h[k] = [] },
+        T::Hash[String, T::Array[Offense]],
+      )
+      results.each do |source_path, offenses|
+        offenses_by_file[source_path] = offenses if offenses.any?
+      end
+      offenses_by_file
+    end
+
+    # Check a single file's extracted references for violations.
+    sig do
+      params(
+        source_path: String,
+        refs: T::Array[ExtractedRef],
+      ).returns(T::Array[Offense])
+    end
+    def check_file_refs(source_path, refs)
+      source_package = package_set.package_from_path(source_path)
+      offenses = T.let([], T::Array[Offense])
+
+      refs.each do |ref|
+        target_package = package_set.package_from_path(ref[:target_path])
         next if source_package == target_package
 
         reference = Reference.new(
           package: source_package,
           relative_path: source_path,
-          constant: ConstantContext.new(declaration.name, target_path, target_package),
-          source_location: Node::Location.new(ref.location.start_line, ref.location.start_column),
+          constant: ConstantContext.new(ref[:const_name], ref[:target_path], target_package),
+          source_location: Node::Location.new(ref[:line], ref[:column]),
         )
 
-        offenses = @reference_checker.call(reference)
-        offenses_by_file[source_path]&.concat(offenses)
+        offenses.concat(@reference_checker.call(reference))
       end
 
-      offenses_by_file
+      offenses
     end
 
     # Run a supplementary pass to detect cross-package references from ActiveRecord associations.
