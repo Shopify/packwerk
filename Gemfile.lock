@@ -1,6 +1,7 @@
 GIT
   remote: https://github.com/Shopify/rubydex.git
-  revision: 7aed62e851e5f6d64487cab7ff6b11f63c3a4155
+  revision: 4ba7962340cbed76dcbdb47063dd86aa2e2bcd49
+  branch: 04-14-use_bundle_gemfile_to_determine_if_we_need_a_debug_build
   specs:
     rubydex (0.1.0.beta11)
 
@@ -12,7 +13,7 @@ PATH
       better_html
       bundler
       prism (>= 0.25.0)
-      rubydex
+      rubydex (>= 0.1.0.beta11)
       sorbet-runtime (>= 0.5.9914)
       zeitwerk (>= 2.6.1)
 

@@ -5,7 +5,7 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}.git" }
 
 gemspec
 
-gem("rubydex", github: "Shopify/rubydex")
+gem("rubydex", github: "Shopify/rubydex", branch: "04-14-use_bundle_gemfile_to_determine_if_we_need_a_debug_build")
 
 # Specify the same dependency sources as the application Gemfile
 

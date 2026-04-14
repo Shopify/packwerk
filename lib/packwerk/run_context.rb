@@ -116,7 +116,7 @@ module Packwerk
         ruby_source = erb_parser.extract_ruby_source(file_path: erb_file)
         next unless ruby_source
 
-        @graph.index_source(erb_file, ruby_source, "ruby")
+        @graph.index_source("file://#{erb_file}", ruby_source, "ruby")
       end
 
       @graph.resolve
@@ -167,14 +167,16 @@ module Packwerk
       @graph.constant_references.each do |ref|
         next unless ref.is_a?(Rubydex::ResolvedConstantReference)
 
-        source_path = make_relative(ref.location.to_file_path)
+        source_path = location_to_relative_path(ref.location)
+        next unless source_path
         next unless relative_file_set.include?(source_path)
 
         declaration = ref.declaration
         target_def = declaration.definitions.first
         next unless target_def
 
-        target_path = make_relative(target_def.location.to_file_path)
+        target_path = location_to_relative_path(target_def.location)
+        next unless target_path
 
         source_package = package_set.package_from_path(source_path)
         target_package = package_set.package_from_path(target_path)
@@ -218,7 +220,9 @@ module Packwerk
           target_def = declaration.definitions.first
           next unless target_def
 
-          target_path = make_relative(target_def.location.to_file_path)
+          target_path = location_to_relative_path(target_def.location)
+          next unless target_path
+
           source_package = package_set.package_from_path(relative_file)
           target_package = package_set.package_from_path(target_path)
           next if source_package == target_package
@@ -333,6 +337,15 @@ module Packwerk
         child = node.full_name.to_s
         parent ? "#{parent}::#{child}" : child
       end
+    end
+
+    # Safely convert a Rubydex::Location to a relative file path.
+    # Returns nil if the location doesn't use a file:// URI.
+    sig { params(location: Rubydex::Location).returns(T.nilable(String)) }
+    def location_to_relative_path(location)
+      make_relative(location.to_file_path)
+    rescue Rubydex::Location::NotFileUriError
+      nil
     end
 
     sig { params(path: String).returns(String) }
