@@ -1,6 +1,8 @@
 # typed: strict
 # frozen_string_literal: true
 
+require "parallel"
+
 module Packwerk
   class ParseRun
     extend T::Sig
@@ -13,9 +15,7 @@ module Packwerk
     end
     def initialize(relative_file_set:, parallel: true)
       @relative_file_set = relative_file_set
-      # NOTE: The parallel flag is accepted for interface compatibility but ignored.
-      # Rubydex handles parallelism internally in its Rust indexing engine.
-      _ = parallel
+      @parallel = parallel
     end
 
     sig do
@@ -32,7 +32,7 @@ module Packwerk
       run_context.index_and_resolve(@relative_file_set)
 
       # Phase 2: Walk resolved references, check violations, report per-file
-      run_context.find_offenses(@relative_file_set, &block)
+      run_context.find_offenses(@relative_file_set, parallel: @parallel, &block)
     rescue Interrupt
       on_interrupt&.call
       []

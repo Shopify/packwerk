@@ -127,12 +127,13 @@ module Packwerk
     sig do
       params(
         relative_file_set: FilesForProcessing::RelativeFileSet,
+        parallel: T::Boolean,
         block: T.nilable(T.proc.params(offenses: T::Array[Offense]).void),
       ).returns(T::Array[Offense])
     end
-    def find_offenses(relative_file_set, &block)
+    def find_offenses(relative_file_set, parallel: true, &block)
       offenses_by_file = collect_constant_reference_offenses(relative_file_set)
-      merge_association_offenses!(offenses_by_file, relative_file_set)
+      merge_association_offenses!(offenses_by_file, relative_file_set, parallel: parallel)
 
       all_offenses = T.let([], T::Array[Offense])
       relative_file_set.each do |file|
@@ -199,44 +200,62 @@ module Packwerk
     # Run a supplementary pass to detect cross-package references from ActiveRecord associations.
     # Rubydex doesn't understand that `has_many :orders` implies a reference to `Order`,
     # so we parse those files with Prism and resolve the implied constants via the graph.
+    #
+    # The Prism parsing is parallelized since each file can be parsed independently.
+    # Resolution and violation checking happen after all files are parsed.
     sig do
       params(
         offenses_by_file: T::Hash[String, T::Array[Offense]],
         relative_file_set: FilesForProcessing::RelativeFileSet,
+        parallel: T::Boolean,
       ).void
     end
-    def merge_association_offenses!(offenses_by_file, relative_file_set)
+    def merge_association_offenses!(offenses_by_file, relative_file_set, parallel: true)
       excluded_files = Set.new(@associations_exclude.flat_map { |glob| Dir[glob] })
 
-      relative_file_set.each do |relative_file|
-        next if relative_file.end_with?(".erb")
-        next if excluded_files.include?(relative_file)
+      files_to_scan = relative_file_set.reject do |f|
+        f.end_with?(".erb") || excluded_files.include?(f)
+      end
 
-        association_refs = extract_association_references(relative_file)
-        association_refs.each do |const_name, nesting, location|
-          declaration = @graph.resolve_constant(const_name, nesting)
-          next unless declaration
-
-          target_def = declaration.definitions.first
-          next unless target_def
-
-          target_path = location_to_relative_path(target_def.location)
-          next unless target_path
-
-          source_package = package_set.package_from_path(relative_file)
-          target_package = package_set.package_from_path(target_path)
-          next if source_package == target_package
-
-          reference = Reference.new(
-            package: source_package,
-            relative_path: relative_file,
-            constant: ConstantContext.new(declaration.name, target_path, target_package),
-            source_location: location,
-          )
-
-          offenses = @reference_checker.call(reference)
-          offenses_by_file[relative_file]&.concat(offenses)
+      # Phase 1: Parse files and extract association references (parallelizable)
+      all_association_refs = if parallel
+        Parallel.flat_map(files_to_scan) do |relative_file|
+          extract_association_references(relative_file).map do |const_name, nesting, location|
+            [relative_file, const_name, nesting, location]
+          end
         end
+      else
+        files_to_scan.flat_map do |relative_file|
+          extract_association_references(relative_file).map do |const_name, nesting, location|
+            [relative_file, const_name, nesting, location]
+          end
+        end
+      end
+
+      # Phase 2: Resolve and check violations (must be sequential -- uses shared graph + package_set)
+      all_association_refs.each do |relative_file, const_name, nesting, location|
+        declaration = @graph.resolve_constant(const_name, nesting)
+        next unless declaration
+
+        target_def = declaration.definitions.first
+        next unless target_def
+
+        target_path = location_to_relative_path(target_def.location)
+        next unless target_path
+
+        source_package = package_set.package_from_path(relative_file)
+        target_package = package_set.package_from_path(target_path)
+        next if source_package == target_package
+
+        reference = Reference.new(
+          package: source_package,
+          relative_path: relative_file,
+          constant: ConstantContext.new(declaration.name, target_path, target_package),
+          source_location: location,
+        )
+
+        offenses = @reference_checker.call(reference)
+        offenses_by_file[relative_file]&.concat(offenses)
       end
     end
 
