@@ -31,7 +31,6 @@ module Packwerk
           associations_exclude: configuration.associations_exclude,
           include_globs: configuration.include,
           exclude_globs: configuration.exclude,
-
         )
       end
     end
@@ -88,34 +87,33 @@ module Packwerk
     # so that Rubydex can resolve cross-package constant references. The checked
     # file set may be a subset (e.g. `packwerk check components/timeline`), but
     # resolution needs to see definitions across the entire codebase.
-    sig { params(relative_file_set: FilesForProcessing::RelativeFileSet).void }
-    def index_and_resolve(relative_file_set)
-      all_rb_files = T.let([], T::Array[String])
-      erb_files_to_check = T.let([], T::Array[String])
+    # Index files and resolve constants. `relative_file_set` is the set of files to
+    # check for violations. `all_files` is the full workspace file set needed for
+    # complete constant resolution (defaults to relative_file_set when checking everything).
+    sig do
+      params(
+        relative_file_set: FilesForProcessing::RelativeFileSet,
+        all_files: FilesForProcessing::RelativeFileSet,
+      ).void
+    end
+    def index_and_resolve(relative_file_set, all_files: relative_file_set)
+      rb_files = T.let([], T::Array[String])
+      erb_files = T.let([], T::Array[String])
 
-      # Collect all Ruby files in the workspace for indexing
-      all_workspace_files = Dir.glob(
-        @include_globs.map { |glob| File.join(@root_path, glob) }
-      ) - Dir.glob(
-        @exclude_globs.map { |glob| File.join(@root_path, glob) }
-      )
-
-      all_workspace_files.each do |abs_path|
-        if abs_path.end_with?(".erb")
-          # Only extract ERB files that are in the check set
-          rel_path = abs_path.delete_prefix("#{@root_path}/")
-          erb_files_to_check << abs_path if relative_file_set.include?(rel_path)
+      all_files.each do |rel_path|
+        abs_path = File.join(@real_root_path, rel_path)
+        if rel_path.end_with?(".erb")
+          # Only index ERB files that are in the check set
+          erb_files << abs_path if relative_file_set.include?(rel_path)
         else
-          all_rb_files << abs_path
+          rb_files << abs_path
         end
       end
 
-      # Index all Ruby files for complete resolution
-      @graph.index_all(all_rb_files) unless all_rb_files.empty?
+      @graph.index_all(rb_files) unless rb_files.empty?
 
-      # Index ERB files in the check set by extracting their Ruby source
       erb_parser = Parsers::Erb.new
-      erb_files_to_check.each do |erb_file|
+      erb_files.each do |erb_file|
         ruby_source = erb_parser.extract_ruby_source(file_path: erb_file)
         next unless ruby_source
 
@@ -124,8 +122,7 @@ module Packwerk
 
       @graph.resolve
 
-      # Store the file set for precomputing the file→package mapping
-      @indexed_file_set = relative_file_set
+      @indexed_file_set = all_files
     end
 
     # Phase 2: Walk all resolved constant references and check for violations.
@@ -209,24 +206,28 @@ module Packwerk
             # Normalize metaclass names: "Foo::<Foo>" → "Foo"
             const_name = normalize_constant_name(declaration.name)
 
+            # Compute Zeitwerk suffix once per constant, not per definition
+            zeitwerk_suffix = "#{ActiveSupport::Inflector.underscore(const_name)}.rb"
+
             declaration.definitions.each do |defn|
-              dp = location_to_relative_path(defn.location)
+              uri = defn.location.uri
+              dp = if uri.start_with?(@real_file_uri_prefix)
+                uri.byteslice(@real_file_uri_prefix.bytesize..)
+              elsif uri.start_with?(@file_uri_prefix)
+                uri.byteslice(@file_uri_prefix.bytesize..)
+              end
               next unless dp
 
               entry = result[const_name] ||= { packages: Set.new, target_path: nil }
               T.unsafe(entry[:packages]) << package_for(dp)
 
               # Prefer the definition whose path matches Zeitwerk naming
-              zeitwerk_suffix = "#{ActiveSupport::Inflector.underscore(const_name)}.rb"
               if dp.end_with?(zeitwerk_suffix)
                 entry[:target_path] ||= dp
               end
               entry[:target_path] ||= dp
             end
           end
-
-          # Remove entries with no packages (shouldn't happen, but be safe)
-          result.reject! { |_, v| T.unsafe(v[:packages]).empty? }
 
           result
         end,
@@ -254,31 +255,42 @@ module Packwerk
 
       defn_packages = constant_definition_packages
 
+      # Cache package lookups per file to avoid repeated hash lookups
+      file_package_cache = T.let({}, T::Hash[String, Package])
+      real_prefix = @real_file_uri_prefix
+      file_prefix = @file_uri_prefix
+
       @graph.constant_references.each do |ref|
         next unless ref.is_a?(Rubydex::ResolvedConstantReference)
 
-        source_path = location_to_relative_path(ref.location)
+        # Inline URI → relative path conversion for speed (avoids method call overhead on hot path)
+        loc = ref.location
+        uri = loc.uri
+        source_path = if uri.start_with?(real_prefix)
+          uri.byteslice(real_prefix.bytesize..)
+        elsif uri.start_with?(file_prefix)
+          uri.byteslice(file_prefix.bytesize..)
+        end
         next unless source_path
         next unless relative_file_set.include?(source_path)
 
-        raw_name = ref.declaration.name
-        const_name = normalize_constant_name(raw_name)
+        const_name = normalize_constant_name(ref.declaration.name)
         info = defn_packages[const_name]
         next unless info
 
-        source_package = package_for(source_path)
+        source_package = file_package_cache[source_path] ||= package_for(source_path)
 
         # If ANY definition of this constant is in the source package, it's a local reference
         next if info[:packages].include?(source_package)
 
         target_path = info[:target_path]
         next unless target_path
-
+        T.must(refs_by_file[source_path]) << {
         refs_by_file[source_path] << {
           const_name: "::#{const_name}",
           target_path: target_path,
-          line: ref.location.start_line,
-          column: ref.location.start_column,
+          line: loc.start_line,
+          column: loc.start_column,
         }
       end
 
@@ -379,8 +391,8 @@ module Packwerk
 
         target_path = location_to_relative_path(target_def.location)
         next unless target_path
-
-          source_package = package_for(relative_file)
+        source_package = package_for(relative_file)
+        target_package = package_for(target_path)
           target_package = package_for(target_path)
         next if source_package == target_package
 
