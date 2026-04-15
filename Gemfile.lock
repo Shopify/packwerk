@@ -5,7 +5,6 @@ PATH
       activesupport (>= 6.0)
       better_html
       bundler
-      parallel
       prism (>= 0.25.0)
       rubydex (>= 0.1.0.beta12)
       sorbet-runtime (>= 0.5.9914)

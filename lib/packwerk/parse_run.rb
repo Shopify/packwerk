@@ -1,8 +1,6 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "parallel"
-
 module Packwerk
   class ParseRun
     extend T::Sig
@@ -15,7 +13,10 @@ module Packwerk
     end
     def initialize(relative_file_set:, parallel: true)
       @relative_file_set = relative_file_set
-      @parallel = parallel
+      # NOTE: The parallel flag is accepted for interface compatibility but ignored.
+      # Rubydex handles heavy lifting in Rust; the remaining Ruby work is too lightweight
+      # for fork-based parallelism to help (benchmarks show it's 2-3x slower due to overhead).
+      _ = parallel
     end
 
     sig do
