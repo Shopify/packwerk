@@ -356,8 +356,8 @@ module Packwerk
     # Rubydex doesn't understand that `has_many :orders` implies a reference to `Order`,
     # so we parse those files with Prism and resolve the implied constants via the graph.
     #
-    # The Prism parsing is parallelized since each file can be parsed independently.
-    # Resolution and violation checking happen after all files are parsed.
+    # Uses graph.method_references to identify which files contain association calls,
+    # then only parses those files with Prism (typically ~1% of all files).
     sig do
       params(
         offenses_by_file: T::Hash[String, T::Array[Offense]],
@@ -368,11 +368,22 @@ module Packwerk
     def merge_association_offenses!(offenses_by_file, relative_file_set, parallel: true)
       excluded_files = Set.new(@associations_exclude.flat_map { |glob| Dir[glob] })
 
-      files_to_scan = relative_file_set.reject do |f|
-        f.end_with?(".erb") || excluded_files.include?(f)
+      # Use Rubydex's method references to find only files that contain association calls.
+      # This avoids reparsing all 57k+ files when only ~1.3% have associations.
+      association_names = @associations.map(&:to_s).to_set
+      files_with_associations = Set.new
+      @graph.method_references.each do |ref|
+        next unless association_names.include?(ref.name)
+
+        rel_path = location_to_relative_path(ref.location)
+        next unless rel_path
+
+        files_with_associations << rel_path
       end
 
-      # Phase 1: Parse files and extract association references (parallelizable)
+      files_to_scan = files_with_associations & relative_file_set - excluded_files
+
+      # Parse targeted files and extract association references
       all_association_refs = if parallel
         Parallel.flat_map(files_to_scan) do |relative_file|
           extract_association_references(relative_file).map do |const_name, nesting, location|
