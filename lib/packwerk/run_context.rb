@@ -31,6 +31,7 @@ module Packwerk
           associations_exclude: configuration.associations_exclude,
           include_globs: configuration.include,
           exclude_globs: configuration.exclude,
+          parallel: configuration.parallel?,
         )
       end
     end
@@ -45,6 +46,7 @@ module Packwerk
         associations_exclude: T::Array[String],
         include_globs: T::Array[String],
         exclude_globs: T::Array[String],
+        parallel: T::Boolean,
         checkers: T::Array[Checker],
       ).void
     end
@@ -57,6 +59,7 @@ module Packwerk
       associations_exclude: [],
       include_globs: Configuration::DEFAULT_INCLUDE_GLOBS,
       exclude_globs: Configuration::DEFAULT_EXCLUDE_GLOBS,
+      parallel: true,
       checkers: Checker.all
     )
       @root_path = root_path
@@ -68,6 +71,7 @@ module Packwerk
       @package_paths = package_paths
       @include_globs = include_globs
       @exclude_globs = exclude_globs
+      @parallel = parallel
 
       @real_root_path = T.let(File.realpath(root_path), String)
       @associations = T.let(RAILS_ASSOCIATIONS | custom_associations.to_set, T::Set[Symbol])
@@ -127,13 +131,12 @@ module Packwerk
     sig do
       params(
         relative_file_set: FilesForProcessing::RelativeFileSet,
-        parallel: T::Boolean,
         block: T.nilable(T.proc.params(offenses: T::Array[Offense]).void),
       ).returns(T::Array[Offense])
     end
-    def find_offenses(relative_file_set, parallel: true, &block)
-      offenses_by_file = collect_constant_reference_offenses(relative_file_set, parallel: parallel)
-      merge_association_offenses!(offenses_by_file, relative_file_set, parallel: parallel)
+    def find_offenses(relative_file_set, &block)
+      offenses_by_file = collect_constant_reference_offenses(relative_file_set, parallel: @parallel)
+      merge_association_offenses!(offenses_by_file, relative_file_set, parallel: @parallel)
 
       all_offenses = T.let([], T::Array[Offense])
       relative_file_set.each do |file|

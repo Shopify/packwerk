@@ -32,7 +32,7 @@ module Packwerk
       run_context.index_and_resolve(@relative_file_set)
 
       # Phase 2: Walk resolved references, check violations, report per-file
-      run_context.find_offenses(@relative_file_set, parallel: @parallel, &block)
+      run_context.find_offenses(@relative_file_set, &block)
     rescue Interrupt
       on_interrupt&.call
       []
