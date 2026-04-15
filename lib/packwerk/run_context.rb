@@ -74,6 +74,9 @@ module Packwerk
       @parallel = parallel
 
       @real_root_path = T.let(File.realpath(root_path), String)
+      @file_uri_prefix = T.let("file://#{root_path}/", String)
+      @real_file_uri_prefix = T.let("file://#{@real_root_path}/", String)
+      @indexed_file_set = T.let(nil, T.nilable(FilesForProcessing::RelativeFileSet))
       @associations = T.let(RAILS_ASSOCIATIONS | custom_associations.to_set, T::Set[Symbol])
       @graph = T.let(Rubydex::Graph.new(workspace_path: @real_root_path), Rubydex::Graph)
       @package_set = T.let(nil, T.nilable(PackageSet))
@@ -124,6 +127,9 @@ module Packwerk
       end
 
       @graph.resolve
+
+      # Store the file set for precomputing the file→package mapping
+      @indexed_file_set = relative_file_set
     end
 
     # Phase 2: Walk all resolved constant references and check for violations.
@@ -208,7 +214,7 @@ module Packwerk
               dp = location_to_relative_path(defn.location)
               next unless dp
 
-              packages << package_set.package_from_path(dp)
+              packages << package_for(dp)
               first_path ||= dp
             end
 
@@ -254,7 +260,7 @@ module Packwerk
         info = defn_packages[const_name]
         next unless info
 
-        source_package = package_set.package_from_path(source_path)
+        source_package = package_for(source_path)
 
         # If ANY definition of this constant is in the source package, it's a local reference
         next if info[:packages].include?(source_package)
@@ -311,11 +317,11 @@ module Packwerk
       ).returns(T::Array[Offense])
     end
     def check_file_refs(source_path, refs)
-      source_package = package_set.package_from_path(source_path)
+      source_package = package_for(source_path)
       offenses = T.let([], T::Array[Offense])
 
       refs.each do |ref|
-        target_package = package_set.package_from_path(ref[:target_path])
+        target_package = package_for(ref[:target_path])
         next if source_package == target_package
 
         reference = Reference.new(
@@ -377,8 +383,8 @@ module Packwerk
         target_path = location_to_relative_path(target_def.location)
         next unless target_path
 
-        source_package = package_set.package_from_path(relative_file)
-        target_package = package_set.package_from_path(target_path)
+          source_package = package_for(relative_file)
+          target_package = package_for(target_path)
         next if source_package == target_package
 
         reference = Reference.new(
@@ -492,24 +498,37 @@ module Packwerk
       end
     end
 
-    # Safely convert a Rubydex::Location to a relative file path.
+    # Convert a Rubydex::Location to a relative file path using the fast URI accessor.
+    # `location.uri` returns a raw string (no URI parsing), which is ~5x faster than
+    # `location.to_file_path` on large codebases (11s vs 57s for 2.7M calls on Core).
     # Returns nil if the location doesn't use a file:// URI.
     sig { params(location: Rubydex::Location).returns(T.nilable(String)) }
     def location_to_relative_path(location)
-      make_relative(location.to_file_path)
-    rescue Rubydex::Location::NotFileUriError
-      nil
+      uri = location.uri
+      if uri.start_with?(@file_uri_prefix)
+        uri.delete_prefix(@file_uri_prefix)
+      elsif uri.start_with?(@real_file_uri_prefix)
+        uri.delete_prefix(@real_file_uri_prefix)
+      end
     end
 
-    sig { params(path: String).returns(String) }
-    def make_relative(path)
-      if path.start_with?(@root_path)
-        path.delete_prefix("#{@root_path}/")
-      elsif path.start_with?(@real_root_path)
-        path.delete_prefix("#{@real_root_path}/")
-      else
-        path
-      end
+    # Precomputed file→package mapping to avoid repeated path prefix searches.
+    sig { returns(T::Hash[String, Package]) }
+    def file_to_package_map
+      @file_to_package_map ||= T.let(
+        begin
+          map = T.let({}, T::Hash[String, Package])
+          @indexed_file_set&.each { |f| map[f] = package_set.package_from_path(f) }
+          map
+        end,
+        T.nilable(T::Hash[String, Package]),
+      )
+    end
+
+    # Fast package lookup using precomputed map, falling back to PackageSet for unknown paths.
+    sig { params(relative_path: String).returns(Package) }
+    def package_for(relative_path)
+      file_to_package_map[relative_path] || package_set.package_from_path(relative_path)
     end
   end
 
