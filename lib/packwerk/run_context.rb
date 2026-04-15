@@ -190,6 +190,12 @@ module Packwerk
 
     # Iterate all resolved constant references from Rubydex and extract the data
     # needed for violation checking into plain Ruby hashes, grouped by source file.
+    #
+    # Shared namespaces (e.g. `GraphApi`, `Checkouts`) are defined in many packages.
+    # Rubydex resolves a reference to a Declaration whose first definition may be in a
+    # different package, even though the namespace is also defined locally. To avoid
+    # false positives, we check ALL definitions of the target constant: if any definition
+    # lives in the same package as the source file, the reference is local and skipped.
     sig do
       params(
         relative_file_set: FilesForProcessing::RelativeFileSet,
@@ -209,10 +215,31 @@ module Packwerk
         next unless relative_file_set.include?(source_path)
 
         declaration = ref.declaration
-        target_def = declaration.definitions.first
-        next unless target_def
+        source_package = package_set.package_from_path(source_path)
 
-        target_path = location_to_relative_path(target_def.location)
+        # Find the best target definition: prefer one outside the source package.
+        # If ANY definition is in the source package, the reference is local -- skip it.
+        target_path = nil
+        local = false
+        has_definitions = false
+
+        declaration.definitions.each do |defn|
+          has_definitions = true
+          dp = location_to_relative_path(defn.location)
+          next unless dp
+
+          if package_set.package_from_path(dp) == source_package
+            # At least one definition is in the source package -- this is a local reference
+            local = true
+            break
+          end
+
+          # Use the first non-local definition as the target
+          target_path ||= dp
+        end
+
+        next unless has_definitions
+        next if local
         next unless target_path
 
         refs_by_file[source_path] << {
