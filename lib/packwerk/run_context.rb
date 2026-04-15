@@ -263,7 +263,7 @@ module Packwerk
         next unless target_path
 
         refs_by_file[source_path] << {
-          const_name: const_name,
+          const_name: "::#{const_name}",
           target_path: target_path,
           line: ref.location.start_line,
           column: ref.location.start_column,
@@ -384,7 +384,7 @@ module Packwerk
         reference = Reference.new(
           package: source_package,
           relative_path: relative_file,
-          constant: ConstantContext.new(declaration.name, target_path, target_package),
+          constant: ConstantContext.new("::#{declaration.name}", target_path, target_package),
           source_location: location,
         )
 
