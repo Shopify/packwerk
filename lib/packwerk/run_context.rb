@@ -215,28 +215,27 @@ module Packwerk
           )
 
           @graph.declarations.each do |declaration|
-            packages = T.let(Set.new, T::Set[Package])
-            canonical_path = T.let(nil, T.nilable(String))
-            fallback_path = T.let(nil, T.nilable(String))
-
-            # Zeitwerk convention: Foo::BarBaz → foo/bar_baz.rb
-            zeitwerk_suffix = "#{ActiveSupport::Inflector.underscore(declaration.name)}.rb"
+            # Normalize metaclass names: "Foo::<Foo>" → "Foo"
+            const_name = normalize_constant_name(declaration.name)
 
             declaration.definitions.each do |defn|
               dp = location_to_relative_path(defn.location)
               next unless dp
 
-              packages << package_for(dp)
-              fallback_path ||= dp
+              entry = result[const_name] ||= { packages: Set.new, target_path: nil }
+              T.unsafe(entry[:packages]) << package_for(dp)
 
               # Prefer the definition whose path matches Zeitwerk naming
-              canonical_path ||= dp if dp.end_with?(zeitwerk_suffix)
+              zeitwerk_suffix = "#{ActiveSupport::Inflector.underscore(const_name)}.rb"
+              if dp.end_with?(zeitwerk_suffix)
+                entry[:target_path] ||= dp
+              end
+              entry[:target_path] ||= dp
             end
-
-            next if packages.empty?
-
-            result[declaration.name] = { packages: packages, target_path: canonical_path || fallback_path }
           end
+
+          # Remove entries with no packages (shouldn't happen, but be safe)
+          result.reject! { |_, v| T.unsafe(v[:packages]).empty? }
 
           result
         end,
@@ -271,7 +270,8 @@ module Packwerk
         next unless source_path
         next unless relative_file_set.include?(source_path)
 
-        const_name = ref.declaration.name
+        raw_name = ref.declaration.name
+        const_name = normalize_constant_name(raw_name)
         info = defn_packages[const_name]
         next unless info
 
@@ -522,6 +522,17 @@ module Packwerk
         child = node.full_name.to_s
         parent ? "#{parent}::#{child}" : child
       end
+    end
+
+    # Normalize a Rubydex declaration name to a plain Ruby constant name.
+    # Rubydex uses `Foo::<Foo>` for the singleton/metaclass of `Foo` (from `class << self`),
+    # and `Foo::<Foo>#method` for singleton methods. Strip these internal suffixes so that
+    # the constant name matches what appears in package_todo.yml and Ruby source.
+    sig { params(name: String).returns(String) }
+    def normalize_constant_name(name)
+      # Strip singleton class suffix: "Foo::<Foo>" → "Foo"
+      # Strip method suffixes: "Foo::<Foo>#bar()" → "Foo"
+      name.sub(/::<[^>]+>.*\z/, "")
     end
 
     # Convert a Rubydex::Location to a relative file path using the fast URI accessor.
