@@ -188,14 +188,48 @@ module Packwerk
       }
     end
 
+    # Pre-compute a mapping of constant name → set of packages that define it,
+    # plus the path of the first definition outside each package.
+    # This avoids iterating all definitions for every reference (O(refs * defs) → O(refs)).
+    sig { returns(T::Hash[String, { packages: T::Set[Package], target_path: T.nilable(String) }]) }
+    def constant_definition_packages
+      @constant_definition_packages ||= T.let(
+        begin
+          result = T.let(
+            {},
+            T::Hash[String, { packages: T::Set[Package], target_path: T.nilable(String) }],
+          )
+
+          @graph.declarations.each do |declaration|
+            packages = T.let(Set.new, T::Set[Package])
+            first_path = T.let(nil, T.nilable(String))
+
+            declaration.definitions.each do |defn|
+              dp = location_to_relative_path(defn.location)
+              next unless dp
+
+              packages << package_set.package_from_path(dp)
+              first_path ||= dp
+            end
+
+            next if packages.empty?
+
+            result[declaration.name] = { packages: packages, target_path: first_path }
+          end
+
+          result
+        end,
+        T.nilable(T::Hash[String, { packages: T::Set[Package], target_path: T.nilable(String) }]),
+      )
+    end
+
     # Iterate all resolved constant references from Rubydex and extract the data
     # needed for violation checking into plain Ruby hashes, grouped by source file.
     #
     # Shared namespaces (e.g. `GraphApi`, `Checkouts`) are defined in many packages.
-    # Rubydex resolves a reference to a Declaration whose first definition may be in a
-    # different package, even though the namespace is also defined locally. To avoid
-    # false positives, we check ALL definitions of the target constant: if any definition
-    # lives in the same package as the source file, the reference is local and skipped.
+    # We pre-compute which packages define each constant so the per-reference check is O(1).
+    # If the source package is in the set of packages that define the constant,
+    # the reference is local and skipped.
     sig do
       params(
         relative_file_set: FilesForProcessing::RelativeFileSet,
@@ -207,6 +241,8 @@ module Packwerk
         T::Hash[String, T::Array[ExtractedRef]],
       )
 
+      defn_packages = constant_definition_packages
+
       @graph.constant_references.each do |ref|
         next unless ref.is_a?(Rubydex::ResolvedConstantReference)
 
@@ -214,36 +250,20 @@ module Packwerk
         next unless source_path
         next unless relative_file_set.include?(source_path)
 
-        declaration = ref.declaration
+        const_name = ref.declaration.name
+        info = defn_packages[const_name]
+        next unless info
+
         source_package = package_set.package_from_path(source_path)
 
-        # Find the best target definition: prefer one outside the source package.
-        # If ANY definition is in the source package, the reference is local -- skip it.
-        target_path = nil
-        local = false
-        has_definitions = false
+        # If ANY definition of this constant is in the source package, it's a local reference
+        next if info[:packages].include?(source_package)
 
-        declaration.definitions.each do |defn|
-          has_definitions = true
-          dp = location_to_relative_path(defn.location)
-          next unless dp
-
-          if package_set.package_from_path(dp) == source_package
-            # At least one definition is in the source package -- this is a local reference
-            local = true
-            break
-          end
-
-          # Use the first non-local definition as the target
-          target_path ||= dp
-        end
-
-        next unless has_definitions
-        next if local
+        target_path = info[:target_path]
         next unless target_path
 
         refs_by_file[source_path] << {
-          const_name: declaration.name,
+          const_name: const_name,
           target_path: target_path,
           line: ref.location.start_line,
           column: ref.location.start_column,
