@@ -195,8 +195,16 @@ module Packwerk
     end
 
     # Pre-compute a mapping of constant name → set of packages that define it,
-    # plus the path of the first definition outside each package.
-    # This avoids iterating all definitions for every reference (O(refs * defs) → O(refs)).
+    # plus the canonical definition path.
+    #
+    # When a constant has multiple definitions (e.g. a canonical file + class reopenings),
+    # we prefer the definition whose path matches Zeitwerk naming conventions for that
+    # constant. For example, for `ApiClient`:
+    #   - `app/models/api_client.rb` → canonical (matches Zeitwerk convention)
+    #   - `app/models/api_client/extension.rb` → reopening (ignored)
+    #
+    # This matches the old `constant_resolver` behavior which only resolved to
+    # Zeitwerk-canonical paths.
     sig { returns(T::Hash[String, { packages: T::Set[Package], target_path: T.nilable(String) }]) }
     def constant_definition_packages
       @constant_definition_packages ||= T.let(
@@ -208,19 +216,26 @@ module Packwerk
 
           @graph.declarations.each do |declaration|
             packages = T.let(Set.new, T::Set[Package])
-            first_path = T.let(nil, T.nilable(String))
+            canonical_path = T.let(nil, T.nilable(String))
+            fallback_path = T.let(nil, T.nilable(String))
+
+            # Zeitwerk convention: Foo::BarBaz → foo/bar_baz.rb
+            zeitwerk_suffix = "#{ActiveSupport::Inflector.underscore(declaration.name)}.rb"
 
             declaration.definitions.each do |defn|
               dp = location_to_relative_path(defn.location)
               next unless dp
 
               packages << package_for(dp)
-              first_path ||= dp
+              fallback_path ||= dp
+
+              # Prefer the definition whose path matches Zeitwerk naming
+              canonical_path ||= dp if dp.end_with?(zeitwerk_suffix)
             end
 
             next if packages.empty?
 
-            result[declaration.name] = { packages: packages, target_path: first_path }
+            result[declaration.name] = { packages: packages, target_path: canonical_path || fallback_path }
           end
 
           result
