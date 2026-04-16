@@ -285,8 +285,8 @@ module Packwerk
 
         target_path = info[:target_path]
         next unless target_path
+
         T.must(refs_by_file[source_path]) << {
-        refs_by_file[source_path] << {
           const_name: "::#{const_name}",
           target_path: target_path,
           line: loc.start_line,
@@ -391,9 +391,10 @@ module Packwerk
 
         target_path = location_to_relative_path(target_def.location)
         next unless target_path
+
         source_package = package_for(relative_file)
         target_package = package_for(target_path)
-          target_package = package_for(target_path)
+        target_package = package_for(target_path)
         next if source_package == target_package
 
         reference = Reference.new(
