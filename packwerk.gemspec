@@ -40,16 +40,12 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency("activesupport", ">= 6.0")
   spec.add_dependency("bundler")
-  spec.add_dependency("constant_resolver", ">= 0.3")
-  spec.add_dependency("parallel")
+  spec.add_dependency("rubydex", ">= 0.1.0.beta12")
   spec.add_dependency("sorbet-runtime", ">= 0.5.9914")
-  spec.add_dependency("zeitwerk", ">= 2.6.1")
 
-  # For Ruby parsing
-  spec.add_dependency("ast")
-  spec.add_dependency("parser")
+  # For association detection (Prism native AST walk)
   spec.add_dependency("prism", ">= 0.25.0")
 
-  # For ERB parsing
+  # For ERB parsing (also pulls in parser/ast transitively)
   spec.add_dependency("better_html")
 end

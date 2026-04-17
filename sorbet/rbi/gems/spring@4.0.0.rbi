@@ -316,10 +316,10 @@ class Spring::Watcher::Abstract
   # source://spring//lib/spring/watcher/abstract.rb#15
   def latency; end
 
-  # source://mutex_m/0.1.2/mutex_m.rb#93
+  # source://mutex_m/0.3.0/lib/mutex_m.rb#96
   def lock; end
 
-  # source://mutex_m/0.1.2/mutex_m.rb#83
+  # source://mutex_m/0.3.0/lib/mutex_m.rb#86
   def locked?; end
 
   # source://spring//lib/spring/watcher/abstract.rb#91
@@ -359,13 +359,13 @@ class Spring::Watcher::Abstract
   # source://spring//lib/spring/watcher/abstract.rb#112
   def subjects_changed; end
 
-  # source://mutex_m/0.1.2/mutex_m.rb#78
+  # source://mutex_m/0.3.0/lib/mutex_m.rb#81
   def synchronize(&block); end
 
-  # source://mutex_m/0.1.2/mutex_m.rb#88
+  # source://mutex_m/0.3.0/lib/mutex_m.rb#91
   def try_lock; end
 
-  # source://mutex_m/0.1.2/mutex_m.rb#98
+  # source://mutex_m/0.3.0/lib/mutex_m.rb#101
   def unlock; end
 end
 

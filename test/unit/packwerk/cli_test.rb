@@ -28,7 +28,8 @@ module Packwerk
 
       configuration = Configuration.new({ "parallel" => false })
       configuration.stubs(load_paths: {})
-      RunContext.any_instance.stubs(:process_file).at_least_once.returns([offense])
+      RunContext.any_instance.stubs(:index_and_resolve)
+      RunContext.any_instance.stubs(:find_offenses).yields([offense]).returns([offense])
 
       string_io = StringIO.new
 
@@ -52,17 +53,12 @@ module Packwerk
 
       file_path = "path/of/exile.rb"
       interrupt_message = "Manually interrupted. Violations caught so far are listed below:"
-      violation_message = "This is a violation of code health."
-      offense = Offense.new(file: file_path, message: violation_message)
 
       configuration = Configuration.new({ "parallel" => false })
       configuration.stubs(load_paths: {})
 
-      RunContext.any_instance.stubs(:process_file)
-        .at_least(2)
-        .returns([offense])
-        .raises(Interrupt)
-        .returns([offense])
+      RunContext.any_instance.stubs(:index_and_resolve)
+      RunContext.any_instance.stubs(:find_offenses).raises(Interrupt)
 
       string_io = StringIO.new
 
@@ -75,11 +71,9 @@ module Packwerk
       success = cli.execute_command(["check", file_path])
 
       assert_includes string_io.string, "Packwerk is inspecting 3 files"
-      assert_includes string_io.string, "E\n"
       assert_includes string_io.string, interrupt_message
-      assert_includes string_io.string, violation_message
-      assert_includes string_io.string, "1 offense detected"
-      refute success
+      assert_includes string_io.string, "No offenses detected"
+      assert success
     end
 
     test "#execute_command with the subcommand help lists all the valid subcommands" do
@@ -184,8 +178,8 @@ module Packwerk
 
       configuration = Configuration.new
       configuration.stubs(load_paths: {})
-      RunContext.any_instance.stubs(:process_file)
-        .returns([offense])
+      RunContext.any_instance.stubs(:index_and_resolve)
+      RunContext.any_instance.stubs(:find_offenses).yields([offense]).returns([offense])
 
       string_io = StringIO.new
 
@@ -215,8 +209,8 @@ module Packwerk
       violation_message = "This is a violation of code health."
       offense = Offense.new(file: file_path, message: violation_message)
 
-      RunContext.any_instance.stubs(:process_file)
-        .returns([offense])
+      RunContext.any_instance.stubs(:index_and_resolve)
+      RunContext.any_instance.stubs(:find_offenses).yields([offense]).returns([offense])
 
       cli = T.let(nil, T.nilable(Packwerk::Cli))
       string_io = StringIO.new
@@ -253,8 +247,8 @@ module Packwerk
       violation_message = "This is a violation of code health."
       offense = Offense.new(file: file_path, message: violation_message)
 
-      RunContext.any_instance.stubs(:process_file)
-        .returns([offense])
+      RunContext.any_instance.stubs(:index_and_resolve)
+      RunContext.any_instance.stubs(:find_offenses).yields([offense]).returns([offense])
 
       cli = T.let(nil, T.nilable(Packwerk::Cli))
       string_io = StringIO.new

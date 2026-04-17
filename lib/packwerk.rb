@@ -29,7 +29,6 @@ module Packwerk
   autoload :PackageSet
   autoload :PackageTodo
   autoload :Parsers
-  autoload :RailsLoadPaths
   autoload :Reference
   autoload :ReferenceOffense
   autoload :Validator
@@ -57,24 +56,11 @@ module Packwerk
   # Private APIs
   # Please submit an issue if you have a use-case for these
   autoload :ApplicationValidator
-  autoload :AssociationInspector
-  autoload :Cache
-  autoload :ConstantDiscovery
-  autoload :ConstantNameInspector
-  autoload :ConstNodeInspector
   autoload :ExtensionLoader
-  autoload :FileProcessor
   autoload :FilesForProcessing
   autoload :Graph
-  autoload :NodeHelpers
-  autoload :NodeProcessor
-  autoload :NodeProcessorFactory
-  autoload :NodeVisitor
-  autoload :ParsedConstantDefinitions
   autoload :ParseRun
-  autoload :ReferenceExtractor
   autoload :RunContext
-  autoload :UnresolvedReference
 
   module Generators
     extend ActiveSupport::Autoload

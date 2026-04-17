@@ -3,15 +3,11 @@ PATH
   specs:
     packwerk (3.2.3)
       activesupport (>= 6.0)
-      ast
       better_html
       bundler
-      constant_resolver (>= 0.3)
-      parallel
-      parser
       prism (>= 0.25.0)
+      rubydex (>= 0.1.0.beta12)
       sorbet-runtime (>= 0.5.9914)
-      zeitwerk (>= 2.6.1)
 
 GEM
   remote: https://rubygems.org/
@@ -61,7 +57,6 @@ GEM
     cgi (0.4.2)
     concurrent-ruby (1.3.5)
     connection_pool (2.5.3)
-    constant_resolver (0.3.0)
     crass (1.0.6)
     date (3.4.1)
     drb (2.2.3)
@@ -85,20 +80,18 @@ GEM
       method_source (>= 0.6.7)
       rake (>= 0.9.2.2)
     method_source (1.1.0)
-    minitest (5.25.5)
-    minitest-focus (1.3.1)
-      minitest (>= 4, < 6)
+    mini_portile2 (2.8.9)
+    minitest (5.27.0)
+    minitest-focus (1.4.1)
+      minitest (> 5.0)
     mocha (2.5.0)
       ruby2_keywords (>= 0.0.5)
+    mutex_m (0.3.0)
     netrc (0.11.0)
-    nokogiri (1.18.9-aarch64-linux-gnu)
+    nokogiri (1.18.9)
+      mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
-    nokogiri (1.18.9-arm64-darwin)
-      racc (~> 1.4)
-    nokogiri (1.18.9-x86_64-darwin)
-      racc (~> 1.4)
-    nokogiri (1.18.9-x86_64-linux-gnu)
-      racc (~> 1.4)
+    ostruct (0.6.3)
     parallel (1.25.1)
     parser (3.3.3.0)
       ast (~> 2.4.1)
@@ -168,6 +161,10 @@ GEM
       rubocop (>= 0.90.0)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
+    rubydex (0.1.0.beta12)
+    rubydex (0.1.0.beta12-aarch64-linux)
+    rubydex (0.1.0.beta12-arm64-darwin)
+    rubydex (0.1.0.beta12-x86_64-linux)
     securerandom (0.4.1)
     smart_properties (1.17.0)
     sorbet (0.5.12135)
@@ -217,16 +214,19 @@ PLATFORMS
 
 DEPENDENCIES
   byebug
-  constant_resolver
   m
+  minitest (~> 5.0)
   minitest-focus
   mocha
+  mutex_m
+  ostruct
   packwerk!
   railties
   rake
   rubocop-performance
   rubocop-shopify
   rubocop-sorbet
+  rubydex (= 0.1.0.beta12)
   sorbet-static-and-runtime
   spring
   tapioca

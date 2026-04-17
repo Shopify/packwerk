@@ -46,8 +46,20 @@ module Packwerk
 
       sig { returns(ParseRun) }
       def parse_run
+        all_files = if @files_for_processing.files_specified?
+          # Scoped check -- compute full workspace for indexing
+          FilesForProcessing.fetch(
+            relative_file_paths: [],
+            configuration: configuration,
+          ).files
+        else
+          # Full check -- the file set IS the workspace
+          @files_for_processing.files
+        end
+
         ParseRun.new(
           relative_file_set: @files_for_processing.files,
+          all_files: all_files,
           parallel: configuration.parallel?,
         )
       end

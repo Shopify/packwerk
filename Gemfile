@@ -5,10 +5,11 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}.git" }
 
 gemspec
 
+gem("rubydex", "0.1.0.beta12")
+
 # Specify the same dependency sources as the application Gemfile
 
 gem("spring")
-gem("constant_resolver", require: false)
 gem("rubocop-performance", require: false)
 gem("rubocop-sorbet", require: false)
 gem("mocha", require: false)
@@ -18,8 +19,13 @@ gem("railties")
 
 gem("byebug")
 gem("minitest-focus")
+gem("minitest", "~> 5.0")
 
 gem("m")
 gem("rake")
 gem("sorbet-static-and-runtime")
 gem("zeitwerk")
+
+# Ruby 4.0 removed ostruct from stdlib; yard/tapioca need it
+gem("ostruct")
+gem("mutex_m")
