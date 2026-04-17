@@ -29,7 +29,6 @@ module Packwerk
   autoload :PackageSet
   autoload :PackageTodo
   autoload :Parsers
-  autoload :RailsLoadPaths
   autoload :Reference
   autoload :ReferenceOffense
   autoload :Validator

@@ -42,7 +42,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency("bundler")
   spec.add_dependency("rubydex", ">= 0.1.0.beta12")
   spec.add_dependency("sorbet-runtime", ">= 0.5.9914")
-  spec.add_dependency("zeitwerk", ">= 2.6.1")
 
   # For association detection (Prism native AST walk)
   spec.add_dependency("prism", ">= 0.25.0")

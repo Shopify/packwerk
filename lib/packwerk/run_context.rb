@@ -24,7 +24,6 @@ module Packwerk
       def from_configuration(configuration)
         new(
           root_path: configuration.root_path,
-          load_paths: configuration.load_paths,
           package_paths: configuration.package_paths,
           inflector: ActiveSupport::Inflector,
           custom_associations: configuration.custom_associations,
@@ -38,7 +37,6 @@ module Packwerk
     sig do
       params(
         root_path: String,
-        load_paths: T::Hash[String, Module],
         inflector: T.class_of(ActiveSupport::Inflector),
         package_paths: T.nilable(T.any(T::Array[String], String)),
         custom_associations: T::Array[Symbol],
@@ -50,7 +48,6 @@ module Packwerk
     end
     def initialize(
       root_path:,
-      load_paths:,
       inflector:,
       package_paths: nil,
       custom_associations: [],
@@ -60,7 +57,6 @@ module Packwerk
       checkers: Checker.all
     )
       @root_path = root_path
-      @load_paths = load_paths
       @inflector = inflector
       @custom_associations = custom_associations
       @associations_exclude = associations_exclude
