@@ -21,6 +21,7 @@ gem("minitest-focus")
 gem("minitest-mock")
 
 gem("m")
+gem("mutex_m") # extracted from stdlib in Ruby 3.4
 gem("rake")
 gem("sorbet-static-and-runtime")
 gem("zeitwerk")
