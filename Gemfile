@@ -18,6 +18,7 @@ gem("railties")
 
 gem("byebug")
 gem("minitest-focus")
+gem("minitest-mock")
 
 gem("m")
 gem("rake")

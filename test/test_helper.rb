@@ -9,6 +9,7 @@ ENV["RAILS_ENV"] = "test"
 require "packwerk"
 
 require "minitest/autorun"
+require "minitest/mock"
 require "minitest/focus"
 require "mocha/minitest"
 require "support/packwerk/application_fixture_helper"
