@@ -6,7 +6,7 @@ module StubConst
 
   sig do
     params(
-      mod: Module,
+      mod: T::Module[T.anything],
       const: T.any(Symbol, String),
       value: Object,
       block: T.proc.void

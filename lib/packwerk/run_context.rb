@@ -33,7 +33,7 @@ module Packwerk
     sig do
       params(
         root_path: String,
-        load_paths: T::Hash[String, Module],
+        load_paths: T::Hash[String, T::Module[T.anything]],
         inflector: T.class_of(ActiveSupport::Inflector),
         cache_directory: Pathname,
         config_path: T.nilable(String),
