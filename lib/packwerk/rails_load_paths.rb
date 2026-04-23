@@ -43,7 +43,10 @@ module Packwerk
           .reject { |path| path.fnmatch(bundle_path_match.to_s) } # reject paths from vendored gems
       end
 
-      sig { params(load_paths: T::Hash[Pathname, T::Module[T.anything]], rails_root: Pathname).returns(T::Hash[String, T::Module[T.anything]]) }
+      sig do
+        params(load_paths: T::Hash[Pathname, T::Module[T.anything]],
+          rails_root: Pathname).returns(T::Hash[String, T::Module[T.anything]])
+      end
       def relative_path_strings(load_paths, rails_root: Rails.root)
         load_paths.transform_keys { |path| Pathname.new(path).relative_path_from(rails_root).to_s }
       end
