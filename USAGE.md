@@ -302,24 +302,28 @@ class MyChecker
   include Packwerk::Checker
   # implement the `Checker` interface
 
-  sig { override.returns(String) }
+  # @override
+  #: -> String
   def violation_type
     'my_custom_violation_type'
   end
 
-  sig { override.params(listed_offense: ReferenceOffense).returns(T::Boolean) }
+  # @override
+  #: (ReferenceOffense listed_offense) -> bool
   def strict_mode_violation?(listed_offense)
     # This will allow "strict mode" to be supported in your checker
     referencing_package = listed_offense.reference.package
     referencing_package.config["enforce_custom"] == "strict"
   end
 
-  sig { override.params(reference: Reference).returns(T::Boolean) }
+  # @override
+  #: (Reference reference) -> bool
   def invalid_reference?(reference)
     # your logic here
   end
 
-  sig { override.params(reference: Reference).returns(String) }
+  # @override
+  #: (Reference reference) -> String
   def message(reference)
     # your message here
   end
@@ -345,12 +349,14 @@ class MyValidator
   include Packwerk::Validator
   # implement the `Validator` interface
 
-  sig { override.returns(T::Array[String]) }
+  # @override
+  #: -> Array[String]
   def permitted_keys
     ['enforce_my_custom_checker']
   end
 
-  sig { override.params(package_set: PackageSet, configuration: Configuration).returns(ApplicationValidator::Result) }
+  # @override
+  #: (PackageSet package_set, Configuration configuration) -> ApplicationValidator::Result
   def call(package_set, configuration)
     # your logic here
   end
