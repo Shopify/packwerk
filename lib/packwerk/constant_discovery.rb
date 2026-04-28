@@ -19,9 +19,7 @@ module Packwerk
 
     # @param constant_resolver [ConstantResolver]
     # @param packages [Packwerk::PackageSet]
-    sig do
-      params(constant_resolver: ConstantResolver, packages: Packwerk::PackageSet).void
-    end
+    #: (constant_resolver: ConstantResolver, packages: Packwerk::PackageSet) -> void
     def initialize(constant_resolver:, packages:)
       @packages = packages
       @resolver = constant_resolver
@@ -33,11 +31,7 @@ module Packwerk
     #
     # @return [Packwerk::Package] the package that contains the given file,
     #   or nil if the path is not owned by any component
-    sig do
-      params(
-        path: String,
-      ).returns(Packwerk::Package)
-    end
+    #: (String path) -> Packwerk::Package
     def package_from_path(path)
       @packages.package_from_path(path)
     end
@@ -49,12 +43,7 @@ module Packwerk
     # @param current_namespace_path [Array<String>] (optional) The namespace of the context in which the constant is
     #   used, e.g. ["Apps", "Models"] for `Apps::Models`. Defaults to [] which means top level.
     # @return [ConstantContext]
-    sig do
-      params(
-        const_name: String,
-        current_namespace_path: T.nilable(T::Array[String]),
-      ).returns(T.nilable(ConstantContext))
-    end
+    #: (String const_name, ?current_namespace_path: Array[String]?) -> ConstantContext?
     def context_for(const_name, current_namespace_path: [])
       begin
         constant = @resolver.resolve(const_name, current_namespace_path: current_namespace_path)

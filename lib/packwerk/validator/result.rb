@@ -9,7 +9,7 @@ module Packwerk
       const :ok, T::Boolean
       const :error_value, T.nilable(String)
 
-      sig { returns(T::Boolean) }
+      #: -> bool
       def ok?
         ok
       end

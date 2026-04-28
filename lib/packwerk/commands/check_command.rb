@@ -9,7 +9,8 @@ module Packwerk
 
       description "run all checks"
 
-      sig { override.returns(T::Boolean) }
+      # @override
+      #: -> bool
       def run
         if @files_for_processing.files.empty?
           out.puts(<<~MSG.squish)
@@ -48,12 +49,12 @@ module Packwerk
 
       private
 
-      sig { returns(RunContext) }
+      #: -> RunContext
       def run_context
         @run_context ||= T.let(RunContext.from_configuration(configuration), T.nilable(RunContext))
       end
 
-      sig { returns(OffenseCollection) }
+      #: -> OffenseCollection
       def offense_collection
         @offense_collection ||= T.let(OffenseCollection.new(configuration.root_path), T.nilable(OffenseCollection))
       end

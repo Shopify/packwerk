@@ -11,12 +11,9 @@ module Packwerk
 
     interface!
 
-    sig do
-      abstract
-        .params(node: ::AST::Node, ancestors: T::Array[::AST::Node], relative_file: String)
-        .returns(T.nilable(String))
-    end
-    def constant_name_from_node(node, ancestors:, relative_file:); end
+    # @abstract
+    #: (::AST::Node node, ancestors: Array[::AST::Node], relative_file: String) -> String?
+    def constant_name_from_node(node, ancestors:, relative_file:) = raise NotImplementedError, "Abstract method called"
   end
 
   private_constant :ConstantNameInspector

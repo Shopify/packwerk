@@ -9,12 +9,7 @@ module Packwerk
     include TSort
 
     extend T::Sig
-    sig do
-      params(
-        # The edges of the graph; represented as an Hash of Arrays.
-        edges: T::Hash[T.any(String, Integer, NilClass), T::Array[T.any(String, Integer, NilClass)]]
-      ).void
-    end
+    #: (Hash[(String | Integer | NilClass), Array[(String | Integer | NilClass)]] edges) -> void
     def initialize(edges)
       @edges = edges
     end

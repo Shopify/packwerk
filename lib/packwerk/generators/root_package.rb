@@ -9,19 +9,19 @@ module Packwerk
       class << self
         extend T::Sig
 
-        sig { params(root: String, out: T.any(IO, StringIO)).returns(T::Boolean) }
+        #: (root: String, out: (IO | StringIO)) -> bool
         def generate(root:, out:)
           new(root: root, out: out).generate
         end
       end
 
-      sig { params(root: String, out: T.any(IO, StringIO)).void }
+      #: (root: String, ?out: (IO | StringIO)) -> void
       def initialize(root:, out: $stdout)
         @root = root
         @out = out
       end
 
-      sig { returns(T::Boolean) }
+      #: -> bool
       def generate
         if Dir.glob("#{@root}/package.yml").any?
           @out.puts("⚠️  Root package already exists.")

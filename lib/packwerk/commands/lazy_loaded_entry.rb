@@ -6,27 +6,27 @@ module Packwerk
     class LazyLoadedEntry
       extend T::Sig
 
-      sig { returns(String) }
+      #: String
       attr_reader :name
 
-      sig { params(name: String, aliases: T::Array[String]).void }
+      #: (String name, ?aliases: Array[String]) -> void
       def initialize(name, aliases: [])
         @name = name
         @aliases = aliases
       end
 
-      sig { returns(T.class_of(BaseCommand)) }
+      #: -> singleton(BaseCommand)
       def command_class
         classname = @name.sub(" ", "_").underscore.classify + "Command"
         Commands.const_get(classname) # rubocop:disable Sorbet/ConstantsFromStrings
       end
 
-      sig { returns(String) }
+      #: -> String
       def description
         command_class.description
       end
 
-      sig { params(name_or_alias: String).returns(T::Boolean) }
+      #: (String name_or_alias) -> bool
       def matches_command?(name_or_alias)
         @name == name_or_alias || @aliases.include?(name_or_alias)
       end

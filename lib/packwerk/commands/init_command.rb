@@ -8,7 +8,8 @@ module Packwerk
 
       description "set up packwerk"
 
-      sig { override.returns(T::Boolean) }
+      # @override
+      #: -> bool
       def run
         out.puts("📦 Initializing Packwerk...")
 

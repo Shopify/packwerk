@@ -73,7 +73,7 @@ module Packwerk
 
     private
 
-    sig { returns(ApplicationValidator) }
+    #: -> ApplicationValidator
     def validator
       @application_validator ||= ApplicationValidator.new
     end

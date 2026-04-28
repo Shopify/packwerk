@@ -8,7 +8,8 @@ module Packwerk
 
       description "output packwerk version"
 
-      sig { override.returns(T::Boolean) }
+      # @override
+      #: -> bool
       def run
         out.puts(Packwerk::VERSION)
         true

@@ -8,13 +8,16 @@ module Packwerk
 
     interface!
 
-    sig { abstract.returns(String) }
-    def reset; end
+    # @abstract
+    #: -> String
+    def reset = raise NotImplementedError, "Abstract method called"
 
-    sig { abstract.returns(String) }
-    def filename; end
+    # @abstract
+    #: -> String
+    def filename = raise NotImplementedError, "Abstract method called"
 
-    sig { abstract.returns(String) }
-    def error; end
+    # @abstract
+    #: -> String
+    def error = raise NotImplementedError, "Abstract method called"
   end
 end

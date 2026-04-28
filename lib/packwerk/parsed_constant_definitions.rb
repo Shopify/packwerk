@@ -12,7 +12,7 @@ module Packwerk
       extend T::Sig
 
       # What fully qualified constants can this constant refer to in this context?
-      sig { params(constant_name: String, namespace_path: T::Array[T.nilable(String)]).returns(T::Array[String]) }
+      #: (String constant_name, namespace_path: Array[String?]) -> Array[String]
       def reference_qualifications(constant_name, namespace_path:)
         return [constant_name] if constant_name.start_with?("::")
 
@@ -26,20 +26,14 @@ module Packwerk
       end
     end
 
-    sig { params(root_node: T.nilable(AST::Node)).void }
+    #: (root_node: AST::Node?) -> void
     def initialize(root_node:)
       @local_definitions = T.let({}, T::Hash[String, T.nilable(Node::Location)])
 
       collect_local_definitions_from_root(root_node) if root_node
     end
 
-    sig do
-      params(
-        constant_name: String,
-        location: T.nilable(Node::Location),
-        namespace_path: T::Array[String],
-      ).returns(T::Boolean)
-    end
+    #: (String constant_name, ?location: Node::Location?, ?namespace_path: Array[String]) -> bool
     def local_reference?(constant_name, location: nil, namespace_path: [])
       qualifications = self.class.reference_qualifications(constant_name, namespace_path: namespace_path)
 
@@ -51,7 +45,7 @@ module Packwerk
 
     private
 
-    sig { params(node: AST::Node, current_namespace_path: T::Array[T.nilable(String)]).void }
+    #: (AST::Node node, ?Array[String?] current_namespace_path) -> void
     def collect_local_definitions_from_root(node, current_namespace_path = [])
       if NodeHelpers.constant_assignment?(node)
         add_definition(NodeHelpers.constant_name(node), current_namespace_path, NodeHelpers.name_location(node))
@@ -69,13 +63,7 @@ module Packwerk
       NodeHelpers.each_child(node) { |child| collect_local_definitions_from_root(child, current_namespace_path) }
     end
 
-    sig do
-      params(
-        constant_name: String,
-        current_namespace_path: T::Array[T.nilable(String)],
-        location: T.nilable(Node::Location),
-      ).void
-    end
+    #: (String constant_name, Array[String?] current_namespace_path, Node::Location? location) -> void
     def add_definition(constant_name, current_namespace_path, location)
       resolved_constant = [""].concat(current_namespace_path).push(constant_name).join("::")
 

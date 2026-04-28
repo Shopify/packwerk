@@ -11,26 +11,13 @@ module Packwerk
       T.proc.params(path: String).returns(T::Array[Offense])
     end
 
-    sig do
-      params(
-        relative_file_set: FilesForProcessing::RelativeFileSet,
-        parallel: T::Boolean,
-      ).void
-    end
+    #: (relative_file_set: FilesForProcessing::RelativeFileSet, parallel: bool) -> void
     def initialize(relative_file_set:, parallel:)
       @relative_file_set = relative_file_set
       @parallel = parallel
     end
 
-    sig do
-      params(
-        run_context: RunContext,
-        on_interrupt: T.nilable(T.proc.void),
-        block: T.nilable(T.proc.params(
-          offenses: T::Array[Packwerk::Offense],
-        ).void)
-      ).returns(T::Array[Offense])
-    end
+    #: (RunContext run_context, ?on_interrupt: (^-> void)?) ?{ (Array[Packwerk::Offense] offenses) -> void } -> Array[Offense]
     def find_offenses(run_context, on_interrupt: nil, &block)
       process_file_proc = process_file_proc(run_context, &block)
 
@@ -45,12 +32,7 @@ module Packwerk
 
     private
 
-    sig do
-      params(
-        run_context: RunContext,
-        block: T.nilable(T.proc.params(offenses: T::Array[Offense]).void)
-      ).returns(ProcessFileProc)
-    end
+    #: (RunContext run_context) ?{ (Array[Offense] offenses) -> void } -> ProcessFileProc
     def process_file_proc(run_context, &block)
       if block
         T.let(proc do |relative_file|
@@ -63,12 +45,7 @@ module Packwerk
       end
     end
 
-    sig do
-      params(
-        on_interrupt: T.nilable(T.proc.void),
-        block: ProcessFileProc
-      ).returns(T::Array[Offense])
-    end
+    #: (?on_interrupt: (^-> void)?) { (?) -> untyped } -> Array[Offense]
     def serial_find_offenses(on_interrupt: nil, &block)
       all_offenses = T.let([], T::Array[Offense])
       begin

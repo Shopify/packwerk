@@ -8,7 +8,8 @@ module Packwerk
 
       description "verify integrity of packwerk and package configuration"
 
-      sig { override.returns(T::Boolean) }
+      # @override
+      #: -> bool
       def run
         validator_result = T.let(nil, T.nilable(Validator::Result))
 
@@ -29,12 +30,12 @@ module Packwerk
 
       private
 
-      sig { returns(ApplicationValidator) }
+      #: -> ApplicationValidator
       def validator
         ApplicationValidator.new
       end
 
-      sig { returns(PackageSet) }
+      #: -> PackageSet
       def package_set
         PackageSet.load_all_from(
           configuration.root_path,

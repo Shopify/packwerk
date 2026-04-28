@@ -9,7 +9,8 @@ module Packwerk
 
       description "update package_todo.yml files"
 
-      sig { override.returns(T::Boolean) }
+      # @override
+      #: -> bool
       def run
         if @files_for_processing.files_specified?
           out.puts(<<~MSG.squish)

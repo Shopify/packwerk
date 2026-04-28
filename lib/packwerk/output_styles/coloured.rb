@@ -8,18 +8,21 @@ module Packwerk
       extend T::Sig
       include OutputStyle
 
-      sig { override.returns(String) }
+      # @override
+      #: -> String
       def reset
         "\033[m"
       end
 
-      sig { override.returns(String) }
+      # @override
+      #: -> String
       def filename
         # 36 is foreground cyan
         "\033[36m"
       end
 
-      sig { override.returns(String) }
+      # @override
+      #: -> String
       def error
         # 31 is foreground red
         "\033[31m"

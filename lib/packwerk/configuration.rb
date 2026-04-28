@@ -11,7 +11,7 @@ module Packwerk
     class << self
       extend T::Sig
 
-      sig { params(path: String).returns(Configuration) }
+      #: (?String path) -> Configuration
       def from_path(path = Dir.pwd)
         raise ArgumentError, "#{File.expand_path(path)} does not exist" unless File.exist?(path)
 
@@ -26,7 +26,7 @@ module Packwerk
 
       private
 
-      sig { params(path: String).returns(Configuration) }
+      #: (String path) -> Configuration
       def from_packwerk_config(path)
         new(
           YAML.load_file(path) || {},
@@ -39,39 +39,34 @@ module Packwerk
     DEFAULT_INCLUDE_GLOBS = T.let(["**/*.{rb,rake,erb}"], T::Array[String])
     DEFAULT_EXCLUDE_GLOBS = T.let(["{bin,node_modules,script,tmp,vendor}/**/*"], T::Array[String])
 
-    sig { returns(T::Array[String]) }
+    #: Array[String]
     attr_reader(:include)
 
-    sig { returns(T::Array[String]) }
+    #: Array[String]
     attr_reader(:exclude)
 
-    sig { returns(String) }
+    #: String
     attr_reader(:root_path)
 
-    sig { returns(T.any(String, T::Array[String])) }
+    #: (String | Array[String])
     attr_reader(:package_paths)
 
-    sig { returns(T::Array[Symbol]) }
+    #: Array[Symbol]
     attr_reader(:custom_associations)
 
-    sig { returns(T::Array[String]) }
+    #: Array[String]
     attr_reader(:associations_exclude)
 
-    sig { returns(T.nilable(String)) }
+    #: String?
     attr_reader(:config_path)
 
-    sig { returns(Pathname) }
+    #: Pathname
     attr_reader(:cache_directory)
 
-    sig { params(parallel: T::Boolean).returns(T::Boolean) }
+    #: bool
     attr_writer(:parallel)
 
-    sig do
-      params(
-        configs: T::Hash[String, T.untyped],
-        config_path: T.nilable(String),
-      ).void
-    end
+    #: (?Hash[String, untyped] configs, ?config_path: String?) -> void
     def initialize(configs = {}, config_path: nil)
       @include = T.let(configs["include"] || DEFAULT_INCLUDE_GLOBS, T::Array[String])
       @exclude = T.let(configs["exclude"] || DEFAULT_EXCLUDE_GLOBS, T::Array[String])
@@ -96,7 +91,7 @@ module Packwerk
       end
     end
 
-    sig { returns(T::Hash[String, T::Module[T.anything]]) }
+    #: -> Hash[String, Module[top]]
     def load_paths
       @load_paths ||= T.let(
         RailsLoadPaths.for(@root_path, environment: "test"),
@@ -104,17 +99,17 @@ module Packwerk
       )
     end
 
-    sig { returns(T::Boolean) }
+    #: -> bool
     def parallel?
       @parallel
     end
 
-    sig { returns(OffensesFormatter) }
+    #: -> OffensesFormatter
     def offenses_formatter
       OffensesFormatter.find(@offenses_formatter_identifier)
     end
 
-    sig { returns(T::Boolean) }
+    #: -> bool
     def cache_enabled?
       @cache_enabled
     end

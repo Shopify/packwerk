@@ -8,7 +8,8 @@ module Packwerk
 
       description "display help information about packwerk"
 
-      sig { override.returns(T::Boolean) }
+      # @override
+      #: -> bool
       def run
         err_out.puts(<<~USAGE)
           Usage: #{$PROGRAM_NAME} <subcommand>
@@ -22,7 +23,7 @@ module Packwerk
 
       private
 
-      sig { returns(String) }
+      #: -> String
       def command_help_lines
         Commands.all.map do |command|
           "  #{command.name} - #{command.description}"

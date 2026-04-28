@@ -11,16 +11,16 @@ module Packwerk
 
     ROOT_PACKAGE_NAME = "."
 
-    sig { returns(String) }
+    #: String
     attr_reader :name
 
-    sig { returns(T::Array[String]) }
+    #: Array[String]
     attr_reader :dependencies
 
-    sig { returns(T::Hash[T.untyped, T.untyped]) }
+    #: Hash[untyped, untyped]
     attr_reader :config
 
-    sig { params(name: String, config: T.nilable(T::Hash[String, T.untyped])).void }
+    #: (name: String, ?config: Hash[String, untyped]?) -> void
     def initialize(name:, config: nil)
       @name = name
       @config = T.let(config || {}, T::Hash[String, T.untyped])
@@ -28,46 +28,46 @@ module Packwerk
       @public_path = T.let(nil, T.nilable(String))
     end
 
-    sig { returns(T::Boolean) }
+    #: -> bool
     def enforce_dependencies?
       [true, "strict"].include?(@config["enforce_dependencies"])
     end
 
-    sig { params(package: Package).returns(T::Boolean) }
+    #: (Package package) -> bool
     def dependency?(package)
       @dependencies.include?(package.name)
     end
 
-    sig { params(path: String).returns(T::Boolean) }
+    #: (String path) -> bool
     def package_path?(path)
       return true if root?
 
       path.start_with?(@name + "/")
     end
 
-    sig { params(other: T.untyped).returns(T.nilable(Integer)) }
+    #: (untyped other) -> Integer?
     def <=>(other)
       return nil unless other.is_a?(self.class)
 
       name <=> other.name
     end
 
-    sig { params(other: T.untyped).returns(T::Boolean) }
+    #: (untyped other) -> bool
     def eql?(other)
       self == other
     end
 
-    sig { returns(Integer) }
+    #: -> Integer
     def hash
       name.hash
     end
 
-    sig { returns(String) }
+    #: -> String
     def to_s
       name
     end
 
-    sig { returns(T::Boolean) }
+    #: -> bool
     def root?
       @name == ROOT_PACKAGE_NAME
     end

@@ -8,12 +8,7 @@ module Packwerk
     extend T::Sig
     extend T::Helpers
 
-    sig do
-      params(
-        root_path: String,
-        package_todos: T::Hash[Packwerk::Package, Packwerk::PackageTodo]
-      ).void
-    end
+    #: (String root_path, ?Hash[Packwerk::Package, Packwerk::PackageTodo] package_todos) -> void
     def initialize(root_path, package_todos = {})
       @root_path = root_path
       @package_todos = T.let(package_todos, T::Hash[Packwerk::Package, Packwerk::PackageTodo])
@@ -22,33 +17,28 @@ module Packwerk
       @errors = T.let([], T::Array[Packwerk::Offense])
     end
 
-    sig { returns(T::Array[Packwerk::ReferenceOffense]) }
+    #: Array[Packwerk::ReferenceOffense]
     attr_reader :new_violations
 
-    sig { returns(T::Array[Packwerk::Offense]) }
+    #: Array[Packwerk::Offense]
     attr_reader :errors
 
-    sig { returns(T::Array[Packwerk::ReferenceOffense]) }
+    #: Array[Packwerk::ReferenceOffense]
     attr_reader :strict_mode_violations
 
-    sig do
-      params(offense: Packwerk::Offense)
-        .returns(T::Boolean)
-    end
+    #: (Packwerk::Offense offense) -> bool
     def listed?(offense)
       return false unless offense.is_a?(ReferenceOffense)
 
       already_listed?(offense)
     end
 
-    sig { params(offenses: T::Array[Offense]).void }
+    #: (Array[Offense] offenses) -> void
     def add_offenses(offenses)
       offenses.each { |offense| add_offense(offense) }
     end
 
-    sig do
-      params(offense: Packwerk::Offense).void
-    end
+    #: (Packwerk::Offense offense) -> void
     def add_offense(offense)
       unless offense.is_a?(ReferenceOffense)
         @errors << offense
@@ -67,50 +57,50 @@ module Packwerk
       end
     end
 
-    sig { params(for_files: T::Set[String]).returns(T::Boolean) }
+    #: (Set[String] for_files) -> bool
     def stale_violations?(for_files)
       @package_todos.values.any? do |package_todo|
         package_todo.stale_violations?(for_files)
       end
     end
 
-    sig { params(package_set: Packwerk::PackageSet).void }
+    #: (Packwerk::PackageSet package_set) -> void
     def persist_package_todo_files(package_set)
       dump_package_todo_files
       cleanup_extra_package_todo_files(package_set)
     end
 
-    sig { returns(T::Array[Packwerk::Offense]) }
+    #: -> Array[Packwerk::Offense]
     def outstanding_offenses
       errors + new_violations
     end
 
-    sig { returns(T::Array[Packwerk::ReferenceOffense]) }
+    #: -> Array[Packwerk::ReferenceOffense]
     def unlisted_strict_mode_violations
       strict_mode_violations.reject { |offense| already_listed?(offense) }
     end
 
     private
 
-    sig { params(offense: ReferenceOffense).returns(T::Boolean) }
+    #: (ReferenceOffense offense) -> bool
     def already_listed?(offense)
       package_todo_for(offense.reference.package).listed?(offense.reference,
         violation_type: offense.violation_type)
     end
 
-    sig { params(offense: ReferenceOffense).returns(T::Boolean) }
+    #: (ReferenceOffense offense) -> bool
     def add_to_package_todo(offense)
       package_todo_for(offense.reference.package).add_entries(offense.reference,
         offense.violation_type)
     end
 
-    sig { params(offense: ReferenceOffense).returns(T::Boolean) }
+    #: (ReferenceOffense offense) -> bool
     def strict_mode_violation?(offense)
       checker = Checker.find(offense.violation_type)
       checker.strict_mode_violation?(offense)
     end
 
-    sig { params(package_set: Packwerk::PackageSet).void }
+    #: (Packwerk::PackageSet package_set) -> void
     def cleanup_extra_package_todo_files(package_set)
       packages_without_todos = (package_set.packages.values - @package_todos.keys)
 
@@ -122,12 +112,12 @@ module Packwerk
       end
     end
 
-    sig { void }
+    #: -> void
     def dump_package_todo_files
       @package_todos.each_value(&:dump)
     end
 
-    sig { params(package: Packwerk::Package).returns(Packwerk::PackageTodo) }
+    #: (Packwerk::Package package) -> Packwerk::PackageTodo
     def package_todo_for(package)
       @package_todos[package] ||= Packwerk::PackageTodo.new(
         package,
@@ -135,7 +125,7 @@ module Packwerk
       )
     end
 
-    sig { params(package: Packwerk::Package).returns(String) }
+    #: (Packwerk::Package package) -> String
     def package_todo_file_for(package)
       File.join(@root_path, package.name, "package_todo.yml")
     end

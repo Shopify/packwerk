@@ -8,26 +8,23 @@ module Packwerk
     extend T::Sig
     extend T::Helpers
 
-    sig { returns(T.nilable(Node::Location)) }
+    #: Node::Location?
     attr_reader :location
 
-    sig { returns(String) }
+    #: String
     attr_reader :file
 
-    sig { returns(String) }
+    #: String
     attr_reader :message
 
-    sig do
-      params(file: String, message: String, location: T.nilable(Node::Location))
-        .void
-    end
+    #: (file: String, message: String, ?location: Node::Location?) -> void
     def initialize(file:, message:, location: nil)
       @location = location
       @file = file
       @message = message
     end
 
-    sig { params(style: OutputStyle).returns(String) }
+    #: (?OutputStyle style) -> String
     def to_s(style = OutputStyles::Plain.new)
       location = self.location
       if location

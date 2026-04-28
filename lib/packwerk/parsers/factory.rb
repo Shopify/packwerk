@@ -20,14 +20,14 @@ module Packwerk
       ERB_REGEX = /\.erb\Z/
       private_constant :ERB_REGEX
 
-      sig { void }
+      #: -> void
       def initialize
         @ruby_parser = T.let(nil, T.nilable(ParserInterface))
         @erb_parser = T.let(nil, T.nilable(ParserInterface))
         @erb_parser_class = T.let(nil, T.nilable(T::Class[T.anything]))
       end
 
-      sig { params(path: String).returns(T.nilable(ParserInterface)) }
+      #: (String path) -> ParserInterface?
       def for_path(path)
         case path
         when RUBY_REGEX
@@ -37,12 +37,12 @@ module Packwerk
         end
       end
 
-      sig { returns(T::Class[T.anything]) }
+      #: -> Class[top]
       def erb_parser_class
         @erb_parser_class ||= Erb
       end
 
-      sig { params(klass: T.nilable(T::Class[T.anything])).void }
+      #: (Class[top]? klass) -> void
       def erb_parser_class=(klass)
         @erb_parser_class = klass
         @erb_parser = nil

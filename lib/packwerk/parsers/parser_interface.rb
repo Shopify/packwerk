@@ -11,9 +11,9 @@ module Packwerk
 
       interface!
 
-      sig { abstract.params(io: T.any(IO, StringIO), file_path: String).returns(T.untyped) }
-      def call(io:, file_path:)
-      end
+      # @abstract
+      #: (io: (IO | StringIO), file_path: String) -> untyped
+      def call(io:, file_path:) = raise NotImplementedError, "Abstract method called"
     end
   end
 end

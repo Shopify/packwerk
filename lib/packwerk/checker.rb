@@ -11,35 +11,35 @@ module Packwerk
     class << self
       extend T::Sig
 
-      sig { params(base: T::Class[T.anything]).void }
+      #: (Class[top] base) -> void
       def included(base)
         checkers << base
       end
 
-      sig { returns(T::Array[Checker]) }
+      #: -> Array[Checker]
       def all
         load_defaults
         T.cast(checkers.map(&:new), T::Array[Checker])
       end
 
-      sig { params(violation_type: String).returns(Checker) }
+      #: (String violation_type) -> Checker
       def find(violation_type)
         checker_by_violation_type(violation_type)
       end
 
       private
 
-      sig { void }
+      #: -> void
       def load_defaults
         require("packwerk/reference_checking/checkers/dependency_checker")
       end
 
-      sig { returns(T::Array[T::Class[T.anything]]) }
+      #: -> Array[Class[top]]
       def checkers
         @checkers ||= T.let([], T.nilable(T::Array[T::Class[T.anything]]))
       end
 
-      sig { params(name: String).returns(Checker) }
+      #: (String name) -> Checker
       def checker_by_violation_type(name)
         @checker_by_violation_type ||= T.let(Checker.all.to_h do |checker|
                                                [checker.violation_type, checker]
@@ -48,16 +48,20 @@ module Packwerk
       end
     end
 
-    sig { abstract.returns(String) }
-    def violation_type; end
+    # @abstract
+    #: -> String
+    def violation_type = raise NotImplementedError, "Abstract method called"
 
-    sig { abstract.params(offense: ReferenceOffense).returns(T::Boolean) }
-    def strict_mode_violation?(offense); end
+    # @abstract
+    #: (ReferenceOffense offense) -> bool
+    def strict_mode_violation?(offense) = raise NotImplementedError, "Abstract method called"
 
-    sig { abstract.params(reference: Reference).returns(T::Boolean) }
-    def invalid_reference?(reference); end
+    # @abstract
+    #: (Reference reference) -> bool
+    def invalid_reference?(reference) = raise NotImplementedError, "Abstract method called"
 
-    sig { abstract.params(reference: Reference).returns(String) }
-    def message(reference); end
+    # @abstract
+    #: (Reference reference) -> String
+    def message(reference) = raise NotImplementedError, "Abstract method called"
   end
 end

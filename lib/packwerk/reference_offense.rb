@@ -7,21 +7,13 @@ module Packwerk
     extend T::Sig
     extend T::Helpers
 
-    sig { returns(Reference) }
+    #: Reference
     attr_reader :reference
 
-    sig { returns(String) }
+    #: String
     attr_reader :violation_type
 
-    sig do
-      params(
-        reference: Packwerk::Reference,
-        violation_type: String,
-        message: String,
-        location: T.nilable(Node::Location)
-      )
-        .void
-    end
+    #: (reference: Packwerk::Reference, violation_type: String, message: String, ?location: Node::Location?) -> void
     def initialize(reference:, violation_type:, message:, location: nil)
       super(file: T.must(reference.relative_path), message: message, location: location)
       @reference = reference

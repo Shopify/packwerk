@@ -9,14 +9,15 @@ module Packwerk
 
       extend T::Sig
 
-      sig { override.returns(String) }
+      # @override
+      #: -> String
       def identifier
         IDENTIFIER
       end
 
       private
 
-      sig { returns(OutputStyle) }
+      #: -> OutputStyle
       def style
         @style ||= T.let(Packwerk::OutputStyles::Plain.new, T.nilable(Packwerk::OutputStyle))
       end

@@ -6,16 +6,14 @@ module Packwerk
   class Cli
     extend T::Sig
 
-    sig do
-      params(
-        configuration: T.nilable(Configuration),
-        out: T.any(StringIO, IO),
-        err_out: T.any(StringIO, IO),
-        environment: String,
-        style: OutputStyle,
-        offenses_formatter: T.nilable(OffensesFormatter)
-      ).void
-    end
+    #: (
+    #|   ?configuration: Configuration?,
+    #|   ?out: (StringIO | IO),
+    #|   ?err_out: (StringIO | IO),
+    #|   ?environment: String,
+    #|   ?style: OutputStyle,
+    #|   ?offenses_formatter: OffensesFormatter?
+    #| ) -> void
     def initialize(
       configuration: nil,
       out: $stdout,
@@ -36,13 +34,13 @@ module Packwerk
       )
     end
 
-    sig { params(args: T::Array[String]).returns(T.noreturn) }
+    #: (Array[String] args) -> bot
     def run(args)
       success = execute_command(args)
       exit(success)
     end
 
-    sig { params(args: T::Array[String]).returns(T::Boolean) }
+    #: (Array[String] args) -> bool
     def execute_command(args)
       command = args.shift || "help"
       command_class = Commands.for(command)

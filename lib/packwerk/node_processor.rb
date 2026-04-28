@@ -6,23 +6,13 @@ module Packwerk
   class NodeProcessor
     extend T::Sig
 
-    sig do
-      params(
-        reference_extractor: ReferenceExtractor,
-        relative_file: String,
-      ).void
-    end
+    #: (reference_extractor: ReferenceExtractor, relative_file: String) -> void
     def initialize(reference_extractor:, relative_file:)
       @reference_extractor = reference_extractor
       @relative_file = relative_file
     end
 
-    sig do
-      params(
-        node: Parser::AST::Node,
-        ancestors: T::Array[Parser::AST::Node]
-      ).returns(T.nilable(UnresolvedReference))
-    end
+    #: (Parser::AST::Node node, Array[Parser::AST::Node] ancestors) -> UnresolvedReference?
     def call(node, ancestors)
       return unless NodeHelpers.method_call?(node) || NodeHelpers.constant?(node)
 

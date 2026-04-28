@@ -15,7 +15,7 @@ module Packwerk
       T::Hash[PackageName, Entry]
     end
 
-    sig { params(package: Packwerk::Package, path: String).void }
+    #: (Packwerk::Package package, String path) -> void
     def initialize(package, path)
       @package = package
       @path = path
@@ -23,10 +23,7 @@ module Packwerk
       @old_entries = T.let(nil, T.nilable(Entries))
     end
 
-    sig do
-      params(reference: Packwerk::Reference, violation_type: String)
-        .returns(T::Boolean)
-    end
+    #: (Packwerk::Reference reference, violation_type: String) -> bool
     def listed?(reference, violation_type:)
       violated_constants_found = old_entries.dig(reference.constant.package.name, reference.constant.name)
       return false unless violated_constants_found
@@ -37,9 +34,7 @@ module Packwerk
       violated_constants_found.fetch("violations", []).include?(violation_type)
     end
 
-    sig do
-      params(reference: Packwerk::Reference, violation_type: String).returns(T::Boolean)
-    end
+    #: (Packwerk::Reference reference, String violation_type) -> bool
     def add_entries(reference, violation_type)
       package_violations = new_entries.fetch(reference.constant.package.name, {})
       entries_for_constant = package_violations[reference.constant.name] ||= {}
@@ -54,7 +49,7 @@ module Packwerk
       listed?(reference, violation_type: violation_type)
     end
 
-    sig { params(for_files: T::Set[String]).returns(T::Boolean) }
+    #: (Set[String] for_files) -> bool
     def stale_violations?(for_files)
       prepare_entries_for_dump
 
@@ -71,7 +66,7 @@ module Packwerk
       end
     end
 
-    sig { void }
+    #: -> void
     def dump
       if new_entries.empty?
         delete_if_exists
@@ -93,24 +88,24 @@ module Packwerk
       end
     end
 
-    sig { void }
+    #: -> void
     def delete_if_exists
       File.delete(@path) if File.exist?(@path)
     end
 
     private
 
-    sig { returns(Entries) }
+    #: Entries
     attr_reader(:new_entries)
 
-    sig { params(package: String).returns(T::Array[String]) }
+    #: (String package) -> Array[String]
     def deleted_files_for(package)
       old_files = old_entries.fetch(package, {}).values.flat_map { |violation| violation.fetch("files") }
       new_files = new_entries.fetch(package, {}).values.flat_map { |violation| violation.fetch("files") }
       old_files - new_files
     end
 
-    sig { params(package: String, violations: Entry).returns(T::Boolean) }
+    #: (String package, violations: Entry) -> bool
     def stale_violation_for_package?(package, violations:)
       violations.any? do |constant_name, entries_for_constant|
         new_entries_violation_types = new_entries.dig(package, constant_name, "violations")
@@ -129,7 +124,7 @@ module Packwerk
       end
     end
 
-    sig { params(package_violations: Entry, files: T::Set[String]).returns(Entry) }
+    #: (Entry package_violations, files: Set[String]) -> Entry
     def package_violations_for(package_violations, files:)
       {}.tap do |package_violations_for_files|
         package_violations_for_files = T.cast(package_violations_for_files, Entry)
@@ -146,7 +141,7 @@ module Packwerk
       end
     end
 
-    sig { returns(Entries) }
+    #: -> Entries
     def prepare_entries_for_dump
       new_entries.each do |package_name, package_violations|
         package_violations.each do |_, entries_for_constant|
@@ -159,12 +154,12 @@ module Packwerk
       @new_entries = new_entries.sort.to_h
     end
 
-    sig { returns(Entries) }
+    #: -> Entries
     def old_entries
       @old_entries ||= load_yaml_file(@path)
     end
 
-    sig { params(path: String).returns(Entries) }
+    #: (String path) -> Entries
     def load_yaml_file(path)
       File.exist?(path) && YAML.load_file(path) || {}
     rescue Psych::Exception

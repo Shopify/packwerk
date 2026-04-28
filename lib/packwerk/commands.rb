@@ -19,26 +19,26 @@ module Packwerk
     class << self
       extend T::Sig
 
-      sig { params(name: String, aliases: T::Array[String]).void }
+      #: (String name, ?aliases: Array[String]) -> void
       def register(name, aliases: [])
         registry << LazyLoadedEntry.new(name, aliases: aliases)
       end
 
-      sig { params(name_or_alias: String).returns(T.nilable(T.class_of(BaseCommand))) }
+      #: (String name_or_alias) -> singleton(BaseCommand)?
       def for(name_or_alias)
         registry
           .find { |command| command.matches_command?(name_or_alias) }
           &.command_class
       end
 
-      sig { returns(T::Array[LazyLoadedEntry]) }
+      #: -> Array[LazyLoadedEntry]
       def all
         registry.dup
       end
 
       private
 
-      sig { returns(T::Array[LazyLoadedEntry]) }
+      #: -> Array[LazyLoadedEntry]
       def registry
         @registry ||= T.let([], T.nilable(T::Array[LazyLoadedEntry]))
       end
