@@ -74,8 +74,8 @@ module Packwerk
       # We want to match more specific paths first
       sorted_packages = packages.sort_by { |package| -package.name.length }
       packages = sorted_packages.each_with_object({}) { |package, hash| hash[package.name] = package }
-      @packages = T.let(packages, T::Hash[String, Package])
-      @package_from_path = T.let({}, T::Hash[String, T.nilable(Package)])
+      @packages = packages #: Hash[String, Package]
+      @package_from_path = {} #: Hash[String, Package?]
     end
 
     # @override

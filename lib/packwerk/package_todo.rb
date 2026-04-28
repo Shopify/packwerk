@@ -19,8 +19,8 @@ module Packwerk
     def initialize(package, path)
       @package = package
       @path = path
-      @new_entries = T.let({}, Entries)
-      @old_entries = T.let(nil, T.nilable(Entries))
+      @new_entries = {} #: Entries
+      @old_entries = nil #: Entries?
     end
 
     #: (Packwerk::Reference reference, violation_type: String) -> bool

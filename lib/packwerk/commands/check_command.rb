@@ -21,8 +21,8 @@ module Packwerk
           true
         end
 
-        all_offenses = T.let([], T::Array[Offense])
-        on_interrupt = T.let(-> { progress_formatter.interrupted }, T.proc.void)
+        all_offenses = [] #: Array[Offense]
+        on_interrupt = -> { progress_formatter.interrupted } #: ^-> void
 
         progress_formatter.started_inspection(@files_for_processing.files) do
           all_offenses = parse_run.find_offenses(run_context, on_interrupt: on_interrupt) do |offenses|
@@ -51,12 +51,12 @@ module Packwerk
 
       #: -> RunContext
       def run_context
-        @run_context ||= T.let(RunContext.from_configuration(configuration), T.nilable(RunContext))
+        @run_context ||= RunContext.from_configuration(configuration) #: RunContext?
       end
 
       #: -> OffenseCollection
       def offense_collection
-        @offense_collection ||= T.let(OffenseCollection.new(configuration.root_path), T.nilable(OffenseCollection))
+        @offense_collection ||= OffenseCollection.new(configuration.root_path) #: OffenseCollection?
       end
     end
   end

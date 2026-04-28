@@ -36,14 +36,14 @@ module Packwerk
 
       #: -> Array[Class[top]]
       def checkers
-        @checkers ||= T.let([], T.nilable(T::Array[T::Class[T.anything]]))
+        @checkers ||= [] #: Array[Class[top]]?
       end
 
       #: (String name) -> Checker
       def checker_by_violation_type(name)
-        @checker_by_violation_type ||= T.let(Checker.all.to_h do |checker|
-                                               [checker.violation_type, checker]
-                                             end, T.nilable(T::Hash[String, Checker]))
+        @checker_by_violation_type ||= Checker.all.to_h do |checker|
+          [checker.violation_type, checker]
+        end #: Hash[String, Checker]?
         @checker_by_violation_type.fetch(name)
       end
     end

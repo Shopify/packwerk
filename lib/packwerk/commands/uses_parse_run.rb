@@ -21,8 +21,8 @@ module Packwerk
       #| ) -> void
       def initialize(args, configuration:, out:, err_out:, progress_formatter:, offenses_formatter:)
         super
-        @files_for_processing = T.let(fetch_files_to_process, FilesForProcessing)
-        @offenses_formatter = T.let(offenses_formatter_from_options || @offenses_formatter, OffensesFormatter)
+        @files_for_processing = fetch_files_to_process #: FilesForProcessing
+        @offenses_formatter = offenses_formatter_from_options || @offenses_formatter #: OffensesFormatter
         configuration.parallel = parsed_options[:parallel]
       end
 
@@ -54,13 +54,13 @@ module Packwerk
       def parsed_options
         return @parsed_options if @parsed_options
 
-        @parsed_options = T.let(nil, T.nilable(T::Hash[Symbol, T.untyped]))
+        @parsed_options = nil #: Hash[Symbol, untyped]?
 
         @parsed_options = {
-          relative_file_paths: T.let([], T::Array[String]),
-          ignore_nested_packages: T.let(false, T::Boolean),
-          formatter_name: T.let(nil, T.nilable(String)),
-          parallel: T.let(configuration.parallel?, T::Boolean),
+          relative_file_paths: [], #: Array[String]
+          ignore_nested_packages: false, #: bool
+          formatter_name: nil, #: String?
+          parallel: configuration.parallel?,
         }
 
         OptionParser.new do |parser|

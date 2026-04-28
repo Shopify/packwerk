@@ -21,8 +21,8 @@ module Packwerk
       @relative_file_paths = relative_file_paths
       @configuration = configuration
       @ignore_nested_packages = ignore_nested_packages
-      @specified_files = T.let(nil, T.nilable(RelativeFileSet))
-      @files = T.let(nil, T.nilable(RelativeFileSet))
+      @specified_files = nil #: RelativeFileSet?
+      @files = nil #: RelativeFileSet?
     end
 
     #: -> RelativeFileSet

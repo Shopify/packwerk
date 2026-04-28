@@ -5,7 +5,7 @@ module Packwerk
   module Formatters
     class OffensesFormatterPlain < DefaultOffensesFormatter
       include OffensesFormatter
-      IDENTIFIER = T.let("plain", String)
+      IDENTIFIER = "plain" #: String
 
       extend T::Sig
 
@@ -19,7 +19,7 @@ module Packwerk
 
       #: -> OutputStyle
       def style
-        @style ||= T.let(Packwerk::OutputStyles::Plain.new, T.nilable(Packwerk::OutputStyle))
+        @style ||= Packwerk::OutputStyles::Plain.new #: Packwerk::OutputStyle?
       end
     end
   end

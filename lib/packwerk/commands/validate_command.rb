@@ -11,7 +11,7 @@ module Packwerk
       # @override
       #: -> bool
       def run
-        validator_result = T.let(nil, T.nilable(Validator::Result))
+        validator_result = nil #: Validator::Result?
 
         progress_formatter.started_validation do
           validator_result = validator.check_all(package_set, configuration)

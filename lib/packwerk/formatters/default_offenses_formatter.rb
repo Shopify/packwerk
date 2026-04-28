@@ -6,7 +6,7 @@ module Packwerk
     class DefaultOffensesFormatter
       include OffensesFormatter
 
-      IDENTIFIER = T.let("default", String)
+      IDENTIFIER = "default" #: String
 
       extend T::Sig
 
@@ -51,7 +51,7 @@ module Packwerk
 
       #: -> OutputStyle
       def style
-        @style ||= T.let(Packwerk::OutputStyles::Coloured.new, T.nilable(Packwerk::OutputStyles::Coloured))
+        @style ||= Packwerk::OutputStyles::Coloured.new #: Packwerk::OutputStyles::Coloured?
       end
 
       #: (ReferenceOffense offense) -> String

@@ -11,10 +11,10 @@ module Packwerk
     #: (String root_path, ?Hash[Packwerk::Package, Packwerk::PackageTodo] package_todos) -> void
     def initialize(root_path, package_todos = {})
       @root_path = root_path
-      @package_todos = T.let(package_todos, T::Hash[Packwerk::Package, Packwerk::PackageTodo])
-      @new_violations = T.let([], T::Array[Packwerk::ReferenceOffense])
-      @strict_mode_violations = T.let([], T::Array[Packwerk::ReferenceOffense])
-      @errors = T.let([], T::Array[Packwerk::Offense])
+      @package_todos = package_todos #: Hash[Packwerk::Package, Packwerk::PackageTodo]
+      @new_violations = [] #: Array[Packwerk::ReferenceOffense]
+      @strict_mode_violations = [] #: Array[Packwerk::ReferenceOffense]
+      @errors = [] #: Array[Packwerk::Offense]
     end
 
     #: Array[Packwerk::ReferenceOffense]

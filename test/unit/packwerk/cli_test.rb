@@ -218,7 +218,7 @@ module Packwerk
       RunContext.any_instance.stubs(:process_file)
         .returns([offense])
 
-      cli = T.let(nil, T.nilable(Packwerk::Cli))
+      cli = nil #: Packwerk::Cli?
       string_io = StringIO.new
       mock_require_method = ->(required_thing) do
         next unless required_thing.include?("my_local_extension")
@@ -256,7 +256,7 @@ module Packwerk
       RunContext.any_instance.stubs(:process_file)
         .returns([offense])
 
-      cli = T.let(nil, T.nilable(Packwerk::Cli))
+      cli = nil #: Packwerk::Cli?
       string_io = StringIO.new
       mock_require_method = ->(required_thing) do
         next unless required_thing.include?("my_local_extension")

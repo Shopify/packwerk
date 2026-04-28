@@ -11,7 +11,7 @@ module Packwerk
 
       #: (Array[UnresolvedReference] unresolved_references, ConstantDiscovery context_provider) -> Array[Reference]
       def get_fully_qualified_references_from(unresolved_references, context_provider)
-        fully_qualified_references = T.let([], T::Array[Reference])
+        fully_qualified_references = [] #: Array[Reference]
 
         unresolved_references.each do |unresolved_references_or_offense|
           unresolved_reference = unresolved_references_or_offense
@@ -52,15 +52,12 @@ module Packwerk
     )
       @constant_name_inspectors = constant_name_inspectors
       @root_path = root_path
-      @local_constant_definitions = T.let(
-        ParsedConstantDefinitions.new(root_node: root_node),
-        ParsedConstantDefinitions,
-      )
+      @local_constant_definitions = ParsedConstantDefinitions.new(root_node: root_node) #: ParsedConstantDefinitions
     end
 
     #: (Parser::AST::Node node, ancestors: Array[Parser::AST::Node], relative_file: String) -> UnresolvedReference?
     def reference_from_node(node, ancestors:, relative_file:)
-      constant_name = T.let(nil, T.nilable(String))
+      constant_name = nil #: String?
 
       @constant_name_inspectors.each do |inspector|
         constant_name = inspect_node(

@@ -9,15 +9,12 @@ module Packwerk
 
     CustomAssociations = T.type_alias { T.any(T::Array[Symbol], T::Set[Symbol]) }
 
-    RAILS_ASSOCIATIONS = T.let(
-      [
-        :belongs_to,
-        :has_many,
-        :has_one,
-        :has_and_belongs_to_many,
-      ].to_set,
-      CustomAssociations
-    )
+    RAILS_ASSOCIATIONS = [
+      :belongs_to,
+      :has_many,
+      :has_one,
+      :has_and_belongs_to_many,
+    ].to_set #: CustomAssociations
 
     #: (
     #|   inflector: singleton(ActiveSupport::Inflector),
@@ -26,8 +23,8 @@ module Packwerk
     #| ) -> void
     def initialize(inflector:, custom_associations: Set.new, excluded_files: Set.new)
       @inflector = inflector
-      @associations = T.let(RAILS_ASSOCIATIONS + custom_associations, CustomAssociations)
-      @excluded_files = T.let(excluded_files, T::Set[String])
+      @associations = RAILS_ASSOCIATIONS + custom_associations #: CustomAssociations
+      @excluded_files = excluded_files #: Set[String]
     end
 
     # @override

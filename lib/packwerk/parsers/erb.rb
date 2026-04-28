@@ -15,7 +15,7 @@ module Packwerk
 
       #: (?parser_class: untyped, ?ruby_parser: Ruby) -> void
       def initialize(parser_class: BetterHtml::Parser, ruby_parser: Ruby.new)
-        @parser_class = T.let(parser_class, T.class_of(BetterHtml::Parser))
+        @parser_class = parser_class #: singleton(BetterHtml::Parser)
         @ruby_parser = ruby_parser
       end
 

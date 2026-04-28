@@ -40,7 +40,7 @@ module Packwerk
 
       #: -> Array[LazyLoadedEntry]
       def registry
-        @registry ||= T.let([], T.nilable(T::Array[LazyLoadedEntry]))
+        @registry ||= [] #: Array[LazyLoadedEntry]?
       end
     end
 

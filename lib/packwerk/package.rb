@@ -23,9 +23,9 @@ module Packwerk
     #: (name: String, ?config: Hash[String, untyped]?) -> void
     def initialize(name:, config: nil)
       @name = name
-      @config = T.let(config || {}, T::Hash[String, T.untyped])
-      @dependencies = T.let(Array(@config["dependencies"]).freeze, T::Array[String])
-      @public_path = T.let(nil, T.nilable(String))
+      @config = config || {} #: Hash[String, untyped]
+      @dependencies = Array(@config["dependencies"]).freeze #: Array[String]
+      @public_path = nil #: String?
     end
 
     #: -> bool

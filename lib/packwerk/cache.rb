@@ -51,8 +51,8 @@ module Packwerk
     #: (enable_cache: bool, cache_directory: Pathname, config_path: String?) -> void
     def initialize(enable_cache:, cache_directory:, config_path:)
       @enable_cache = enable_cache
-      @cache = T.let({}, CacheShape)
-      @files_by_digest = T.let({}, T::Hash[String, String])
+      @cache = {} #: CacheShape
+      @files_by_digest = {} #: Hash[String, String]
       @config_path = config_path
       @cache_directory = cache_directory
 
@@ -75,8 +75,7 @@ module Packwerk
       cache_location = @cache_directory.join(digest_for_string(file_path))
 
       cache_contents = if cache_location.exist?
-        T.let(CacheContents.deserialize(cache_location.read),
-          CacheContents)
+        CacheContents.deserialize(cache_location.read) #: CacheContents
       end
 
       file_contents_digest = digest_for_file(file_path)

@@ -8,7 +8,7 @@ module Packwerk
       extend T::Helpers
       abstract!
 
-      @description = T.let("", String)
+      @description = "" #: String
 
       class << self
         extend T::Sig

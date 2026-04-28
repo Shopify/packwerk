@@ -26,12 +26,9 @@ module Packwerk
       @err_out = err_out
       @environment = environment
       @style = style
-      @configuration = T.let(configuration || Configuration.from_path, Configuration)
-      @progress_formatter = T.let(Formatters::ProgressFormatter.new(@out, style: style), Formatters::ProgressFormatter)
-      @offenses_formatter = T.let(
-        offenses_formatter || @configuration.offenses_formatter,
-        OffensesFormatter
-      )
+      @configuration = configuration || Configuration.from_path #: Configuration
+      @progress_formatter = Formatters::ProgressFormatter.new(@out, style: style) #: Formatters::ProgressFormatter
+      @offenses_formatter = offenses_formatter || @configuration.offenses_formatter #: OffensesFormatter
     end
 
     #: (Array[String] args) -> bot

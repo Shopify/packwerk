@@ -45,21 +45,21 @@ module Packwerk
 
       #: -> Array[Class[top]]
       def offenses_formatters
-        @offenses_formatters ||= T.let([], T.nilable(T::Array[T::Class[T.anything]]))
+        @offenses_formatters ||= [] #: Array[Class[top]]?
       end
 
       #: (String name) -> OffensesFormatter
       def formatter_by_identifier(name)
-        @formatter_by_identifier ||= T.let(nil, T.nilable(T::Hash[String, T.nilable(OffensesFormatter)]))
+        @formatter_by_identifier ||= nil #: Hash[String, OffensesFormatter?]?
         @formatter_by_identifier ||= begin
-          index = T.let({}, T::Hash[String, T.nilable(OffensesFormatter)])
+          index = {} #: Hash[String, OffensesFormatter?]
           OffensesFormatter.all.each do |formatter|
             identifier = formatter.identifier
             raise DuplicateFormatterError, identifier if index.key?(identifier)
 
             index[identifier] = formatter
           end
-          T.let(index, T.nilable(T::Hash[String, T.nilable(OffensesFormatter)]))
+          index #: Hash[String, OffensesFormatter?]?
         end
 
         T.must(T.must(@formatter_by_identifier)[name])

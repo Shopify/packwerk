@@ -66,13 +66,11 @@ module Packwerk
       @config_path = config_path
       @exclude = exclude
 
-      @file_processor = T.let(nil, T.nilable(FileProcessor))
-      @context_provider = T.let(nil, T.nilable(ConstantDiscovery))
-      @package_set = T.let(nil, T.nilable(PackageSet))
+      @file_processor = nil #: FileProcessor?
+      @context_provider = nil #: ConstantDiscovery?
+      @package_set = nil #: PackageSet?
       # We need to initialize this before we fork the process, see https://github.com/Shopify/packwerk/issues/182
-      @cache = T.let(
-        Cache.new(enable_cache: @cache_enabled, cache_directory: @cache_directory, config_path: @config_path), Cache
-      )
+      @cache = Cache.new(enable_cache: @cache_enabled, cache_directory: @cache_directory, config_path: @config_path) #: Cache
     end
 
     #: (relative_file: String) -> Array[Packwerk::Offense]

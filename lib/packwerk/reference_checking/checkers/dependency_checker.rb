@@ -9,7 +9,7 @@ module Packwerk
         extend T::Sig
         include Checker
 
-        VIOLATION_TYPE = T.let("dependency", String)
+        VIOLATION_TYPE = "dependency" #: String
 
         # @override
         #: -> String

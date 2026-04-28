@@ -28,7 +28,7 @@ module Packwerk
 
     #: (root_node: AST::Node?) -> void
     def initialize(root_node:)
-      @local_definitions = T.let({}, T::Hash[String, T.nilable(Node::Location)])
+      @local_definitions = {} #: Hash[String, Node::Location?]
 
       collect_local_definitions_from_root(root_node) if root_node
     end
@@ -51,7 +51,7 @@ module Packwerk
         add_definition(NodeHelpers.constant_name(node), current_namespace_path, NodeHelpers.name_location(node))
       elsif NodeHelpers.module_name_from_definition(node)
         # handle compact constant nesting (e.g. "module Sales::Order")
-        tempnode = T.let(node, T.nilable(AST::Node))
+        tempnode = node #: AST::Node?
         while (tempnode = NodeHelpers.each_child(T.must(tempnode)).find { |node| NodeHelpers.constant?(node) })
           add_definition(NodeHelpers.constant_name(tempnode), current_namespace_path,
             NodeHelpers.name_location(tempnode))

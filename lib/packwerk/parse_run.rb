@@ -35,19 +35,19 @@ module Packwerk
     #: (RunContext run_context) ?{ (Array[Offense] offenses) -> void } -> ProcessFileProc
     def process_file_proc(run_context, &block)
       if block
-        T.let(proc do |relative_file|
+        proc do |relative_file|
           run_context.process_file(relative_file: relative_file).tap(&block)
-        end, ProcessFileProc)
+        end #: ProcessFileProc
       else
-        T.let(proc do |relative_file|
+        proc do |relative_file|
           run_context.process_file(relative_file: relative_file)
-        end, ProcessFileProc)
+        end #: ProcessFileProc
       end
     end
 
     #: (?on_interrupt: (^-> void)?) { (?) -> untyped } -> Array[Offense]
     def serial_find_offenses(on_interrupt: nil, &block)
-      all_offenses = T.let([], T::Array[Offense])
+      all_offenses = [] #: Array[Offense]
       begin
         @relative_file_set.each do |relative_file|
           offenses = yield(relative_file)

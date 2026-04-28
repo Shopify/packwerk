@@ -22,9 +22,9 @@ module Packwerk
 
       #: -> void
       def initialize
-        @ruby_parser = T.let(nil, T.nilable(ParserInterface))
-        @erb_parser = T.let(nil, T.nilable(ParserInterface))
-        @erb_parser_class = T.let(nil, T.nilable(T::Class[T.anything]))
+        @ruby_parser = nil #: ParserInterface?
+        @erb_parser = nil #: ParserInterface?
+        @erb_parser_class = nil #: Class[top]?
       end
 
       #: (String path) -> ParserInterface?

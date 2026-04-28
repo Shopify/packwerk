@@ -38,7 +38,7 @@ module Packwerk
 
       #: -> Array[Class[top]]
       def validators
-        @validators ||= T.let([], T.nilable(T::Array[T::Class[T.anything]]))
+        @validators ||= [] #: Array[Class[top]]?
       end
     end
 

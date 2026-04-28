@@ -20,7 +20,7 @@ module Packwerk
     def initialize(node_processor_factory:, cache:, parser_factory: nil)
       @node_processor_factory = node_processor_factory
       @cache = cache
-      @parser_factory = T.let(parser_factory || Packwerk::Parsers::Factory.instance, Parsers::Factory)
+      @parser_factory = parser_factory || Packwerk::Parsers::Factory.instance #: Parsers::Factory
     end
 
     class ProcessedFile < T::Struct
