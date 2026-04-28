@@ -145,7 +145,7 @@ module Packwerk
         assert_match(/Packwerk encountered an internal error/, captured_output)
         assert_match(/For now, you can add this file to `packwerk.yml` `exclude` list./, captured_output)
         assert_match(/Please file an issue and include this error message and stacktrace:/, captured_output)
-        assert_match(/Passed `nil` into T.must/, captured_output)
+        assert_match(/undefined method .type. for nil/, captured_output)
         assert_match(/1 offense detected/, captured_output)
         assert_match(/No stale violations detected/, captured_output)
       end
