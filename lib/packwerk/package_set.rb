@@ -92,7 +92,7 @@ module Packwerk
     #: ((Pathname | String) file_path) -> Package
     def package_from_path(file_path)
       path_string = file_path.to_s
-      @package_from_path[path_string] ||= T.must(packages.values.find { |package| package.package_path?(path_string) })
+      @package_from_path[path_string] ||= packages.values.find { |package| package.package_path?(path_string) } #: as !nil
     end
   end
 end

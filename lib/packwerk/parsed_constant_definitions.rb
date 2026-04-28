@@ -52,7 +52,9 @@ module Packwerk
       elsif NodeHelpers.module_name_from_definition(node)
         # handle compact constant nesting (e.g. "module Sales::Order")
         tempnode = node #: AST::Node?
-        while (tempnode = NodeHelpers.each_child(T.must(tempnode)).find { |node| NodeHelpers.constant?(node) })
+        while (tempnode = NodeHelpers.each_child(
+            tempnode #: as !nil
+          ).find { |node| NodeHelpers.constant?(node) })
           add_definition(NodeHelpers.constant_name(tempnode), current_namespace_path,
             NodeHelpers.name_location(tempnode))
         end

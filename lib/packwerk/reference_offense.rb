@@ -15,7 +15,8 @@ module Packwerk
 
     #: (reference: Packwerk::Reference, violation_type: String, message: String, ?location: Node::Location?) -> void
     def initialize(reference:, violation_type:, message:, location: nil)
-      super(file: T.must(reference.relative_path), message: message, location: location)
+      file = reference.relative_path #: as !nil
+      super(file: file, message: message, location: location)
       @reference = reference
       @violation_type = violation_type
     end

@@ -46,8 +46,10 @@ module Packwerk
         # Note that we're not using the source location (line/column) at the moment, but if we did
         # care about that, we'd need to tweak this to insert empty lines and spaces so that things
         # line up with the ERB file
-        code_pieces = T.must(code_nodes(erb_ast)).map do |node|
-          T.cast(node, ::AST::Node).children.first
+        code_pieces = code_nodes(erb_ast) #: as !nil
+          .map do |node|
+          node #: as ::AST::Node
+            .children.first
         end
 
         @ruby_parser.call(

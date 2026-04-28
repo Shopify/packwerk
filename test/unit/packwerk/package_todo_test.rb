@@ -262,7 +262,8 @@ module Packwerk
 
     test "#dump deletes the package TODO if there are no entries" do
       file = Tempfile.new("empty_package_todo.yml")
-      package_todo = PackageTodo.new(destination_package, T.must(file.path))
+      path = file.path #: as !nil
+      package_todo = PackageTodo.new(destination_package, path)
       package_todo.dump
 
       refute File.exist?(file.path)

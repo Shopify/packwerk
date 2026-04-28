@@ -17,7 +17,7 @@ module Packwerk
           validator_result = validator.check_all(package_set, configuration)
         end
 
-        validator_result = T.must(validator_result)
+        validator_result = validator_result #: as !nil
 
         if validator_result.ok?
           out.puts("Validation successful 🎉")

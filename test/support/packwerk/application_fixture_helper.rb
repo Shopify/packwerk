@@ -93,8 +93,8 @@ module Packwerk
     end
 
     def copy_dir(path)
-      root = FileUtils.mkdir_p(fixture_path).last
-      FileUtils.cp_r("#{path}/.", T.must(root))
+      root = FileUtils.mkdir_p(fixture_path).last #: as !nil
+      FileUtils.cp_r("#{path}/.", root)
       @app_dir = root
     end
 

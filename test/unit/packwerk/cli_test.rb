@@ -235,7 +235,8 @@ module Packwerk
         files: Set.new([file_path])
       )
 
-      success = T.must(cli).execute_command(["check", file_path])
+      success = cli #: as !nil
+                .execute_command(["check", file_path])
 
       assert_includes string_io.string, "hi i am a custom offense formatter"
       assert_includes string_io.string, "stale violations report"
@@ -273,7 +274,8 @@ module Packwerk
         files: Set.new([file_path])
       )
 
-      success = T.must(cli).execute_command(["check", "--offenses-formatter=default", file_path])
+      success = cli #: as !nil
+                .execute_command(["check", "--offenses-formatter=default", file_path])
 
       assert_includes string_io.string, violation_message
       assert_includes string_io.string, "1 offense detected"

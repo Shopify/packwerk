@@ -62,7 +62,8 @@ module Packwerk
           index #: Hash[String, OffensesFormatter?]?
         end
 
-        T.must(T.must(@formatter_by_identifier)[name])
+        formatter_by_identifier = @formatter_by_identifier #: as !nil
+        formatter_by_identifier[name] #: as !nil
       end
     end
 

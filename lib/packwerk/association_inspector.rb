@@ -69,7 +69,7 @@ module Packwerk
 
     #: (Array[AST::Node] arguments) -> (Symbol | String)?
     def association_name(arguments)
-      association_name_node = T.must(arguments[0])
+      association_name_node = arguments[0] #: as !nil
       return unless NodeHelpers.symbol?(association_name_node)
 
       NodeHelpers.literal_value(association_name_node)
