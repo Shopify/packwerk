@@ -13,6 +13,12 @@ AllCops:
   Exclude:
     - 'test/fixtures/**/*'
 
+Layout/LeadingCommentSpace:
+  AllowRBSInlineAnnotation: true
+
+Layout/LineLength:
+  AllowRBSInlineAnnotation: true
+
 Sorbet/ConstantsFromStrings:
   Enabled: true
 
