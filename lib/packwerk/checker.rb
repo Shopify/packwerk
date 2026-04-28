@@ -19,7 +19,7 @@ module Packwerk
       #: -> Array[Checker]
       def all
         load_defaults
-        T.cast(checkers.map(&:new), T::Array[Checker])
+        checkers.map(&:new) #: as Array[Checker]
       end
 
       #: (String violation_type) -> Checker

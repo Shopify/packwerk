@@ -28,7 +28,7 @@ module Packwerk
       #: -> Array[OffensesFormatter]
       def all
         load_defaults
-        T.cast(offenses_formatters.map(&:new), T::Array[OffensesFormatter])
+        offenses_formatters.map(&:new) #: as Array[OffensesFormatter]
       end
 
       #: (String identifier) -> OffensesFormatter

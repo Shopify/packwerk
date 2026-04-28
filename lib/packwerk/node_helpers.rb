@@ -183,7 +183,8 @@ module Packwerk
 
       #: (AST::Node node) -> Node::Location?
       def name_location(node)
-        location = T.cast(node, Parser::AST::Node).location
+        location = node #: as Parser::AST::Node
+          .location
 
         if location.respond_to?(:name)
           name = location.name

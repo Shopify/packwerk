@@ -94,7 +94,7 @@ module Packwerk
       if error.message == "unknown keyword: :relative_file"
         T.unsafe(inspector).constant_name_from_node(node, ancestors: ancestors).tap do
           warn(<<~MSG.squish)
-            #{T.cast(inspector, Object).class}#reference_from_node without a relative_file: keyword
+            #{T.unsafe(inspector).class}#reference_from_node without a relative_file: keyword
             argument is deprecated and will be required in Packwerk 3.1.1.
           MSG
         end

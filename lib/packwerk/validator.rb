@@ -26,7 +26,7 @@ module Packwerk
       #: -> Array[Validator]
       def all
         load_defaults
-        T.cast(validators.map(&:new), T::Array[Validator])
+        validators.map(&:new) #: as Array[Validator]
       end
 
       private

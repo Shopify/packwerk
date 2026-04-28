@@ -127,7 +127,7 @@ module Packwerk
     #: (Entry package_violations, files: Set[String]) -> Entry
     def package_violations_for(package_violations, files:)
       {}.tap do |package_violations_for_files|
-        package_violations_for_files = T.cast(package_violations_for_files, Entry)
+        package_violations_for_files = package_violations_for_files #: as Entry
 
         package_violations.each do |constant_name, entries_for_constant|
           entries_for_files = files & entries_for_constant.fetch("files")
