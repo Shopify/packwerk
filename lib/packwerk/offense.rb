@@ -1,7 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "parser/source/map"
+require "parser"
 
 module Packwerk
   class Offense

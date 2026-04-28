@@ -13,6 +13,7 @@ gem("rubocop-performance", require: false)
 gem("rubocop-sorbet", require: false)
 gem("mocha", require: false)
 gem("rubocop-shopify", require: false)
+gem("rbi", "< 0.3.11", require: false) # rbi 0.3.11+ requires Ruby >= 3.3
 gem("tapioca", require: false)
 gem("railties")
 
@@ -22,5 +23,5 @@ gem("minitest-mock")
 
 gem("m")
 gem("rake")
-gem("sorbet-static-and-runtime")
+gem("sorbet-static-and-runtime", "< 0.6") # Sorbet 0.6+ has stricter type checking, bumped separately
 gem("zeitwerk")
