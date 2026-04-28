@@ -1,4 +1,6 @@
 --dir
 .
+--parser=prism
 --enable-experimental-requires-ancestor
+--enable-experimental-rbs-comments
 --ignore=/vendor/bundle
