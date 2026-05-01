@@ -4,8 +4,6 @@
 module Packwerk
   # An offense related to a {Packwerk::Reference}.
   class ReferenceOffense < Offense
-    extend T::Helpers
-
     #: Reference
     attr_reader :reference
 

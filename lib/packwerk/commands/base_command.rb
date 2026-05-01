@@ -3,10 +3,8 @@
 
 module Packwerk
   module Commands
+    # @abstract
     class BaseCommand
-      extend T::Helpers
-      abstract!
-
       @description = "" #: String
 
       class << self

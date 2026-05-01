@@ -5,8 +5,6 @@ require "pathname"
 
 module Packwerk
   class OffenseCollection
-    extend T::Helpers
-
     #: (String root_path, ?Hash[Packwerk::Package, Packwerk::PackageTodo] package_todos) -> void
     def initialize(root_path, package_todos = {})
       @root_path = root_path

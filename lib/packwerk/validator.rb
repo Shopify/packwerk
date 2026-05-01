@@ -6,13 +6,11 @@ require "pathname"
 require "yaml"
 
 module Packwerk
+  # @abstract
   module Validator
-    extend T::Helpers
     extend ActiveSupport::Autoload
 
     autoload :Result
-
-    abstract!
 
     class << self
       #: (Class[top] base) -> void

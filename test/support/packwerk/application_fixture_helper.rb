@@ -2,13 +2,10 @@
 # frozen_string_literal: true
 
 module Packwerk
+  # @requires_ancestor: Kernel
   module ApplicationFixtureHelper
     TEMP_FIXTURE_DIR = ROOT.join("tmp", "fixtures").to_s
     DEFAULT_TEMPLATE = :minimal
-
-    extend T::Helpers
-
-    requires_ancestor { Kernel }
 
     def setup_application_fixture
       @old_working_dir = Dir.pwd

@@ -5,8 +5,6 @@ require "parser"
 
 module Packwerk
   class Offense
-    extend T::Helpers
-
     #: Node::Location?
     attr_reader :location
 

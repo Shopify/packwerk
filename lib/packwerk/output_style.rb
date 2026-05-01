@@ -2,11 +2,8 @@
 # frozen_string_literal: true
 
 module Packwerk
+  # @interface
   module OutputStyle
-    extend T::Helpers
-
-    interface!
-
     # @abstract
     #: -> String
     def reset = raise NotImplementedError, "Abstract method called"

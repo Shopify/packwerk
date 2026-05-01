@@ -5,11 +5,8 @@ require "optparse"
 
 module Packwerk
   module Commands
+    # @requires_ancestor: BaseCommand
     module UsesParseRun
-      extend T::Helpers
-
-      requires_ancestor { BaseCommand }
-
       #: (
       #|   Array[String] args,
       #|   configuration: Configuration,

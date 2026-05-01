@@ -2,11 +2,8 @@
 # frozen_string_literal: true
 
 module Packwerk
+  # @abstract
   module Checker
-    extend T::Helpers
-
-    abstract!
-
     class << self
       #: (Class[top] base) -> void
       def included(base)

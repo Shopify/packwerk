@@ -5,11 +5,8 @@ require "ast"
 
 module Packwerk
   # An interface describing an object that can extract a constant name from an AST node.
+  # @interface
   module ConstantNameInspector
-    extend T::Helpers
-
-    interface!
-
     # @abstract
     #: (::AST::Node node, ancestors: Array[::AST::Node], relative_file: String) -> String?
     def constant_name_from_node(node, ancestors:, relative_file:) = raise NotImplementedError, "Abstract method called"

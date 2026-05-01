@@ -2,11 +2,8 @@
 # frozen_string_literal: true
 
 module Packwerk
+  # @abstract
   module OffensesFormatter
-    extend T::Helpers
-
-    abstract!
-
     class DuplicateFormatterError < StandardError
       #: (String identifier) -> void
       def initialize(identifier)
