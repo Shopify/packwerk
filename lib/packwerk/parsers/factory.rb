@@ -32,7 +32,8 @@ module Packwerk
         when RUBY_REGEX
           @ruby_parser ||= Ruby.new
         when ERB_REGEX
-          @erb_parser ||= T.unsafe(erb_parser_class).new
+          erb_parser_class_ = erb_parser_class #: as untyped
+          @erb_parser ||= erb_parser_class_.new
         end
       end
 

@@ -192,7 +192,7 @@ module Packwerk
       cli = ::Packwerk::Cli.new(
         out: string_io,
         configuration: configuration,
-        offenses_formatter: T.unsafe(offenses_formatter).new
+        offenses_formatter: offenses_formatter.new
       )
 
       FilesForProcessing.any_instance.stubs(
@@ -236,7 +236,7 @@ module Packwerk
       )
 
       success = cli #: as !nil
-                .execute_command(["check", file_path])
+        .execute_command(["check", file_path])
 
       assert_includes string_io.string, "hi i am a custom offense formatter"
       assert_includes string_io.string, "stale violations report"
@@ -275,7 +275,7 @@ module Packwerk
       )
 
       success = cli #: as !nil
-                .execute_command(["check", "--offenses-formatter=default", file_path])
+        .execute_command(["check", "--offenses-formatter=default", file_path])
 
       assert_includes string_io.string, violation_message
       assert_includes string_io.string, "1 offense detected"
