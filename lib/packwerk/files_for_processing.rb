@@ -3,11 +3,9 @@
 
 module Packwerk
   class FilesForProcessing
-
-    RelativeFileSet = T.type_alias { T::Set[String] }
+    #: type relative_file_set = Set[String]
 
     class << self
-
       #: (relative_file_paths: Array[String], configuration: Configuration, ?ignore_nested_packages: bool) -> FilesForProcessing
       def fetch(relative_file_paths:, configuration:, ignore_nested_packages: false)
         new(relative_file_paths, configuration, ignore_nested_packages)
@@ -19,11 +17,11 @@ module Packwerk
       @relative_file_paths = relative_file_paths
       @configuration = configuration
       @ignore_nested_packages = ignore_nested_packages
-      @specified_files = nil #: RelativeFileSet?
-      @files = nil #: RelativeFileSet?
+      @specified_files = nil #: relative_file_set?
+      @files = nil #: relative_file_set?
     end
 
-    #: -> RelativeFileSet
+    #: -> relative_file_set
     def files
       @files ||= files_for_processing
     end
@@ -35,7 +33,7 @@ module Packwerk
 
     private
 
-    #: -> RelativeFileSet
+    #: -> relative_file_set
     def files_for_processing
       all_included_files = if specified_files.empty?
         configured_included_files
@@ -46,7 +44,7 @@ module Packwerk
       all_included_files - configured_excluded_files
     end
 
-    #: -> RelativeFileSet
+    #: -> relative_file_set
     def specified_files
       @specified_files ||= Set.new(
         @relative_file_paths.map do |relative_file_path|
@@ -59,7 +57,7 @@ module Packwerk
       ).flatten
     end
 
-    #: (String relative_file_path) -> RelativeFileSet
+    #: (String relative_file_path) -> relative_file_set
     def specified_included_files(relative_file_path)
       # Note, assuming include globs are always relative paths
       relative_includes = @configuration.include
@@ -82,17 +80,17 @@ module Packwerk
       Set.new(relative_files)
     end
 
-    #: -> RelativeFileSet
+    #: -> relative_file_set
     def configured_included_files
       relative_files_for_globs(@configuration.include)
     end
 
-    #: -> RelativeFileSet
+    #: -> relative_file_set
     def configured_excluded_files
       relative_files_for_globs(@configuration.exclude)
     end
 
-    #: (Array[String] relative_globs) -> RelativeFileSet
+    #: (Array[String] relative_globs) -> relative_file_set
     def relative_files_for_globs(relative_globs)
       Set.new(relative_globs.flat_map { |glob| Dir[glob] })
     end

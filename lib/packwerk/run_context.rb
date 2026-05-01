@@ -31,7 +31,7 @@ module Packwerk
     #|   cache_directory: Pathname,
     #|   ?config_path: String?,
     #|   ?package_paths: (Array[String] | String)?,
-    #|   ?custom_associations: AssociationInspector::CustomAssociations,
+    #|   ?custom_associations: AssociationInspector::custom_associations,
     #|   ?associations_exclude: Array[String],
     #|   ?exclude: Array[String],
     #|   ?checkers: Array[Checker],
@@ -132,7 +132,7 @@ module Packwerk
       ]
     end
 
-    #: (Array[String] relative_globs) -> FilesForProcessing::RelativeFileSet
+    #: (Array[String] relative_globs) -> FilesForProcessing::relative_file_set
     def relative_files_for_globs(relative_globs)
       Set.new(relative_globs.flat_map { |glob| Dir[glob] })
     end

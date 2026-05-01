@@ -5,7 +5,7 @@ require "pathname"
 require "bundler"
 
 module Packwerk
-  PathSpec = T.type_alias { T.any(String, T::Array[String]) }
+  #: type path_spec = String | Array[String]
 
   # A set of {Packwerk::Package}s as well as methods to parse packages from the filesystem.
   #: [Elem = Package]
@@ -15,7 +15,7 @@ module Packwerk
     PACKAGE_CONFIG_FILENAME = "package.yml"
 
     class << self
-      #: (String root_path, ?package_pathspec: PathSpec?) -> PackageSet
+      #: (String root_path, ?package_pathspec: path_spec?) -> PackageSet
       def load_all_from(root_path, package_pathspec: nil)
         package_paths = package_paths(root_path, package_pathspec || "**")
 
@@ -29,7 +29,7 @@ module Packwerk
         new(packages)
       end
 
-      #: (String root_path, PathSpec package_pathspec, ?PathSpec? exclude_pathspec) -> Array[Pathname]
+      #: (String root_path, path_spec package_pathspec, ?path_spec? exclude_pathspec) -> Array[Pathname]
       def package_paths(root_path, package_pathspec, exclude_pathspec = [])
         exclude_pathspec = Array(exclude_pathspec).dup
           .push(Bundler.bundle_path.join("**").to_s)

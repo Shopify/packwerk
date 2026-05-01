@@ -5,21 +5,18 @@ require "yaml"
 
 module Packwerk
   class PackageTodo
-
-    PackageName = T.type_alias { String }
-    ConstantName = T.type_alias { String }
-    FilePath = T.type_alias { String }
-    Entry = T.type_alias { T::Hash[ConstantName, T::Hash[ConstantName, T::Array[FilePath]]] }
-    Entries = T.type_alias do
-      T::Hash[PackageName, Entry]
-    end
+    #: type package_name = String
+    #: type constant_name = String
+    #: type file_path = String
+    #: type entry = Hash[constant_name, Hash[constant_name, Array[file_path]]]
+    #: type entries = Hash[package_name, entry]
 
     #: (Packwerk::Package package, String path) -> void
     def initialize(package, path)
       @package = package
       @path = path
-      @new_entries = {} #: Entries
-      @old_entries = nil #: Entries?
+      @new_entries = {} #: entries
+      @old_entries = nil #: entries?
     end
 
     #: (Packwerk::Reference reference, violation_type: String) -> bool
@@ -94,7 +91,7 @@ module Packwerk
 
     private
 
-    #: Entries
+    #: entries
     attr_reader(:new_entries)
 
     #: (String package) -> Array[String]
@@ -104,7 +101,7 @@ module Packwerk
       old_files - new_files
     end
 
-    #: (String package, violations: Entry) -> bool
+    #: (String package, violations: entry) -> bool
     def stale_violation_for_package?(package, violations:)
       violations.any? do |constant_name, entries_for_constant|
         new_entries_violation_types = new_entries.dig(package, constant_name, "violations")
@@ -123,10 +120,10 @@ module Packwerk
       end
     end
 
-    #: (Entry package_violations, files: Set[String]) -> Entry
+    #: (entry package_violations, files: Set[String]) -> entry
     def package_violations_for(package_violations, files:)
       {}.tap do |package_violations_for_files|
-        package_violations_for_files = package_violations_for_files #: as Entry
+        package_violations_for_files = package_violations_for_files #: as entry
 
         package_violations.each do |constant_name, entries_for_constant|
           entries_for_files = files & entries_for_constant.fetch("files")
@@ -140,7 +137,7 @@ module Packwerk
       end
     end
 
-    #: -> Entries
+    #: -> entries
     def prepare_entries_for_dump
       new_entries.each do |package_name, package_violations|
         package_violations.each do |_, entries_for_constant|
@@ -153,12 +150,12 @@ module Packwerk
       @new_entries = new_entries.sort.to_h
     end
 
-    #: -> Entries
+    #: -> entries
     def old_entries
       @old_entries ||= load_yaml_file(@path)
     end
 
-    #: (String path) -> Entries
+    #: (String path) -> entries
     def load_yaml_file(path)
       File.exist?(path) && YAML.load_file(path) || {}
     rescue Psych::Exception

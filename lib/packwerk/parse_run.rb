@@ -5,12 +5,9 @@ require "parallel"
 
 module Packwerk
   class ParseRun
+    #: type process_file_proc = ^(String path) -> Array[Offense]
 
-    ProcessFileProc = T.type_alias do
-      T.proc.params(path: String).returns(T::Array[Offense])
-    end
-
-    #: (relative_file_set: FilesForProcessing::RelativeFileSet, parallel: bool) -> void
+    #: (relative_file_set: FilesForProcessing::relative_file_set, parallel: bool) -> void
     def initialize(relative_file_set:, parallel:)
       @relative_file_set = relative_file_set
       @parallel = parallel
@@ -31,16 +28,16 @@ module Packwerk
 
     private
 
-    #: (RunContext run_context) ?{ (Array[Offense] offenses) -> void } -> ProcessFileProc
+    #: (RunContext run_context) ?{ (Array[Offense] offenses) -> void } -> process_file_proc
     def process_file_proc(run_context, &block)
       if block
         proc do |relative_file|
           run_context.process_file(relative_file: relative_file).tap(&block)
-        end #: ProcessFileProc
+        end #: process_file_proc
       else
         proc do |relative_file|
           run_context.process_file(relative_file: relative_file)
-        end #: ProcessFileProc
+        end #: process_file_proc
       end
     end
 

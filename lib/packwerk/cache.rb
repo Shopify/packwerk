@@ -38,17 +38,12 @@ module Packwerk
       end
     end
 
-    CacheShape = T.type_alias do
-      T::Hash[
-        String,
-        CacheContents
-      ]
-    end
+    #: type cache_shape = Hash[String, CacheContents]
 
     #: (enable_cache: bool, cache_directory: Pathname, config_path: String?) -> void
     def initialize(enable_cache:, cache_directory:, config_path:)
       @enable_cache = enable_cache
-      @cache = {} #: CacheShape
+      @cache = {} #: cache_shape
       @files_by_digest = {} #: Hash[String, String]
       @config_path = config_path
       @cache_directory = cache_directory

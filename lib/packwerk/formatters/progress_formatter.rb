@@ -20,7 +20,7 @@ module Packwerk
         finished(execution_time)
       end
 
-      #: (FilesForProcessing::RelativeFileSet target_files) { -> void } -> void
+      #: (FilesForProcessing::relative_file_set target_files) { -> void } -> void
       def started_inspection(target_files, &block)
         start_inspection(target_files)
 
@@ -68,7 +68,7 @@ module Packwerk
         @out.puts("📦 Packwerk is running validation...")
       end
 
-      #: (FilesForProcessing::RelativeFileSet target_files) -> void
+      #: (FilesForProcessing::relative_file_set target_files) -> void
       def start_inspection(target_files)
         files_size = target_files.size
         files_string = "file".pluralize(files_size)
