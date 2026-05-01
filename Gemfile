@@ -17,7 +17,10 @@ gem("tapioca", require: false)
 gem("railties")
 
 gem("byebug")
+
+gem("minitest", "~> 6.0")
 gem("minitest-focus")
+gem("minitest-mock")
 
 gem("m")
 gem("rake")
