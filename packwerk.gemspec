@@ -36,7 +36,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir["CHANGELOG.md", "LICENSE.md", "README.md", "lib/**/*", "sorbet/**/*"]
   spec.require_paths = ["lib"]
 
-  spec.required_ruby_version = ">= 3.1"
+  spec.required_ruby_version = ">= 3.3"
 
   spec.add_dependency("activesupport", ">= 6.0")
   spec.add_dependency("bundler")
