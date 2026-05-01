@@ -11,7 +11,7 @@ module Packwerk
     class << self
       extend T::Sig
 
-      sig { params(root: String, environment: String).returns(T::Hash[String, Module]) }
+      sig { params(root: String, environment: String).returns(T::Hash[String, T::Module[T.anything]]) }
       def for(root, environment:)
         require_application(root, environment)
         all_paths = extract_application_autoload_paths
@@ -22,7 +22,7 @@ module Packwerk
 
       private
 
-      sig { returns(T::Hash[String, Module]) }
+      sig { returns(T::Hash[String, T::Module[T.anything]]) }
       def extract_application_autoload_paths
         Rails.autoloaders.inject({}) do |h, loader|
           h.merge(loader.dirs(namespaces: true))
@@ -30,8 +30,8 @@ module Packwerk
       end
 
       sig do
-        params(all_paths: T::Hash[String, Module], bundle_path: Pathname, rails_root: Pathname)
-          .returns(T::Hash[Pathname, Module])
+        params(all_paths: T::Hash[String, T::Module[T.anything]], bundle_path: Pathname, rails_root: Pathname)
+          .returns(T::Hash[Pathname, T::Module[T.anything]])
       end
       def filter_relevant_paths(all_paths, bundle_path: Bundler.bundle_path, rails_root: Rails.root)
         bundle_path_match = bundle_path.join("**")
@@ -43,7 +43,7 @@ module Packwerk
           .reject { |path| path.fnmatch(bundle_path_match.to_s) } # reject paths from vendored gems
       end
 
-      sig { params(load_paths: T::Hash[Pathname, Module], rails_root: Pathname).returns(T::Hash[String, Module]) }
+      sig { params(load_paths: T::Hash[Pathname, T::Module[T.anything]], rails_root: Pathname).returns(T::Hash[String, T::Module[T.anything]]) }
       def relative_path_strings(load_paths, rails_root: Rails.root)
         load_paths.transform_keys { |path| Pathname.new(path).relative_path_from(rails_root).to_s }
       end
@@ -61,7 +61,7 @@ module Packwerk
         end
       end
 
-      sig { params(paths: T::Hash[T.untyped, Module]).void }
+      sig { params(paths: T::Hash[T.untyped, T::Module[T.anything]]).void }
       def assert_load_paths_present(paths)
         if paths.empty?
           raise <<~EOS

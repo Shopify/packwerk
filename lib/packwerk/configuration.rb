@@ -96,11 +96,11 @@ module Packwerk
       end
     end
 
-    sig { returns(T::Hash[String, Module]) }
+    sig { returns(T::Hash[String, T::Module[T.anything]]) }
     def load_paths
       @load_paths ||= T.let(
         RailsLoadPaths.for(@root_path, environment: "test"),
-        T.nilable(T::Hash[String, Module]),
+        T.nilable(T::Hash[String, T::Module[T.anything]]),
       )
     end
 

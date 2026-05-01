@@ -23,5 +23,5 @@ gem("minitest-mock")
 
 gem("m")
 gem("rake")
-gem("sorbet-static-and-runtime", "< 0.6") # Sorbet 0.6+ has stricter type checking, bumped separately
+gem("sorbet-static-and-runtime")
 gem("zeitwerk")
