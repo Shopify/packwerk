@@ -182,15 +182,15 @@ GEM
     rubydex (0.2.0-x86_64-linux)
     securerandom (0.4.1)
     smart_properties (1.17.0)
-    sorbet (0.5.12443)
-      sorbet-static (= 0.5.12443)
-    sorbet-runtime (0.5.12443)
-    sorbet-static (0.5.12443-aarch64-linux)
-    sorbet-static (0.5.12443-universal-darwin)
-    sorbet-static (0.5.12443-x86_64-linux)
-    sorbet-static-and-runtime (0.5.12443)
-      sorbet (= 0.5.12443)
-      sorbet-runtime (= 0.5.12443)
+    sorbet (0.6.13184)
+      sorbet-static (= 0.6.13184)
+    sorbet-runtime (0.6.13184)
+    sorbet-static (0.6.13184-aarch64-linux)
+    sorbet-static (0.6.13184-universal-darwin)
+    sorbet-static (0.6.13184-x86_64-linux)
+    sorbet-static-and-runtime (0.6.13184)
+      sorbet (= 0.6.13184)
+      sorbet-runtime (= 0.6.13184)
     spoom (1.7.13)
       erubi (>= 1.10.0)
       prism (>= 0.28.0)
@@ -246,7 +246,7 @@ DEPENDENCIES
   rubocop-performance
   rubocop-shopify
   rubocop-sorbet
-  sorbet-static-and-runtime (< 0.6)
+  sorbet-static-and-runtime
   spring
   tapioca
   zeitwerk
