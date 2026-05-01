@@ -9,7 +9,7 @@ PATH
       constant_resolver (>= 0.3)
       parallel (< 2)
       parser
-      prism (>= 0.25.0)
+      prism (>= 1.4.0)
       sorbet-runtime (>= 0.5.9914)
       zeitwerk (>= 2.6.1)
 

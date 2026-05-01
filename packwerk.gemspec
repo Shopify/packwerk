@@ -48,7 +48,7 @@ Gem::Specification.new do |spec|
   # For Ruby parsing
   spec.add_dependency("ast")
   spec.add_dependency("parser")
-  spec.add_dependency("prism", ">= 0.25.0")
+  spec.add_dependency("prism", ">= 1.4.0")
 
   # For ERB parsing
   spec.add_dependency("better_html")
