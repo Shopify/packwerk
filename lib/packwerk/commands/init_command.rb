@@ -4,8 +4,6 @@
 module Packwerk
   module Commands
     class InitCommand < BaseCommand
-      extend T::Sig
-
       description "set up packwerk"
 
       # @override

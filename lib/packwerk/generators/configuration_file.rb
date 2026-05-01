@@ -6,13 +6,9 @@ require "erb"
 module Packwerk
   module Generators
     class ConfigurationFile
-      extend T::Sig
-
       CONFIGURATION_TEMPLATE_FILE_PATH = "templates/packwerk.yml.erb"
 
       class << self
-        extend T::Sig
-
         #: (root: String, out: (IO | StringIO)) -> bool
         def generate(root:, out:)
           new(root: root, out: out).generate

@@ -3,7 +3,6 @@
 
 module Packwerk
   module Commands
-    extend T::Sig
     extend ActiveSupport::Autoload
 
     autoload :BaseCommand
@@ -17,8 +16,6 @@ module Packwerk
     autoload :VersionCommand
 
     class << self
-      extend T::Sig
-
       #: (String name, ?aliases: Array[String]) -> void
       def register(name, aliases: [])
         registry << LazyLoadedEntry.new(name, aliases: aliases)

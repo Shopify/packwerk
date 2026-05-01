@@ -4,11 +4,7 @@
 module Packwerk
   # Extracts a possible constant reference from a given AST node.
   class ReferenceExtractor
-    extend T::Sig
-
     class << self
-      extend T::Sig
-
       #: (Array[UnresolvedReference] unresolved_references, ConstantDiscovery context_provider) -> Array[Reference]
       def get_fully_qualified_references_from(unresolved_references, context_provider)
         fully_qualified_references = [] #: Array[Reference]

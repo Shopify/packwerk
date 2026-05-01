@@ -4,7 +4,6 @@
 module Packwerk
   # Extracts a constant name from an AST node of type :const
   class ConstNodeInspector
-    extend T::Sig
     include ConstantNameInspector
 
     # @override

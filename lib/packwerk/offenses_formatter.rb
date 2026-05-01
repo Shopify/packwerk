@@ -3,14 +3,11 @@
 
 module Packwerk
   module OffensesFormatter
-    extend T::Sig
     extend T::Helpers
 
     abstract!
 
     class DuplicateFormatterError < StandardError
-      extend T::Sig
-
       #: (String identifier) -> void
       def initialize(identifier)
         super("Cannot have multiple identifiers with the same key (`#{identifier}`)")
@@ -18,8 +15,6 @@ module Packwerk
     end
 
     class << self
-      extend T::Sig
-
       #: (Class[top] base) -> void
       def included(base)
         offenses_formatters << base

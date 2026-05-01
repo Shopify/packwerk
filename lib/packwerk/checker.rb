@@ -3,14 +3,11 @@
 
 module Packwerk
   module Checker
-    extend T::Sig
     extend T::Helpers
 
     abstract!
 
     class << self
-      extend T::Sig
-
       #: (Class[top] base) -> void
       def included(base)
         checkers << base

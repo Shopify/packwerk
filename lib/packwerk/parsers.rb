@@ -11,8 +11,6 @@ module Packwerk
     class ParseResult < Offense; end
 
     class ParseError < StandardError
-      extend T::Sig
-
       #: ParseResult
       attr_reader(:result)
 

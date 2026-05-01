@@ -6,11 +6,7 @@ require "yaml"
 
 module Packwerk
   class Configuration
-    extend T::Sig
-
     class << self
-      extend T::Sig
-
       #: (?String path) -> Configuration
       def from_path(path = Dir.pwd)
         raise ArgumentError, "#{File.expand_path(path)} does not exist" unless File.exist?(path)

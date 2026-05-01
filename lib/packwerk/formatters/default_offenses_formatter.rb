@@ -8,8 +8,6 @@ module Packwerk
 
       IDENTIFIER = "default" #: String
 
-      extend T::Sig
-
       # @override
       #: (Array[Offense?] offenses) -> String
       def show_offenses(offenses)

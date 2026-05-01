@@ -6,7 +6,6 @@ module Packwerk
   # The package contains all constants defined in files in this folder and all subfolders that are not packages
   # themselves.
   class Package
-    extend T::Sig
     include Comparable
 
     ROOT_PACKAGE_NAME = "."

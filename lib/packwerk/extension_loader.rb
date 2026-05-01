@@ -6,7 +6,6 @@ module Packwerk
   # in the `packwerk.yml` configuration.
   module ExtensionLoader
     class << self
-      extend T::Sig
       #: (String require_directive, String config_dir_path) -> void
       def load(require_directive, config_dir_path)
         # We want to transform the require directive to behave differently

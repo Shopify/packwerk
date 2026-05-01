@@ -3,12 +3,10 @@
 
 module Packwerk
   class FilesForProcessing
-    extend T::Sig
 
     RelativeFileSet = T.type_alias { T::Set[String] }
 
     class << self
-      extend T::Sig
 
       #: (relative_file_paths: Array[String], configuration: Configuration, ?ignore_nested_packages: bool) -> FilesForProcessing
       def fetch(relative_file_paths:, configuration:, ignore_nested_packages: false)

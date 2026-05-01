@@ -5,7 +5,6 @@ require "test_helper"
 
 module Packwerk
   class ApplicationValidatorTest < Minitest::Test
-    extend T::Sig
     include RailsApplicationFixtureHelper
 
     setup do

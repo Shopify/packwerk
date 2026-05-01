@@ -4,15 +4,12 @@
 module Packwerk
   module Commands
     class BaseCommand
-      extend T::Sig
       extend T::Helpers
       abstract!
 
       @description = "" #: String
 
       class << self
-        extend T::Sig
-
         #: (?String? description) -> String
         def description(description = nil)
           if description

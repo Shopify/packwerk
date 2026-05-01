@@ -4,7 +4,6 @@
 module Packwerk
   # An offense related to a {Packwerk::Reference}.
   class ReferenceOffense < Offense
-    extend T::Sig
     extend T::Helpers
 
     #: Reference

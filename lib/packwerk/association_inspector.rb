@@ -4,7 +4,6 @@
 module Packwerk
   # Extracts the implicit constant reference from an active record association
   class AssociationInspector
-    extend T::Sig
     include ConstantNameInspector
 
     CustomAssociations = T.type_alias { T.any(T::Array[Symbol], T::Set[Symbol]) }

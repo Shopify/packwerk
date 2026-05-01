@@ -5,7 +5,6 @@ require "parallel"
 
 module Packwerk
   class ParseRun
-    extend T::Sig
 
     ProcessFileProc = T.type_alias do
       T.proc.params(path: String).returns(T::Array[Offense])

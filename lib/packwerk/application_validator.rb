@@ -10,7 +10,6 @@ module Packwerk
   # correct results.
   class ApplicationValidator
     include Validator
-    extend T::Sig
     extend ActiveSupport::Autoload
 
     autoload :Helpers

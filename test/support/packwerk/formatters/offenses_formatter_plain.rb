@@ -7,8 +7,6 @@ module Packwerk
       include OffensesFormatter
       IDENTIFIER = "plain" #: String
 
-      extend T::Sig
-
       # @override
       #: -> String
       def identifier

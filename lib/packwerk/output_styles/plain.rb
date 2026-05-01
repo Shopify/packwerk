@@ -4,7 +4,6 @@
 module Packwerk
   module OutputStyles
     class Plain
-      extend T::Sig
       include OutputStyle
 
       # @override

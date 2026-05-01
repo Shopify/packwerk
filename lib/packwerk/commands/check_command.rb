@@ -4,7 +4,6 @@
 module Packwerk
   module Commands
     class CheckCommand < BaseCommand
-      extend T::Sig
       include UsesParseRun
 
       description "run all checks"

@@ -4,8 +4,6 @@
 module Packwerk
   module Commands
     class HelpCommand < BaseCommand
-      extend T::Sig
-
       description "display help information about packwerk"
 
       # @override

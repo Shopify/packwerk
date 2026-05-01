@@ -9,8 +9,6 @@ require "parser/source/buffer"
 module Packwerk
   module Parsers
     class Erb
-      extend T::Sig
-
       include ParserInterface
 
       #: (?parser_class: untyped, ?ruby_parser: Ruby) -> void

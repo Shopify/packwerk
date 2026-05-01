@@ -6,7 +6,6 @@ require "singleton"
 module Packwerk
   module Parsers
     class Factory
-      extend T::Sig
       include Singleton
 
       RUBY_REGEX = %r{

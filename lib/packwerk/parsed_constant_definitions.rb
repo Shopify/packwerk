@@ -6,11 +6,7 @@ require "ast/node"
 module Packwerk
   # A collection of constant definitions parsed from an Abstract Syntax Tree (AST).
   class ParsedConstantDefinitions
-    extend T::Sig
-
     class << self
-      extend T::Sig
-
       # What fully qualified constants can this constant refer to in this context?
       #: (String constant_name, namespace_path: Array[String?]) -> Array[String]
       def reference_qualifications(constant_name, namespace_path:)

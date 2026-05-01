@@ -5,7 +5,6 @@ module Packwerk
   module Parsers
     module ParserInterface
       extend T::Helpers
-      extend T::Sig
 
       requires_ancestor { Kernel }
 

@@ -2,8 +2,6 @@
 # frozen_string_literal: true
 
 module StubConst
-  extend T::Sig
-
   #: (Module[top] mod, (Symbol | String) const, Object value) { -> void } -> void
   def with_stubbed_const(mod, const, value, &block)
     original_value = mod.const_get(const) # rubocop:disable Sorbet/ConstantsFromStrings

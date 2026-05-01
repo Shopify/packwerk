@@ -5,7 +5,6 @@ require "pathname"
 
 module Packwerk
   class OffenseCollection
-    extend T::Sig
     extend T::Helpers
 
     #: (String root_path, ?Hash[Packwerk::Package, Packwerk::PackageTodo] package_todos) -> void

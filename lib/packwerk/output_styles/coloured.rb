@@ -5,7 +5,6 @@ module Packwerk
   module OutputStyles
     # See https://en.wikipedia.org/wiki/ANSI_escape_code#3/4_bit for ANSI escape colour codes
     class Coloured
-      extend T::Sig
       include OutputStyle
 
       # @override

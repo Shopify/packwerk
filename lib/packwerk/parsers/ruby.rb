@@ -7,13 +7,9 @@ require "prism"
 module Packwerk
   module Parsers
     class Ruby
-      extend T::Sig
-
       include ParserInterface
 
       class RaiseExceptionsParser < Prism::Translation::Parser
-        extend T::Sig
-
         #: (untyped builder) -> void
         def initialize(builder)
           super(builder)
@@ -29,8 +25,6 @@ module Packwerk
       end
 
       class TolerateInvalidUtf8Builder < Prism::Translation::Parser::Builder
-        extend T::Sig
-
         #: (untyped token) -> untyped
         def string_value(token)
           value(token)

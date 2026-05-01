@@ -4,8 +4,6 @@
 module Packwerk
   module ReferenceChecking
     class ReferenceChecker
-      extend T::Sig
-
       #: (Array[Checker] checkers) -> void
       def initialize(checkers)
         @checkers = checkers

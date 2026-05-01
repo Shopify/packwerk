@@ -4,7 +4,6 @@
 module Packwerk
   module Validator
     class Result < T::Struct
-      extend T::Sig
 
       const :ok, T::Boolean
       const :error_value, T.nilable(String)

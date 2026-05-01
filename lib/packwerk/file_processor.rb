@@ -5,11 +5,7 @@ require "parser"
 
 module Packwerk
   class FileProcessor
-    extend T::Sig
-
     class UnknownFileTypeResult < Offense
-      extend T::Sig
-
       #: (file: String) -> void
       def initialize(file:)
         super(file: file, message: "unknown file type")

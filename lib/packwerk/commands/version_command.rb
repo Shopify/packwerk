@@ -4,8 +4,6 @@
 module Packwerk
   module Commands
     class VersionCommand < BaseCommand
-      extend T::Sig
-
       description "output packwerk version"
 
       # @override

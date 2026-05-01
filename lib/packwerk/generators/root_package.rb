@@ -4,11 +4,7 @@
 module Packwerk
   module Generators
     class RootPackage
-      extend T::Sig
-
       class << self
-        extend T::Sig
-
         #: (root: String, out: (IO | StringIO)) -> bool
         def generate(root:, out:)
           new(root: root, out: out).generate

@@ -6,8 +6,6 @@ require "benchmark"
 module Packwerk
   module Formatters
     class ProgressFormatter
-      extend T::Sig
-
       #: ((StringIO | IO) out, ?style: OutputStyle) -> void
       def initialize(out, style: OutputStyles::Plain.new)
         @out = out

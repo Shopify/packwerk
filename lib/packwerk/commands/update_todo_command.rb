@@ -4,7 +4,6 @@
 module Packwerk
   module Commands
     class UpdateTodoCommand < BaseCommand
-      extend T::Sig
       include UsesParseRun
 
       description "update package_todo.yml files"

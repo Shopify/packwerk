@@ -3,7 +3,6 @@
 
 module Packwerk
   class NodeProcessorFactory < T::Struct
-    extend T::Sig
 
     const :root_path, String
     const :constant_name_inspectors, T::Array[ConstantNameInspector]

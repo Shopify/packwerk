@@ -6,7 +6,6 @@ require "optparse"
 module Packwerk
   module Commands
     module UsesParseRun
-      extend T::Sig
       extend T::Helpers
 
       requires_ancestor { BaseCommand }

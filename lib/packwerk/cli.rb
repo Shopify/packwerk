@@ -4,8 +4,6 @@
 module Packwerk
   # A command-line interface to Packwerk.
   class Cli
-    extend T::Sig
-
     #: (
     #|   ?configuration: Configuration?,
     #|   ?out: (StringIO | IO),

@@ -15,8 +15,6 @@ module Packwerk
   #   have no way of inferring the file it is defined in. You could argue though that inheritance means that another
   #   constant with the same name exists in the inheriting class, and this view is sufficient for all our use cases.
   class ConstantDiscovery
-    extend T::Sig
-
     # @param constant_resolver [ConstantResolver]
     # @param packages [Packwerk::PackageSet]
     #: (constant_resolver: ConstantResolver, packages: Packwerk::PackageSet) -> void

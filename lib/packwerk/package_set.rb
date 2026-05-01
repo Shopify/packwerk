@@ -9,7 +9,6 @@ module Packwerk
 
   # A set of {Packwerk::Package}s as well as methods to parse packages from the filesystem.
   class PackageSet
-    extend T::Sig
     extend T::Generic
     include Enumerable
 
@@ -18,7 +17,6 @@ module Packwerk
     PACKAGE_CONFIG_FILENAME = "package.yml"
 
     class << self
-      extend T::Sig
 
       #: (String root_path, ?package_pathspec: PathSpec?) -> PackageSet
       def load_all_from(root_path, package_pathspec: nil)

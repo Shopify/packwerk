@@ -5,7 +5,6 @@ require "parser"
 
 module Packwerk
   class Offense
-    extend T::Sig
     extend T::Helpers
 
     #: Node::Location?

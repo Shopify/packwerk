@@ -4,8 +4,6 @@
 module Packwerk
   module Commands
     class ValidateCommand < BaseCommand
-      extend T::Sig
-
       description "verify integrity of packwerk and package configuration"
 
       # @override

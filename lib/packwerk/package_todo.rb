@@ -5,7 +5,6 @@ require "yaml"
 
 module Packwerk
   class PackageTodo
-    extend T::Sig
 
     PackageName = T.type_alias { String }
     ConstantName = T.type_alias { String }

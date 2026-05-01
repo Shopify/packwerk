@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 module TypedMock
-  extend T::Sig
   include(::Mocha::API)
 
   #: (**untyped params) -> untyped

@@ -4,8 +4,6 @@
 module Packwerk
   # Processes a single node in an abstract syntax tree (AST) using the provided checkers.
   class NodeProcessor
-    extend T::Sig
-
     #: (reference_extractor: ReferenceExtractor, relative_file: String) -> void
     def initialize(reference_extractor:, relative_file:)
       @reference_extractor = reference_extractor

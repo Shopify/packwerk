@@ -8,7 +8,6 @@ module Packwerk
   class Graph
     include TSort
 
-    extend T::Sig
     #: (Hash[(String | Integer | NilClass), Array[(String | Integer | NilClass)]] edges) -> void
     def initialize(edges)
       @edges = edges

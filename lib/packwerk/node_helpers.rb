@@ -10,8 +10,6 @@ module Packwerk
     class TypeError < ArgumentError; end
 
     class << self
-      extend T::Sig
-
       #: (AST::Node class_or_module_node) -> String
       def class_or_module_name(class_or_module_node)
         case type_of(class_or_module_node)

@@ -6,8 +6,6 @@ require "sorbet-runtime"
 
 module Packwerk
   class SpringCommand
-    extend T::Sig
-
     #: (untyped args) -> String
     def env(args)
       # Packwerk needs to run in a test environment, which has a set of autoload paths that are

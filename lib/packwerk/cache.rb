@@ -5,16 +5,13 @@ require "digest"
 
 module Packwerk
   class Cache
-    extend T::Sig
 
     class CacheContents < T::Struct
-      extend T::Sig
 
       const :file_contents_digest, String
       const :unresolved_references, T::Array[UnresolvedReference]
 
       class << self
-        extend T::Sig
 
         #: (String serialized_cache_contents) -> CacheContents
         def deserialize(serialized_cache_contents)
@@ -155,7 +152,6 @@ module Packwerk
 
   class Debug
     class << self
-      extend T::Sig
 
       #: (String out) -> void
       def out(out)

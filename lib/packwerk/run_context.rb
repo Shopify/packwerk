@@ -6,11 +6,7 @@ require "constant_resolver"
 module Packwerk
   # Holds the context of a Packwerk run across multiple files.
   class RunContext
-    extend T::Sig
-
     class << self
-      extend T::Sig
-
       #: (Configuration configuration) -> RunContext
       def from_configuration(configuration)
         new(

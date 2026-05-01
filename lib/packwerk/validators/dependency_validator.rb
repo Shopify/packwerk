@@ -4,7 +4,6 @@
 module Packwerk
   module Validators
     class DependencyValidator
-      extend T::Sig
       include Validator
 
       # @override

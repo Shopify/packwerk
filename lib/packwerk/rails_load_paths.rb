@@ -9,8 +9,6 @@ module Packwerk
   # Extracts the load paths from the analyzed application so that we can map constant names to paths.
   module RailsLoadPaths
     class << self
-      extend T::Sig
-
       #: (String root, environment: String) -> Hash[String, Module[top]]
       def for(root, environment:)
         require_application(root, environment)

@@ -7,7 +7,6 @@ require "yaml"
 
 module Packwerk
   module Validator
-    extend T::Sig
     extend T::Helpers
     extend ActiveSupport::Autoload
 
@@ -16,8 +15,6 @@ module Packwerk
     abstract!
 
     class << self
-      extend T::Sig
-
       #: (Class[top] base) -> void
       def included(base)
         validators << base

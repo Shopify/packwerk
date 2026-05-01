@@ -4,8 +4,6 @@
 module Packwerk
   module Commands
     class LazyLoadedEntry
-      extend T::Sig
-
       #: String
       attr_reader :name
 

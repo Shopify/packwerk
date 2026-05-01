@@ -3,7 +3,6 @@
 
 module Packwerk
   module OutputStyle
-    extend T::Sig
     extend T::Helpers
 
     interface!
