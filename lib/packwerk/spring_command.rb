@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "spring/commands"
-require "sorbet-runtime"
 
 module Packwerk
   class SpringCommand
