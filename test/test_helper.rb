@@ -10,6 +10,7 @@ require "packwerk"
 
 require "minitest/autorun"
 require "minitest/focus"
+require "minitest/mock"
 require "mocha/minitest"
 require "support/packwerk/application_fixture_helper"
 require "support/packwerk/factory_helper"
