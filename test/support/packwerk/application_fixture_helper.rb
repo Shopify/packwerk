@@ -96,7 +96,8 @@ module Packwerk
     end
 
     def fixture_path
-      T.bind(self, Minitest::Runnable)
+      #: self as Minitest::Runnable
+
       File.join(TEMP_FIXTURE_DIR, "#{name}-#{Time.now.strftime("%Y_%m_%d_%H_%M_%S")}")
     end
   end
