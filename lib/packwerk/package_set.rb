@@ -8,16 +8,13 @@ module Packwerk
   PathSpec = T.type_alias { T.any(String, T::Array[String]) }
 
   # A set of {Packwerk::Package}s as well as methods to parse packages from the filesystem.
+  #: [Elem = Package]
   class PackageSet
-    extend T::Generic
     include Enumerable
-
-    Elem = type_member { { fixed: Package } }
 
     PACKAGE_CONFIG_FILENAME = "package.yml"
 
     class << self
-
       #: (String root_path, ?package_pathspec: PathSpec?) -> PackageSet
       def load_all_from(root_path, package_pathspec: nil)
         package_paths = package_paths(root_path, package_pathspec || "**")
