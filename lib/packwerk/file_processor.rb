@@ -19,9 +19,18 @@ module Packwerk
       @parser_factory = parser_factory || Packwerk::Parsers::Factory.instance #: Parsers::Factory
     end
 
-    class ProcessedFile < T::Struct
-      const :unresolved_references, T::Array[UnresolvedReference], default: []
-      const :offenses, T::Array[Offense], default: []
+    class ProcessedFile
+      #: Array[UnresolvedReference]
+      attr_reader :unresolved_references
+
+      #: Array[Offense]
+      attr_reader :offenses
+
+      #: (?unresolved_references: Array[UnresolvedReference], ?offenses: Array[Offense]) -> void
+      def initialize(unresolved_references: [], offenses: [])
+        @unresolved_references = unresolved_references
+        @offenses = offenses
+      end
     end
 
     #: (String relative_file) -> ProcessedFile

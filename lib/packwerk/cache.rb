@@ -5,14 +5,20 @@ require "digest"
 
 module Packwerk
   class Cache
+    class CacheContents
+      #: String
+      attr_reader :file_contents_digest
 
-    class CacheContents < T::Struct
+      #: Array[UnresolvedReference]
+      attr_reader :unresolved_references
 
-      const :file_contents_digest, String
-      const :unresolved_references, T::Array[UnresolvedReference]
+      #: (file_contents_digest: String, unresolved_references: Array[UnresolvedReference]) -> void
+      def initialize(file_contents_digest:, unresolved_references:)
+        @file_contents_digest = file_contents_digest
+        @unresolved_references = unresolved_references
+      end
 
       class << self
-
         #: (String serialized_cache_contents) -> CacheContents
         def deserialize(serialized_cache_contents)
           cache_contents_json = JSON.parse(serialized_cache_contents)
@@ -30,6 +36,23 @@ module Packwerk
             unresolved_references: unresolved_references,
           )
         end
+      end
+
+      #: (*untyped _args) -> String
+      def to_json(*_args)
+        JSON.generate({
+          file_contents_digest: @file_contents_digest,
+          unresolved_references: @unresolved_references.map do |ref|
+            source_location = ref.source_location #: as !nil
+
+            {
+              constant_name: ref.constant_name,
+              namespace_path: ref.namespace_path,
+              relative_path: ref.relative_path,
+              source_location: { line: source_location.line, column: source_location.column },
+            }
+          end,
+        })
       end
 
       #: -> String
@@ -147,7 +170,6 @@ module Packwerk
 
   class Debug
     class << self
-
       #: (String out) -> void
       def out(out)
         if ENV["DEBUG_PACKWERK_CACHE"]

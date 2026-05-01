@@ -2,10 +2,18 @@
 # frozen_string_literal: true
 
 module Packwerk
-  class NodeProcessorFactory < T::Struct
+  class NodeProcessorFactory
+    #: String
+    attr_reader :root_path
 
-    const :root_path, String
-    const :constant_name_inspectors, T::Array[ConstantNameInspector]
+    #: Array[ConstantNameInspector]
+    attr_reader :constant_name_inspectors
+
+    #: (root_path: String, constant_name_inspectors: Array[ConstantNameInspector]) -> void
+    def initialize(root_path:, constant_name_inspectors:)
+      @root_path = root_path
+      @constant_name_inspectors = constant_name_inspectors
+    end
 
     #: (relative_file: String, node: AST::Node) -> NodeProcessor
     def for(relative_file:, node:)
