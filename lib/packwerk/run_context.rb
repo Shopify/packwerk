@@ -6,21 +6,15 @@ require "constant_resolver"
 module Packwerk
   # Holds the context of a Packwerk run across multiple files.
   class RunContext
-    extend T::Sig
-
     class << self
-      extend T::Sig
-
-      sig do
-        params(configuration: Configuration).returns(RunContext)
-      end
+      #: (Configuration configuration) -> RunContext
       def from_configuration(configuration)
         new(
           root_path: configuration.root_path,
           load_paths: configuration.load_paths,
           package_paths: configuration.package_paths,
           inflector: ActiveSupport::Inflector,
-          custom_associations: configuration.custom_associations,
+          custom_associations: configuration.custom_associations.to_set,
           associations_exclude: configuration.associations_exclude,
           exclude: configuration.exclude,
           cache_enabled: configuration.cache_enabled?,
@@ -30,21 +24,19 @@ module Packwerk
       end
     end
 
-    sig do
-      params(
-        root_path: String,
-        load_paths: T::Hash[String, T::Module[T.anything]],
-        inflector: T.class_of(ActiveSupport::Inflector),
-        cache_directory: Pathname,
-        config_path: T.nilable(String),
-        package_paths: T.nilable(T.any(T::Array[String], String)),
-        custom_associations: AssociationInspector::CustomAssociations,
-        associations_exclude: T::Array[String],
-        exclude: T::Array[String],
-        checkers: T::Array[Checker],
-        cache_enabled: T::Boolean,
-      ).void
-    end
+    #: (
+    #|   root_path: String,
+    #|   load_paths: Hash[String, Module[top]],
+    #|   inflector: singleton(ActiveSupport::Inflector),
+    #|   cache_directory: Pathname,
+    #|   ?config_path: String?,
+    #|   ?package_paths: (Array[String] | String)?,
+    #|   ?custom_associations: Set[Symbol],
+    #|   ?associations_exclude: Array[String],
+    #|   ?exclude: Array[String],
+    #|   ?checkers: Array[Checker],
+    #|   ?cache_enabled: bool
+    #| ) -> void
     def initialize(
       root_path:,
       load_paths:,
@@ -52,7 +44,7 @@ module Packwerk
       cache_directory:,
       config_path: nil,
       package_paths: nil,
-      custom_associations: [],
+      custom_associations: Set.new,
       associations_exclude: [],
       exclude: [],
       checkers: Checker.all,
@@ -70,16 +62,14 @@ module Packwerk
       @config_path = config_path
       @exclude = exclude
 
-      @file_processor = T.let(nil, T.nilable(FileProcessor))
-      @context_provider = T.let(nil, T.nilable(ConstantDiscovery))
-      @package_set = T.let(nil, T.nilable(PackageSet))
+      @file_processor = nil #: FileProcessor?
+      @context_provider = nil #: ConstantDiscovery?
+      @package_set = nil #: PackageSet?
       # We need to initialize this before we fork the process, see https://github.com/Shopify/packwerk/issues/182
-      @cache = T.let(
-        Cache.new(enable_cache: @cache_enabled, cache_directory: @cache_directory, config_path: @config_path), Cache
-      )
+      @cache = Cache.new(enable_cache: @cache_enabled, cache_directory: @cache_directory, config_path: @config_path) #: Cache
     end
 
-    sig { params(relative_file: String).returns(T::Array[Packwerk::Offense]) }
+    #: (relative_file: String) -> Array[Packwerk::Offense]
     def process_file(relative_file:)
       processed_file = file_processor.call(relative_file)
 
@@ -92,19 +82,19 @@ module Packwerk
       processed_file.offenses + references.flat_map { |reference| reference_checker.call(reference) }
     end
 
-    sig { returns(PackageSet) }
+    #: -> PackageSet
     def package_set
       @package_set ||= ::Packwerk::PackageSet.load_all_from(@root_path, package_pathspec: @package_paths)
     end
 
     private
 
-    sig { returns(FileProcessor) }
+    #: -> FileProcessor
     def file_processor
       @file_processor ||= FileProcessor.new(node_processor_factory: node_processor_factory, cache: @cache)
     end
 
-    sig { returns(NodeProcessorFactory) }
+    #: -> NodeProcessorFactory
     def node_processor_factory
       NodeProcessorFactory.new(
         root_path: @root_path,
@@ -112,7 +102,7 @@ module Packwerk
       )
     end
 
-    sig { returns(ConstantDiscovery) }
+    #: -> ConstantDiscovery
     def context_provider
       @context_provider ||= ConstantDiscovery.new(
         constant_resolver: resolver,
@@ -120,7 +110,7 @@ module Packwerk
       )
     end
 
-    sig { returns(ConstantResolver) }
+    #: -> ConstantResolver
     def resolver
       ConstantResolver.new(
         root_path: @root_path,
@@ -130,7 +120,7 @@ module Packwerk
       )
     end
 
-    sig { returns(T::Array[ConstantNameInspector]) }
+    #: -> Array[ConstantNameInspector]
     def constant_name_inspectors
       [
         ConstNodeInspector.new,
@@ -142,7 +132,7 @@ module Packwerk
       ]
     end
 
-    sig { params(relative_globs: T::Array[String]).returns(FilesForProcessing::RelativeFileSet) }
+    #: (Array[String] relative_globs) -> FilesForProcessing::relative_file_set
     def relative_files_for_globs(relative_globs)
       Set.new(relative_globs.flat_map { |glob| Dir[glob] })
     end

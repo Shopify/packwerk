@@ -4,12 +4,12 @@
 module Packwerk
   module Commands
     class UpdateTodoCommand < BaseCommand
-      extend T::Sig
       include UsesParseRun
 
       description "update package_todo.yml files"
 
-      sig { override.returns(T::Boolean) }
+      # @override
+      #: -> bool
       def run
         if @files_for_processing.files_specified?
           out.puts(<<~MSG.squish)
@@ -28,7 +28,7 @@ module Packwerk
         end
 
         run_context = RunContext.from_configuration(configuration)
-        offenses = T.let([], T::Array[Offense])
+        offenses = [] #: Array[Offense]
         progress_formatter.started_inspection(@files_for_processing.files) do
           offenses = parse_run.find_offenses(run_context, on_interrupt: -> { progress_formatter.interrupted }) do
             progress_formatter.increment_progress

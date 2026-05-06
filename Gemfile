@@ -23,5 +23,5 @@ gem("minitest-mock")
 
 gem("m")
 gem("rake")
-gem("sorbet-static-and-runtime")
+gem("sorbet-static")
 gem("zeitwerk")

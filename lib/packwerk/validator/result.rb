@@ -3,13 +3,20 @@
 
 module Packwerk
   module Validator
-    class Result < T::Struct
-      extend T::Sig
+    class Result
+      #: bool
+      attr_reader :ok
 
-      const :ok, T::Boolean
-      const :error_value, T.nilable(String)
+      #: String?
+      attr_reader :error_value
 
-      sig { returns(T::Boolean) }
+      #: (ok: bool, ?error_value: String?) -> void
+      def initialize(ok:, error_value: nil)
+        @ok = ok
+        @error_value = error_value
+      end
+
+      #: -> bool
       def ok?
         ok
       end

@@ -4,18 +4,14 @@
 module Packwerk
   # A command-line interface to Packwerk.
   class Cli
-    extend T::Sig
-
-    sig do
-      params(
-        configuration: T.nilable(Configuration),
-        out: T.any(StringIO, IO),
-        err_out: T.any(StringIO, IO),
-        environment: String,
-        style: OutputStyle,
-        offenses_formatter: T.nilable(OffensesFormatter)
-      ).void
-    end
+    #: (
+    #|   ?configuration: Configuration?,
+    #|   ?out: (StringIO | IO),
+    #|   ?err_out: (StringIO | IO),
+    #|   ?environment: String,
+    #|   ?style: OutputStyle,
+    #|   ?offenses_formatter: OffensesFormatter?
+    #| ) -> void
     def initialize(
       configuration: nil,
       out: $stdout,
@@ -28,21 +24,18 @@ module Packwerk
       @err_out = err_out
       @environment = environment
       @style = style
-      @configuration = T.let(configuration || Configuration.from_path, Configuration)
-      @progress_formatter = T.let(Formatters::ProgressFormatter.new(@out, style: style), Formatters::ProgressFormatter)
-      @offenses_formatter = T.let(
-        offenses_formatter || @configuration.offenses_formatter,
-        OffensesFormatter
-      )
+      @configuration = configuration || Configuration.from_path #: Configuration
+      @progress_formatter = Formatters::ProgressFormatter.new(@out, style: style) #: Formatters::ProgressFormatter
+      @offenses_formatter = offenses_formatter || @configuration.offenses_formatter #: OffensesFormatter
     end
 
-    sig { params(args: T::Array[String]).returns(T.noreturn) }
+    #: (Array[String] args) -> bot
     def run(args)
       success = execute_command(args)
       exit(success)
     end
 
-    sig { params(args: T::Array[String]).returns(T::Boolean) }
+    #: (Array[String] args) -> bool
     def execute_command(args)
       command = args.shift || "help"
       command_class = Commands.for(command)

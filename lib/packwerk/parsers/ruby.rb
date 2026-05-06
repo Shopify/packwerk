@@ -7,14 +7,10 @@ require "prism"
 module Packwerk
   module Parsers
     class Ruby
-      extend T::Sig
-
       include ParserInterface
 
       class RaiseExceptionsParser < Prism::Translation::Parser
-        extend T::Sig
-
-        sig { params(builder: T.untyped).void }
+        #: (untyped builder) -> void
         def initialize(builder)
           super(builder)
           super.diagnostics.all_errors_are_fatal = true
@@ -22,28 +18,27 @@ module Packwerk
 
         private
 
-        sig { params(error: Prism::ParseError).returns(T::Boolean) }
+        #: (Prism::ParseError error) -> bool
         def valid_error?(error)
           error.type != :invalid_yield
         end
       end
 
       class TolerateInvalidUtf8Builder < Prism::Translation::Parser::Builder
-        extend T::Sig
-
-        sig { params(token: T.untyped).returns(T.untyped) }
+        #: (untyped token) -> untyped
         def string_value(token)
           value(token)
         end
       end
 
-      sig { params(parser_class: T.untyped).void }
+      #: (?parser_class: untyped) -> void
       def initialize(parser_class: RaiseExceptionsParser)
-        @builder = T.let(TolerateInvalidUtf8Builder.new, Object)
-        @parser_class = T.let(parser_class, T.class_of(RaiseExceptionsParser))
+        @builder = TolerateInvalidUtf8Builder.new #: Object
+        @parser_class = parser_class #: singleton(RaiseExceptionsParser)
       end
 
-      sig { override.params(io: T.any(IO, StringIO), file_path: String).returns(T.nilable(Parser::AST::Node)) }
+      # @override
+      #: (io: (IO | StringIO), ?file_path: String) -> Parser::AST::Node?
       def call(io:, file_path: "<unknown>")
         buffer = Parser::Source::Buffer.new(file_path)
         buffer.source = io.read

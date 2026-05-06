@@ -251,8 +251,10 @@ module Packwerk
     end
 
     class DeprecatedInspector
-      T.unsafe(self).include(ConstantNameInspector)
+      include ConstantNameInspector
 
+      # @override(allow_incompatible: true)
+      #: (::AST::Node node, ancestors: Array[::AST::Node]) -> String?
       def constant_name_from_node(node, ancestors:)
         "Something"
       end

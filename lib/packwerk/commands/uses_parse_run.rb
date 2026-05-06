@@ -5,32 +5,26 @@ require "optparse"
 
 module Packwerk
   module Commands
+    # @requires_ancestor: BaseCommand
     module UsesParseRun
-      extend T::Sig
-      extend T::Helpers
-
-      requires_ancestor { BaseCommand }
-
-      sig do
-        params(
-          args: T::Array[String],
-          configuration: Configuration,
-          out: T.any(StringIO, IO),
-          err_out: T.any(StringIO, IO),
-          progress_formatter: Formatters::ProgressFormatter,
-          offenses_formatter: OffensesFormatter,
-        ).void
-      end
+      #: (
+      #|   Array[String] args,
+      #|   configuration: Configuration,
+      #|   out: (StringIO | IO),
+      #|   err_out: (StringIO | IO),
+      #|   progress_formatter: Formatters::ProgressFormatter,
+      #|   offenses_formatter: OffensesFormatter
+      #| ) -> void
       def initialize(args, configuration:, out:, err_out:, progress_formatter:, offenses_formatter:)
         super
-        @files_for_processing = T.let(fetch_files_to_process, FilesForProcessing)
-        @offenses_formatter = T.let(offenses_formatter_from_options || @offenses_formatter, OffensesFormatter)
+        @files_for_processing = fetch_files_to_process #: FilesForProcessing
+        @offenses_formatter = offenses_formatter_from_options || @offenses_formatter #: OffensesFormatter
         configuration.parallel = parsed_options[:parallel]
       end
 
       private
 
-      sig { returns(FilesForProcessing) }
+      #: -> FilesForProcessing
       def fetch_files_to_process
         FilesForProcessing.fetch(
           relative_file_paths: parsed_options[:relative_file_paths],
@@ -39,12 +33,12 @@ module Packwerk
         )
       end
 
-      sig { returns(T.nilable(OffensesFormatter)) }
+      #: -> OffensesFormatter?
       def offenses_formatter_from_options
         OffensesFormatter.find(parsed_options[:formatter_name]) if parsed_options[:formatter_name]
       end
 
-      sig { returns(ParseRun) }
+      #: -> ParseRun
       def parse_run
         ParseRun.new(
           relative_file_set: @files_for_processing.files,
@@ -52,17 +46,17 @@ module Packwerk
         )
       end
 
-      sig { returns(T::Hash[Symbol, T.untyped]) }
+      #: -> Hash[Symbol, untyped]
       def parsed_options
         return @parsed_options if @parsed_options
 
-        @parsed_options = T.let(nil, T.nilable(T::Hash[Symbol, T.untyped]))
+        @parsed_options = nil #: Hash[Symbol, untyped]?
 
         @parsed_options = {
-          relative_file_paths: T.let([], T::Array[String]),
-          ignore_nested_packages: T.let(false, T::Boolean),
-          formatter_name: T.let(nil, T.nilable(String)),
-          parallel: T.let(configuration.parallel?, T::Boolean),
+          relative_file_paths: [], #: Array[String]
+          ignore_nested_packages: false, #: bool
+          formatter_name: nil, #: String?
+          parallel: configuration.parallel?,
         }
 
         OptionParser.new do |parser|

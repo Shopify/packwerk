@@ -11,12 +11,10 @@ module Packwerk
     class ParseResult < Offense; end
 
     class ParseError < StandardError
-      extend T::Sig
-
-      sig { returns(ParseResult) }
+      #: ParseResult
       attr_reader(:result)
 
-      sig { params(result: ParseResult).void }
+      #: (ParseResult result) -> void
       def initialize(result)
         super(result.message)
         @result = result

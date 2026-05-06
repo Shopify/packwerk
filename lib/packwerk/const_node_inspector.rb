@@ -4,14 +4,10 @@
 module Packwerk
   # Extracts a constant name from an AST node of type :const
   class ConstNodeInspector
-    extend T::Sig
     include ConstantNameInspector
 
-    sig do
-      override
-        .params(node: AST::Node, ancestors: T::Array[AST::Node], relative_file: String)
-        .returns(T.nilable(String))
-    end
+    # @override
+    #: (AST::Node node, ancestors: Array[AST::Node], relative_file: String) -> String?
     def constant_name_from_node(node, ancestors:, relative_file:)
       return nil unless NodeHelpers.constant?(node)
 
@@ -34,18 +30,18 @@ module Packwerk
 
     private
 
-    sig { params(parent: T.nilable(AST::Node)).returns(T::Boolean) }
+    #: (AST::Node? parent) -> bool
     def root_constant?(parent)
       !(parent && NodeHelpers.constant?(parent))
     end
 
-    sig { params(node: AST::Node, parent: AST::Node).returns(T.nilable(T::Boolean)) }
+    #: (AST::Node node, parent: AST::Node) -> bool?
     def constant_in_module_or_class_definition?(node, parent:)
       parent_name = NodeHelpers.module_name_from_definition(parent)
       parent_name && parent_name == NodeHelpers.constant_name(node)
     end
 
-    sig { params(ancestors: T::Array[AST::Node]).returns(String) }
+    #: (Array[AST::Node] ancestors) -> String
     def fully_qualify_constant(ancestors)
       # We're defining a class with this name, in which case the constant is implicitly fully qualified by its
       # enclosing namespace

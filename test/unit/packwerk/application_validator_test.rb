@@ -5,7 +5,6 @@ require "test_helper"
 
 module Packwerk
   class ApplicationValidatorTest < Minitest::Test
-    extend T::Sig
     include RailsApplicationFixtureHelper
 
     setup do
@@ -73,7 +72,7 @@ module Packwerk
 
     private
 
-    sig { returns(ApplicationValidator) }
+    #: -> ApplicationValidator
     def validator
       @application_validator ||= ApplicationValidator.new
     end

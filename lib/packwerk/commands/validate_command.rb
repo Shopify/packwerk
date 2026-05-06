@@ -4,19 +4,18 @@
 module Packwerk
   module Commands
     class ValidateCommand < BaseCommand
-      extend T::Sig
-
       description "verify integrity of packwerk and package configuration"
 
-      sig { override.returns(T::Boolean) }
+      # @override
+      #: -> bool
       def run
-        validator_result = T.let(nil, T.nilable(Validator::Result))
+        validator_result = nil #: Validator::Result?
 
         progress_formatter.started_validation do
           validator_result = validator.check_all(package_set, configuration)
         end
 
-        validator_result = T.must(validator_result)
+        validator_result = validator_result #: as !nil
 
         if validator_result.ok?
           out.puts("Validation successful 🎉")
@@ -29,12 +28,12 @@ module Packwerk
 
       private
 
-      sig { returns(ApplicationValidator) }
+      #: -> ApplicationValidator
       def validator
         ApplicationValidator.new
       end
 
-      sig { returns(PackageSet) }
+      #: -> PackageSet
       def package_set
         PackageSet.load_all_from(
           configuration.root_path,

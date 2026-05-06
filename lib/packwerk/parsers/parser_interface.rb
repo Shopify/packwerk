@@ -3,17 +3,12 @@
 
 module Packwerk
   module Parsers
+    # @requires_ancestor: Kernel
+    # @interface
     module ParserInterface
-      extend T::Helpers
-      extend T::Sig
-
-      requires_ancestor { Kernel }
-
-      interface!
-
-      sig { abstract.params(io: T.any(IO, StringIO), file_path: String).returns(T.untyped) }
-      def call(io:, file_path:)
-      end
+      # @abstract
+      #: (io: (IO | StringIO), file_path: String) -> untyped
+      def call(io:, file_path:) = raise NotImplementedError, "Abstract method called"
     end
   end
 end

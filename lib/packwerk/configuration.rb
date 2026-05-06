@@ -6,12 +6,8 @@ require "yaml"
 
 module Packwerk
   class Configuration
-    extend T::Sig
-
     class << self
-      extend T::Sig
-
-      sig { params(path: String).returns(Configuration) }
+      #: (?String path) -> Configuration
       def from_path(path = Dir.pwd)
         raise ArgumentError, "#{File.expand_path(path)} does not exist" unless File.exist?(path)
 
@@ -26,7 +22,7 @@ module Packwerk
 
       private
 
-      sig { params(path: String).returns(Configuration) }
+      #: (String path) -> Configuration
       def from_packwerk_config(path)
         new(
           YAML.load_file(path) || {},
@@ -36,58 +32,51 @@ module Packwerk
     end
 
     DEFAULT_CONFIG_PATH = "packwerk.yml"
-    DEFAULT_INCLUDE_GLOBS = T.let(["**/*.{rb,rake,erb}"], T::Array[String])
-    DEFAULT_EXCLUDE_GLOBS = T.let(["{bin,node_modules,script,tmp,vendor}/**/*"], T::Array[String])
+    DEFAULT_INCLUDE_GLOBS = ["**/*.{rb,rake,erb}"] #: Array[String]
+    DEFAULT_EXCLUDE_GLOBS = ["{bin,node_modules,script,tmp,vendor}/**/*"] #: Array[String]
 
-    sig { returns(T::Array[String]) }
+    #: Array[String]
     attr_reader(:include)
 
-    sig { returns(T::Array[String]) }
+    #: Array[String]
     attr_reader(:exclude)
 
-    sig { returns(String) }
+    #: String
     attr_reader(:root_path)
 
-    sig { returns(T.any(String, T::Array[String])) }
+    #: (String | Array[String])
     attr_reader(:package_paths)
 
-    sig { returns(T::Array[Symbol]) }
+    #: Array[Symbol]
     attr_reader(:custom_associations)
 
-    sig { returns(T::Array[String]) }
+    #: Array[String]
     attr_reader(:associations_exclude)
 
-    sig { returns(T.nilable(String)) }
+    #: String?
     attr_reader(:config_path)
 
-    sig { returns(Pathname) }
+    #: Pathname
     attr_reader(:cache_directory)
 
-    sig { params(parallel: T::Boolean).returns(T::Boolean) }
+    #: bool
     attr_writer(:parallel)
 
-    sig do
-      params(
-        configs: T::Hash[String, T.untyped],
-        config_path: T.nilable(String),
-      ).void
-    end
+    #: (?Hash[String, untyped] configs, ?config_path: String?) -> void
     def initialize(configs = {}, config_path: nil)
-      @include = T.let(configs["include"] || DEFAULT_INCLUDE_GLOBS, T::Array[String])
-      @exclude = T.let(configs["exclude"] || DEFAULT_EXCLUDE_GLOBS, T::Array[String])
+      @include = configs["include"] || DEFAULT_INCLUDE_GLOBS #: Array[String]
+      @exclude = configs["exclude"] || DEFAULT_EXCLUDE_GLOBS #: Array[String]
       root = config_path ? File.dirname(config_path) : "."
-      @root_path = T.let(File.expand_path(root), String)
-      @package_paths = T.let(configs["package_paths"] || "**/", T.any(String, T::Array[String]))
-      @custom_associations = T.let((configs["custom_associations"] || []).map(&:to_sym), T::Array[Symbol])
-      @associations_exclude = T.let(configs["associations_exclude"] || [], T::Array[String])
-      @parallel = T.let(configs.key?("parallel") ? configs["parallel"] : true, T::Boolean)
-      @cache_enabled = T.let(configs.key?("cache") ? configs["cache"] : false, T::Boolean)
-      @cache_directory = T.let(Pathname.new(configs["cache_directory"] || "tmp/cache/packwerk"), Pathname)
+      @root_path = File.expand_path(root) #: String
+      @package_paths = configs["package_paths"] || "**/" #: (String | Array[String])
+      @custom_associations = (configs["custom_associations"] || []).map(&:to_sym) #: Array[Symbol]
+      @associations_exclude = configs["associations_exclude"] || [] #: Array[String]
+      @parallel = configs.key?("parallel") ? configs["parallel"] : true #: bool
+      @cache_enabled = configs.key?("cache") ? configs["cache"] : false #: bool
+      @cache_directory = Pathname.new(configs["cache_directory"] || "tmp/cache/packwerk") #: Pathname
       @config_path = config_path
 
-      @offenses_formatter_identifier = T.let(
-        configs["offenses_formatter"] || Formatters::DefaultOffensesFormatter::IDENTIFIER, String
-      )
+      @offenses_formatter_identifier = configs["offenses_formatter"] || Formatters::DefaultOffensesFormatter::IDENTIFIER #: String
 
       if configs.key?("require")
         configs["require"].each do |require_directive|
@@ -96,25 +85,22 @@ module Packwerk
       end
     end
 
-    sig { returns(T::Hash[String, T::Module[T.anything]]) }
+    #: -> Hash[String, Module[top]]
     def load_paths
-      @load_paths ||= T.let(
-        RailsLoadPaths.for(@root_path, environment: "test"),
-        T.nilable(T::Hash[String, T::Module[T.anything]]),
-      )
+      @load_paths ||= RailsLoadPaths.for(@root_path, environment: "test") #: Hash[String, Module[top]]?
     end
 
-    sig { returns(T::Boolean) }
+    #: -> bool
     def parallel?
       @parallel
     end
 
-    sig { returns(OffensesFormatter) }
+    #: -> OffensesFormatter
     def offenses_formatter
       OffensesFormatter.find(@offenses_formatter_identifier)
     end
 
-    sig { returns(T::Boolean) }
+    #: -> bool
     def cache_enabled?
       @cache_enabled
     end

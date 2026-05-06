@@ -3,53 +3,37 @@
 
 module Packwerk
   class FilesForProcessing
-    extend T::Sig
-
-    RelativeFileSet = T.type_alias { T::Set[String] }
+    #: type relative_file_set = Set[String]
 
     class << self
-      extend T::Sig
-
-      sig do
-        params(
-          relative_file_paths: T::Array[String],
-          configuration: Configuration,
-          ignore_nested_packages: T::Boolean
-        ).returns(FilesForProcessing)
-      end
+      #: (relative_file_paths: Array[String], configuration: Configuration, ?ignore_nested_packages: bool) -> FilesForProcessing
       def fetch(relative_file_paths:, configuration:, ignore_nested_packages: false)
         new(relative_file_paths, configuration, ignore_nested_packages)
       end
     end
 
-    sig do
-      params(
-        relative_file_paths: T::Array[String],
-        configuration: Configuration,
-        ignore_nested_packages: T::Boolean
-      ).void
-    end
+    #: (Array[String] relative_file_paths, Configuration configuration, bool ignore_nested_packages) -> void
     def initialize(relative_file_paths, configuration, ignore_nested_packages)
       @relative_file_paths = relative_file_paths
       @configuration = configuration
       @ignore_nested_packages = ignore_nested_packages
-      @specified_files = T.let(nil, T.nilable(RelativeFileSet))
-      @files = T.let(nil, T.nilable(RelativeFileSet))
+      @specified_files = nil #: relative_file_set?
+      @files = nil #: relative_file_set?
     end
 
-    sig { returns(RelativeFileSet) }
+    #: -> relative_file_set
     def files
       @files ||= files_for_processing
     end
 
-    sig { returns(T::Boolean) }
+    #: -> bool
     def files_specified?
       specified_files.any?
     end
 
     private
 
-    sig { returns(RelativeFileSet) }
+    #: -> relative_file_set
     def files_for_processing
       all_included_files = if specified_files.empty?
         configured_included_files
@@ -60,7 +44,7 @@ module Packwerk
       all_included_files - configured_excluded_files
     end
 
-    sig { returns(RelativeFileSet) }
+    #: -> relative_file_set
     def specified_files
       @specified_files ||= Set.new(
         @relative_file_paths.map do |relative_file_path|
@@ -73,7 +57,7 @@ module Packwerk
       ).flatten
     end
 
-    sig { params(relative_file_path: String).returns(RelativeFileSet) }
+    #: (String relative_file_path) -> relative_file_set
     def specified_included_files(relative_file_path)
       # Note, assuming include globs are always relative paths
       relative_includes = @configuration.include
@@ -96,17 +80,17 @@ module Packwerk
       Set.new(relative_files)
     end
 
-    sig { returns(RelativeFileSet) }
+    #: -> relative_file_set
     def configured_included_files
       relative_files_for_globs(@configuration.include)
     end
 
-    sig { returns(RelativeFileSet) }
+    #: -> relative_file_set
     def configured_excluded_files
       relative_files_for_globs(@configuration.exclude)
     end
 
-    sig { params(relative_globs: T::Array[String]).returns(RelativeFileSet) }
+    #: (Array[String] relative_globs) -> relative_file_set
     def relative_files_for_globs(relative_globs)
       Set.new(relative_globs.flat_map { |glob| Dir[glob] })
     end

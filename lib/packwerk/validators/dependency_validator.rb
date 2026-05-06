@@ -4,12 +4,10 @@
 module Packwerk
   module Validators
     class DependencyValidator
-      extend T::Sig
       include Validator
 
-      sig do
-        override.params(package_set: PackageSet, configuration: Configuration).returns(Validator::Result)
-      end
+      # @override
+      #: (PackageSet package_set, Configuration configuration) -> Validator::Result
       def call(package_set, configuration)
         results = [
           check_package_manifest_syntax(configuration),
@@ -20,7 +18,8 @@ module Packwerk
         merge_results(results)
       end
 
-      sig { override.returns(T::Array[String]) }
+      # @override
+      #: -> Array[String]
       def permitted_keys
         [
           "enforce_dependencies",
@@ -30,7 +29,7 @@ module Packwerk
 
       private
 
-      sig { params(configuration: Configuration).returns(Validator::Result) }
+      #: (Configuration configuration) -> Validator::Result
       def check_package_manifest_syntax(configuration)
         errors = []
 
@@ -63,7 +62,7 @@ module Packwerk
         end
       end
 
-      sig { params(package_set: PackageSet).returns(Validator::Result) }
+      #: (PackageSet package_set) -> Validator::Result
       def check_acyclic_graph(package_set)
         edges = package_set.to_h do |package|
           [
@@ -90,7 +89,7 @@ module Packwerk
         end
       end
 
-      sig { params(configuration: Configuration).returns(Validator::Result) }
+      #: (Configuration configuration) -> Validator::Result
       def check_valid_package_dependencies(configuration)
         packages_dependencies = package_manifests_settings_for(configuration, "dependencies")
           .delete_if { |_, deps| deps.nil? }
@@ -126,7 +125,7 @@ module Packwerk
         end
       end
 
-      sig { params(configuration: Configuration, path: T.untyped).returns(T::Boolean) }
+      #: (Configuration configuration, untyped path) -> bool
       def invalid_package_path?(configuration, path)
         # Packages at the root can be implicitly specified as "."
         return false if path == "."
@@ -142,7 +141,7 @@ module Packwerk
       # to the string:
       #
       #   ["a -> b -> c -> a", "b -> c -> b"]
-      sig { params(cycles: T.untyped).returns(T::Array[String]) }
+      #: (untyped cycles) -> Array[String]
       def build_cycle_strings(cycles)
         cycles.map do |cycle|
           cycle_strings = cycle.map(&:to_s)

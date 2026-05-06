@@ -192,7 +192,7 @@ module Packwerk
       cli = ::Packwerk::Cli.new(
         out: string_io,
         configuration: configuration,
-        offenses_formatter: T.unsafe(offenses_formatter).new
+        offenses_formatter: offenses_formatter.new
       )
 
       FilesForProcessing.any_instance.stubs(
@@ -218,7 +218,7 @@ module Packwerk
       RunContext.any_instance.stubs(:process_file)
         .returns([offense])
 
-      cli = T.let(nil, T.nilable(Packwerk::Cli))
+      cli = nil #: Packwerk::Cli?
       string_io = StringIO.new
       mock_require_method = ->(required_thing) do
         next unless required_thing.include?("my_local_extension")
@@ -235,7 +235,8 @@ module Packwerk
         files: Set.new([file_path])
       )
 
-      success = T.must(cli).execute_command(["check", file_path])
+      success = cli #: as !nil
+        .execute_command(["check", file_path])
 
       assert_includes string_io.string, "hi i am a custom offense formatter"
       assert_includes string_io.string, "stale violations report"
@@ -256,7 +257,7 @@ module Packwerk
       RunContext.any_instance.stubs(:process_file)
         .returns([offense])
 
-      cli = T.let(nil, T.nilable(Packwerk::Cli))
+      cli = nil #: Packwerk::Cli?
       string_io = StringIO.new
       mock_require_method = ->(required_thing) do
         next unless required_thing.include?("my_local_extension")
@@ -273,7 +274,8 @@ module Packwerk
         files: Set.new([file_path])
       )
 
-      success = T.must(cli).execute_command(["check", "--offenses-formatter=default", file_path])
+      success = cli #: as !nil
+        .execute_command(["check", "--offenses-formatter=default", file_path])
 
       assert_includes string_io.string, violation_message
       assert_includes string_io.string, "1 offense detected"

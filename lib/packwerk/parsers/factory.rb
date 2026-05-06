@@ -6,7 +6,6 @@ require "singleton"
 module Packwerk
   module Parsers
     class Factory
-      extend T::Sig
       include Singleton
 
       RUBY_REGEX = %r{
@@ -20,29 +19,30 @@ module Packwerk
       ERB_REGEX = /\.erb\Z/
       private_constant :ERB_REGEX
 
-      sig { void }
+      #: -> void
       def initialize
-        @ruby_parser = T.let(nil, T.nilable(ParserInterface))
-        @erb_parser = T.let(nil, T.nilable(ParserInterface))
-        @erb_parser_class = T.let(nil, T.nilable(T::Class[T.anything]))
+        @ruby_parser = nil #: ParserInterface?
+        @erb_parser = nil #: ParserInterface?
+        @erb_parser_class = nil #: Class[top]?
       end
 
-      sig { params(path: String).returns(T.nilable(ParserInterface)) }
+      #: (String path) -> ParserInterface?
       def for_path(path)
         case path
         when RUBY_REGEX
           @ruby_parser ||= Ruby.new
         when ERB_REGEX
-          @erb_parser ||= T.unsafe(erb_parser_class).new
+          erb_parser_class_ = erb_parser_class #: as untyped
+          @erb_parser ||= erb_parser_class_.new
         end
       end
 
-      sig { returns(T::Class[T.anything]) }
+      #: -> Class[top]
       def erb_parser_class
         @erb_parser_class ||= Erb
       end
 
-      sig { params(klass: T.nilable(T::Class[T.anything])).void }
+      #: (Class[top]? klass) -> void
       def erb_parser_class=(klass)
         @erb_parser_class = klass
         @erb_parser = nil

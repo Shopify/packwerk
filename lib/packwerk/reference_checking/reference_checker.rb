@@ -4,18 +4,12 @@
 module Packwerk
   module ReferenceChecking
     class ReferenceChecker
-      extend T::Sig
-
-      sig { params(checkers: T::Array[Checker]).void }
+      #: (Array[Checker] checkers) -> void
       def initialize(checkers)
         @checkers = checkers
       end
 
-      sig do
-        params(
-          reference: Reference
-        ).returns(T::Array[Packwerk::Offense])
-      end
+      #: (Reference reference) -> Array[Packwerk::Offense]
       def call(reference)
         @checkers.each_with_object([]) do |checker, violations|
           next unless checker.invalid_reference?(reference)

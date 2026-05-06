@@ -6,21 +6,18 @@ module Packwerk
     module Checkers
       # Checks whether a given reference conforms to the configured graph of dependencies.
       class DependencyChecker
-        extend T::Sig
         include Checker
 
-        VIOLATION_TYPE = T.let("dependency", String)
+        VIOLATION_TYPE = "dependency" #: String
 
-        sig { override.returns(String) }
+        # @override
+        #: -> String
         def violation_type
           VIOLATION_TYPE
         end
 
-        sig do
-          override
-            .params(reference: Packwerk::Reference)
-            .returns(T::Boolean)
-        end
+        # @override
+        #: (Packwerk::Reference reference) -> bool
         def invalid_reference?(reference)
           return false unless reference.package.enforce_dependencies?
           return false if reference.package.dependency?(reference.constant.package)
@@ -28,11 +25,8 @@ module Packwerk
           true
         end
 
-        sig do
-          override
-            .params(reference: Packwerk::Reference)
-            .returns(String)
-        end
+        # @override
+        #: (Packwerk::Reference reference) -> String
         def message(reference)
           const_name = reference.constant.name
           const_package = reference.constant.package
@@ -46,7 +40,8 @@ module Packwerk
           EOS
         end
 
-        sig { override.params(offense: ReferenceOffense).returns(T::Boolean) }
+        # @override
+        #: (ReferenceOffense offense) -> bool
         def strict_mode_violation?(offense)
           referencing_package = offense.reference.package
           referencing_package.config["enforce_dependencies"] == "strict"
@@ -54,7 +49,7 @@ module Packwerk
 
         private
 
-        sig { params(reference: Reference).returns(String) }
+        #: (Reference reference) -> String
         def standard_help_message(reference)
           standard_message = <<~EOS
             Inference details: this is a reference to #{reference.constant.name} which seems to be defined in #{reference.constant.location}.

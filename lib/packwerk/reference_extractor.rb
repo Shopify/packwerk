@@ -4,19 +4,10 @@
 module Packwerk
   # Extracts a possible constant reference from a given AST node.
   class ReferenceExtractor
-    extend T::Sig
-
     class << self
-      extend T::Sig
-
-      sig do
-        params(
-          unresolved_references: T::Array[UnresolvedReference],
-          context_provider: ConstantDiscovery
-        ).returns(T::Array[Reference])
-      end
+      #: (Array[UnresolvedReference] unresolved_references, ConstantDiscovery context_provider) -> Array[Reference]
       def get_fully_qualified_references_from(unresolved_references, context_provider)
-        fully_qualified_references = T.let([], T::Array[Reference])
+        fully_qualified_references = [] #: Array[Reference]
 
         unresolved_references.each do |unresolved_references_or_offense|
           unresolved_reference = unresolved_references_or_offense
@@ -49,13 +40,7 @@ module Packwerk
       end
     end
 
-    sig do
-      params(
-        constant_name_inspectors: T::Array[ConstantNameInspector],
-        root_node: AST::Node,
-        root_path: String,
-      ).void
-    end
+    #: (constant_name_inspectors: Array[ConstantNameInspector], root_node: AST::Node, root_path: String) -> void
     def initialize(
       constant_name_inspectors:,
       root_node:,
@@ -63,21 +48,12 @@ module Packwerk
     )
       @constant_name_inspectors = constant_name_inspectors
       @root_path = root_path
-      @local_constant_definitions = T.let(
-        ParsedConstantDefinitions.new(root_node: root_node),
-        ParsedConstantDefinitions,
-      )
+      @local_constant_definitions = ParsedConstantDefinitions.new(root_node: root_node) #: ParsedConstantDefinitions
     end
 
-    sig do
-      params(
-        node: Parser::AST::Node,
-        ancestors: T::Array[Parser::AST::Node],
-        relative_file: String
-      ).returns(T.nilable(UnresolvedReference))
-    end
+    #: (Parser::AST::Node node, ancestors: Array[Parser::AST::Node], relative_file: String) -> UnresolvedReference?
     def reference_from_node(node, ancestors:, relative_file:)
-      constant_name = T.let(nil, T.nilable(String))
+      constant_name = nil #: String?
 
       @constant_name_inspectors.each do |inspector|
         constant_name = inspect_node(
@@ -102,21 +78,20 @@ module Packwerk
 
     private
 
-    sig do
-      params(
-        inspector: ConstantNameInspector,
-        node: Parser::AST::Node,
-        ancestors: T::Array[Parser::AST::Node],
-        relative_file: String
-      ).returns(T.nilable(String))
-    end
+    #: (
+    #|   ConstantNameInspector inspector,
+    #|   node: Parser::AST::Node,
+    #|   ancestors: Array[Parser::AST::Node],
+    #|   relative_file: String
+    #| ) -> String?
     def inspect_node(inspector, node:, ancestors:, relative_file:)
       inspector.constant_name_from_node(node, ancestors: ancestors, relative_file: relative_file)
     rescue ArgumentError => error
       if error.message == "unknown keyword: :relative_file"
-        T.unsafe(inspector).constant_name_from_node(node, ancestors: ancestors).tap do
+        inspector_ = inspector #: as untyped
+        inspector_.constant_name_from_node(node, ancestors: ancestors).tap do
           warn(<<~MSG.squish)
-            #{T.cast(inspector, Object).class}#reference_from_node without a relative_file: keyword
+            #{inspector_.class}#reference_from_node without a relative_file: keyword
             argument is deprecated and will be required in Packwerk 3.1.1.
           MSG
         end
@@ -125,14 +100,12 @@ module Packwerk
       end
     end
 
-    sig do
-      params(
-        constant_name: String,
-        node: Parser::AST::Node,
-        ancestors: T::Array[Parser::AST::Node],
-        relative_file: String
-      ).returns(T.nilable(UnresolvedReference))
-    end
+    #: (
+    #|   String constant_name,
+    #|   node: Parser::AST::Node,
+    #|   ancestors: Array[Parser::AST::Node],
+    #|   relative_file: String
+    #| ) -> UnresolvedReference?
     def reference_from_constant(constant_name, node:, ancestors:, relative_file:)
       namespace_path = NodeHelpers.enclosing_namespace_path(node, ancestors: ancestors)
 
@@ -148,13 +121,7 @@ module Packwerk
       )
     end
 
-    sig do
-      params(
-        constant_name: String,
-        name_location: T.nilable(Node::Location),
-        namespace_path: T::Array[String],
-      ).returns(T::Boolean)
-    end
+    #: (String constant_name, Node::Location? name_location, Array[String] namespace_path) -> bool
     def local_reference?(constant_name, name_location, namespace_path)
       @local_constant_definitions.local_reference?(
         constant_name,

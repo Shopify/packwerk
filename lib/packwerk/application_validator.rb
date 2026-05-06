@@ -10,18 +10,18 @@ module Packwerk
   # correct results.
   class ApplicationValidator
     include Validator
-    extend T::Sig
     extend ActiveSupport::Autoload
 
     autoload :Helpers
 
-    sig { params(package_set: PackageSet, configuration: Configuration).returns(Validator::Result) }
+    #: (PackageSet package_set, Configuration configuration) -> Validator::Result
     def check_all(package_set, configuration)
       results = Validator.all.flat_map { |validator| validator.call(package_set, configuration) }
       merge_results(results)
     end
 
-    sig { override.params(package_set: PackageSet, configuration: Configuration).returns(Validator::Result) }
+    # @override
+    #: (PackageSet package_set, Configuration configuration) -> Validator::Result
     def call(package_set, configuration)
       results = [
         check_package_manifest_syntax(configuration),
@@ -33,14 +33,15 @@ module Packwerk
       merge_results(results, separator: "\n❓ ")
     end
 
-    sig { override.returns(T::Array[String]) }
+    # @override
+    #: -> Array[String]
     def permitted_keys
       [
         "metadata",
       ]
     end
 
-    sig { params(configuration: Configuration).returns(Validator::Result) }
+    #: (Configuration configuration) -> Validator::Result
     def check_package_manifest_syntax(configuration)
       errors = []
 
@@ -68,7 +69,7 @@ module Packwerk
       end
     end
 
-    sig { params(configuration: Configuration).returns(Validator::Result) }
+    #: (Configuration configuration) -> Validator::Result
     def check_application_structure(configuration)
       resolver = ConstantResolver.new(
         root_path: configuration.root_path.to_s,
@@ -84,7 +85,7 @@ module Packwerk
       end
     end
 
-    sig { params(configuration: Configuration).returns(Validator::Result) }
+    #: (Configuration configuration) -> Validator::Result
     def check_package_manifest_paths(configuration)
       all_package_manifests = package_manifests(configuration, "**/")
       package_paths_package_manifests = package_manifests(configuration, package_glob(configuration))
@@ -105,7 +106,7 @@ module Packwerk
       end
     end
 
-    sig { params(configuration: Configuration).returns(Validator::Result) }
+    #: (Configuration configuration) -> Validator::Result
     def check_root_package_exists(configuration)
       root_package_path = File.join(configuration.root_path, "package.yml")
       all_packages_manifests = package_manifests(configuration, package_glob(configuration))
@@ -124,12 +125,12 @@ module Packwerk
 
     private
 
-    sig { params(list: T.untyped).returns(T.untyped) }
+    #: (untyped list) -> untyped
     def format_yaml_strings(list)
       list.sort.map { |p| "- \"#{p}\"" }.join("\n")
     end
 
-    sig { params(configuration: Configuration, paths: T::Array[String]).returns(T::Array[Pathname]) }
+    #: (Configuration configuration, Array[String] paths) -> Array[Pathname]
     def relative_paths(configuration, paths)
       paths.map { |path| relative_path(configuration, path) }
     end

@@ -2,14 +2,7 @@
 
 module Packwerk
   class UnresolvedReference
-    sig do
-      params(
-        constant_name: String,
-        namespace_path: T.nilable(T::Array[String]),
-        relative_path: String,
-        source_location: T.nilable(Node::Location),
-      ).void
-    end
+    #: (constant_name: String, namespace_path: Array[String]?, relative_path: String, source_location: Node::Location?) -> void
     def initialize(
       constant_name:,
       namespace_path:,
@@ -18,16 +11,16 @@ module Packwerk
     )
     end
 
-    sig { returns(String) }
+    #: String
     attr_reader(:constant_name)
 
-    sig { returns(T.nilable(T::Array[String])) }
+    #: Array[String]?
     attr_reader(:namespace_path)
 
-    sig { returns(String) }
+    #: String
     attr_reader(:relative_path)
 
-    sig { returns(T.nilable(Node::Location)) }
+    #: Node::Location?
     attr_reader(:source_location)
   end
 end

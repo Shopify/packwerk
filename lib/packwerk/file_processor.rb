@@ -5,38 +5,35 @@ require "parser"
 
 module Packwerk
   class FileProcessor
-    extend T::Sig
-
     class UnknownFileTypeResult < Offense
-      extend T::Sig
-
-      sig { params(file: String).void }
+      #: (file: String) -> void
       def initialize(file:)
         super(file: file, message: "unknown file type")
       end
     end
 
-    sig do
-      params(
-        node_processor_factory: NodeProcessorFactory,
-        cache: Cache,
-        parser_factory: T.nilable(Parsers::Factory)
-      ).void
-    end
+    #: (node_processor_factory: NodeProcessorFactory, cache: Cache, ?parser_factory: Parsers::Factory?) -> void
     def initialize(node_processor_factory:, cache:, parser_factory: nil)
       @node_processor_factory = node_processor_factory
       @cache = cache
-      @parser_factory = T.let(parser_factory || Packwerk::Parsers::Factory.instance, Parsers::Factory)
+      @parser_factory = parser_factory || Packwerk::Parsers::Factory.instance #: Parsers::Factory
     end
 
-    class ProcessedFile < T::Struct
-      const :unresolved_references, T::Array[UnresolvedReference], default: []
-      const :offenses, T::Array[Offense], default: []
+    class ProcessedFile
+      #: Array[UnresolvedReference]
+      attr_reader :unresolved_references
+
+      #: Array[Offense]
+      attr_reader :offenses
+
+      #: (?unresolved_references: Array[UnresolvedReference], ?offenses: Array[Offense]) -> void
+      def initialize(unresolved_references: [], offenses: [])
+        @unresolved_references = unresolved_references
+        @offenses = offenses
+      end
     end
 
-    sig do
-      params(relative_file: String).returns(ProcessedFile)
-    end
+    #: (String relative_file) -> ProcessedFile
     def call(relative_file)
       parser = parser_for(relative_file)
       if parser.nil?
@@ -68,9 +65,7 @@ module Packwerk
 
     private
 
-    sig do
-      params(node: Parser::AST::Node, relative_file: String).returns(T::Array[UnresolvedReference])
-    end
+    #: (Parser::AST::Node node, String relative_file) -> Array[UnresolvedReference]
     def references_from_ast(node, relative_file)
       references = []
 
@@ -81,14 +76,14 @@ module Packwerk
       references
     end
 
-    sig { params(relative_file: String, parser: Parsers::ParserInterface).returns(T.untyped) }
+    #: (String relative_file, Parsers::ParserInterface parser) -> untyped
     def parse_into_ast(relative_file, parser)
       File.open(relative_file, "r", nil, external_encoding: Encoding::UTF_8) do |file|
         parser.call(io: file, file_path: relative_file)
       end
     end
 
-    sig { params(file_path: String).returns(T.nilable(Parsers::ParserInterface)) }
+    #: (String file_path) -> Parsers::ParserInterface?
     def parser_for(file_path)
       @parser_factory.for_path(file_path)
     end

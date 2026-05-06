@@ -2,13 +2,10 @@
 # frozen_string_literal: true
 
 module Packwerk
+  # @requires_ancestor: Kernel
   module ApplicationFixtureHelper
     TEMP_FIXTURE_DIR = ROOT.join("tmp", "fixtures").to_s
     DEFAULT_TEMPLATE = :minimal
-
-    extend T::Helpers
-
-    requires_ancestor { Kernel }
 
     def setup_application_fixture
       @old_working_dir = Dir.pwd
@@ -93,13 +90,14 @@ module Packwerk
     end
 
     def copy_dir(path)
-      root = FileUtils.mkdir_p(fixture_path).last
-      FileUtils.cp_r("#{path}/.", T.must(root))
+      root = FileUtils.mkdir_p(fixture_path).last #: as !nil
+      FileUtils.cp_r("#{path}/.", root)
       @app_dir = root
     end
 
     def fixture_path
-      T.bind(self, Minitest::Runnable)
+      #: self as Minitest::Runnable
+
       File.join(TEMP_FIXTURE_DIR, "#{name}-#{Time.now.strftime("%Y_%m_%d_%H_%M_%S")}")
     end
   end

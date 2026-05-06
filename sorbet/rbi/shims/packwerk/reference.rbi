@@ -2,14 +2,7 @@
 
 module Packwerk
   class Reference
-    sig do
-      params(
-        package: Package,
-        relative_path: String,
-        constant: ConstantContext,
-        source_location: T.nilable(Node::Location),
-      ).void
-    end
+    #: (package: Package, relative_path: String, constant: ConstantContext, source_location: Node::Location?) -> void
     def initialize(
       package:,
       relative_path:,
@@ -18,16 +11,16 @@ module Packwerk
     )
     end
 
-    sig { returns(Package) }
+    #: Package
     attr_reader(:package)
 
-    sig { returns(T.nilable(String)) }
+    #: String?
     attr_reader(:relative_path)
 
-    sig { returns(ConstantContext) }
+    #: ConstantContext
     attr_reader(:constant)
 
-    sig { returns(T.nilable(Node::Location)) }
+    #: Node::Location?
     attr_reader(:source_location)
   end
 end

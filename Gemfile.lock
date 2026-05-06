@@ -11,7 +11,6 @@ PATH
       parallel (< 2)
       parser
       prism (>= 1.4.0)
-      sorbet-runtime (>= 0.5.9914)
       zeitwerk (>= 2.6.1)
 
 GEM
@@ -206,7 +205,7 @@ GEM
       thor (>= 0.19.2)
     spring (4.0.0)
     stringio (3.1.7)
-    tapioca (0.19.0)
+    tapioca (0.19.1)
       benchmark
       bundler (>= 2.2.25)
       netrc (>= 0.11.0)
@@ -214,7 +213,7 @@ GEM
       rbi (>= 0.3.7)
       require-hooks (>= 0.2.2)
       rubydex (>= 0.1.0.beta10)
-      sorbet-static-and-runtime (>= 0.5.11087)
+      sorbet-static-and-runtime (>= 0.6.12698)
       spoom (>= 1.7.9)
       thor (>= 1.2.0)
       tsort
@@ -233,6 +232,7 @@ PLATFORMS
   arm64-darwin-21
   arm64-darwin-22
   arm64-darwin-23
+  arm64-darwin-25
   x86_64-darwin
   x86_64-darwin-20
   x86_64-linux
@@ -251,7 +251,7 @@ DEPENDENCIES
   rubocop-performance
   rubocop-shopify
   rubocop-sorbet
-  sorbet-static-and-runtime
+  sorbet-static
   spring
   tapioca
   zeitwerk

@@ -2,19 +2,18 @@
 # frozen_string_literal: true
 
 module Packwerk
+  # @interface
   module OutputStyle
-    extend T::Sig
-    extend T::Helpers
+    # @abstract
+    #: -> String
+    def reset = raise NotImplementedError, "Abstract method called"
 
-    interface!
+    # @abstract
+    #: -> String
+    def filename = raise NotImplementedError, "Abstract method called"
 
-    sig { abstract.returns(String) }
-    def reset; end
-
-    sig { abstract.returns(String) }
-    def filename; end
-
-    sig { abstract.returns(String) }
-    def error; end
+    # @abstract
+    #: -> String
+    def error = raise NotImplementedError, "Abstract method called"
   end
 end
