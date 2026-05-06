@@ -12,7 +12,7 @@ module Packwerk
 
     test "#association? understands custom associations" do
       node = parse("has_lots :order")
-      inspector = AssociationInspector.new(inflector: @inflector, custom_associations: [:has_lots])
+      inspector = AssociationInspector.new(inflector: @inflector, custom_associations: Set.new([:has_lots]))
 
       assert_equal "Order", inspector.constant_name_from_node(node, ancestors: [], relative_file: "")
     end

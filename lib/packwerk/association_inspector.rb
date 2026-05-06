@@ -6,23 +6,21 @@ module Packwerk
   class AssociationInspector
     include ConstantNameInspector
 
-    #: type custom_associations = Array[Symbol] | Set[Symbol]
-
     RAILS_ASSOCIATIONS = [
       :belongs_to,
       :has_many,
       :has_one,
       :has_and_belongs_to_many,
-    ].to_set #: custom_associations
+    ].to_set #: Set[Symbol]
 
     #: (
     #|   inflector: singleton(ActiveSupport::Inflector),
-    #|   ?custom_associations: custom_associations,
+    #|   ?custom_associations: Set[Symbol],
     #|   ?excluded_files: Set[String]
     #| ) -> void
     def initialize(inflector:, custom_associations: Set.new, excluded_files: Set.new)
       @inflector = inflector
-      @associations = RAILS_ASSOCIATIONS + custom_associations #: custom_associations
+      @associations = RAILS_ASSOCIATIONS + custom_associations #: Set[Symbol]
       @excluded_files = excluded_files #: Set[String]
     end
 
