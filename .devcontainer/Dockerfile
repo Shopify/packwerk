@@ -1,4 +1,4 @@
-FROM ghcr.io/rails/devcontainer/images/ruby:3.3.5
+FROM ghcr.io/rails/devcontainer/images/ruby:4.0.3
 
 ARG WATCHMAN_VERSION=v2026.05.04.00
 
