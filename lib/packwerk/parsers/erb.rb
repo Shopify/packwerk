@@ -44,8 +44,8 @@ module Packwerk
         # Note that we're not using the source location (line/column) at the moment, but if we did
         # care about that, we'd need to tweak this to insert empty lines and spaces so that things
         # line up with the ERB file
-        code_pieces = code_nodes(erb_ast) #: as !nil
-          .map do |node|
+        nodes = code_nodes(erb_ast) #: as !nil
+        code_pieces = nodes.map do |node|
           node #: as ::AST::Node
             .children.first
         end
