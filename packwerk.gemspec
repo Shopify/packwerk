@@ -51,5 +51,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency("prism", ">= 1.4.0")
 
   # For ERB parsing
-  spec.add_dependency("better_html")
+  spec.add_dependency("herb")
 end
