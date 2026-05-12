@@ -146,76 +146,28 @@ module Packwerk
     #
     # Iterates per-declaration rather than per-reference because:
     # - Many declarations have zero references in the workspace (skip them entirely)
-    # - Per-declaration work (resolving canonical name, package set, Zeitwerk path)
-    #   is computed once per constant rather than once per reference
-    # - Uses Declaration#references (added in Rubydex 0.2) which gives the references
-    #   TO each declaration, avoiding the global reference iteration
-    #
-    # Shared namespaces (e.g. `GraphApi`, `Checkouts`) are defined in many packages.
-    # If the source package is in the set of packages that define the constant,
-    # the reference is local and skipped.
+    # - Per-declaration work (resolving package set, Zeitwerk path) is computed
+    #   once per constant rather than once per reference
+    # - Uses Declaration#references (added in Rubydex 0.2)
     #: (FilesForProcessing::relative_file_set relative_file_set) -> Hash[String, Array[extracted_ref]]
     def extract_refs_by_file(relative_file_set)
       refs_by_file = Hash.new { |h, k| h[k] = [] } #: Hash[String, Array[extracted_ref]]
-
-      # Cache package lookups per file to avoid repeated hash lookups
       file_package_cache = {} #: Hash[String, Package]
-      real_prefix = @real_file_uri_prefix
-      file_prefix = @file_uri_prefix
 
       @graph.declarations.each do |declaration|
         # Skip singleton classes (Foo::<Foo>) -- their references duplicate the regular
         # class's references (Foo.bar produces refs to BOTH Foo and Foo::<Foo>).
         next if declaration.is_a?(Rubydex::SingletonClass)
 
-        const_name = declaration.name
+        in_set_refs = collect_in_set_references(declaration, relative_file_set)
+        next if in_set_refs.empty?
 
-        # Compute the set of packages that define this constant + the canonical target path.
-        # Done lazily inside the loop because we only do this work for declarations
-        # that actually have references (saves time for unreferenced constants).
-        defn_packages = nil #: Set[Package]?
-        target_path = nil #: String?
-        zeitwerk_suffix = nil #: String?
+        defn_packages, target_path = definition_packages_and_target(declaration)
+        next if defn_packages.empty? || target_path.nil?
 
-        declaration.references.each do |ref|
-          next unless ref.is_a?(Rubydex::ResolvedConstantReference)
+        const_name = "::#{declaration.name}"
 
-          # Inline URI → relative path conversion for speed (avoids method call overhead on hot path)
-          loc = ref.location
-          uri = loc.uri
-          source_path = if uri.start_with?(real_prefix)
-            uri.byteslice(real_prefix.bytesize..)
-          elsif uri.start_with?(file_prefix)
-            uri.byteslice(file_prefix.bytesize..)
-          end
-          next unless source_path
-          next unless relative_file_set.include?(source_path)
-
-          # Lazily compute defn_packages and target_path (only if we have at least one in-set ref)
-          if defn_packages.nil?
-            defn_packages = Set.new
-            zeitwerk_suffix = "#{ActiveSupport::Inflector.underscore(const_name)}.rb"
-            declaration.definitions.each do |defn|
-              defn_uri = defn.location.uri
-              dp = if defn_uri.start_with?(real_prefix)
-                defn_uri.byteslice(real_prefix.bytesize..)
-              elsif defn_uri.start_with?(file_prefix)
-                defn_uri.byteslice(file_prefix.bytesize..)
-              end
-              next unless dp
-
-              defn_packages << package_for(dp)
-              # Prefer the definition whose path matches Zeitwerk naming
-              if dp.end_with?(zeitwerk_suffix)
-                target_path ||= dp
-              end
-              target_path ||= dp
-            end
-          end
-
-          next if defn_packages.empty?
-          next unless target_path
-
+        in_set_refs.each do |source_path, loc|
           source_package = file_package_cache[source_path] ||= package_for(source_path)
 
           # If ANY definition of this constant is in the source package, it's a local reference
@@ -223,7 +175,7 @@ module Packwerk
 
           bucket = refs_by_file[source_path] #: as !nil
           bucket << {
-            const_name: "::#{const_name}",
+            const_name: const_name,
             target_path: target_path,
             line: loc.start_line,
             column: loc.start_column,
@@ -232,6 +184,56 @@ module Packwerk
       end
 
       refs_by_file
+    end
+
+    # Collect references to this declaration that land in the check set.
+    # Returns [source_path, location] pairs.
+    #: (Rubydex::Declaration declaration, FilesForProcessing::relative_file_set relative_file_set) -> Array[[String, Rubydex::Location]]
+    def collect_in_set_references(declaration, relative_file_set)
+      results = [] #: Array[[String, Rubydex::Location]]
+      declaration.references.each do |ref|
+        next unless ref.is_a?(Rubydex::ResolvedConstantReference)
+
+        source_path = uri_to_relative_path(ref.location.uri)
+        next unless source_path
+        next unless relative_file_set.include?(source_path)
+
+        results << [source_path, ref.location]
+      end
+      results
+    end
+
+    # Compute the set of packages that define a constant and the canonical target path.
+    # Prefers the definition whose path matches Zeitwerk naming conventions
+    # (e.g. ApiClient → app/models/api_client.rb).
+    #: (Rubydex::Declaration declaration) -> [Set[Package], String?]
+    def definition_packages_and_target(declaration)
+      packages = Set.new #: Set[Package]
+      zeitwerk_path = nil #: String?
+      fallback_path = nil #: String?
+      zeitwerk_suffix = "#{ActiveSupport::Inflector.underscore(declaration.name)}.rb"
+
+      declaration.definitions.each do |defn|
+        dp = uri_to_relative_path(defn.location.uri)
+        next unless dp
+
+        packages << package_for(dp)
+        fallback_path ||= dp
+        zeitwerk_path ||= dp if dp.end_with?(zeitwerk_suffix)
+      end
+
+      [packages, zeitwerk_path || fallback_path]
+    end
+
+    # Convert a Rubydex location URI to a workspace-relative path.
+    # Returns nil if the URI doesn't point inside the workspace (e.g. rubydex:built-in).
+    #: (String uri) -> String?
+    def uri_to_relative_path(uri)
+      if uri.start_with?(@real_file_uri_prefix)
+        uri.byteslice(@real_file_uri_prefix.bytesize..)
+      elsif uri.start_with?(@file_uri_prefix)
+        uri.byteslice(@file_uri_prefix.bytesize..)
+      end
     end
 
     # Check extracted references for dependency violations.
