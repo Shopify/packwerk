@@ -173,12 +173,13 @@ module Packwerk
           # If ANY definition of this constant is in the source package, it's a local reference
           next if defn_packages.include?(source_package)
 
+          # Rubydex locations use 0-based line/column; Packwerk uses 1-based for display.
           bucket = refs_by_file[source_path] #: as !nil
           bucket << {
             const_name: const_name,
             target_path: target_path,
-            line: loc.start_line,
-            column: loc.start_column,
+            line: loc.start_line + 1,
+            column: loc.start_column + 1,
           }
         end
       end
@@ -351,7 +352,8 @@ module Packwerk
         if @associations.include?(node.name)
           const_name = association_constant_name(node)
           if const_name
-            location = Node::Location.new(node.location.start_line, node.location.start_column)
+            # Prism uses 1-based line, 0-based column; Packwerk uses 1-based for both.
+            location = Node::Location.new(node.location.start_line, node.location.start_column + 1)
             refs << [const_name, nesting.dup, location]
           end
         end
