@@ -10,10 +10,69 @@ module Packwerk
   class RunContext
     RAILS_ASSOCIATIONS = [:belongs_to, :has_many, :has_one, :has_and_belongs_to_many].to_set.freeze #: Set[Symbol]
 
-    # A plain Ruby representation of a resolved constant reference.
-    #: type extracted_ref = { const_name: String, target_path: String, line: Integer, column: Integer }
+    # A constant reference implied by a Rails-style association call (e.g.
+    # `belongs_to :foo` implies a reference to `Foo`). Discovered by parsing
+    # the source file with Prism rather than from the Rubydex graph.
+    class AssociationReference
+      #: String
+      attr_reader :const_name
 
-    #: type association_ref = [String, Array[String], Node::Location]
+      # Module/class nesting in which the association call appears, used as
+      # the resolution scope for `const_name`.
+      #: Array[String]
+      attr_reader :nesting
+
+      #: Node::Location
+      attr_reader :location
+
+      #: (const_name: String, nesting: Array[String], location: Node::Location) -> void
+      def initialize(const_name:, nesting:, location:)
+        @const_name = const_name
+        @nesting = nesting
+        @location = location
+      end
+    end
+
+    # A resolved cross-package constant reference, captured as a plain Ruby object
+    # (no Rubydex types) so it can be processed in the violation-checking phase
+    # independently of the Rubydex graph.
+    class ExtractedRef
+      #: String
+      attr_reader :const_name
+
+      #: String
+      attr_reader :target_path
+
+      #: Integer
+      attr_reader :line
+
+      #: Integer
+      attr_reader :column
+
+      #: (const_name: String, target_path: String, line: Integer, column: Integer) -> void
+      def initialize(const_name:, target_path:, line:, column:)
+        @const_name = const_name
+        @target_path = target_path
+        @line = line
+        @column = column
+      end
+    end
+
+    # Where a constant is defined: the set of packages containing any definition,
+    # and the canonical target URI (preferring Zeitwerk-conventional paths).
+    class DefinitionSet
+      #: Set[Package]
+      attr_reader :packages
+
+      #: String?
+      attr_reader :target_uri
+
+      #: (Set[Package] packages, String? target_uri) -> void
+      def initialize(packages, target_uri)
+        @packages = packages
+        @target_uri = target_uri
+      end
+    end
 
     class << self
       #: (Configuration configuration) -> RunContext
@@ -59,14 +118,18 @@ module Packwerk
       @include_globs = include_globs
       @exclude_globs = exclude_globs
       @real_root_path = File.realpath(root_path) #: String
-      @file_uri_prefix = "file://#{root_path}/" #: String
       @real_file_uri_prefix = "file://#{@real_root_path}/" #: String
-      @indexed_file_set = nil #: FilesForProcessing::relative_file_set?
       @associations = (RAILS_ASSOCIATIONS | custom_associations.to_set) #: Set[Symbol]
       @graph = Rubydex::Graph.new(workspace_path: @real_root_path) #: Rubydex::Graph
       @package_set = nil #: PackageSet?
       @reference_checker = ReferenceChecking::ReferenceChecker.new(@checkers) #: ReferenceChecking::ReferenceChecker
-      @file_to_package_map = nil #: Hash[String, Package]?
+
+      # Maps keyed by absolute file:// URI for fast lookup in the hot reference loop
+      # without re-parsing URIs. Built in index_and_resolve.
+      @checked_uris = Set.new #: Set[String]
+      @uri_to_package = {} #: Hash[String, Package]
+      @uri_to_relative_path = {} #: Hash[String, String]
+      @path_to_package = {} #: Hash[String, Package]
     end
 
     # Phase 1: Index all files into the Rubydex graph and run resolution.
@@ -102,7 +165,7 @@ module Packwerk
 
       @graph.resolve
 
-      @indexed_file_set = all_files
+      build_uri_indexes(relative_file_set, all_files)
     end
 
     # Phase 2: Walk all resolved constant references and check for violations.
@@ -129,116 +192,117 @@ module Packwerk
 
     private
 
-    # Extract constant references from Rubydex, then check for dependency violations.
+    # Build URI-keyed lookup tables so the hot reference loop can compare URIs as opaque
+    # strings without parsing them. Computed once per run after indexing completes.
     #
-    # This is split into two phases:
-    # 1. Extract: iterate Rubydex's resolved references and pull all needed data into
-    #    plain Ruby values (source path, constant name, target path, location). This
-    #    crosses the Rust FFI boundary and must be sequential.
-    # 2. Check: walk extracted references per file and check for violations.
+    # @checked_uris        : URIs of files we should report violations for
+    # @uri_to_package      : URI -> owning Package (for all indexed workspace files)
+    # @uri_to_relative_path: URI -> workspace-relative path (used when emitting offenses)
+    #: (FilesForProcessing::relative_file_set relative_file_set, FilesForProcessing::relative_file_set all_files) -> void
+    def build_uri_indexes(relative_file_set, all_files)
+      @checked_uris = Set.new
+      @uri_to_package = {}
+      @uri_to_relative_path = {}
+
+      all_files.each do |rel_path|
+        uri = "#{@real_file_uri_prefix}#{rel_path}"
+        package = package_set.package_from_path(rel_path)
+        @uri_to_relative_path[uri] = rel_path
+        @uri_to_package[uri] = package
+        @path_to_package[rel_path] = package
+        @checked_uris << uri if relative_file_set.include?(rel_path)
+      end
+    end
+
+    # Extract constant references from Rubydex, then check for dependency violations.
     #: (FilesForProcessing::relative_file_set relative_file_set) -> Hash[String, Array[Offense]]
     def collect_constant_reference_offenses(relative_file_set)
-      refs_by_file = extract_refs_by_file(relative_file_set)
+      refs_by_file = extract_refs_by_file
       check_refs_for_violations(refs_by_file)
     end
 
     # Iterate declarations and their references to extract cross-package violations.
     #
+    # Hot loop works entirely with absolute URIs as opaque strings: no URI parsing,
+    # no path manipulation. URIs are converted to relative paths only when emitting
+    # the final ExtractedRef objects (one conversion per output reference).
+    #
     # Iterates per-declaration rather than per-reference because:
     # - Many declarations have zero references in the workspace (skip them entirely)
     # - Per-declaration work (resolving package set, Zeitwerk path) is computed
     #   once per constant rather than once per reference
-    # - Uses Declaration#references (added in Rubydex 0.2)
-    #: (FilesForProcessing::relative_file_set relative_file_set) -> Hash[String, Array[extracted_ref]]
-    def extract_refs_by_file(relative_file_set)
-      refs_by_file = Hash.new { |h, k| h[k] = [] } #: Hash[String, Array[extracted_ref]]
-      file_package_cache = {} #: Hash[String, Package]
+    #: -> Hash[String, Array[ExtractedRef]]
+    def extract_refs_by_file
+      refs_by_file = Hash.new { |h, k| h[k] = [] } #: Hash[String, Array[ExtractedRef]]
 
       @graph.declarations.each do |declaration|
         # Skip singleton classes (Foo::<Foo>) -- their references duplicate the regular
         # class's references (Foo.bar produces refs to BOTH Foo and Foo::<Foo>).
         next if declaration.is_a?(Rubydex::SingletonClass)
 
-        in_set_refs = collect_in_set_references(declaration, relative_file_set)
-        next if in_set_refs.empty?
+        checked_refs = checked_references(declaration)
+        next if checked_refs.empty?
 
-        defn_packages, target_path = definition_packages_and_target(declaration)
-        next if defn_packages.empty? || target_path.nil?
+        defns = definition_set_for(declaration)
+        target_uri = defns.target_uri
+        next if defns.packages.empty? || target_uri.nil?
 
+        target_path = @uri_to_relative_path.fetch(target_uri)
         const_name = "::#{declaration.name}"
 
-        in_set_refs.each do |source_path, loc|
-          source_package = file_package_cache[source_path] ||= package_for(source_path)
-
+        checked_refs.each do |loc|
+          source_uri = loc.uri
+          source_package = @uri_to_package.fetch(source_uri)
           # If ANY definition of this constant is in the source package, it's a local reference
-          next if defn_packages.include?(source_package)
+          next if defns.packages.include?(source_package)
+
+          source_path = @uri_to_relative_path.fetch(source_uri)
+          bucket = refs_by_file[source_path] #: as !nil
 
           # Rubydex locations use 0-based line/column; Packwerk uses 1-based for display.
-          bucket = refs_by_file[source_path] #: as !nil
-          bucket << {
+          bucket << ExtractedRef.new(
             const_name: const_name,
             target_path: target_path,
             line: loc.start_line + 1,
             column: loc.start_column + 1,
-          }
+          )
         end
       end
 
       refs_by_file
     end
 
-    # Collect references to this declaration that land in the check set.
-    # Returns [source_path, location] pairs.
-    #: (Rubydex::Declaration declaration, FilesForProcessing::relative_file_set relative_file_set) -> Array[[String, Rubydex::Location]]
-    def collect_in_set_references(declaration, relative_file_set)
-      results = [] #: Array[[String, Rubydex::Location]]
-      declaration.references.each do |ref|
+    # Collect locations of references to this declaration whose source URI
+    # belongs to the set of files being checked.
+    #: (Rubydex::Declaration declaration) -> Array[Rubydex::Location]
+    def checked_references(declaration)
+      declaration.references.filter_map do |ref|
         next unless ref.is_a?(Rubydex::ResolvedConstantReference)
 
-        source_path = uri_to_relative_path(ref.location.uri)
-        next unless source_path
-        next unless relative_file_set.include?(source_path)
-
-        results << [source_path, ref.location]
+        loc = ref.location
+        loc if @checked_uris.include?(loc.uri)
       end
-      results
     end
 
-    # Compute the set of packages that define a constant and the canonical target path.
-    # Prefers the definition whose path matches Zeitwerk naming conventions
-    # (e.g. ApiClient → app/models/api_client.rb).
-    #: (Rubydex::Declaration declaration) -> [Set[Package], String?]
-    def definition_packages_and_target(declaration)
-      packages = Set.new #: Set[Package]
-      zeitwerk_path = nil #: String?
-      fallback_path = nil #: String?
+    # Summarize where a constant is defined: the set of packages containing any
+    # definition, and the canonical target URI (preferring Zeitwerk-conventional paths
+    # like `ApiClient` → `app/models/api_client.rb`).
+    #: (Rubydex::Declaration declaration) -> DefinitionSet
+    def definition_set_for(declaration)
+      defined_uris = declaration.definitions.filter_map do |defn|
+        uri = defn.location.uri
+        uri if @uri_to_package.key?(uri)
+      end
+
+      packages = defined_uris.map { |uri| @uri_to_package.fetch(uri) }.to_set
       zeitwerk_suffix = "#{ActiveSupport::Inflector.underscore(declaration.name)}.rb"
+      target_uri = defined_uris.find { |uri| uri.end_with?(zeitwerk_suffix) } || defined_uris.first
 
-      declaration.definitions.each do |defn|
-        dp = uri_to_relative_path(defn.location.uri)
-        next unless dp
-
-        packages << package_for(dp)
-        fallback_path ||= dp
-        zeitwerk_path ||= dp if dp.end_with?(zeitwerk_suffix)
-      end
-
-      [packages, zeitwerk_path || fallback_path]
-    end
-
-    # Convert a Rubydex location URI to a workspace-relative path.
-    # Returns nil if the URI doesn't point inside the workspace (e.g. rubydex:built-in).
-    #: (String uri) -> String?
-    def uri_to_relative_path(uri)
-      if uri.start_with?(@real_file_uri_prefix)
-        uri.byteslice(@real_file_uri_prefix.bytesize..)
-      elsif uri.start_with?(@file_uri_prefix)
-        uri.byteslice(@file_uri_prefix.bytesize..)
-      end
+      DefinitionSet.new(packages, target_uri)
     end
 
     # Check extracted references for dependency violations.
-    #: (Hash[String, Array[extracted_ref]] refs_by_file) -> Hash[String, Array[Offense]]
+    #: (Hash[String, Array[ExtractedRef]] refs_by_file) -> Hash[String, Array[Offense]]
     def check_refs_for_violations(refs_by_file)
       offenses_by_file = Hash.new { |h, k| h[k] = [] } #: Hash[String, Array[Offense]]
 
@@ -251,20 +315,21 @@ module Packwerk
     end
 
     # Check a single file's extracted references for violations.
-    #: (String source_path, Array[extracted_ref] refs) -> Array[Offense]
+    #: (String source_path, Array[ExtractedRef] refs) -> Array[Offense]
     def check_file_refs(source_path, refs)
       source_package = package_for(source_path)
       offenses = [] #: Array[Offense]
 
       refs.each do |ref|
-        target_package = package_for(ref[:target_path])
+        target_package = package_for(ref.target_path)
+        # Already filtered by definition_set_for, but keep for safety
         next if source_package == target_package
 
         reference = Reference.new(
           package: source_package,
           relative_path: source_path,
-          constant: ConstantContext.new(ref[:const_name], ref[:target_path], target_package),
-          source_location: Node::Location.new(ref[:line], ref[:column]),
+          constant: ConstantContext.new(ref.const_name, ref.target_path, target_package),
+          source_location: Node::Location.new(ref.line, ref.column),
         )
 
         offenses.concat(@reference_checker.call(reference))
@@ -299,14 +364,12 @@ module Packwerk
       files_to_scan = files_with_associations & relative_file_set - excluded_files
 
       all_association_refs = files_to_scan.flat_map do |relative_file|
-        extract_association_references(relative_file).map do |const_name, nesting, location|
-          [relative_file, const_name, nesting, location]
-        end
+        extract_association_references(relative_file).map { |assoc_ref| [relative_file, assoc_ref] }
       end
 
       # Resolve and check violations (uses shared graph + package_set)
-      all_association_refs.each do |relative_file, const_name, nesting, location|
-        declaration = @graph.resolve_constant(const_name, nesting)
+      all_association_refs.each do |relative_file, assoc_ref|
+        declaration = @graph.resolve_constant(assoc_ref.const_name, assoc_ref.nesting)
         next unless declaration
 
         target_def = declaration.definitions.first
@@ -323,7 +386,7 @@ module Packwerk
           package: source_package,
           relative_path: relative_file,
           constant: ConstantContext.new("::#{declaration.name}", target_path, target_package),
-          source_location: location,
+          source_location: assoc_ref.location,
         )
 
         offenses = @reference_checker.call(reference)
@@ -332,20 +395,20 @@ module Packwerk
     end
 
     # Parse a single file with Prism and extract constant names implied by AR associations.
-    #: (String relative_file) -> Array[association_ref]
+    #: (String relative_file) -> Array[AssociationReference]
     def extract_association_references(relative_file)
       source = File.read(relative_file, encoding: Encoding::UTF_8)
       result = Prism.parse(source)
       return [] unless result.success?
 
-      refs = [] #: Array[association_ref]
+      refs = [] #: Array[AssociationReference]
       visit_for_associations(result.value, [], refs)
       refs
     end
 
     # Recursively walk Prism's native AST looking for association method calls.
     # Tracks module/class nesting for constant resolution context.
-    #: (Prism::Node node, Array[String] nesting, Array[association_ref] refs) -> void
+    #: (Prism::Node node, Array[String] nesting, Array[AssociationReference] refs) -> void
     def visit_for_associations(node, nesting, refs)
       case node
       when Prism::CallNode
@@ -354,7 +417,7 @@ module Packwerk
           if const_name
             # Prism uses 1-based line, 0-based column; Packwerk uses 1-based for both.
             location = Node::Location.new(node.location.start_line, node.location.start_column + 1)
-            refs << [const_name, nesting.dup, location]
+            refs << AssociationReference.new(const_name: const_name, nesting: nesting.dup, location: location)
           end
         end
       when Prism::ClassNode
@@ -425,34 +488,18 @@ module Packwerk
       end
     end
 
-    # Convert a Rubydex::Location to a relative file path using the fast URI accessor.
-    # `location.uri` returns a raw string (no URI parsing), which is ~5x faster than
-    # `location.to_file_path` on large codebases (11s vs 57s for 2.7M calls on Core).
-    # Returns nil if the location doesn't use a file:// URI.
+    # Look up the workspace-relative path for a Rubydex::Location.
+    # Returns nil for locations outside the indexed workspace (e.g. rubydex:built-in).
     #: (Rubydex::Location location) -> String?
     def location_to_relative_path(location)
-      uri = location.uri
-      if uri.start_with?(@file_uri_prefix)
-        uri.delete_prefix(@file_uri_prefix)
-      elsif uri.start_with?(@real_file_uri_prefix)
-        uri.delete_prefix(@real_file_uri_prefix)
-      end
+      @uri_to_relative_path[location.uri]
     end
 
-    # Precomputed file→package mapping to avoid repeated path prefix searches.
-    #: -> Hash[String, Package]
-    def file_to_package_map
-      @file_to_package_map ||= begin
-        map = {} #: Hash[String, Package]
-        @indexed_file_set&.each { |f| map[f] = package_set.package_from_path(f) }
-        map
-      end
-    end
-
-    # Fast package lookup using precomputed map, falling back to PackageSet for unknown paths.
+    # Look up a package by relative file path, using the precomputed map and
+    # falling back to PackageSet for unknown paths (e.g. files not in the index).
     #: (String relative_path) -> Package
     def package_for(relative_path)
-      file_to_package_map[relative_path] || package_set.package_from_path(relative_path)
+      @path_to_package[relative_path] || package_set.package_from_path(relative_path)
     end
   end
 
