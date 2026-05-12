@@ -40,12 +40,12 @@ module Packwerk
       end
 
       refute_successful_run("check")
-      assert_match(/Dependency violation: (::|)Order/, captured_output)
+      assert_match(/Dependency violation: ::Order/, captured_output)
       assert_match(/1 offense detected/, captured_output)
 
       reset_output
       refute_successful_run(["check", "components/timeline"])
-      assert_match(/Dependency violation: (::|)Order/, captured_output)
+      assert_match(/Dependency violation: ::Order/, captured_output)
       assert_match(/1 offense detected/, captured_output)
 
       reset_output
@@ -60,7 +60,7 @@ module Packwerk
       end
 
       refute_successful_run("check")
-      assert_match(/Dependency violation: (::|)Order/, captured_output)
+      assert_match(/Dependency violation: ::Order/, captured_output)
       assert_match(/1 offense detected/, captured_output)
 
       reset_output
@@ -107,7 +107,7 @@ module Packwerk
 
         timeline_package_todo_content = File.read(timeline_package_todo_path)
         assert_match(
-          %r{components/sales:\n\s+"?(::|)Order"?:\n\s+violations:\n\s+- dependency},
+          %r{components/sales:\n\s+"::Order":\n\s+violations:\n\s+- dependency},
           timeline_package_todo_content
         )
 

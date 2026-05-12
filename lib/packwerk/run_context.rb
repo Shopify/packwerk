@@ -15,8 +15,6 @@ module Packwerk
 
     #: type association_ref = [String, Array[String], Node::Location]
 
-    #: type defn_packages_entry = { packages: Set[Package], target_path: String? }
-
     class << self
       #: (Configuration configuration) -> RunContext
       def from_configuration(configuration)
@@ -68,7 +66,6 @@ module Packwerk
       @graph = Rubydex::Graph.new(workspace_path: @real_root_path) #: Rubydex::Graph
       @package_set = nil #: PackageSet?
       @reference_checker = ReferenceChecking::ReferenceChecker.new(@checkers) #: ReferenceChecking::ReferenceChecker
-      @constant_definition_packages = nil #: Hash[String, defn_packages_entry]?
       @file_to_package_map = nil #: Hash[String, Package]?
     end
 
@@ -145,103 +142,93 @@ module Packwerk
       check_refs_for_violations(refs_by_file)
     end
 
-    # Pre-compute a mapping of constant name → set of packages that define it,
-    # plus the canonical definition path.
+    # Iterate declarations and their references to extract cross-package violations.
     #
-    # When a constant has multiple definitions (e.g. a canonical file + class reopenings),
-    # we prefer the definition whose path matches Zeitwerk naming conventions for that
-    # constant. For example, for `ApiClient`:
-    #   - `app/models/api_client.rb` → canonical (matches Zeitwerk convention)
-    #   - `app/models/api_client/extension.rb` → reopening (ignored)
-    #
-    # This matches the old `constant_resolver` behavior which only resolved to
-    # Zeitwerk-canonical paths.
-    #: -> Hash[String, defn_packages_entry]
-    def constant_definition_packages
-      @constant_definition_packages ||= begin
-        result = {} #: Hash[String, defn_packages_entry]
-
-        @graph.declarations.each do |declaration|
-          # Normalize metaclass names: "Foo::<Foo>" → "Foo"
-          const_name = normalize_constant_name(declaration.name)
-
-          # Compute Zeitwerk suffix once per constant, not per definition
-          zeitwerk_suffix = "#{ActiveSupport::Inflector.underscore(const_name)}.rb"
-
-          declaration.definitions.each do |defn|
-            uri = defn.location.uri
-            dp = if uri.start_with?(@real_file_uri_prefix)
-              uri.byteslice(@real_file_uri_prefix.bytesize..)
-            elsif uri.start_with?(@file_uri_prefix)
-              uri.byteslice(@file_uri_prefix.bytesize..)
-            end
-            next unless dp
-
-            entry = result[const_name] ||= { packages: Set.new, target_path: nil }
-            entry[:packages] << package_for(dp)
-
-            # Prefer the definition whose path matches Zeitwerk naming
-            if dp.end_with?(zeitwerk_suffix)
-              entry[:target_path] ||= dp
-            end
-            entry[:target_path] ||= dp
-          end
-        end
-
-        result
-      end
-    end
-
-    # Iterate all resolved constant references from Rubydex and extract the data
-    # needed for violation checking into plain Ruby hashes, grouped by source file.
+    # Iterates per-declaration rather than per-reference because:
+    # - Many declarations have zero references in the workspace (skip them entirely)
+    # - Per-declaration work (resolving canonical name, package set, Zeitwerk path)
+    #   is computed once per constant rather than once per reference
+    # - Uses Declaration#references (added in Rubydex 0.2) which gives the references
+    #   TO each declaration, avoiding the global reference iteration
     #
     # Shared namespaces (e.g. `GraphApi`, `Checkouts`) are defined in many packages.
-    # We pre-compute which packages define each constant so the per-reference check is O(1).
     # If the source package is in the set of packages that define the constant,
     # the reference is local and skipped.
     #: (FilesForProcessing::relative_file_set relative_file_set) -> Hash[String, Array[extracted_ref]]
     def extract_refs_by_file(relative_file_set)
       refs_by_file = Hash.new { |h, k| h[k] = [] } #: Hash[String, Array[extracted_ref]]
 
-      defn_packages = constant_definition_packages
-
       # Cache package lookups per file to avoid repeated hash lookups
       file_package_cache = {} #: Hash[String, Package]
       real_prefix = @real_file_uri_prefix
       file_prefix = @file_uri_prefix
 
-      @graph.constant_references.each do |ref|
-        next unless ref.is_a?(Rubydex::ResolvedConstantReference)
+      @graph.declarations.each do |declaration|
+        # Skip singleton classes (Foo::<Foo>) -- their references duplicate the regular
+        # class's references (Foo.bar produces refs to BOTH Foo and Foo::<Foo>).
+        next if declaration.is_a?(Rubydex::SingletonClass)
 
-        # Inline URI → relative path conversion for speed (avoids method call overhead on hot path)
-        loc = ref.location
-        uri = loc.uri
-        source_path = if uri.start_with?(real_prefix)
-          uri.byteslice(real_prefix.bytesize..)
-        elsif uri.start_with?(file_prefix)
-          uri.byteslice(file_prefix.bytesize..)
+        const_name = declaration.name
+
+        # Compute the set of packages that define this constant + the canonical target path.
+        # Done lazily inside the loop because we only do this work for declarations
+        # that actually have references (saves time for unreferenced constants).
+        defn_packages = nil #: Set[Package]?
+        target_path = nil #: String?
+        zeitwerk_suffix = nil #: String?
+
+        declaration.references.each do |ref|
+          next unless ref.is_a?(Rubydex::ResolvedConstantReference)
+
+          # Inline URI → relative path conversion for speed (avoids method call overhead on hot path)
+          loc = ref.location
+          uri = loc.uri
+          source_path = if uri.start_with?(real_prefix)
+            uri.byteslice(real_prefix.bytesize..)
+          elsif uri.start_with?(file_prefix)
+            uri.byteslice(file_prefix.bytesize..)
+          end
+          next unless source_path
+          next unless relative_file_set.include?(source_path)
+
+          # Lazily compute defn_packages and target_path (only if we have at least one in-set ref)
+          if defn_packages.nil?
+            defn_packages = Set.new
+            zeitwerk_suffix = "#{ActiveSupport::Inflector.underscore(const_name)}.rb"
+            declaration.definitions.each do |defn|
+              defn_uri = defn.location.uri
+              dp = if defn_uri.start_with?(real_prefix)
+                defn_uri.byteslice(real_prefix.bytesize..)
+              elsif defn_uri.start_with?(file_prefix)
+                defn_uri.byteslice(file_prefix.bytesize..)
+              end
+              next unless dp
+
+              defn_packages << package_for(dp)
+              # Prefer the definition whose path matches Zeitwerk naming
+              if dp.end_with?(zeitwerk_suffix)
+                target_path ||= dp
+              end
+              target_path ||= dp
+            end
+          end
+
+          next if defn_packages.empty?
+          next unless target_path
+
+          source_package = file_package_cache[source_path] ||= package_for(source_path)
+
+          # If ANY definition of this constant is in the source package, it's a local reference
+          next if defn_packages.include?(source_package)
+
+          bucket = refs_by_file[source_path] #: as !nil
+          bucket << {
+            const_name: "::#{const_name}",
+            target_path: target_path,
+            line: loc.start_line,
+            column: loc.start_column,
+          }
         end
-        next unless source_path
-        next unless relative_file_set.include?(source_path)
-
-        const_name = normalize_constant_name(ref.declaration.name)
-        info = defn_packages[const_name]
-        next unless info
-
-        source_package = file_package_cache[source_path] ||= package_for(source_path)
-
-        # If ANY definition of this constant is in the source package, it's a local reference
-        next if info[:packages].include?(source_package)
-
-        target_path = info[:target_path]
-        next unless target_path
-
-        refs_by_file[source_path] << {
-          const_name: "::#{const_name}",
-          target_path: target_path,
-          line: loc.start_line,
-          column: loc.start_column,
-        }
       end
 
       refs_by_file
@@ -405,12 +392,14 @@ module Packwerk
       keyword_hash = arguments.find { |a| a.is_a?(Prism::KeywordHashNode) }
       if keyword_hash.is_a?(Prism::KeywordHashNode)
         class_name_pair = keyword_hash.elements.find do |element|
-          element.is_a?(Prism::AssocNode) &&
-            element.key.is_a?(Prism::SymbolNode) &&
-            element.key.value == "class_name"
+          next false unless element.is_a?(Prism::AssocNode)
+
+          key = element.key
+          key.is_a?(Prism::SymbolNode) && key.value == "class_name"
         end
-        if class_name_pair.is_a?(Prism::AssocNode) && class_name_pair.value.is_a?(Prism::StringNode)
-          return class_name_pair.value.content
+        if class_name_pair.is_a?(Prism::AssocNode)
+          value = class_name_pair.value
+          return value.content if value.is_a?(Prism::StringNode)
         end
       end
 
@@ -430,17 +419,6 @@ module Packwerk
         child = node.full_name.to_s
         parent ? "#{parent}::#{child}" : child
       end
-    end
-
-    # Normalize a Rubydex declaration name to a plain Ruby constant name.
-    # Rubydex uses `Foo::<Foo>` for the singleton/metaclass of `Foo` (from `class << self`),
-    # and `Foo::<Foo>#method` for singleton methods. Strip these internal suffixes so that
-    # the constant name matches what appears in package_todo.yml and Ruby source.
-    #: (String name) -> String
-    def normalize_constant_name(name)
-      # Strip singleton class suffix: "Foo::<Foo>" → "Foo"
-      # Strip method suffixes: "Foo::<Foo>#bar()" → "Foo"
-      name.sub(/::<[^>]+>.*\z/, "")
     end
 
     # Convert a Rubydex::Location to a relative file path using the fast URI accessor.

@@ -5,7 +5,7 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}.git" }
 
 gemspec
 
-gem("rubydex", "0.1.0.beta12")
+gem("rubydex", ">= 0.2.3")
 
 # Specify the same dependency sources as the application Gemfile
 

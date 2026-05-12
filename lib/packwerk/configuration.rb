@@ -85,9 +85,12 @@ module Packwerk
       end
     end
 
+    # Load paths were used by the old ConstantResolver to map constants to file paths
+    # via Zeitwerk conventions. Rubydex resolves constants from actual parsed definitions,
+    # so load paths are no longer needed. Returns an empty hash for backward compatibility.
     #: -> Hash[String, Module[top]]
     def load_paths
-      @load_paths ||= RailsLoadPaths.for(@root_path, environment: "test") #: Hash[String, Module[top]]?
+      {}
     end
 
     #: -> bool
