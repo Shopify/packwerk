@@ -46,6 +46,6 @@ Gem::Specification.new do |spec|
   # For association detection (Prism native AST walk)
   spec.add_dependency("prism", ">= 1.4.0")
 
-  # For ERB parsing (also pulls in parser/ast transitively)
-  spec.add_dependency("better_html")
+  # For ERB parsing -- preserves block-spanning tags and source positions
+  spec.add_dependency("herb")
 end

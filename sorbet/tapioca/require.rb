@@ -4,21 +4,13 @@
 # Please instead update this file by running `tapioca require`.
 # frozen_string_literal: true
 
-require "ast"
-require "ast/node"
 require "benchmark"
-require "better_html"
-require "better_html/parser"
 require "minitest/mock"
 require "mocha/minitest"
-require "parser"
-require "parser/ast/node"
-require "parser/current"
-require "parser/source/buffer"
-require "parser/source/map"
 require "pathname"
 require "prism"
-require "rails/all"
+require "active_support"
+require "rails"
 require "rubydex"
 require "singleton"
 require "spring/commands"
