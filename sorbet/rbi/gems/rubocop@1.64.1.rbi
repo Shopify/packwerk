@@ -776,8 +776,8 @@ class RuboCop::CommentConfig
   # source://rubocop//lib/rubocop/comment_config.rb#63
   def comment_only_line?(line_number); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def config(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def config(*_arg0, **_arg1, &_arg2); end
 
   # source://rubocop//lib/rubocop/comment_config.rb#51
   def cop_disabled_line_ranges; end
@@ -800,8 +800,8 @@ class RuboCop::CommentConfig
   # source://rubocop//lib/rubocop/comment_config.rb#30
   def processed_source; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def registry(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def registry(*_arg0, **_arg1, &_arg2); end
 
   private
 
@@ -976,11 +976,11 @@ class RuboCop::Config
   # source://rubocop//lib/rubocop/config.rb#30
   def initialize(hash = T.unsafe(nil), loaded_path = T.unsafe(nil)); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def [](*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def [](*_arg0, **_arg1, &_arg2); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def []=(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def []=(*_arg0, **_arg1, &_arg2); end
 
   # @return [Boolean]
   #
@@ -1018,33 +1018,33 @@ class RuboCop::Config
   # source://rubocop//lib/rubocop/config.rb#142
   def clusivity_config_for_badge?(badge); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def delete(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def delete(*_arg0, **_arg1, &_arg2); end
 
   # source://rubocop//lib/rubocop/config.rb#108
   def deprecation_check; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def dig(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def dig(*_arg0, **_arg1, &_arg2); end
 
   # @return [Boolean]
   #
   # source://rubocop//lib/rubocop/config.rb#162
   def disabled_new_cops?; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def each(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def each(*_arg0, **_arg1, &_arg2); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def each_key(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def each_key(*_arg0, **_arg1, &_arg2); end
 
   # @return [Boolean]
   #
   # source://rubocop//lib/rubocop/config.rb#166
   def enabled_new_cops?; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def fetch(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def fetch(*_arg0, **_arg1, &_arg2); end
 
   # @return [Boolean]
   #
@@ -1097,11 +1097,11 @@ class RuboCop::Config
   # source://rubocop//lib/rubocop/config.rb#76
   def internal?; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def key?(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def key?(*_arg0, **_arg1, &_arg2); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def keys(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def keys(*_arg0, **_arg1, &_arg2); end
 
   # source://rubocop//lib/rubocop/config.rb#47
   def loaded_features; end
@@ -1114,11 +1114,11 @@ class RuboCop::Config
   # source://rubocop//lib/rubocop/config.rb#81
   def make_excludes_absolute; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def map(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def map(*_arg0, **_arg1, &_arg2); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def merge(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def merge(*_arg0, **_arg1, &_arg2); end
 
   # source://rubocop//lib/rubocop/config.rb#247
   def parser_engine; end
@@ -1143,8 +1143,8 @@ class RuboCop::Config
   # source://rubocop//lib/rubocop/config.rb#207
   def possibly_include_hidden?; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def replace(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def replace(*_arg0, **_arg1, &_arg2); end
 
   # source://rubocop//lib/rubocop/config.rb#71
   def signature; end
@@ -1155,23 +1155,23 @@ class RuboCop::Config
   # source://rubocop//lib/rubocop/config.rb#251
   def target_rails_version; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def target_ruby_version(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def target_ruby_version(*_arg0, **_arg1, &_arg2); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def to_h(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def to_h(*_arg0, **_arg1, &_arg2); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def to_hash(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def to_hash(*_arg0, **_arg1, &_arg2); end
 
   # source://rubocop//lib/rubocop/config.rb#67
   def to_s; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def transform_values(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def transform_values(*_arg0, **_arg1, &_arg2); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def validate(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def validate(*_arg0, **_arg1, &_arg2); end
 
   # source://rubocop//lib/rubocop/config.rb#58
   def validate_after_resolution; end
@@ -2263,11 +2263,11 @@ class RuboCop::ConfigValidator
   # source://rubocop//lib/rubocop/config_validator.rb#26
   def initialize(config); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def for_all_cops(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def for_all_cops(*_arg0, **_arg1, &_arg2); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def smart_loaded_path(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def smart_loaded_path(*_arg0, **_arg1, &_arg2); end
 
   # source://rubocop//lib/rubocop/config_validator.rb#62
   def target_ruby_version; end
@@ -29776,7 +29776,6 @@ end
 # source://rubocop//lib/rubocop/cop/mixin/range_help.rb#9
 RuboCop::Cop::RangeHelp::BYTE_ORDER_MARK = T.let(T.unsafe(nil), Integer)
 
-# source://rubocop//lib/rubocop/cop/mixin/range_help.rb#54
 module RuboCop::Cop::RangeHelp::NOT_GIVEN; end
 
 # Common functionality for handling Rational literals.
@@ -39795,11 +39794,11 @@ class RuboCop::Cop::Style::MagicCommentFormat::CommentRange
   # source://rubocop//lib/rubocop/cop/style/magic_comment_format.rb#125
   def directives; end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def loc(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def loc(*_arg0, **_arg1, &_arg2); end
 
-  # source://forwardable/1.3.3/forwardable.rb#231
-  def text(*args, **_arg1, &block); end
+  # source://forwardable/1.4.0/forwardable.rb#228
+  def text(*_arg0, **_arg1, &_arg2); end
 
   # A magic comment can contain one value (normal style) or
   # multiple directives (emacs style)
@@ -55712,10 +55711,10 @@ RuboCop::Formatter::PacmanFormatter::FALLBACK_TERMINAL_WIDTH = T.let(T.unsafe(ni
 RuboCop::Formatter::PacmanFormatter::GHOST = T.let(T.unsafe(nil), String)
 
 # source://rubocop//lib/rubocop/formatter/pacman_formatter.rb#17
-RuboCop::Formatter::PacmanFormatter::PACDOT = T.let(T.unsafe(nil), Rainbow::Presenter)
+RuboCop::Formatter::PacmanFormatter::PACDOT = T.let(T.unsafe(nil), Rainbow::NullPresenter)
 
 # source://rubocop//lib/rubocop/formatter/pacman_formatter.rb#16
-RuboCop::Formatter::PacmanFormatter::PACMAN = T.let(T.unsafe(nil), Rainbow::Presenter)
+RuboCop::Formatter::PacmanFormatter::PACMAN = T.let(T.unsafe(nil), Rainbow::NullPresenter)
 
 # This formatter display dots for files with no offenses and
 # letters for files with problems in the them. In the end it

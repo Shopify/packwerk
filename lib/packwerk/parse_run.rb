@@ -1,59 +1,28 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "parallel"
-
 module Packwerk
   class ParseRun
-    #: type process_file_proc = ^(String path) -> Array[Offense]
-
-    #: (relative_file_set: FilesForProcessing::relative_file_set, parallel: bool) -> void
-    def initialize(relative_file_set:, parallel:)
+    #: (relative_file_set: FilesForProcessing::relative_file_set, ?all_files: FilesForProcessing::relative_file_set, ?parallel: bool) -> void
+    def initialize(relative_file_set:, all_files: relative_file_set, parallel: true)
       @relative_file_set = relative_file_set
-      @parallel = parallel
+      @all_files = all_files
+      # NOTE: parallel flag accepted for interface compatibility but ignored.
+      # Rubydex handles heavy lifting in Rust; the remaining Ruby work is too lightweight
+      # for fork-based parallelism to help.
+      _ = parallel
     end
 
     #: (RunContext run_context, ?on_interrupt: (^-> void)?) ?{ (Array[Packwerk::Offense] offenses) -> void } -> Array[Offense]
     def find_offenses(run_context, on_interrupt: nil, &block)
-      process_file_proc = process_file_proc(run_context, &block)
+      # Phase 1: Index all workspace files and resolve constants via Rubydex
+      run_context.index_and_resolve(@relative_file_set, all_files: @all_files)
 
-      offenses = if @parallel
-        Parallel.flat_map(@relative_file_set, &process_file_proc)
-      else
-        serial_find_offenses(on_interrupt: on_interrupt, &process_file_proc)
-      end
-
-      offenses
-    end
-
-    private
-
-    #: (RunContext run_context) ?{ (Array[Offense] offenses) -> void } -> process_file_proc
-    def process_file_proc(run_context, &block)
-      if block
-        proc do |relative_file|
-          run_context.process_file(relative_file: relative_file).tap(&block)
-        end #: process_file_proc
-      else
-        proc do |relative_file|
-          run_context.process_file(relative_file: relative_file)
-        end #: process_file_proc
-      end
-    end
-
-    #: (?on_interrupt: (^-> void)?) { (?) -> untyped } -> Array[Offense]
-    def serial_find_offenses(on_interrupt: nil, &block)
-      all_offenses = [] #: Array[Offense]
-      begin
-        @relative_file_set.each do |relative_file|
-          offenses = yield(relative_file)
-          all_offenses.concat(offenses)
-        end
-      rescue Interrupt
-        on_interrupt&.call
-        all_offenses
-      end
-      all_offenses
+      # Phase 2: Walk resolved references, check violations, report per-file
+      run_context.find_offenses(@relative_file_set, &block)
+    rescue Interrupt
+      on_interrupt&.call
+      []
     end
   end
 

@@ -27,7 +27,8 @@ module Packwerk
         )
 
         PackageTodo.any_instance.stubs(:listed?).returns(true)
-        RunContext.any_instance.stubs(:process_file).returns([offense])
+        RunContext.any_instance.stubs(:index_and_resolve)
+        RunContext.any_instance.stubs(:find_offenses).yields([offense]).returns([offense])
         FilesForProcessing.any_instance.stubs(:files).returns(Set.new(["some/path.rb"]))
 
         out = StringIO.new
@@ -109,7 +110,8 @@ module Packwerk
           violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
         )
 
-        RunContext.any_instance.stubs(:process_file).returns([offense1, offense2])
+        RunContext.any_instance.stubs(:index_and_resolve)
+        RunContext.any_instance.stubs(:find_offenses).yields([offense1, offense2]).returns([offense1, offense2])
         FilesForProcessing.any_instance.stubs(:files).returns(Set.new([file_to_check]))
 
         out = StringIO.new
@@ -159,7 +161,8 @@ module Packwerk
               - #{other_file}
         YML
 
-        RunContext.any_instance.stubs(:process_file).returns([])
+        RunContext.any_instance.stubs(:index_and_resolve)
+        RunContext.any_instance.stubs(:find_offenses).yields([]).returns([])
         FilesForProcessing.any_instance.stubs(:files).returns(Set.new([file_to_check]))
 
         out = StringIO.new
@@ -216,7 +219,8 @@ module Packwerk
           violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
         )
 
-        RunContext.any_instance.stubs(:process_file).returns([offense])
+        RunContext.any_instance.stubs(:index_and_resolve)
+        RunContext.any_instance.stubs(:find_offenses).yields([offense]).returns([offense])
         FilesForProcessing.any_instance.stubs(:files).returns(Set.new([file_to_check]))
 
         out = StringIO.new
@@ -268,7 +272,8 @@ module Packwerk
           violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
         )
 
-        RunContext.any_instance.stubs(:process_file).returns([offense])
+        RunContext.any_instance.stubs(:index_and_resolve)
+        RunContext.any_instance.stubs(:find_offenses).yields([offense]).returns([offense])
         FilesForProcessing.any_instance.stubs(:files).returns(Set.new(["components/source/some/path.rb"]))
 
         out = StringIO.new
@@ -325,12 +330,9 @@ module Packwerk
           violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
         )
 
-        RunContext.any_instance.stubs(:process_file)
-          .with(relative_file: "components/source/some/path.rb")
-          .returns([listed_offense])
-        RunContext.any_instance.stubs(:process_file)
-          .with(relative_file: "components/source/other/path.rb")
-          .returns([unlisted_offense])
+        RunContext.any_instance.stubs(:index_and_resolve)
+        RunContext.any_instance.stubs(:find_offenses).multiple_yields([[listed_offense]],
+          [[unlisted_offense]]).returns([listed_offense, unlisted_offense])
         FilesForProcessing.any_instance.stubs(:files).returns(
           Set.new(["components/source/some/path.rb", "components/source/other/path.rb"])
         )
@@ -394,7 +396,8 @@ module Packwerk
           violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
         )
 
-        RunContext.any_instance.stubs(:process_file).returns([offense])
+        RunContext.any_instance.stubs(:index_and_resolve)
+        RunContext.any_instance.stubs(:find_offenses).yields([offense]).returns([offense])
         FilesForProcessing.any_instance.stubs(:files).returns(Set.new([file_to_check]))
 
         out = StringIO.new
@@ -437,7 +440,8 @@ module Packwerk
 
         PackageTodo.any_instance.stubs(:listed?).returns(true)
         OffenseCollection.any_instance.stubs(:stale_violations?).returns(true)
-        RunContext.any_instance.stubs(:process_file).returns([offense])
+        RunContext.any_instance.stubs(:index_and_resolve)
+        RunContext.any_instance.stubs(:find_offenses).yields([offense]).returns([offense])
         FilesForProcessing.any_instance.stubs(:files).returns(Set.new(["some/path.rb"]))
 
         out = StringIO.new
@@ -480,7 +484,10 @@ module Packwerk
           violation_type: ReferenceChecking::Checkers::DependencyChecker::VIOLATION_TYPE
         )
 
-        RunContext.any_instance.stubs(:process_file).returns([offense]).returns([offense2])
+        RunContext.any_instance.stubs(:index_and_resolve)
+        RunContext.any_instance.stubs(:find_offenses)
+          .multiple_yields([[offense]], [[offense2]])
+          .returns([offense, offense2])
         FilesForProcessing.any_instance.stubs(:files).returns(Set.new(["some/path.rb", "some/other_path.rb"]))
 
         out = StringIO.new
