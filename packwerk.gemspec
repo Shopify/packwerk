@@ -33,7 +33,7 @@ Gem::Specification.new do |spec|
   spec.bindir = "exe"
   spec.executables << "packwerk"
 
-  spec.files = Dir["CHANGELOG.md", "LICENSE.md", "README.md", "lib/**/*", "sorbet/**/*"]
+  spec.files = Dir["CHANGELOG.md", "LICENSE.md", "README.md", "lib/**/*"]
   spec.require_paths = ["lib"]
 
   spec.required_ruby_version = ">= 3.3"
