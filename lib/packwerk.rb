@@ -9,6 +9,8 @@ require "stringio"
 require "active_support/core_ext/string"
 # Provides Object#to_json
 require "active_support/core_ext/object/json"
+# Provides Object#present? / #blank?
+require "active_support/core_ext/object/blank"
 
 module Packwerk
   extend ActiveSupport::Autoload
@@ -28,7 +30,6 @@ module Packwerk
   autoload :PackageSet
   autoload :PackageTodo
   autoload :Parsers
-  autoload :RailsLoadPaths
   autoload :Reference
   autoload :ReferenceOffense
   autoload :Validator
@@ -56,24 +57,11 @@ module Packwerk
   # Private APIs
   # Please submit an issue if you have a use-case for these
   autoload :ApplicationValidator
-  autoload :AssociationInspector
-  autoload :Cache
-  autoload :ConstantDiscovery
-  autoload :ConstantNameInspector
-  autoload :ConstNodeInspector
   autoload :ExtensionLoader
-  autoload :FileProcessor
   autoload :FilesForProcessing
   autoload :Graph
-  autoload :NodeHelpers
-  autoload :NodeProcessor
-  autoload :NodeProcessorFactory
-  autoload :NodeVisitor
-  autoload :ParsedConstantDefinitions
   autoload :ParseRun
-  autoload :ReferenceExtractor
   autoload :RunContext
-  autoload :UnresolvedReference
 
   module Generators
     extend ActiveSupport::Autoload

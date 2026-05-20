@@ -1,77 +1,23 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "ast/node"
-require "better_html"
-require "better_html/parser"
-require "parser/source/buffer"
+require "herb"
 
 module Packwerk
   module Parsers
+    # Extracts the Ruby source embedded in an ERB template using Herb, the
+    # Shopify ERB parser. Herb correctly handles ERB blocks that span tags
+    # (e.g. `<%= form_for(:user) do |f| %>...<% end %>`) and preserves the
+    # original line/column positions so reported violations point at the
+    # actual ERB source location.
     class Erb
-      include ParserInterface
-
-      #: (?parser_class: untyped, ?ruby_parser: Ruby) -> void
-      def initialize(parser_class: BetterHtml::Parser, ruby_parser: Ruby.new)
-        @parser_class = parser_class #: singleton(BetterHtml::Parser)
-        @ruby_parser = ruby_parser
-      end
-
-      # @override
-      #: (io: (IO | StringIO), ?file_path: String) -> untyped
-      def call(io:, file_path: "<unknown>")
-        buffer = Parser::Source::Buffer.new(file_path)
-        buffer.source = io.read
-        parse_buffer(buffer, file_path: file_path)
-      end
-
-      #: (Parser::Source::Buffer buffer, file_path: String) -> AST::Node?
-      def parse_buffer(buffer, file_path:)
-        parser = @parser_class.new(buffer, template_language: :html)
-        to_ruby_ast(parser.ast, file_path)
-      rescue EncodingError => e
-        result = ParseResult.new(file: file_path, message: e.message)
-        raise Parsers::ParseError, result
-      rescue Parser::SyntaxError => e
-        result = ParseResult.new(file: file_path, message: "Syntax error: #{e}")
-        raise Parsers::ParseError, result
-      end
-
-      private
-
-      #: ((::AST::Node & Object) erb_ast, String file_path) -> ::AST::Node?
-      def to_ruby_ast(erb_ast, file_path)
-        # Note that we're not using the source location (line/column) at the moment, but if we did
-        # care about that, we'd need to tweak this to insert empty lines and spaces so that things
-        # line up with the ERB file
-        nodes = code_nodes(erb_ast) #: as !nil
-        code_pieces = nodes.map do |node|
-          node #: as ::AST::Node
-            .children.first
-        end
-
-        @ruby_parser.call(
-          io: StringIO.new(code_pieces.join("\n")),
-          file_path: file_path,
-        )
-      end
-
-      #: ((::AST::Node | String)? node) ?{ (::AST::Node arg0) -> void } -> (Enumerator[::AST::Node] | Array[String])?
-      def code_nodes(node, &block)
-        return enum_for(:code_nodes, node) unless block
-        return unless node.is_a?(::AST::Node)
-
-        yield node if node.type == :code
-
-        # Skip descending into an ERB comment node, which may contain code nodes
-        if node.type == :erb
-          first_child = node.children.first
-          return if first_child&.type == :indicator && first_child&.children&.first == "#"
-        end
-
-        node.children.each do |child|
-          code_nodes(child, &block)
-        end
+      #: (file_path: String) -> String?
+      def extract_ruby_source(file_path:)
+        source = File.read(file_path, encoding: Encoding::UTF_8)
+        ruby = Herb.extract_ruby(source)
+        ruby.empty? ? nil : ruby
+      rescue EncodingError
+        nil
       end
     end
   end

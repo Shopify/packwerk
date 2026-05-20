@@ -41,15 +41,11 @@ Gem::Specification.new do |spec|
   spec.add_dependency("activesupport", ">= 6.0")
   spec.add_dependency("benchmark")
   spec.add_dependency("bundler")
-  spec.add_dependency("constant_resolver", ">= 0.3")
-  spec.add_dependency("parallel", "< 2")
-  spec.add_dependency("zeitwerk", ">= 2.6.1")
+  spec.add_dependency("rubydex", ">= 0.2.3")
 
-  # For Ruby parsing
-  spec.add_dependency("ast")
-  spec.add_dependency("parser")
+  # For association detection (Prism native AST walk)
   spec.add_dependency("prism", ">= 1.4.0")
 
-  # For ERB parsing
-  spec.add_dependency("better_html")
+  # For ERB parsing -- preserves block-spanning tags and source positions
+  spec.add_dependency("herb")
 end
