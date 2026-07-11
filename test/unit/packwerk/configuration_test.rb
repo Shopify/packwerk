@@ -82,6 +82,74 @@ module Packwerk
       remove_extensions
     end
 
+    test "#load_paths uses explicitly configured load_paths and never boots Rails" do
+      use_template(:minimal)
+      merge_into_app_yaml_file("packwerk.yml", { "load_paths" => ["components/sales/app/models"] })
+
+      RailsLoadPaths.expects(:for).never
+
+      configuration = Configuration.from_path(app_dir)
+
+      assert_equal({ "components/sales/app/models" => Object }, configuration.load_paths)
+    end
+
+    test "#load_paths expands globs in configured load_paths" do
+      use_template(:minimal)
+      merge_into_app_yaml_file("packwerk.yml", { "load_paths" => ["components/*/app/models"] })
+
+      configuration = Configuration.from_path(app_dir)
+
+      assert_equal({ "components/sales/app/models" => Object }, configuration.load_paths)
+    end
+
+    test "#load_paths deduplicates paths matched by overlapping entries" do
+      use_template(:minimal)
+      merge_into_app_yaml_file("packwerk.yml", {
+        "load_paths" => ["components/sales/app/models", "components/*/app/models"],
+      })
+
+      configuration = Configuration.from_path(app_dir)
+
+      assert_equal({ "components/sales/app/models" => Object }, configuration.load_paths)
+    end
+
+    test "#load_paths falls back to RailsLoadPaths when no load_paths are configured" do
+      use_template(:minimal)
+      expected = { "app" => Object }
+      RailsLoadPaths.expects(:for).with(app_dir, environment: "test").returns(expected)
+
+      configuration = Configuration.from_path(app_dir)
+
+      assert_equal(expected, configuration.load_paths)
+    end
+
+    test "#load_paths raises a helpful error when not a Rails app and no load_paths are configured" do
+      use_template(:blank)
+
+      configuration = Configuration.from_path(app_dir)
+
+      error = assert_raises(RuntimeError) { configuration.load_paths }
+      assert_match(/load_paths/, error.message)
+      assert_match(%r{config/environment\.rb}, error.message)
+    end
+
+    test "#load_paths raises when configured load_paths match no directories" do
+      use_template(:minimal)
+      merge_into_app_yaml_file("packwerk.yml", { "load_paths" => ["does_not_exist/**"] })
+
+      configuration = Configuration.from_path(app_dir)
+
+      error = assert_raises(RuntimeError) { configuration.load_paths }
+      assert_match(/did not match any directories/, error.message)
+    end
+
+    test "raises when load_paths is not a list of strings" do
+      use_template(:minimal)
+      merge_into_app_yaml_file("packwerk.yml", { "load_paths" => "app" })
+
+      assert_raises(ArgumentError) { Configuration.from_path(app_dir) }
+    end
+
     test "require works when referencing a gem" do
       use_template(:extended)
 

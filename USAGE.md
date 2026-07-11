@@ -82,6 +82,19 @@ Packwerk reads from the `packwerk.yml` configuration file in the root directory.
 | parallel             | true                                      | when true, fork code parsing out to subprocesses |
 | cache                | false                                     | when true, caches the results of parsing files |
 | cache_directory      | tmp/cache/packwerk                        | the directory that will hold the packwerk cache |
+| load_paths           | N/A                                       | list of Zeitwerk root directories, for non-Rails applications (see below) |
+
+### Using Packwerk without Rails
+
+By default Packwerk boots your Rails application to discover its autoload paths from `Rails.autoloaders`. Applications that use [Zeitwerk](https://github.com/fxn/zeitwerk) directly (without Rails) can instead declare their load paths explicitly with the `load_paths` key:
+
+```yaml
+load_paths:
+  - app
+  - lib
+```
+
+Each entry is a directory relative to `packwerk.yml`, and should mirror the `push_dir` calls your application makes when configuring its `Zeitwerk::Loader`. Globs are supported (e.g. `packs/*/app/models`). Custom root namespaces (`push_dir(dir, namespace: SomeModule)`) are not yet supported through this configuration.
 
 ### Using a custom ERB parser
 
