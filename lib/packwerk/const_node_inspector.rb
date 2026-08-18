@@ -17,14 +17,14 @@ module Packwerk
       # reference `Spam::Eggs::Thing`, we only process the const node associated with `Spam`.
       return nil unless root_constant?(parent)
 
-      if parent && constant_in_module_or_class_definition?(node, parent: parent)
-        fully_qualify_constant(ancestors)
-      else
-        begin
+      begin
+        if parent && constant_in_module_or_class_definition?(node, parent: parent)
+          fully_qualify_constant(ancestors)
+        else
           NodeHelpers.constant_name(node)
-        rescue NodeHelpers::TypeError
-          nil
         end
+      rescue NodeHelpers::TypeError
+        nil
       end
     end
 
