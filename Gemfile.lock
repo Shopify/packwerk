@@ -8,7 +8,7 @@ PATH
       better_html
       bundler
       constant_resolver (>= 0.3)
-      parallel (< 2)
+      parallel
       parser
       prism (>= 1.4.0)
       zeitwerk (>= 2.6.1)
@@ -203,7 +203,7 @@ GEM
       rexml (>= 3.2.6)
       sorbet-static-and-runtime (>= 0.5.10187)
       thor (>= 0.19.2)
-    spring (4.0.0)
+    spring (4.7.0)
     stringio (3.1.7)
     tapioca (0.19.1)
       benchmark
@@ -225,13 +225,14 @@ GEM
       unicode-emoji (~> 4.1)
     unicode-emoji (4.2.0)
     useragent (0.16.11)
-    zeitwerk (2.6.18)
+    zeitwerk (2.8.3)
 
 PLATFORMS
   aarch64-linux
   arm64-darwin-21
   arm64-darwin-22
   arm64-darwin-23
+  arm64-darwin-24
   arm64-darwin-25
   x86_64-darwin
   x86_64-darwin-20
@@ -247,7 +248,6 @@ DEPENDENCIES
   packwerk!
   railties
   rake
-  rbi (< 0.3.11)
   rubocop-performance
   rubocop-shopify
   rubocop-sorbet

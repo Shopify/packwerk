@@ -1,10 +1,13 @@
 name: packwerk
 
+nix: true
 type: ruby
 
 up:
   - ruby
   - bundler
+  - packages:
+    - libyaml
 
 commands:
   test:
