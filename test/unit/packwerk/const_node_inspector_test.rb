@@ -71,6 +71,24 @@ module Packwerk
       assert_nil constant_name
     end
 
+    test "#constant_name_from_node should return nil for a superclass with a dynamic namespace" do
+      parent = parse("class Child < module_parent::Base; end")
+      node = parent.children[1]
+
+      constant_name = @inspector.constant_name_from_node(node, ancestors: [parent], relative_file: "")
+
+      assert_nil constant_name
+    end
+
+    test "#constant_name_from_node should return nil for a class name with a dynamic namespace" do
+      parent = parse("class module_parent::Foo; end")
+      node = parent.children[0]
+
+      constant_name = @inspector.constant_name_from_node(node, ancestors: [parent], relative_file: "")
+
+      assert_nil constant_name
+    end
+
     private
 
     def parse(code)
