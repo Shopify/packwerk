@@ -42,7 +42,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency("benchmark")
   spec.add_dependency("bundler")
   spec.add_dependency("constant_resolver", ">= 0.3")
-  spec.add_dependency("parallel", "< 2")
+  spec.add_dependency("parallel")
   spec.add_dependency("zeitwerk", ">= 2.6.1")
 
   # For Ruby parsing
