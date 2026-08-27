@@ -77,6 +77,7 @@ module Packwerk
       @config_path = config_path
 
       @offenses_formatter_identifier = configs["offenses_formatter"] || Formatters::DefaultOffensesFormatter::IDENTIFIER #: String
+      @config_load_paths = parse_config_load_paths(configs["load_paths"]) #: Array[String]
 
       if configs.key?("require")
         configs["require"].each do |require_directive|
@@ -87,7 +88,7 @@ module Packwerk
 
     #: -> Hash[String, Module[top]]
     def load_paths
-      @load_paths ||= RailsLoadPaths.for(@root_path, environment: "test") #: Hash[String, Module[top]]?
+      @load_paths ||= resolve_load_paths #: Hash[String, Module[top]]?
     end
 
     #: -> bool
@@ -103,6 +104,60 @@ module Packwerk
     #: -> bool
     def cache_enabled?
       @cache_enabled
+    end
+
+    private
+
+    #: -> Hash[String, Module[top]]
+    def resolve_load_paths
+      if @config_load_paths.any? # non-Rails app
+        load_paths_from_config
+      elsif File.file?(File.join(@root_path, "config", "environment.rb")) # Rails app
+        RailsLoadPaths.for(@root_path, environment: "test")
+      else
+        raise <<~MSG
+          Packwerk could not determine your application's load paths.
+
+          If this is a Rails application, run Packwerk from its root directory
+          (the one containing config/environment.rb).
+
+          Otherwise, list your Zeitwerk root directories explicitly in packwerk.yml, e.g.:
+
+            load_paths:
+              - app
+              - lib
+        MSG
+      end
+    end
+
+    #: -> Hash[String, Module[top]]
+    def load_paths_from_config
+      paths = @config_load_paths
+        .flat_map { |glob| Dir.glob(glob, base: @root_path) }
+        .select { |path| File.directory?(File.join(@root_path, path)) }
+        .uniq
+
+      if paths.empty?
+        raise <<~MSG
+          The `load_paths` configured in packwerk.yml did not match any directories:
+            #{@config_load_paths.inspect}
+
+          Packwerk will not work correctly without any load paths.
+        MSG
+      end
+
+      paths.to_h { |path| [path, Object] }
+    end
+
+    #: (untyped raw) -> Array[String]
+    def parse_config_load_paths(raw)
+      return [] if raw.nil?
+
+      unless raw.is_a?(Array) && raw.all?(String)
+        raise ArgumentError, "`load_paths` in packwerk.yml must be a list of strings, got: #{raw.inspect}"
+      end
+
+      raw
     end
   end
 end
