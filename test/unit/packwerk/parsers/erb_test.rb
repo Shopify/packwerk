@@ -48,6 +48,19 @@ module Packwerk
         assert_equal(file_path, exc.result.file)
       end
 
+      test "#call does not report a location for Ruby syntax errors in the template" do
+        file_path = fixture_path("invalid.erb")
+
+        exc = assert_raises(Parsers::ParseError) do
+          File.open(file_path, "r") do |fixture|
+            Erb.new.call(io: fixture, file_path: file_path)
+          end
+        end
+
+        assert_match(/\ASyntax error: /, exc.result.message)
+        assert_nil(exc.result.location)
+      end
+
       test "#call writes encoding error to stdout" do
         error_message = "stub error"
         err = EncodingError.new(error_message)
