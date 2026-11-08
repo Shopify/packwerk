@@ -48,7 +48,12 @@ module Packwerk
         result = ParseResult.new(file: file_path, message: e.message)
         raise Parsers::ParseError, result
       rescue Parser::SyntaxError => e
-        result = ParseResult.new(file: file_path, message: "Syntax error: #{e}")
+        location = e.diagnostic.location
+        result = ParseResult.new(
+          file: file_path,
+          message: "Syntax error: #{e}",
+          location: Node::Location.new(location.line, location.column),
+        )
         raise Parsers::ParseError, result
       end
     end

@@ -18,7 +18,7 @@ module Packwerk
 
       test "#call writes parse error to stdout" do
         error_message = "stub error"
-        err = Parser::SyntaxError.new(stub(message: error_message))
+        err = Parser::SyntaxError.new(stub(message: error_message, location: stub(line: 3, column: 7)))
         parser = stub
         parser.stubs(:parse).raises(err)
 
@@ -35,6 +35,19 @@ module Packwerk
 
         assert_equal("Syntax error: stub error", exc.result.message)
         assert_equal(file_path, exc.result.file)
+        assert_equal(Node::Location.new(3, 7), exc.result.location)
+      end
+
+      test "#call reports the location of a syntax error" do
+        file_path = fixture_path("invalid.rb")
+
+        exc = assert_raises(Parsers::ParseError) do
+          File.open(file_path, "r") do |fixture|
+            Ruby.new.call(io: fixture, file_path: file_path)
+          end
+        end
+
+        assert_equal(Node::Location.new(5, 3), exc.result.location)
       end
 
       test "#call writes encoding error to stdout" do

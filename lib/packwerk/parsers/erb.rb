@@ -54,6 +54,9 @@ module Packwerk
           io: StringIO.new(code_pieces.join("\n")),
           file_path: file_path,
         )
+      rescue Parsers::ParseError => e
+        # Locations in the joined code pieces don't match the template
+        raise Parsers::ParseError, ParseResult.new(file: e.result.file, message: e.result.message)
       end
 
       #: ((::AST::Node | String)? node) ?{ (::AST::Node arg0) -> void } -> (Enumerator[::AST::Node] | Array[String])?
