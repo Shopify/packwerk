@@ -85,7 +85,7 @@ Packwerk reads from the `packwerk.yml` configuration file in the root directory.
 
 ### Using a custom ERB parser
 
-You can specify a custom ERB parser if needed. For example, if you're using `<%graphql>` tags from https://github.com/github/graphql-client in your ERBs, you can use a custom parser subclass to comment them out so that Packwerk can parse the rest of the file:
+You can specify a custom ERB parser if needed. For example, if you're using `<%graphql>` tags from https://github.com/github-community-projects/graphql-client in your ERBs, you can use a custom parser subclass to comment them out so that Packwerk can parse the rest of the file:
 
 ```ruby
 class CustomParser < Packwerk::Parsers::Erb
