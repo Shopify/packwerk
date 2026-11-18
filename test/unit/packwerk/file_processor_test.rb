@@ -117,6 +117,7 @@ module Packwerk
       offenses = processed_file.offenses
       assert_equal 1, offenses.length
       assert_equal "Syntax error: expected a delimiter to close the parameters", offenses.first.message
+      assert_equal Node::Location.new(1, 9), offenses.first.location
     end
 
     test "#call with a path that can't be parsed outputs error message" do
