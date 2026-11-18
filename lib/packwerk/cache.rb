@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "digest"
+require "securerandom"
 
 module Packwerk
   class Cache
@@ -89,9 +90,7 @@ module Packwerk
 
       cache_location = @cache_directory.join(digest_for_string(file_path))
 
-      cache_contents = if cache_location.exist?
-        CacheContents.deserialize(cache_location.read) #: CacheContents
-      end
+      cache_contents = read_cache_contents(cache_location)
 
       file_contents_digest = digest_for_file(file_path)
 
@@ -108,7 +107,7 @@ module Packwerk
           file_contents_digest: file_contents_digest,
           unresolved_references: unresolved_references,
         )
-        cache_location.write(cache_contents.serialize)
+        write_atomically(cache_location, cache_contents.serialize)
 
         unresolved_references
       end
@@ -147,7 +146,7 @@ module Packwerk
         # In this case, we have nothing cached
         # We save the current digest. This way the next time we compare current digest to cached digest,
         # we can accurately determine if we should bust the cache
-        cached_digest_path.write(current_digest)
+        write_atomically(cached_digest_path, current_digest)
 
         nil
       elsif cached_digest_path.read == current_digest
@@ -158,13 +157,41 @@ module Packwerk
         bust_cache!
         create_cache_directory!
 
-        cached_digest_path.write(current_digest)
+        write_atomically(cached_digest_path, current_digest)
       end
     end
 
     #: -> void
     def create_cache_directory!
       FileUtils.mkdir_p(@cache_directory)
+    end
+
+    private
+
+    # Another packwerk process sharing the cache directory can leave an entry empty or
+    # half-written, so an entry that does not parse is treated as a cache miss.
+    #: (Pathname cache_location) -> CacheContents?
+    def read_cache_contents(cache_location)
+      return unless cache_location.exist?
+
+      CacheContents.deserialize(cache_location.read)
+    rescue JSON::ParserError, Errno::ENOENT
+      Debug.out("Ignoring unreadable cache entry #{cache_location}")
+      nil
+    end
+
+    # Writes to a temporary file in the same directory and renames it into place, so
+    # concurrent readers see either the previous file or the complete new one.
+    #: (Pathname path, String contents) -> void
+    def write_atomically(path, contents)
+      temp_path = path.dirname.join(".#{path.basename}.#{Process.pid}.#{SecureRandom.hex(4)}.tmp")
+      begin
+        temp_path.write(contents)
+        File.rename(temp_path, path)
+      rescue StandardError
+        FileUtils.rm_f(temp_path)
+        raise
+      end
     end
   end
 
