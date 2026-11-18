@@ -1,9 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-# TODO: make better_html not require Rails
-require "rails/railtie"
-
 require "test_helper"
 
 module Packwerk
