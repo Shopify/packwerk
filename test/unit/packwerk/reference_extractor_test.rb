@@ -253,14 +253,16 @@ module Packwerk
     class DeprecatedInspector
       include ConstantNameInspector
 
+      # rubocop:disable Sorbet/AllowIncompatibleOverride
       # @override(allow_incompatible: true)
       #: (::AST::Node node, ancestors: Array[::AST::Node]) -> String?
       def constant_name_from_node(node, ancestors:)
         "Something"
       end
+      # rubocop:enable Sorbet/AllowIncompatibleOverride
     end
 
-    DEFAULT_INSPECTORS = [ConstNodeInspector.new, DummyAssociationInspector.new]
+    DEFAULT_INSPECTORS = [ConstNodeInspector.new, DummyAssociationInspector.new].freeze
 
     def process(code, file_path, constant_name_inspectors = DEFAULT_INSPECTORS)
       root_node = ParserTestHelper.parse(code)
