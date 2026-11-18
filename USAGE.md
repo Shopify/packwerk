@@ -64,8 +64,8 @@ After that, you may begin creating packages for your application. See [Defining 
 ### Setting up Spring
 
 [Spring](https://github.com/rails/spring) is a preloader for Rails. Because `packwerk` loads `Rails`, it can be sped up dramatically by enabling spring.  Packwerk supports the usage of Spring.
-Firstly, spring needs to know about the packwerk spring command when spring is loading. To do that, add `require 'packwerk/spring_command'` to `config/spring.rb` in your application.
-Secondly, to enable Spring, first run `bin/spring binstub packwerk` which will "springify" the generated binstub.
+Firstly, spring needs to know about the packwerk spring command when spring is loading. To do that, add `require 'packwerk/spring_command'` to `config/spring.rb` in your application (create the file if it doesn't exist).
+Secondly, to enable Spring, run `bin/spring binstub packwerk` which will "springify" the generated binstub.
 
 
 ## Configuring Packwerk
