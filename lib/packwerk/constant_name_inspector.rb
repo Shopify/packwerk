@@ -9,7 +9,7 @@ module Packwerk
   module ConstantNameInspector
     # @abstract
     #: (::AST::Node node, ancestors: Array[::AST::Node], relative_file: String) -> String?
-    def constant_name_from_node(node, ancestors:, relative_file:) = raise NotImplementedError, "Abstract method called"
+    def constant_name_from_node(node, ancestors:, relative_file:) = super
   end
 
   private_constant :ConstantNameInspector

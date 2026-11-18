@@ -37,7 +37,7 @@ module Packwerk
 
       # @abstract
       #: -> bool
-      def run = raise NotImplementedError, "Abstract method called"
+      def run = super
 
       private
 

@@ -6,14 +6,14 @@ module Packwerk
   module OutputStyle
     # @abstract
     #: -> String
-    def reset = raise NotImplementedError, "Abstract method called"
+    def reset = super
 
     # @abstract
     #: -> String
-    def filename = raise NotImplementedError, "Abstract method called"
+    def filename = super
 
     # @abstract
     #: -> String
-    def error = raise NotImplementedError, "Abstract method called"
+    def error = super
   end
 end

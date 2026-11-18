@@ -61,18 +61,18 @@ module Packwerk
 
     # @abstract
     #: (Array[Offense?] offenses) -> String
-    def show_offenses(offenses) = raise NotImplementedError, "Abstract method called"
+    def show_offenses(offenses) = super
 
     # @abstract
     #: (OffenseCollection offense_collection, Set[String] for_files) -> String
-    def show_stale_violations(offense_collection, for_files) = raise NotImplementedError, "Abstract method called"
+    def show_stale_violations(offense_collection, for_files) = super
 
     # @abstract
     #: -> String
-    def identifier = raise NotImplementedError, "Abstract method called"
+    def identifier = super
 
     # @abstract
     #: (Array[ReferenceOffense] strict_mode_violations) -> String
-    def show_strict_mode_violations(strict_mode_violations) = raise NotImplementedError, "Abstract method called"
+    def show_strict_mode_violations(strict_mode_violations) = super
   end
 end
