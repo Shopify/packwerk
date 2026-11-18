@@ -39,11 +39,11 @@ module Packwerk
 
     # @abstract
     #: -> Array[String]
-    def permitted_keys = raise NotImplementedError, "Abstract method called"
+    def permitted_keys = super
 
     # @abstract
     #: (PackageSet package_set, Configuration configuration) -> Validator::Result
-    def call(package_set, configuration) = raise NotImplementedError, "Abstract method called"
+    def call(package_set, configuration) = super
 
     #: (Configuration configuration, untyped setting) -> untyped
     def package_manifests_settings_for(configuration, setting)

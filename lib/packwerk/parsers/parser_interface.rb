@@ -8,7 +8,7 @@ module Packwerk
     module ParserInterface
       # @abstract
       #: (io: (IO | StringIO), file_path: String) -> untyped
-      def call(io:, file_path:) = raise NotImplementedError, "Abstract method called"
+      def call(io:, file_path:) = super
     end
   end
 end

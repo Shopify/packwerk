@@ -32,8 +32,8 @@ module Packwerk
     end
 
     DEFAULT_CONFIG_PATH = "packwerk.yml"
-    DEFAULT_INCLUDE_GLOBS = ["**/*.{rb,rake,erb}"] #: Array[String]
-    DEFAULT_EXCLUDE_GLOBS = ["{bin,node_modules,script,tmp,vendor}/**/*"] #: Array[String]
+    DEFAULT_INCLUDE_GLOBS = ["**/*.{rb,rake,erb}"].freeze #: Array[String]
+    DEFAULT_EXCLUDE_GLOBS = ["{bin,node_modules,script,tmp,vendor}/**/*"].freeze #: Array[String]
 
     #: Array[String]
     attr_reader(:include)

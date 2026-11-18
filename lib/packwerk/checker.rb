@@ -44,18 +44,18 @@ module Packwerk
 
     # @abstract
     #: -> String
-    def violation_type = raise NotImplementedError, "Abstract method called"
+    def violation_type = super
 
     # @abstract
     #: (ReferenceOffense offense) -> bool
-    def strict_mode_violation?(offense) = raise NotImplementedError, "Abstract method called"
+    def strict_mode_violation?(offense) = super
 
     # @abstract
     #: (Reference reference) -> bool
-    def invalid_reference?(reference) = raise NotImplementedError, "Abstract method called"
+    def invalid_reference?(reference) = super
 
     # @abstract
     #: (Reference reference) -> String
-    def message(reference) = raise NotImplementedError, "Abstract method called"
+    def message(reference) = super
   end
 end
