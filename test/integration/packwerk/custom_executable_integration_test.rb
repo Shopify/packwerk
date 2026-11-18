@@ -33,6 +33,21 @@ module Packwerk
       assert_match(/No offenses detected/, captured_output)
     end
 
+    test "'packwerk check' reports ERB offenses at their line and column in the template" do
+      merge_into_app_yaml_file("packwerk.yml", { "include" => ["**/*.erb"] })
+      write_app_file(TIMELINE_PATH.join("app", "views", "show.html.erb"), <<~ERB)
+        <div>
+          <%# ::Order %>
+          <p><%= title %> <%= link_to "order", ::Order %></p>
+        </div>
+      ERB
+
+      refute_successful_run(["check", "components/timeline"])
+
+      assert_match(%r{components/timeline/app/views/show\.html\.erb\S*:3:39$}, captured_output)
+      assert_match(/1 offense detected/, captured_output)
+    end
+
     test "'packwerk check' with violations only in nested packages has different outcomes per variant" do
       open_app_file(TIMELINE_PATH.join("nested", "timeline_comment.rb")) do |file|
         file.write("class TimelineComment; belongs_to :order, class_name: '::Order'; end")

@@ -1,16 +1,11 @@
 # typed: true
 # frozen_string_literal: true
 
-# TODO: make better_html not require Rails
-require "rails/railtie"
-
 require "test_helper"
 
 module Packwerk
   module Parsers
     class ErbTest < Minitest::Test
-      include TypedMock
-
       test "#call returns node with valid file" do
         node = File.open(fixture_path("valid.erb"), "r") do |fixture|
           Erb.new.call(io: fixture)
@@ -19,60 +14,94 @@ module Packwerk
         assert_kind_of(::AST::Node, node)
       end
 
-      test "#call returns node with valid javascript file" do
+      test "#call returns nil for a file with no Ruby code" do
         node = File.open(fixture_path("javascript_valid.erb"), "r") do |fixture|
           Erb.new.call(io: fixture)
         end
 
-        assert_kind_of(NilClass, node)
+        assert_nil(node)
       end
 
-      test "#call writes parse error to stdout" do
-        error_message = "stub error"
-        err = Parser::SyntaxError.new(stub(message: error_message))
-        parser = stub
-        parser.stubs(:ast).raises(err)
+      test "#call keeps the line and column of constants from the template" do
+        node = File.open(fixture_path("valid.erb"), "r") do |fixture|
+          Erb.new.call(io: fixture)
+        end
 
-        parser_class_stub = typed_mock(new: parser)
+        constant = find_const(node, :MY_CONSTANT)
 
-        parser = Erb.new(parser_class: parser_class_stub)
+        refute_nil(constant)
+        assert_equal(Node::Location.new(13, 26), NodeHelpers.location(constant))
+      end
+
+      test "#call parses several ERB tags on the same line as separate statements" do
+        node = Erb.new.call(io: StringIO.new("<p><%= Foo %> and <%= Bar %></p>"))
+
+        assert_equal(:begin, node.type)
+        assert_equal([:Foo, :Bar], node.children.map { |child| child.children.last })
+      end
+
+      test "#call parses Ruby blocks that span several ERB tags" do
+        source = <<~ERB
+          <%= form_for(:user) do |f| %>
+            <div><%= f.text_field Sales::Order %></div>
+          <% end %>
+        ERB
+
+        node = Erb.new.call(io: StringIO.new(source))
+
+        refute_nil(find_const(node, :Order))
+      end
+
+      test "#call ignores code in ERB comments" do
+        node = Erb.new.call(io: StringIO.new("<%# Hidden::Constant %>\n<%= Shown %>"))
+
+        assert_nil(find_const(node, :Hidden))
+        refute_nil(find_const(node, :Shown))
+      end
+
+      test "#call raises a parse error for a Ruby syntax error" do
         file_path = fixture_path("invalid.erb")
 
         exc = assert_raises(Parsers::ParseError) do
           File.open(file_path, "r") do |fixture|
-            parser.call(io: fixture, file_path: file_path)
+            Erb.new.call(io: fixture, file_path: file_path)
           end
         end
 
-        assert_equal("Syntax error: stub error", exc.result.message)
+        assert_match(/\ASyntax error: /, exc.result.message)
         assert_equal(file_path, exc.result.file)
       end
 
-      test "#call writes encoding error to stdout" do
-        error_message = "stub error"
-        err = EncodingError.new(error_message)
-        parser = stub
-        parser.stubs(:ast).raises(err)
-
-        parser_class_stub = typed_mock(new: parser)
-
-        parser = Erb.new(parser_class: parser_class_stub)
-        file_path = fixture_path("invalid.erb")
+      test "#call raises a parse error for an encoding error" do
+        Herb.stubs(:extract_ruby).raises(EncodingError, "stub error")
+        file_path = fixture_path("valid.erb")
 
         exc = assert_raises(Parsers::ParseError) do
           File.open(file_path, "r") do |fixture|
-            parser.call(io: fixture, file_path: file_path)
+            Erb.new.call(io: fixture, file_path: file_path)
           end
         end
 
         assert_equal("stub error", exc.result.message)
-        assert_equal(file_path.to_s, exc.result.file)
+        assert_equal(file_path, exc.result.file)
       end
 
       private
 
       def fixture_path(name)
         ROOT.join("test/fixtures/formats/erb", name).to_s
+      end
+
+      def find_const(node, name)
+        return unless node.is_a?(::AST::Node)
+        return node if node.type == :const && node.children.last == name
+
+        node.children.each do |child|
+          found = find_const(child, name)
+          return found if found
+        end
+
+        nil
       end
     end
   end
