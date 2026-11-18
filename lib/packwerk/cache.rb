@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "digest"
+require "tempfile"
 
 module Packwerk
   class Cache
@@ -88,11 +89,7 @@ module Packwerk
       return yield unless @enable_cache
 
       cache_location = @cache_directory.join(digest_for_string(file_path))
-
-      cache_contents = if cache_location.exist?
-        CacheContents.deserialize(cache_location.read) #: CacheContents
-      end
-
+      cache_contents = read_cache_contents(cache_location)
       file_contents_digest = digest_for_file(file_path)
 
       if !cache_contents.nil? && cache_contents.file_contents_digest == file_contents_digest
@@ -108,9 +105,32 @@ module Packwerk
           file_contents_digest: file_contents_digest,
           unresolved_references: unresolved_references,
         )
-        cache_location.write(cache_contents.serialize)
+        write_atomically(cache_location, cache_contents.serialize)
 
         unresolved_references
+      end
+    end
+
+    # A missing file and a half-written or otherwise unparseable file are both
+    # misses. Concurrent writers and killed runs leave those behind; the cache
+    # is only an optimization, so the caller recomputes the references.
+    #: (Pathname cache_location) -> CacheContents?
+    def read_cache_contents(cache_location)
+      CacheContents.deserialize(cache_location.read)
+    rescue JSON::ParserError, Errno::ENOENT
+      nil
+    end
+
+    # Write to a temporary file in the cache directory, then rename it into
+    # place. A rename in the same directory is atomic, so readers see either
+    # the previous complete file or the new one.
+    #: (Pathname path, String contents) -> void
+    def write_atomically(path, contents)
+      Tempfile.create([path.basename.to_s, ".tmp"], @cache_directory.to_s) do |temporary|
+        temporary.write(contents)
+        temporary.close
+        File.chmod(0666 & ~File.umask, temporary.path)
+        File.rename(temporary.path, path.to_s)
       end
     end
 
@@ -147,7 +167,7 @@ module Packwerk
         # In this case, we have nothing cached
         # We save the current digest. This way the next time we compare current digest to cached digest,
         # we can accurately determine if we should bust the cache
-        cached_digest_path.write(current_digest)
+        write_atomically(cached_digest_path, current_digest)
 
         nil
       elsif cached_digest_path.read == current_digest
@@ -158,7 +178,7 @@ module Packwerk
         bust_cache!
         create_cache_directory!
 
-        cached_digest_path.write(current_digest)
+        write_atomically(cached_digest_path, current_digest)
       end
     end
 
