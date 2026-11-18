@@ -8,6 +8,50 @@
 # pkg:gem/lint_roller#lib/lint_roller/context.rb:1
 module LintRoller; end
 
+# pkg:gem/lint_roller#lib/lint_roller/about.rb:2
+class LintRoller::About < ::Struct
+  # pkg:gem/lint_roller#lib/lint_roller/about.rb:2
+  def description; end
+
+  # pkg:gem/lint_roller#lib/lint_roller/about.rb:2
+  def description=(_); end
+
+  # pkg:gem/lint_roller#lib/lint_roller/about.rb:2
+  def homepage; end
+
+  # pkg:gem/lint_roller#lib/lint_roller/about.rb:2
+  def homepage=(_); end
+
+  # pkg:gem/lint_roller#lib/lint_roller/about.rb:2
+  def name; end
+
+  # pkg:gem/lint_roller#lib/lint_roller/about.rb:2
+  def name=(_); end
+
+  # pkg:gem/lint_roller#lib/lint_roller/about.rb:2
+  def version; end
+
+  # pkg:gem/lint_roller#lib/lint_roller/about.rb:2
+  def version=(_); end
+
+  class << self
+    # pkg:gem/lint_roller#lib/lint_roller/about.rb:2
+    def [](*_arg0); end
+
+    # pkg:gem/lint_roller#lib/lint_roller/about.rb:2
+    def inspect; end
+
+    # pkg:gem/lint_roller#lib/lint_roller/about.rb:2
+    def keyword_init?; end
+
+    # pkg:gem/lint_roller#lib/lint_roller/about.rb:2
+    def members; end
+
+    # pkg:gem/lint_roller#lib/lint_roller/about.rb:2
+    def new(*_arg0); end
+  end
+end
+
 # pkg:gem/lint_roller#lib/lint_roller/context.rb:2
 class LintRoller::Context < ::Struct
   # pkg:gem/lint_roller#lib/lint_roller/context.rb:2
@@ -63,3 +107,83 @@ class LintRoller::Context < ::Struct
     def new(*_arg0); end
   end
 end
+
+# pkg:gem/lint_roller#lib/lint_roller/error.rb:2
+class LintRoller::Error < ::StandardError; end
+
+# pkg:gem/lint_roller#lib/lint_roller/plugin.rb:2
+class LintRoller::Plugin
+  # `config' is a Hash of options passed to the plugin by the user
+  #
+  # pkg:gem/lint_roller#lib/lint_roller/plugin.rb:4
+  def initialize(config = T.unsafe(nil)); end
+
+  # pkg:gem/lint_roller#lib/lint_roller/plugin.rb:8
+  def about; end
+
+  # `context' is an instance of LintRoller::Context provided by the runner
+  #
+  # pkg:gem/lint_roller#lib/lint_roller/plugin.rb:18
+  def rules(context); end
+
+  # `context' is an instance of LintRoller::Context provided by the runner
+  #
+  # pkg:gem/lint_roller#lib/lint_roller/plugin.rb:13
+  def supported?(context); end
+end
+
+# pkg:gem/lint_roller#lib/lint_roller/rules.rb:2
+class LintRoller::Rules < ::Struct
+  # pkg:gem/lint_roller#lib/lint_roller/rules.rb:2
+  def config_format; end
+
+  # pkg:gem/lint_roller#lib/lint_roller/rules.rb:2
+  def config_format=(_); end
+
+  # pkg:gem/lint_roller#lib/lint_roller/rules.rb:2
+  def error; end
+
+  # pkg:gem/lint_roller#lib/lint_roller/rules.rb:2
+  def error=(_); end
+
+  # pkg:gem/lint_roller#lib/lint_roller/rules.rb:2
+  def type; end
+
+  # pkg:gem/lint_roller#lib/lint_roller/rules.rb:2
+  def type=(_); end
+
+  # pkg:gem/lint_roller#lib/lint_roller/rules.rb:2
+  def value; end
+
+  # pkg:gem/lint_roller#lib/lint_roller/rules.rb:2
+  def value=(_); end
+
+  class << self
+    # pkg:gem/lint_roller#lib/lint_roller/rules.rb:2
+    def [](*_arg0); end
+
+    # pkg:gem/lint_roller#lib/lint_roller/rules.rb:2
+    def inspect; end
+
+    # pkg:gem/lint_roller#lib/lint_roller/rules.rb:2
+    def keyword_init?; end
+
+    # pkg:gem/lint_roller#lib/lint_roller/rules.rb:2
+    def members; end
+
+    # pkg:gem/lint_roller#lib/lint_roller/rules.rb:2
+    def new(*_arg0); end
+  end
+end
+
+# pkg:gem/lint_roller#lib/lint_roller/support/merges_upstream_metadata.rb:2
+module LintRoller::Support; end
+
+# pkg:gem/lint_roller#lib/lint_roller/support/merges_upstream_metadata.rb:3
+class LintRoller::Support::MergesUpstreamMetadata
+  # pkg:gem/lint_roller#lib/lint_roller/support/merges_upstream_metadata.rb:4
+  def merge(plugin_yaml, upstream_yaml); end
+end
+
+# pkg:gem/lint_roller#lib/lint_roller/version.rb:2
+LintRoller::VERSION = T.let(T.unsafe(nil), String)
