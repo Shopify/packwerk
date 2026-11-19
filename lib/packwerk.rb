@@ -9,6 +9,8 @@ require "stringio"
 require "active_support/core_ext/string"
 # Provides Object#to_json
 require "active_support/core_ext/object/json"
+# Provides Object#present?/#blank?
+require "active_support/core_ext/object/blank"
 
 module Packwerk
   extend ActiveSupport::Autoload

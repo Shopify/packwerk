@@ -21,3 +21,10 @@
 
 # Where you want the cache to be stored (default below)
 # cache_directory: 'tmp/cache/packwerk'
+
+# For non-Rails applications: the list of Zeitwerk root directories, relative to
+# this file. Mirror your app's `Zeitwerk::Loader#push_dir` calls. Globs are supported.
+# When set, Packwerk will not attempt to boot a Rails application.
+# load_paths:
+# - "app"
+# - "lib"
